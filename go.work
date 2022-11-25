@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./fitness-measurer
+	./testing
+	evolve
+	examples
+)
