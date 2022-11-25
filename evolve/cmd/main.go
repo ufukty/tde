@@ -16,7 +16,6 @@ Main progress:
 */
 
 import (
-	"GoGP/evolve/evolution"
 	"log"
 )
 
@@ -29,8 +28,8 @@ const (
 func main() {
 	log.Printf("Parameters: n=%d g=%d c=%d", n, g, c)
 
-	var e = evolution.Evolution{}
-	e.InitPopulation(n)
+	// var e = evolution.Evolution{}
+	// e.InitPopulation(n)
 
 	// for i := 0; i < g; i++ {
 	// 	e.ExecuteOneGeneration()
