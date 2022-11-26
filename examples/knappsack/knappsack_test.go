@@ -6,15 +6,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Input struct {
-	prices  []float64
-	weights []float64
-}
-
-type Output struct {
-	placement []int
-}
-
 func AssertArrays[T int | float64](left, right []T) error {
 	if len(left) != len(right) {
 		return errors.New("Array lengths are different")
@@ -29,7 +20,12 @@ func AssertArrays[T int | float64](left, right []T) error {
 
 func Test_Knappsack(t *testing.T) {
 
-	cases := map[*Input]*Output{
+	cases := map[*struct {
+		prices  []float64
+		weights []float64
+	}]*struct {
+		placement []int
+	}{
 		{
 			prices:  []float64{0, 0, 0, 0, 0},
 			weights: []float64{0, 0, 0, 0, 0},
