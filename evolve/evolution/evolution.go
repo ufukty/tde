@@ -6,15 +6,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type Program []byte
+
 type Evolution struct {
-	Individuals map[uuid.UUID]*Individual
+	HallOfFame map[int]*Candidate
+	Candidates map[uuid.UUID]*Candidate
 }
 
 func (e *Evolution) InitPopulation(n int) {
 	for i := 0; i < n; i++ {
-		var individual = NewIndividual()
-		individual.RandomInit()
-		e.Individuals[individual.ID] = individual
+		var candidate = NewCandidate()
+		candidate.RandomInit()
+		e.Candidates[candidate.ID] = candidate
 	}
 }
 
@@ -25,8 +28,8 @@ func (e *Evolution) Select() {
 }
 
 func (e *Evolution) Measure() {
-	for _, individual := range e.Individuals {
-		individual.Measure()
+	for _, candidate := range e.Candidates {
+		candidate.Measure()
 	}
 
 	// test
@@ -36,9 +39,9 @@ func (e *Evolution) Measure() {
 	// penalty for bloat
 }
 
-func (e *Evolution) SortedByFitness() []*Individual {
-	ordered := []*Individual{}
-	for _, ind := range e.Individuals {
+func (e *Evolution) SortedByFitness() []*Candidate {
+	ordered := []*Candidate{}
+	for _, ind := range e.Candidates {
 		ordered = append(ordered, ind)
 	}
 	sort.Slice(ordered, func(i, j int) bool {

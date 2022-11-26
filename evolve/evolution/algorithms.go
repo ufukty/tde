@@ -19,7 +19,7 @@ func CumulativeArray[N Number64](input []N) []N {
 	return output
 }
 
-func GetFitnessArray(individuals []Individual) []float64 {
+func GetFitnessArray(individuals []Candidate) []float64 {
 	fitnesses := []float64{}
 	for _, individual := range individuals {
 		fitnesses = append(fitnesses, individual.Fitness)
@@ -54,7 +54,7 @@ func BinarySearchSmallestOfGreaters(values []float64, key float64) int {
 	return hi
 }
 
-func SelectionRouletteWheel(individuals []Individual, selectionSize int) {
+func SelectionRouletteWheel(individuals []Candidate, selectionSize int) {
 	var (
 		fitnesses             = GetFitnessArray(individuals)
 		reversedFitnesses     = ReversedFitnesses(fitnesses)

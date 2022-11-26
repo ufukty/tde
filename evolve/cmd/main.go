@@ -16,17 +16,16 @@ Main progress:
 */
 
 import (
-	"log"
-)
-
-const (
-	n = 1000 // population
-	g = 100  // generation limit
-	c = 1000 // character limit
+	"GoGP/evolve/file"
+	"fmt"
 )
 
 func main() {
-	log.Printf("Parameters: n=%d g=%d c=%d", n, g, c)
+	fmt.Println(config)
+
+	file := file.NewFile(config.File)
+
+	fmt.Println(file)
 
 	// var e = evolution.Evolution{}
 	// e.InitPopulation(n)
