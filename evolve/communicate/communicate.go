@@ -7,12 +7,8 @@ import (
 )
 
 const (
-	ENDPOINT = "measure-fitness"
+	URL = "http://127.0.0.1:6000/"
 )
-
-type FitnessMeasurementRequest struct {
-	Programs
-}
 
 type Connection struct {
 	AgentIP   string
@@ -20,16 +16,12 @@ type Connection struct {
 }
 
 func NewConnection() *Connection {
-	return &Connection{
-		AgentIP:   "127.0.0.1",
-		AgentPort: "6000",
-	}
+	return &Connection{}
 }
 
 func (c *Connection) Establish() bool {
 
-	url := fmt.Sprintf("http://%s:%s/%s", c.AgentIP, c.AgentPort, ENDPOINT)
-	resp, err := http.Get(url)
+	resp, err := http.Get(URL)
 	if err != nil {
 		panic(err)
 	}

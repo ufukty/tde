@@ -1,7 +1,8 @@
-package evolution
+package in_program_models
 
 import (
 	codefragment "GoGP/evolve/code-fragment"
+
 	"go/format"
 	"log"
 	"math/rand"
@@ -10,9 +11,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+type CandidateID string
+
 type Candidate struct {
-	ID           uuid.UUID
-	Program      *Program
+	UUID         CandidateID
+	Body         []byte
 	Fitness      float64
 	ExecTimeInMs int
 }
@@ -23,21 +26,21 @@ func NewCandidate() *Candidate {
 		log.Fatalln(errors.Wrap(err, "Could not create an UUID for new Individual"))
 	}
 	return &Candidate{
-		ID: newUUID,
+		UUID: CandidateID(newUUID.String()),
 	}
 }
 
 func (c *Candidate) RandomInit() {
-	*c.Program = codefragment.ProduceRandomFragment()
+	c.Body = codefragment.ProduceRandomFragment()
 }
 
 func (c *Candidate) CheckSyntax() bool {
-	_, err := format.Source(*c.Program)
+	_, err := format.Source(c.Body)
 	return err == nil
 }
 
 func (c *Candidate) PickCrossoverPoint() int {
-	length := len(*(c.Program))
+	length := len(c.Body)
 	randomPoint := rand.Intn(length)
 	return randomPoint
 }

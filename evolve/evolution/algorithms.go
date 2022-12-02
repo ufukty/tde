@@ -3,6 +3,7 @@ package evolution
 import (
 	"math"
 	"math/rand"
+	models "models/in_program_models"
 )
 
 type Number64 interface {
@@ -19,7 +20,7 @@ func CumulativeArray[N Number64](input []N) []N {
 	return output
 }
 
-func GetFitnessArray(individuals []Candidate) []float64 {
+func GetFitnessArray(individuals []models.Candidate) []float64 {
 	fitnesses := []float64{}
 	for _, individual := range individuals {
 		fitnesses = append(fitnesses, individual.Fitness)
@@ -32,7 +33,7 @@ func ReversedFitnesses(fitnesses []float64) []float64 {
 	for _, v := range fitnesses {
 		reversedFitnesses = append(reversedFitnesses, 1.0-v)
 	}
-	return fitnesses
+	return reversedFitnesses
 }
 
 func BinarySearchSmallestOfGreaters(values []float64, key float64) int {
@@ -54,11 +55,11 @@ func BinarySearchSmallestOfGreaters(values []float64, key float64) int {
 	return hi
 }
 
-func SelectionRouletteWheel(individuals []Candidate, selectionSize int) {
+func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 	var (
 		fitnesses             = GetFitnessArray(individuals)
 		reversedFitnesses     = ReversedFitnesses(fitnesses)
-		cumulativeFitnesses   = CumulativeArray[float64](reversedFitnesses)
+		cumulativeFitnesses   = CumulativeArray(reversedFitnesses)
 		upperBoundLastFitness = cumulativeFitnesses[len(cumulativeFitnesses)-1]
 		choosedIndividuals    = []int{selectionSize}
 		choosen               int

@@ -1,23 +1,21 @@
 package evolution
 
 import (
-	"sort"
+	"models/in_program_models"
 
-	"github.com/google/uuid"
+	"sort"
 )
 
-type Program []byte
-
 type Evolution struct {
-	HallOfFame map[int]*Candidate
-	Candidates map[uuid.UUID]*Candidate
+	HallOfFame map[int]*in_program_models.Candidate
+	Candidates map[in_program_models.CandidateID]*in_program_models.Candidate
 }
 
 func (e *Evolution) InitPopulation(n int) {
 	for i := 0; i < n; i++ {
-		var candidate = NewCandidate()
+		var candidate = in_program_models.NewCandidate()
 		candidate.RandomInit()
-		e.Candidates[candidate.ID] = candidate
+		e.Candidates[in_program_models.CandidateID(candidate.UUID)] = candidate
 	}
 }
 
@@ -39,8 +37,8 @@ func (e *Evolution) Measure() {
 	// penalty for bloat
 }
 
-func (e *Evolution) SortedByFitness() []*Candidate {
-	ordered := []*Candidate{}
+func (e *Evolution) SortedByFitness() []*in_program_models.Candidate {
+	ordered := []*in_program_models.Candidate{}
 	for _, ind := range e.Candidates {
 		ordered = append(ordered, ind)
 	}

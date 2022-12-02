@@ -16,16 +16,14 @@ Main progress:
 */
 
 import (
-	"GoGP/evolve/file"
 	"fmt"
 )
 
+var Version any
+
 func main() {
+	fmt.Println(Version)
 	fmt.Println(config)
-
-	file := file.NewFile(config.File)
-
-	fmt.Println(file)
 
 	// var e = evolution.Evolution{}
 	// e.InitPopulation(n)

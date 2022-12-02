@@ -1,5 +1,5 @@
 {
     "gopls": {
-        "build.buildFlags": ["-tags=evolve"]
+        "build.buildFlags": ["-tags=tdgp"]
     }
 }

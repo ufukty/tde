@@ -1,10 +1,10 @@
-//go:build evolve
-// +build evolve
+//go:build tdgp
+// +build tdgp
 
 package main
 
 // usage from commandline, after this file places into user's project root
-//   go build -tags evolve
+//   go build -tags tdgp
 
 import (
 	"fmt"

@@ -1,0 +1,13 @@
+testParameters := map[string]string{
+	"Hello world":         "dlrow olleH",
+	"The quick brown fox": "xof nworb kciuq ehT",
+}
+
+e.GetCandidate(func(c *testing.TestCandidate) {
+
+	for input, want := range testParameters {
+		output := c.CandidateFunction(input)
+		c.AssertEqual(output, want)
+	}
+
+})
