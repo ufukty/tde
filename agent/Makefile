@@ -1,2 +1,5 @@
-sds:
-	go build -tags evolve
+all:
+	go build -o ../build/agent GoGP/agent/cmd 
+
+run: all
+	../build/agent

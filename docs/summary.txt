@@ -1,0 +1,43 @@
+
+
+
+                          Test Driven Evolution: 
+          Combining Genetic Programming with Test Driven Development 
+                  to assist software developers in creating and 
+                        maintaining production-ready code 
+
+
+
+
+* Liability and responsibility in Software Development
+
+  Software is frequently developed as a commercial product that solves a social 
+(or derived) problem and creates responsibility and liability on the seller 
+company. Responsibility comes from the need to maintain company reputation in 
+target consumer demographic and the liability comes from promises that company 
+explicitly gave to customers as compliences to certain standards or the requirement 
+of complying with the law.
+
+* Meaning of production-ready
+
+Just like any company workers of other departments, software developers should be 
+able to inspect the software as the team makes progress in development to spot 
+
+
+
+
+
+* Changing requirements of projects
+
+
+* Work force circulation
+
+
+* Test driven development
+
+
+* Evolutionary Algorithms and Genetic Programming
+- Developer doesn't need to know form of solution prior to development, being able to define the problem and test cases the solution should pass and fail is enough to start evolution.
+- 
+
+* 

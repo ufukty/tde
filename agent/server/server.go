@@ -1,6 +1,7 @@
 package server
 
 import (
+	"GoGP/agent/embedding"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -69,6 +70,8 @@ func (s *Server) Controller(w http.ResponseWriter, rawRequest *http.Request) {
 			log.Println(errors.Wrap(err, "Body is not valid Golang code"))
 		}
 	}
+
+	f := embedding.NewEmbeddingConfig("main_tde.go")
 
 	// f := file.NewFile(request.File)
 
