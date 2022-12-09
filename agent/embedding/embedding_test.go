@@ -18,3 +18,8 @@ func Test_StampFunctionPrototype(t *testing.T) {
 		t.Errorf("Expected %s got %s", want, output)
 	}
 }
+
+func Test_EmbeddingConfig(t *testing.T) {
+	ec := NewEmbeddingConfig("../../examples/word-reverse", "../../examples/word-reverse/word_reverse.go", "../../examples/word-reverse/word_reverse_tde.go")
+	ec.Embed()
+}

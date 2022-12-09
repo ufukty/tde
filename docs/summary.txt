@@ -40,4 +40,31 @@ able to inspect the software as the team makes progress in development to spot
 - Developer doesn't need to know form of solution prior to development, being able to define the problem and test cases the solution should pass and fail is enough to start evolution.
 - 
 
-* 
+* Improvement Opportunites
+
+- Speed of execution:
+    - Using `ast` and `print` package, to create always-syntactically correct Go programs to spend less time with eliminating invalid-syntax candidates.
+    - Instead fresh-compilation at each generation, only compile the changed file and link it to previous ones.
+
+- Evolution speed
+    - NEAT-like mechanisms such as tagged traits, breeds... Propagating the genes creates improvement to rest that has same genetic history.
+
+- Improvement on applicability
+    - Compilation of a computer program takes some time. To save time on compilation all candidates of one generation are embedded into file at once and tested out at only one compilation. When compared to per-candidate compilation, current version of per-generation compilation lacks the ability to use all tests in module/package for testing candidates through target function's evolution.
+
+* Requirement that comes from commercialization
+
+- Genetic programming means one program is executing arbitrary computer programs in a computer in hope to run across "the one" before time runs. It can be considered amongst those arbitrarily (or carefully random) structured computer code, some of the candidates could potentially harm the operating system or hardware in execution. In practice, Genetic Programming known as a popular choise for generating computer malwares (viruses etc.). In scope of this research, environment is the computer of user; and avoiding harm the computer of user is one of the critical requirements of this project for making it come alive.  
+
+
+* Comparing fitness and test functions
+
+- Fitness functions "tests" each candidate and gives a fitness value represents how much a candidate comply with targeted solution, so the result can be any value in a range usually in [0, 1].
+
+- Test functions of TDD are used to test the only candidate function usually developed by a human and the result of testing process is either PASS or FAIL. Opposed to fitness functions, test functions return "poorly continous" results. 
+
+- As the usage of TDD doesn't require knowing how close a candidate to perfect solution but only if the candidate passes all tests or not, we can't force user to write tests with more detail; cause such verbosity (meaning added lines to test code) can decrease the effectiveness of TDD on being the first source of knowledge what behaviours the function requires to have in order to comply with business requirements of software project it belongs to. TDD tests should stay "clean" and immediately "hint" the new developers to key points of the tested function, as the each members of a software development team in a company are mixed, not all of (current and future) team members are guaranteed to have equal and high experience in software development field.
+
+* Limitations
+
+- Since panics are used to distinguish bad programs (or anomalies, as in the context of evolution), there should not be any expectation to produce a solution that uses panic/recover features for error handling (as some programmers may). There is no limitation for producing solutions that uses error-wrapping method. This should not be a problem since error-wrapping is more frequently suggested over panic/recover feature for most usual cases by programmers and [https://go.dev/blog/error-handling-and-go](official documentation of Go programming language).

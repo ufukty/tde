@@ -14,12 +14,12 @@ func TDE_WordReverse(e *evolution.E) {
 		"The quick brown fox": "xof nworb kciuq ehT",
 	}
 
-	e.GetCandidate(func(c *evolution.TestCandidate) {
+	e.TestCandidate(func(candidate *evolution.C) {
+		candidateFunction := candidate.Function.(func (string) string)
 		for input, want := range testParameters {
-			output := c.CandidateFunction(input)
-			c.AssertEqual(output, want)
+			output := candidateFunction(input)
+			candidate.AssertEqual(output, want)
 		}
-
 	})
 
 }

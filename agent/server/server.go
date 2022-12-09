@@ -1,7 +1,7 @@
 package server
 
 import (
-	"GoGP/agent/embedding"
+	// "GoGP/agent/embedding"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -71,7 +71,7 @@ func (s *Server) Controller(w http.ResponseWriter, rawRequest *http.Request) {
 		}
 	}
 
-	f := embedding.NewEmbeddingConfig("main_tde.go")
+	// f := embedding.NewEmbeddingConfig("main_tde.go")
 
 	// f := file.NewFile(request.File)
 

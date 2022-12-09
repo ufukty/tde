@@ -1,73 +1,137 @@
 package evolution
 
 import (
-	"fmt"
 	models "models/in_program_models"
+
+	"encoding/json"
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/pkg/errors"
 )
 
-type TargetFunctionType func(string) string // FIXME: REPLACE BEFORE COMPILE
+type TargetFunctionType any
 
-type TestCandidate struct {
-	TestingRef        *E
-	CandidateFunction TargetFunctionType
-	UUID              models.CandidateID
-	AssertionResults  []bool
+// Candidate, reference to its embedded function and storage for assertion results
+type C struct {
+	TestingRef             *E                 `json:"-"`
+	Function               TargetFunctionType `json:"-"`
+	UUID                   models.CandidateID `json:"uuid"`
+	AssertionResults       []bool             `json:"assertion_results"`
+	AssertionErrorDistance []float64          `json:"assertion_error_distances"`
+	ExecTime               time.Duration      `json:"exec_time"`
+	Panicked               bool               `json:"panicked"`
 }
 
-func (tc *TestCandidate) AssertEqual(output, want any) {
+func (tc *C) AssertEqual(output, want any) {
 	result := output == want
 	tc.AssertionResults = append(tc.AssertionResults, result)
+
+	errorDistance := 0.0
+	switch wantCasted := want.(type) {
+	case string:
+		if outputCasted, ok := output.(string); ok {
+			errorDistance = StringDistance(wantCasted, outputCasted)
+		} else {
+			panic("<output> and <want> should be same type and one of string, int, float64")
+		}
+	case int:
+		if outputCasted, ok := output.(int); ok {
+			errorDistance = IntegerDistance(wantCasted, outputCasted)
+		} else {
+			panic("<output> and <want> should be same type and one of string, int, float64")
+		}
+	case float64:
+		if outputCasted, ok := output.(float64); ok {
+			errorDistance = FloatDistance(wantCasted, outputCasted)
+		} else {
+			panic("<output> and <want> should be same type and one of string, int, float64")
+		}
+	}
+	tc.AssertionErrorDistance = append(tc.AssertionErrorDistance, errorDistance)
 }
 
-func (tc *TestCandidate) AssertNotEqual(output, notWant any) {
-	result := output != notWant
-	tc.AssertionResults = append(tc.AssertionResults, result)
-}
+// func (tc *C) AssertNotEqual(output, notWant any) {
+// 	result := output != notWant
+// 	tc.AssertionResults = append(tc.AssertionResults, result)
+
+// 	errorDistance := 0.0
+// 	switch wantCasted := notWant.(type) {
+// 	case string:
+// 		if outputCasted, ok := output.(string); ok {
+// 			errorDistance = StringDistance(wantCasted, outputCasted)
+// 		} else {
+// 			panic("<output> and <want> should be same type and one of string, int, float64")
+// 		}
+// 	case int:
+// 		if outputCasted, ok := output.(int); ok {
+// 			errorDistance = IntegerDistance(wantCasted, outputCasted)
+// 		} else {
+// 			panic("<output> and <want> should be same type and one of string, int, float64")
+// 		}
+// 	case float64:
+// 		if outputCasted, ok := output.(float64); ok {
+// 			errorDistance = FloatDistance(wantCasted, outputCasted)
+// 		} else {
+// 			panic("<output> and <want> should be same type and one of string, int, float64")
+// 		}
+// 	}
+// 	tc.AssertionErrorDistance = append(tc.AssertionErrorDistance, errorDistance)
+// }
 
 type E struct {
-	Candidates     map[models.CandidateID]*models.Candidate
-	TestCandidates map[models.CandidateID]*TestCandidate
+	// Candidates     map[models.CandidateID]*models.Candidate
+	TestCandidates map[models.CandidateID]*C
 	CandidateRefs  map[models.CandidateID]TargetFunctionType
 }
 
 func NewE(candidateRefs map[models.CandidateID]TargetFunctionType) *E {
+	testCandidates := map[models.CandidateID]*C{}
 	e := E{
-		CandidateRefs: candidateRefs,
+		TestCandidates: testCandidates,
+		CandidateRefs:  candidateRefs,
+	}
+	for id, ref := range candidateRefs {
+		testCandidates[id] = &C{
+			UUID:                   id,
+			AssertionResults:       []bool{},
+			AssertionErrorDistance: []float64{},
+			TestingRef:             &e,
+			Function:               ref,
+		}
 	}
 	return &e
 }
 
-func (e *E) GetCandidate(candidateTesting func(c *TestCandidate)) {
+func (e *E) TestCandidate(candidateTesting func(candidate *C)) {
+	for _, tc := range e.TestCandidates {
+		start := time.Now()
 
-	for id := range e.Candidates {
-		// candidateFunction := t.Candidates[id].
-		c := TestCandidate{
-			TestingRef:        e,
-			CandidateFunction: e.CandidateRefs[id],
-			UUID:              id,
-			AssertionResults:  []bool{},
-		}
-		candidateTesting(&c)
+		go func(tc *C) { // BECAUSE: Run in parallel
+			defer func() { // If certain candidate panics, pass it by marking for later consideration
+				if r := recover(); r != nil {
+					fmt.Printf("Panic called by Candidate:%s is recovered: %s\n", tc.UUID, r)
+					tc.Panicked = true
+				} else {
+					tc.Panicked = false
+				}
+				tc.ExecTime = time.Since(start)
+			}()
+			candidateTesting(tc) // FIXME: Terminate when candidate exceeds time limit (1sec?)
+		}(tc)
 	}
 }
 
-func (e *E) CalculateFitnesses() { // leave this to "evolve" binary3
-	for id, candidate := range e.TestCandidates {
-		totalSuccessfulAssertions := 0
-		for _, result := range candidate.AssertionResults {
-			if result {
-				totalSuccessfulAssertions++
-			}
-		}
-		e.Candidates[id].Fitness = float64(totalSuccessfulAssertions) / float64(len(candidate.AssertionResults))
+func (e *E) Export() {
+	cleanDynamicKeys := []*C{}
+	for _, tc := range e.TestCandidates {
+		cleanDynamicKeys = append(cleanDynamicKeys, tc)
 	}
-}
 
-func (e *E) PrintStats() {
-	fmt.Println("Stats are printed")
-	fmt.Println("Number of candidates:", len(e.Candidates))
-	for id, cand := range e.Candidates {
-		fmt.Printf("%s: %f\n", id, cand.Fitness)
-
+	f, err := os.Create("results.json")
+	if err != nil {
+		panic(errors.Wrap(err, "Could not create 'result.json' for writing"))
 	}
+	json.NewEncoder(f).Encode(cleanDynamicKeys)
 }

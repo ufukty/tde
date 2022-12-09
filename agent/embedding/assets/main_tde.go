@@ -9,6 +9,7 @@ package main
 import (
 	"GoGP/testing/evolution"
 	"flag"
+	"models/in_program_models"
 
 	"fmt"
 	"os"
@@ -66,9 +67,9 @@ func init() {
 
 	// targetFunc := os.Args[1]
 	var evolveFunction func(*evolution.E)
-	e := evolution.NewE(candidateRefs)
+	e := evolution.NewE(map[in_program_models.CandidateID]evolution.TargetFunctionType{})
 	evolveFunction(e)
-	e.PrintStats()
+	e.Export()
 
 	// search all files that ends with xxx_evolve.go for a function starts with "Evolve<Target>"
 
