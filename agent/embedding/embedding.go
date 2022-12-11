@@ -3,6 +3,7 @@ package embedding
 import (
 	"bufio"
 	"go/parser"
+	"go/printer"
 	"go/token"
 	"models/in_program_models"
 	"os"
@@ -17,15 +18,13 @@ import (
 var mainFileContent string
 
 type EmbeddingConfig struct {
-	ImplementationPackagePath string
-	ImplementationFilePath    string
-	TestFunctionPath          string
-
-	TDEPackagePath     string
-	MainFilePath       string
-	CandidatesFilePath string
-
-	TargetFileContent []byte
+	ImplementationPackagePath string // .../userPackage
+	ImplementationFilePath    string // .../userPackage/userFile.go
+	TestFunctionPath          string // .../userPackage/userFile_tde.go
+	TDEPackagePath            string // .../userPackage/tde
+	MainFilePath              string // .../userPackage/tde/main_tde.go
+	CandidatesFilePath        string // .../userPackage/tde/candidates_tde.go
+	TargetFileContent         []byte
 }
 
 func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath string) *EmbeddingConfig {
@@ -49,19 +48,64 @@ func (ec *EmbeddingConfig) ReadImplementationFileContent() error {
 	// }
 
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, ec.ImplementationFilePath, nil, parser.ParseComments)
+	astFile, err := parser.ParseFile(fset, ec.ImplementationFilePath, nil, parser.ParseComments)
 	if err != nil {
 		return errors.Wrap(err, "Could not parse the implementation file")
 	}
 
-	fmt.Println("==========")
-	// Print the imports from the file's AST.
-	for _, s := range f.Imports {
-		fmt.Println(s.Path.Value)
+	// fmt.Println("=", SearchFunctionDeclaration(astFile, "WordReverse"))
+
+	fd, err := SearchFunctionDeclaration(astFile, "WordReverse")
+	if err != nil {
+		errors.Wrap(err, "Could not get the function definition")
 	}
-	fmt.Println("==========")
+	ReplaceFunctionName(fd, "Kilimcinin")
+	printer.Fprint(os.Stdout, fset, fd)
+
+	// ast.Print(fset, astFile)
+
+	// ast.Inspect(astFile, func(n ast.Node) bool {
+
+	// 	if n != nil {
+	// 		pos := fset.Position(n.Pos()).String()
+	// 		posStripped := pos[strings.Index(pos, ":"):]
+	// 		fmt.Printf("Line%s ", posStripped)
+	// 	}
+
+	// 	fmt.Print(n, reflect.TypeOf(n))
+
+	// 	var s string
+	// 	switch x := n.(type) {
+	// 	case *ast.BasicLit:
+	// 		s = x.Value
+	// 		fmt.Print(" BasicLit ", s)
+	// 	case *ast.Ident:
+	// 		s = x.Name
+	// 		fmt.Print(" Ident ", s)
+	// 	case *ast.Package:
+	// 		s = x.Name
+	// 		fmt.Print(" Package ", s)
+	// 	}
+
+	// 	fmt.Printf("\n")
+	// 	return true
+	// })
+
+	// fmt.Println("==========")
+	// // Print the imports from the file's AST.
+	// for _, s := range astFile.Scope.Objects {
+	// 	fmt.Println(s.Name)
+	// 	fmt.Printf("%#v\n", s.Name)
+	// }
+	// fmt.Println("==========")
+
+	// printer.Fprint(os.Stdout, fset, astFile)
 
 	return nil
+}
+
+func (ec *EmbeddingConfig) CreateMainPackage() error {
+	os.Mkdir(ec.TDEPackagePath)
 }
 
 func (ec *EmbeddingConfig) WriteMainFile() error {
@@ -73,11 +117,11 @@ func (ec *EmbeddingConfig) WriteMainFile() error {
 
 	f, err = os.Create(ec.MainFilePath)
 	if err != nil {
-		return errors.Wrap(err, "Could not place file 'main_tde.go'")
+		return errors.Wrap(err, "could not place file 'main_tde.go'")
 	}
 	_, err = fmt.Fprint(f, mainFileContent)
 	if err != nil {
-		return errors.Wrap(err, "Could not write into file 'main_tde.go'")
+		return errors.Wrap(err, "could not write into file 'main_tde.go'")
 	}
 	return nil
 }
@@ -148,12 +192,14 @@ func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []in_program_model
 
 func (ec *EmbeddingConfig) Embed() error {
 	var err error
+
 	// create "tde" package inside target package
+	err = ec.CreateMainPackage()
 
 	// copy main_tde.go into "tde" package
 	err = ec.WriteMainFile()
 	if err != nil {
-		return errors.Wrap(err, "")
+		return errors.Wrap(err, "Could not create tester file")
 	}
 
 	// read target file for:
@@ -161,16 +207,18 @@ func (ec *EmbeddingConfig) Embed() error {
 	//    - package
 	err = ec.ReadImplementationFileContent()
 	if err != nil {
-		errors.Wrap(err, "Could not read target file content")
+		return errors.Wrap(err, "Could not read implementation file")
 	}
 
 	// embed candidates into a new file target package
-	ec.WriteCandidatesIntoFile([]in_program_models.Candidate{{
+	err = ec.WriteCandidatesIntoFile([]in_program_models.Candidate{{
 		UUID: "414ecb09-3025-51c9-918a-e5f278e1a0f4",
 		Body: []byte(`s := ""
 return s`),
 	}})
-	//
+	if err != nil {
+		return errors.Wrap(err, "Could not write candidates")
+	}
 
 	return nil
 }

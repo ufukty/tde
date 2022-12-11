@@ -1,5 +1,9 @@
 package wordreverse
 
-func WordReverse(w string) string {
+type St struct {
+	Ds string
+}
+
+func (s *St) WordReverse(w string) string {
 	return ""
 }

@@ -20,6 +20,13 @@ func Test_StampFunctionPrototype(t *testing.T) {
 }
 
 func Test_EmbeddingConfig(t *testing.T) {
-	ec := NewEmbeddingConfig("../../examples/word-reverse", "../../examples/word-reverse/word_reverse.go", "../../examples/word-reverse/word_reverse_tde.go")
-	ec.Embed()
+	ec := NewEmbeddingConfig(
+		"../../examples/word-reverse/word_reverse",
+		"../../examples/word-reverse/word_reverse/word_reverse.go",
+		"../../examples/word-reverse/word_reverse/word_reverse_tde.go",
+	)
+	err := ec.Embed()
+	if err != nil {
+		t.Error(errors.Wrap(err, "Got error"))
+	}
 }

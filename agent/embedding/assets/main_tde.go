@@ -3,79 +3,54 @@
 
 package main
 
-// usage from commandline, after this file places into user's project root
-//   go build -tags tdgp
-
 import (
+	wordreverse "GoGP/examples/word-reverse/word_reverse"
 	"GoGP/testing/evolution"
-	"flag"
 	"models/in_program_models"
-
-	"fmt"
-	"os"
 )
 
-// func checkFolder(path string) {
-// 	dirEntries, err := os.ReadDir(path)
-// 	if err != nil {
-// 		errors.Wrap(err, fmt.Sprintf("Could not list the directory '%s'", path))
-// 	}
-// 	foldersToCheck := []string{}
-// 	filesToCheck := []string{}
-// 	for _, dirEntry := range dirEntries {
-// 		path := filepath.Join(path, dirEntry.Name())
-// 		if dirEntry.IsDir() {
-// 			foldersToCheck = append(foldersToCheck, path)
-// 		} else {
-// 			filesToCheck = append(filesToCheck, path)
-// 		}
-// 	}
-
-// 	for _, filePath := range filesToCheck {
-// 		fmt.Println(filePath)
-// 	}
-
-// 	for _, folderPath := range foldersToCheck {
-// 		fmt.Println(folderPath)
-// 	}
-// }
-
-type Arguments struct {
-	FunctionNameToRun string
-}
-
-func ParseArguments() *Arguments {
-	arguments := Arguments{}
-
-	flag.Usage = func() {
-		fmt.Print("GoGP is a program to produce human-competitive, developer-readable Go code from a user provided test function which is common to have when TDD practices are followed.\n\n")
-		fmt.Print("Usage:\n\n")
-		fmt.Print("\tgogp -file=./path/to/file.go -test-file=./path/to/file_test.go -test-function=TestKnappsack\n\n")
-		fmt.Print("Arguments:\n\n")
-		flag.PrintDefaults()
-	}
-
-	arguments.FunctionNameToRun = *flag.String(
-		"run", "ExamplePackage/TDE_Example", "(Required) Name of the test function that will be used as fitness measurement")
-
-	flag.Parse()
-
-	return &arguments
-}
-
-func init() {
-
-	// targetFunc := os.Args[1]
-	var evolveFunction func(*evolution.E)
-	e := evolution.NewE(map[in_program_models.CandidateID]evolution.TargetFunctionType{})
-	evolveFunction(e)
-	e.Export()
-
-	// search all files that ends with xxx_evolve.go for a function starts with "Evolve<Target>"
-
-	os.Exit(0)
-}
-
 func main() {
-	fmt.Println("Goodbye world")
+	e := evolution.NewE(map[in_program_models.CandidateID]evolution.TargetFunctionType{
+		"00000000-0000-0000-000000000000": func(s string) string {
+			r := ""
+			for i := len(s) - 1; i >= 0; i-- {
+				r += string(s[i])
+			}
+			return r
+		},
+
+		"00000000-0000-0000-000000000001": func(s string) string {
+			if s == "Hello world" {
+				panic("panic message")
+			}
+			return ""
+		},
+		"00000000-0000-0000-000000000002": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000003": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000004": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000005": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000010": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000011": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000012": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000013": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000014": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000015": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000020": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000021": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000022": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000023": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000024": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000025": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000030": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000031": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000032": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000033": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000034": func(s string) string { return "wordreverse.WordReverse" },
+		"00000000-0000-0000-000000000035": func(s string) string { return "wordreverse.WordReverse" },
+	})
+	// fmt.Println(len(e.TestCandidates))
+
+	wordreverse.TDE_WordReverse(e)
+	// fmt.Println(len(e.TestCandidates))
+	e.Export()
 }
