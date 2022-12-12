@@ -1,8 +1,8 @@
 package embedding
 
 import (
-	"bufio"
-	"go/parser"
+	"GoGP/agent/code"
+	"bytes"
 	"go/printer"
 	"go/token"
 	"models/in_program_models"
@@ -47,20 +47,12 @@ func (ec *EmbeddingConfig) ReadImplementationFileContent() error {
 	// 	return errors.Wrap(err, fmt.Sprintf("Could not load the file '%s'", ec.TargetFunctionPath))
 	// }
 
-	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, ec.ImplementationFilePath, nil, parser.ParseComments)
+	co := code.Code{}
+	err = co.LoadFromFile(ec.ImplementationFilePath)
 	if err != nil {
 		return errors.Wrap(err, "Could not parse the implementation file")
 	}
-
-	// fmt.Println("=", SearchFunctionDeclaration(astFile, "WordReverse"))
-
-	fd, err := SearchFunctionDeclaration(astFile, "WordReverse")
-	if err != nil {
-		errors.Wrap(err, "Could not get the function definition")
-	}
-	ReplaceFunctionName(fd, "Kilimcinin")
-	printer.Fprint(os.Stdout, fset, fd)
+	co.Print(os.Stdout)
 
 	// ast.Print(fset, astFile)
 
@@ -104,8 +96,12 @@ func (ec *EmbeddingConfig) ReadImplementationFileContent() error {
 	return nil
 }
 
-func (ec *EmbeddingConfig) CreateMainPackage() error {
-	os.Mkdir(ec.TDEPackagePath)
+func (ec *EmbeddingConfig) CreateTDEPackage() error {
+	err := os.Mkdir(ec.TDEPackagePath, 0_755)
+	if err != nil {
+		return errors.Wrap(err, "could not create 'tde' package folder")
+	}
+	return nil
 }
 
 func (ec *EmbeddingConfig) WriteMainFile() error {
@@ -137,36 +133,20 @@ func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []in_program_model
 	if err != nil {
 		return errors.Wrap(err, "Could not create a file for writing candidates")
 	}
-	// It’s idiomatic to defer a Close immediately after opening a file.
+	fset := token.NewFileSet()
+	buf := bytes.NewBuffer([]byte{})
 
-	// You can Write byte slices as you’d expect.
-	d2 := []byte{115, 111, 109, 101, 10}
-	n2, err := f.Write(d2)
-	if err != nil {
-		return errors.Wrap(err, "")
+	for _, cand := range candidates {
+
+		// d := ast.File{}
+
+		// funcName := fmt.Sprintf("candidate%s", strings.ReplaceAll(string(cand.UUID), "-", ""))
+
+		printer.Fprint(buf, fset, cand) // printer to buffer
 	}
-	fmt.Printf("wrote %d bytes\n", n2)
 
-	// A WriteString is also available.
-	n3, err := f.WriteString("writes\n")
-	if err != nil {
-		return errors.Wrap(err, "")
-	}
-	fmt.Printf("wrote %d bytes\n", n3)
-
-	// Issue a Sync to flush writes to stable storage.
-	f.Sync()
-
-	// bufio provides buffered writers in addition to the buffered readers we saw earlier.
-	w := bufio.NewWriter(f)
-	n4, err := w.WriteString("buffered\n")
-	if err != nil {
-		return errors.Wrap(err, "")
-	}
-	fmt.Printf("wrote %d bytes\n", n4)
-
-	// Use Flush to ensure all buffered operations have been applied to the underlying writer.
-	fmt.Fprint(f, s) // 
+	s := buf.String() // buffer to string
+	fmt.Fprint(f, s)  // string to file
 
 	// 	fileHeader := `//go:build tde
 	// package main`
@@ -194,7 +174,10 @@ func (ec *EmbeddingConfig) Embed() error {
 	var err error
 
 	// create "tde" package inside target package
-	err = ec.CreateMainPackage()
+	err = ec.CreateTDEPackage()
+	if err != nil {
+		return errors.Wrap(err, "could not create tde package")
+	}
 
 	// copy main_tde.go into "tde" package
 	err = ec.WriteMainFile()
