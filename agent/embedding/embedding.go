@@ -166,7 +166,7 @@ func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []in_program_model
 	fmt.Printf("wrote %d bytes\n", n4)
 
 	// Use Flush to ensure all buffered operations have been applied to the underlying writer.
-	w.Flush()
+	fmt.Fprint(f, s) // 
 
 	// 	fileHeader := `//go:build tde
 	// package main`
