@@ -36,23 +36,34 @@ func ReversedFitnesses(fitnesses []float64) []float64 {
 	return reversedFitnesses
 }
 
-func BinarySearchSmallestOfGreaters(values []float64, key float64) int {
+func BinaryRangeSearch(values []float64, key float64) int {
+	midIndex := func(lo, hi int) int {
+		return int(math.Floor(float64(lo+hi) / 2))
+	}
+
+	values = append(values, math.MaxFloat64) // solve out of range access
+
 	var (
 		lo  = 0
-		mid int
 		hi  = len(values) - 1
+		mid int
 	)
 
-	for hi-lo > 1 {
-		mid = int(math.Floor(float64(lo+hi) / 2))
+	for lo < hi {
+		mid = midIndex(lo, hi)
+
+		if values[mid] <= key && key < values[mid+1] {
+			return mid
+		}
+
 		if values[mid] <= key {
-			lo = mid + 1
+			lo = mid
 		} else {
-			hi = mid - 1
+			hi = mid
 		}
 	}
 
-	return hi
+	return -1
 }
 
 func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
@@ -68,7 +79,7 @@ func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 
 	for i := 0; i < selectionSize; i++ {
 		rouletteBullet = rand.Float64() * upperBoundLastFitness
-		choosen = BinarySearchSmallestOfGreaters(cumulativeFitnesses, rouletteBullet)
+		choosen = BinaryRangeSearch(cumulativeFitnesses, rouletteBullet)
 		choosedIndividuals = append(choosedIndividuals, choosen)
 	}
 
