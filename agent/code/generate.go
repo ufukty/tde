@@ -10,10 +10,10 @@ type NodeType int
 
 const (
 	// BadExpr
-	// Ident
 	// Comment
 	// CommentGroup
 	BasicLit NodeType = iota
+	Ident
 	Field
 	FieldList
 	Ellipsis
@@ -67,8 +67,121 @@ const (
 	Package
 )
 
+func (n NodeType) String() string {
+	switch n {
+	case BasicLit:
+		return "BasicLit"
+	case Ident:
+		return "Ident"
+	case Field:
+		return "Field"
+	case FieldList:
+		return "FieldList"
+	case Ellipsis:
+		return "Ellipsis"
+	case FuncLit:
+		return "FuncLit"
+	case CompositeLit:
+		return "CompositeLit"
+	case ParenExpr:
+		return "ParenExpr"
+	case SelectorExpr:
+		return "SelectorExpr"
+	case IndexExpr:
+		return "IndexExpr"
+	case IndexListExpr:
+		return "IndexListExpr"
+	case SliceExpr:
+		return "SliceExpr"
+	case TypeAssertExpr:
+		return "TypeAssertExpr"
+	case CallExpr:
+		return "CallExpr"
+	case StarExpr:
+		return "StarExpr"
+	case UnaryExpr:
+		return "UnaryExpr"
+	case BinaryExpr:
+		return "BinaryExpr"
+	case KeyValueExpr:
+		return "KeyValueExpr"
+	case ArrayType:
+		return "ArrayType"
+	case StructType:
+		return "StructType"
+	case FuncType:
+		return "FuncType"
+	case InterfaceType:
+		return "InterfaceType"
+	case MapType:
+		return "MapType"
+	case ChanType:
+		return "ChanType"
+	case BadStmt:
+		return "BadStmt"
+	case DeclStmt:
+		return "DeclStmt"
+	case EmptyStmt:
+		return "EmptyStmt"
+	case LabeledStmt:
+		return "LabeledStmt"
+	case ExprStmt:
+		return "ExprStmt"
+	case SendStmt:
+		return "SendStmt"
+	case IncDecStmt:
+		return "IncDecStmt"
+	case AssignStmt:
+		return "AssignStmt"
+	case GoStmt:
+		return "GoStmt"
+	case DeferStmt:
+		return "DeferStmt"
+	case ReturnStmt:
+		return "ReturnStmt"
+	case BranchStmt:
+		return "BranchStmt"
+	case BlockStmt:
+		return "BlockStmt"
+	case IfStmt:
+		return "IfStmt"
+	case CaseClause:
+		return "CaseClause"
+	case SwitchStmt:
+		return "SwitchStmt"
+	case TypeSwitchStmt:
+		return "TypeSwitchStmt"
+	case CommClause:
+		return "CommClause"
+	case SelectStmt:
+		return "SelectStmt"
+	case ForStmt:
+		return "ForStmt"
+	case RangeStmt:
+		return "RangeStmt"
+	case ImportSpec:
+		return "ImportSpec"
+	case ValueSpec:
+		return "ValueSpec"
+	case TypeSpec:
+		return "TypeSpec"
+	case BadDecl:
+		return "BadDecl"
+	case GenDecl:
+		return "GenDecl"
+	case FuncDecl:
+		return "FuncDecl"
+	case File:
+		return "File"
+	case Package:
+		return "Package"
+	}
+	return "NotFound (NodeType.String())"
+}
+
 var probabilities = map[NodeType]float64{
 	BasicLit:       0.0,
+	Ident:          0.1,
 	Field:          0.0,
 	FieldList:      0.0,
 	Ellipsis:       0.0,
@@ -83,7 +196,7 @@ var probabilities = map[NodeType]float64{
 	CallExpr:       0.0,
 	StarExpr:       0.0,
 	UnaryExpr:      0.0,
-	BinaryExpr:     0.0,
+	BinaryExpr:     0.2,
 	KeyValueExpr:   0.0,
 	ArrayType:      0.0,
 	StructType:     0.0,
@@ -99,10 +212,10 @@ var probabilities = map[NodeType]float64{
 	SendStmt:       0.0,
 	IncDecStmt:     0.0,
 	AssignStmt:     0.0,
-	GoStmt:         0.0,
+	GoStmt:         0.4,
 	DeferStmt:      0.0,
 	ReturnStmt:     0.0,
-	BranchStmt:     0.0,
+	BranchStmt:     0.5,
 	BlockStmt:      0.0,
 	IfStmt:         0.0,
 	CaseClause:     0.0,
@@ -122,60 +235,7 @@ var probabilities = map[NodeType]float64{
 	Package:        0.0,
 }
 
-var orderedNodeTypes = []NodeType{
-	BasicLit,
-	Field,
-	FieldList,
-	Ellipsis,
-	FuncLit,
-	CompositeLit,
-	ParenExpr,
-	SelectorExpr,
-	IndexExpr,
-	IndexListExpr,
-	SliceExpr,
-	TypeAssertExpr,
-	CallExpr,
-	StarExpr,
-	UnaryExpr,
-	BinaryExpr,
-	KeyValueExpr,
-	ArrayType,
-	StructType,
-	FuncType,
-	InterfaceType,
-	MapType,
-	ChanType,
-	BadStmt,
-	DeclStmt,
-	EmptyStmt,
-	LabeledStmt,
-	ExprStmt,
-	SendStmt,
-	IncDecStmt,
-	AssignStmt,
-	GoStmt,
-	DeferStmt,
-	ReturnStmt,
-	BranchStmt,
-	BlockStmt,
-	IfStmt,
-	CaseClause,
-	SwitchStmt,
-	TypeSwitchStmt,
-	CommClause,
-	SelectStmt,
-	ForStmt,
-	RangeStmt,
-	ImportSpec,
-	ValueSpec,
-	TypeSpec,
-	BadDecl,
-	GenDecl,
-	FuncDecl,
-	File,
-	Package,
-}
+var orderedNodeTypes = []NodeType{}
 
 var (
 	cumulativeProbabilities           []float64
@@ -191,20 +251,20 @@ func calculateCumulativeProbabilities() {
 
 	var (
 		total = 0.0
-		prob  = 0.0
 	)
-	for _, nodeType := range orderedNodeTypes {
-		prob = probabilities[nodeType]
-		cumulativeProbabilities[nodeType] = prob
-		total += prob
+	for nodeType, prob := range probabilities {
+		if prob != 0.0 {
+			orderedNodeTypes = append(orderedNodeTypes, nodeType)
+			cumulativeProbabilities = append(cumulativeProbabilities, total)
+			total += prob
+		}
 	}
-
 	cumulativeProbabilitiesUpperBound = total
 }
 
 func PickRandomNodeType() NodeType {
 	rand := utility.URandFloatForCrypto() * cumulativeProbabilitiesUpperBound
-	index := evolution.BinarySearchSmallestOfGreaters(cumulativeProbabilities, rand)
+	index := evolution.BinaryRangeSearch(cumulativeProbabilities, rand)
 	return orderedNodeTypes[index]
 }
 
