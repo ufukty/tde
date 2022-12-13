@@ -5,7 +5,7 @@ package main
 
 import (
 	"tde/models/in_program_models"
-	"tde/pkg/evolution"
+	"tde/pkg/tde"
 )
 
 func candidate1(s string) string {
@@ -27,7 +27,7 @@ func candidate3(s string) string {
 	return "wordreverse.WordReverse"
 }
 
-var candidates = map[in_program_models.CandidateID]evolution.TargetFunctionType{
+var candidates = map[in_program_models.CandidateID]tde.TargetFunctionType{
 	"00000000-0000-0000-0000-000000000000": candidate1,
 	"00000000-0000-0000-0000-000000000001": candidate2,
 	"00000000-0000-0000-0000-000000000002": candidate3,

@@ -5,11 +5,11 @@ package main
 
 import (
 	wordreverse "tde/examples/word-reverse/word_reverse"
-	"tde/pkg/evolution"
+	"tde/pkg/tde"
 )
 
 func main() {
-	e := evolution.NewE(candidates)
+	e := tde.NewE(candidates)
 	wordreverse.TDE_WordReverse(e)
 	e.Export()
 }

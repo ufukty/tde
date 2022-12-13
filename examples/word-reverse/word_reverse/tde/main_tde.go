@@ -6,13 +6,13 @@ package main
 import (
 	"tde/examples/word-reverse/word_reverse"
 	models "tde/models/in_program_models"
-	"tde/pkg/evolution"
+	"tde/pkg/tde"
 )
 
-var candidates = map[models.CandidateID]evolution.TargetFunctionType{}
+var candidates = map[models.CandidateID]tde.TargetFunctionType{}
 
 func main() {
-	e := evolution.NewE(candidates)
+	e := tde.NewE(candidates)
 	word_reverse.TDE_WordReverse(e)
 	e.Export()
 }
