@@ -1,9 +1,9 @@
 package code
 
 import (
+	"tde/internal/utilities"
+
 	"go/ast"
-	"tde/internal/evolution"
-	"tde/internal/utility"
 )
 
 type NodeType int
@@ -333,8 +333,8 @@ func calculateCumulativeProbabilities() {
 }
 
 func PickRandomNodeType() NodeType {
-	rand := utility.URandFloatForCrypto() * cumulativeProbabilitiesUpperBound
-	index := evolution.BinaryRangeSearch(cumulativeProbabilities, rand)
+	rand := utilities.URandFloatForCrypto() * cumulativeProbabilitiesUpperBound
+	index := utilities.BinaryRangeSearch(cumulativeProbabilities, rand)
 	return orderedNodeTypes[index]
 }
 

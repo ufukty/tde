@@ -23,7 +23,7 @@ func TestPrintListOfTokens(t *testing.T) {
 	var err error
 	code := Code{}
 
-	err = code.LoadFromFile("../.go")
+	err = code.LoadFromFile("generate.go")
 	if err != nil {
 		t.Error(errors.Wrap(err, "could not load the code from file"))
 	}

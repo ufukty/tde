@@ -1,4 +1,4 @@
-package communicate
+package client
 
 import (
 	"bufio"

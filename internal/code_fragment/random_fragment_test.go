@@ -24,7 +24,7 @@ func Test_ProduceRandomFragment(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		var fragment = ProduceRandomFragment()
-		fmt.Println(string(fragment))
+		fmt.Println(i, " ", string(fragment))
 
 		if compareByteArrays(fragment, prevFragment) {
 			t.Error("Produced same code fragment twice.")

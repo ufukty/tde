@@ -2,6 +2,7 @@ package utilities
 
 import "bytes"
 
+// StringWriter implements io.Writer interface
 type StringWriter struct {
 	buf    []byte
 	Buffer *bytes.Buffer

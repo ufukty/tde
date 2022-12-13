@@ -93,3 +93,4 @@ Temporary Items
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,git,go,macos
 
 build
+artifacts
