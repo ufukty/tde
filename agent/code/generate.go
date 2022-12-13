@@ -9,10 +9,10 @@ import (
 type NodeType int
 
 const (
-	// BadExpr
-	// Comment
-	// CommentGroup
 	BasicLit NodeType = iota
+	BadExpr
+	Comment
+	CommentGroup
 	Ident
 	Field
 	FieldList
@@ -67,126 +67,37 @@ const (
 	Package
 )
 
-func (n NodeType) String() string {
-	switch n {
-	case BasicLit:
-		return "BasicLit"
-	case Ident:
-		return "Ident"
-	case Field:
-		return "Field"
-	case FieldList:
-		return "FieldList"
-	case Ellipsis:
-		return "Ellipsis"
-	case FuncLit:
-		return "FuncLit"
-	case CompositeLit:
-		return "CompositeLit"
-	case ParenExpr:
-		return "ParenExpr"
-	case SelectorExpr:
-		return "SelectorExpr"
-	case IndexExpr:
-		return "IndexExpr"
-	case IndexListExpr:
-		return "IndexListExpr"
-	case SliceExpr:
-		return "SliceExpr"
-	case TypeAssertExpr:
-		return "TypeAssertExpr"
-	case CallExpr:
-		return "CallExpr"
-	case StarExpr:
-		return "StarExpr"
-	case UnaryExpr:
-		return "UnaryExpr"
-	case BinaryExpr:
-		return "BinaryExpr"
-	case KeyValueExpr:
-		return "KeyValueExpr"
-	case ArrayType:
-		return "ArrayType"
-	case StructType:
-		return "StructType"
-	case FuncType:
-		return "FuncType"
-	case InterfaceType:
-		return "InterfaceType"
-	case MapType:
-		return "MapType"
-	case ChanType:
-		return "ChanType"
-	case BadStmt:
-		return "BadStmt"
-	case DeclStmt:
-		return "DeclStmt"
-	case EmptyStmt:
-		return "EmptyStmt"
-	case LabeledStmt:
-		return "LabeledStmt"
-	case ExprStmt:
-		return "ExprStmt"
-	case SendStmt:
-		return "SendStmt"
-	case IncDecStmt:
-		return "IncDecStmt"
-	case AssignStmt:
-		return "AssignStmt"
-	case GoStmt:
-		return "GoStmt"
-	case DeferStmt:
-		return "DeferStmt"
-	case ReturnStmt:
-		return "ReturnStmt"
-	case BranchStmt:
-		return "BranchStmt"
-	case BlockStmt:
-		return "BlockStmt"
-	case IfStmt:
-		return "IfStmt"
-	case CaseClause:
-		return "CaseClause"
-	case SwitchStmt:
-		return "SwitchStmt"
-	case TypeSwitchStmt:
-		return "TypeSwitchStmt"
-	case CommClause:
-		return "CommClause"
-	case SelectStmt:
-		return "SelectStmt"
-	case ForStmt:
-		return "ForStmt"
-	case RangeStmt:
-		return "RangeStmt"
-	case ImportSpec:
-		return "ImportSpec"
-	case ValueSpec:
-		return "ValueSpec"
-	case TypeSpec:
-		return "TypeSpec"
-	case BadDecl:
-		return "BadDecl"
-	case GenDecl:
-		return "GenDecl"
-	case FuncDecl:
-		return "FuncDecl"
-	case File:
-		return "File"
-	case Package:
-		return "Package"
-	}
-	return "NotFound (NodeType.String())"
-}
-
 var probabilities = map[NodeType]float64{
-	BasicLit:       0.0,
-	Ident:          0.1,
-	Field:          0.0,
-	FieldList:      0.0,
-	Ellipsis:       0.0,
-	FuncLit:        0.0,
-	CompositeLit:   0.0,
+	// first level type
+	DeclStmt:     0.1,
+	AssignStmt:   0.1,
+	CompositeLit: 0.1, // a literal that combines other type of nodes and used as value to fill an Ident
+	IfStmt:       0.0,
+	ForStmt:      0.0,
+	ReturnStmt:   0.0,
+
+	// second level type
+	BasicLit:  0.0, // basic literal, like string, int, float value
+	Ident:     0.0, // ref a variable (to declare/assign/access)
+	ArrayType: 0.0,
+	MapType:   0.0,
+
+	// third level type
+
+	// unfunctional
+	BadExpr:      0.0,
+	BadStmt:      0.0,
+	BadDecl:      0.0,
+	Comment:      0.0,
+	CommentGroup: 0.0,
+
+	// todo (automatic function definition)
+
+	// rest
+	Field:          0.0, // struct rel.
+	FieldList:      0.0, // struct rel.
+	Ellipsis:       0.0, // variadic function
+	FuncLit:        0.0, // function literal, eg. lambda functions
 	ParenExpr:      0.0,
 	SelectorExpr:   0.0,
 	IndexExpr:      0.0,
@@ -196,43 +107,202 @@ var probabilities = map[NodeType]float64{
 	CallExpr:       0.0,
 	StarExpr:       0.0,
 	UnaryExpr:      0.0,
-	BinaryExpr:     0.2,
+	BinaryExpr:     0.0,
 	KeyValueExpr:   0.0,
-	ArrayType:      0.0,
 	StructType:     0.0,
 	FuncType:       0.0,
 	InterfaceType:  0.0,
-	MapType:        0.0,
 	ChanType:       0.0,
-	BadStmt:        0.0,
-	DeclStmt:       0.0,
 	EmptyStmt:      0.0,
 	LabeledStmt:    0.0,
 	ExprStmt:       0.0,
 	SendStmt:       0.0,
 	IncDecStmt:     0.0,
-	AssignStmt:     0.0,
-	GoStmt:         0.4,
+	GoStmt:         0.0,
 	DeferStmt:      0.0,
-	ReturnStmt:     0.0,
-	BranchStmt:     0.5,
+	BranchStmt:     0.0,
 	BlockStmt:      0.0,
-	IfStmt:         0.0,
 	CaseClause:     0.0,
 	SwitchStmt:     0.0,
 	TypeSwitchStmt: 0.0,
 	CommClause:     0.0,
 	SelectStmt:     0.0,
-	ForStmt:        0.0,
 	RangeStmt:      0.0,
 	ImportSpec:     0.0,
 	ValueSpec:      0.0,
 	TypeSpec:       0.0,
-	BadDecl:        0.0,
 	GenDecl:        0.0,
 	FuncDecl:       0.0,
 	File:           0.0,
 	Package:        0.0,
+}
+
+var stringRepresentation = map[NodeType]string{
+	BasicLit:       "BasicLit",
+	BadExpr:        "BadExpr",
+	Comment:        "Comment",
+	CommentGroup:   "CommentGroup",
+	Ident:          "Ident",
+	Field:          "Field",
+	FieldList:      "FieldList",
+	Ellipsis:       "Ellipsis",
+	FuncLit:        "FuncLit",
+	CompositeLit:   "CompositeLit",
+	ParenExpr:      "ParenExpr",
+	SelectorExpr:   "SelectorExpr",
+	IndexExpr:      "IndexExpr",
+	IndexListExpr:  "IndexListExpr",
+	SliceExpr:      "SliceExpr",
+	TypeAssertExpr: "TypeAssertExpr",
+	CallExpr:       "CallExpr",
+	StarExpr:       "StarExpr",
+	UnaryExpr:      "UnaryExpr",
+	BinaryExpr:     "BinaryExpr",
+	KeyValueExpr:   "KeyValueExpr",
+	ArrayType:      "ArrayType",
+	StructType:     "StructType",
+	FuncType:       "FuncType",
+	InterfaceType:  "InterfaceType",
+	MapType:        "MapType",
+	ChanType:       "ChanType",
+	BadStmt:        "BadStmt",
+	DeclStmt:       "DeclStmt",
+	EmptyStmt:      "EmptyStmt",
+	LabeledStmt:    "LabeledStmt",
+	ExprStmt:       "ExprStmt",
+	SendStmt:       "SendStmt",
+	IncDecStmt:     "IncDecStmt",
+	AssignStmt:     "AssignStmt",
+	GoStmt:         "GoStmt",
+	DeferStmt:      "DeferStmt",
+	ReturnStmt:     "ReturnStmt",
+	BranchStmt:     "BranchStmt",
+	BlockStmt:      "BlockStmt",
+	IfStmt:         "IfStmt",
+	CaseClause:     "CaseClause",
+	SwitchStmt:     "SwitchStmt",
+	TypeSwitchStmt: "TypeSwitchStmt",
+	CommClause:     "CommClause",
+	SelectStmt:     "SelectStmt",
+	ForStmt:        "ForStmt",
+	RangeStmt:      "RangeStmt",
+	ImportSpec:     "ImportSpec",
+	ValueSpec:      "ValueSpec",
+	TypeSpec:       "TypeSpec",
+	BadDecl:        "BadDecl",
+	GenDecl:        "GenDecl",
+	FuncDecl:       "FuncDecl",
+	File:           "File",
+	Package:        "Package",
+}
+
+type NodeTypeClass int
+
+const (
+	Expression = NodeTypeClass(iota)
+	Statement
+)
+
+var NodeTypeClasses = map[NodeTypeClass][]NodeType{
+	Expression: {
+		BadExpr,
+		Ident,
+		Ellipsis,
+		BasicLit,
+		FuncLit,
+		CompositeLit,
+		ParenExpr,
+		SelectorExpr,
+		IndexExpr,
+		IndexListExpr,
+		SliceExpr,
+		TypeAssertExpr,
+		CallExpr,
+		StarExpr,
+		UnaryExpr,
+		BinaryExpr,
+		KeyValueExpr,
+		ArrayType,
+		StructType,
+		FuncType,
+		InterfaceType,
+		MapType,
+		ChanType,
+	},
+	Statement: {
+		BadStmt,
+		DeclStmt,
+		EmptyStmt,
+		LabeledStmt,
+		ExprStmt,
+		SendStmt,
+		IncDecStmt,
+		AssignStmt,
+		GoStmt,
+		DeferStmt,
+		ReturnStmt,
+		BranchStmt,
+		BlockStmt,
+		IfStmt,
+		CaseClause,
+		SwitchStmt,
+		TypeSwitchStmt,
+		CommClause,
+		SelectStmt,
+		ForStmt,
+		RangeStmt,
+	},
+}
+
+var NodeTydpeClasses = map[NodeType]NodeTypeClass{
+	BadExpr:        Expression,
+	Ident:          Expression,
+	Ellipsis:       Expression,
+	BasicLit:       Expression,
+	FuncLit:        Expression,
+	CompositeLit:   Expression,
+	ParenExpr:      Expression,
+	SelectorExpr:   Expression,
+	IndexExpr:      Expression,
+	IndexListExpr:  Expression,
+	SliceExpr:      Expression,
+	TypeAssertExpr: Expression,
+	CallExpr:       Expression,
+	StarExpr:       Expression,
+	UnaryExpr:      Expression,
+	BinaryExpr:     Expression,
+	KeyValueExpr:   Expression,
+	ArrayType:      Expression,
+	StructType:     Expression,
+	FuncType:       Expression,
+	InterfaceType:  Expression,
+	MapType:        Expression,
+	ChanType:       Expression,
+	BadStmt:        Statement,
+	DeclStmt:       Statement,
+	EmptyStmt:      Statement,
+	LabeledStmt:    Statement,
+	ExprStmt:       Statement,
+	SendStmt:       Statement,
+	IncDecStmt:     Statement,
+	AssignStmt:     Statement,
+	GoStmt:         Statement,
+	DeferStmt:      Statement,
+	ReturnStmt:     Statement,
+	BranchStmt:     Statement,
+	BlockStmt:      Statement,
+	IfStmt:         Statement,
+	CaseClause:     Statement,
+	SwitchStmt:     Statement,
+	TypeSwitchStmt: Statement,
+	CommClause:     Statement,
+	SelectStmt:     Statement,
+	ForStmt:        Statement,
+	RangeStmt:      Statement,
+}
+
+func (n NodeType) String() string {
+	return stringRepresentation[n]
 }
 
 var orderedNodeTypes = []NodeType{}
@@ -269,166 +339,181 @@ func PickRandomNodeType() NodeType {
 }
 
 func Generate(kind NodeType) ast.Node {
-	var (
-		node ast.Node
-	)
+	var node ast.Node
+
 	switch kind {
 	case BasicLit:
-		d := ast.BasicLit{}
-		node = &d
+		node = &ast.BasicLit{
+			ValuePos: 0,
+			Kind:     0,
+			Value:    "",
+		}
+
 	case Field:
-		d := ast.Field{}
-		node = &d
+		node = &ast.Field{}
+
 	case FieldList:
-		d := ast.FieldList{}
-		node = &d
+		node = &ast.FieldList{}
+
 	case Ellipsis:
-		d := ast.Ellipsis{}
-		node = &d
+		node = &ast.Ellipsis{}
+
 	case FuncLit:
-		d := ast.FuncLit{}
-		node = &d
+		node = &ast.FuncLit{}
+
 	case CompositeLit:
-		d := ast.CompositeLit{}
-		node = &d
+		node = &ast.CompositeLit{}
+
 	case ParenExpr:
-		d := ast.ParenExpr{}
-		node = &d
+		node = &ast.ParenExpr{}
+
 	case SelectorExpr:
-		d := ast.SelectorExpr{}
-		node = &d
+		node = &ast.SelectorExpr{}
+
 	case IndexExpr:
-		d := ast.IndexExpr{}
-		node = &d
+		node = &ast.IndexExpr{}
+
 	case IndexListExpr:
-		d := ast.IndexListExpr{}
-		node = &d
+		node = &ast.IndexListExpr{}
+
 	case SliceExpr:
-		d := ast.SliceExpr{}
-		node = &d
+		node = &ast.SliceExpr{}
+
 	case TypeAssertExpr:
-		d := ast.TypeAssertExpr{}
-		node = &d
+		node = &ast.TypeAssertExpr{}
+
 	case CallExpr:
-		d := ast.CallExpr{}
-		node = &d
+		node = &ast.CallExpr{}
+
 	case StarExpr:
-		d := ast.StarExpr{}
-		node = &d
+		node = &ast.StarExpr{}
+
 	case UnaryExpr:
-		d := ast.UnaryExpr{}
-		node = &d
+		node = &ast.UnaryExpr{}
+
 	case BinaryExpr:
-		d := ast.BinaryExpr{}
-		node = &d
+		node = &ast.BinaryExpr{}
+
 	case KeyValueExpr:
-		d := ast.KeyValueExpr{}
-		node = &d
+		node = &ast.KeyValueExpr{}
+
 	case ArrayType:
-		d := ast.ArrayType{}
-		node = &d
+		node = &ast.ArrayType{}
+
 	case StructType:
-		d := ast.StructType{}
-		node = &d
+		node = &ast.StructType{}
+
 	case FuncType:
-		d := ast.FuncType{}
-		node = &d
+		node = &ast.FuncType{}
+
 	case InterfaceType:
-		d := ast.InterfaceType{}
-		node = &d
+		node = &ast.InterfaceType{}
+
 	case MapType:
-		d := ast.MapType{}
-		node = &d
+		node = &ast.MapType{}
+
 	case ChanType:
-		d := ast.ChanType{}
-		node = &d
+		node = &ast.ChanType{}
+
 	case BadStmt:
-		d := ast.BadStmt{}
-		node = &d
+		node = &ast.BadStmt{}
+
 	case DeclStmt:
-		d := ast.DeclStmt{}
-		node = &d
+		node = &ast.DeclStmt{}
+
 	case EmptyStmt:
-		d := ast.EmptyStmt{}
-		node = &d
+		node = &ast.EmptyStmt{}
+
 	case LabeledStmt:
-		d := ast.LabeledStmt{}
-		node = &d
+		node = &ast.LabeledStmt{}
+
 	case ExprStmt:
-		d := ast.ExprStmt{}
-		node = &d
+		node = &ast.ExprStmt{}
+
 	case SendStmt:
-		d := ast.SendStmt{}
-		node = &d
+		node = &ast.SendStmt{}
+
 	case IncDecStmt:
-		d := ast.IncDecStmt{}
-		node = &d
+		node = &ast.IncDecStmt{}
+
 	case AssignStmt:
-		d := ast.AssignStmt{}
-		node = &d
+		node = &ast.AssignStmt{}
+
 	case GoStmt:
-		d := ast.GoStmt{}
-		node = &d
+		node = &ast.GoStmt{}
+
 	case DeferStmt:
-		d := ast.DeferStmt{}
-		node = &d
+		node = &ast.DeferStmt{}
+
 	case ReturnStmt:
-		d := ast.ReturnStmt{}
-		node = &d
+		node = &ast.ReturnStmt{}
+
 	case BranchStmt:
-		d := ast.BranchStmt{}
-		node = &d
+		node = &ast.BranchStmt{}
+
 	case BlockStmt:
-		d := ast.BlockStmt{}
-		node = &d
+		node = &ast.BlockStmt{}
+
 	case IfStmt:
-		d := ast.IfStmt{}
-		node = &d
+		node = &ast.IfStmt{
+			If:   0,
+			Init: nil,
+			Cond: nil,
+			Body: Generate(BlockStmt).(*ast.BlockStmt),
+			Else: nil,
+		}
+
 	case CaseClause:
-		d := ast.CaseClause{}
-		node = &d
+		node = &ast.CaseClause{}
+
 	case SwitchStmt:
-		d := ast.SwitchStmt{}
-		node = &d
+		node = &ast.SwitchStmt{}
+
 	case TypeSwitchStmt:
-		d := ast.TypeSwitchStmt{}
-		node = &d
+		node = &ast.TypeSwitchStmt{}
+
 	case CommClause:
-		d := ast.CommClause{}
-		node = &d
+		node = &ast.CommClause{}
+
 	case SelectStmt:
-		d := ast.SelectStmt{}
-		node = &d
+		node = &ast.SelectStmt{}
+
 	case ForStmt:
-		d := ast.ForStmt{}
-		node = &d
+		node = &ast.ForStmt{}
+
 	case RangeStmt:
-		d := ast.RangeStmt{}
-		node = &d
+		node = &ast.RangeStmt{}
+
 	case ImportSpec:
-		d := ast.ImportSpec{}
-		node = &d
+		node = &ast.ImportSpec{}
+
 	case ValueSpec:
-		d := ast.ValueSpec{}
-		node = &d
+		node = &ast.ValueSpec{}
+
 	case TypeSpec:
-		d := ast.TypeSpec{}
-		node = &d
+		node = &ast.TypeSpec{}
+
 	case BadDecl:
-		d := ast.BadDecl{}
-		node = &d
+		node = &ast.BadDecl{}
+
 	case GenDecl:
-		d := ast.GenDecl{}
-		node = &d
+		node = &ast.GenDecl{}
+
 	case FuncDecl:
-		d := ast.FuncDecl{}
-		node = &d
+		node = &ast.FuncDecl{
+			Doc:  &ast.CommentGroup{},
+			Recv: &ast.FieldList{},
+			Name: &ast.Ident{},
+			Type: &ast.FuncType{},
+			Body: &ast.BlockStmt{},
+		}
+
 	case File:
-		d := ast.File{}
-		node = &d
+		node = &ast.File{}
+
 	case Package:
-		d := ast.Package{}
-		node = &d
+		node = &ast.Package{}
+
 	}
 	return node
 }
