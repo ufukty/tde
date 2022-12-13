@@ -1,13 +1,14 @@
 package server
 
 import (
-	// "GoGP/agent/embedding"
+	// "tde/internal/embedding"
+	"tde/models/network_models"
+
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"go/parser"
 	"log"
-	"models/network_models"
 	"net/http"
 
 	"github.com/pkg/errors"

@@ -3,7 +3,7 @@ package evolution
 import (
 	"math"
 	"math/rand"
-	models "models/in_program_models"
+	models "tde/models/in_program_models"
 )
 
 type Number64 interface {

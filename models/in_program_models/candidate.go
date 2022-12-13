@@ -1,7 +1,7 @@
 package in_program_models
 
 import (
-	codefragment "GoGP/evolve/code-fragment"
+	"tde/internal/code_fragment"
 
 	"go/format"
 	"log"
@@ -31,7 +31,7 @@ func NewCandidate() *Candidate {
 }
 
 func (c *Candidate) RandomInit() {
-	c.Body = codefragment.ProduceRandomFragment()
+	c.Body = code_fragment.ProduceRandomFragment()
 }
 
 func (c *Candidate) CheckSyntax() bool {

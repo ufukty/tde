@@ -1,9 +1,7 @@
 package code
 
 import (
-	"GoGP/agent/utilities"
-	"reflect"
-	"strings"
+	"tde/internal/utilities"
 
 	"fmt"
 	"go/ast"
@@ -11,6 +9,8 @@ import (
 	"go/printer"
 	"go/token"
 	"io"
+	"reflect"
+	"strings"
 
 	"github.com/pkg/errors"
 )

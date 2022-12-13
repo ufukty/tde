@@ -1,4 +1,4 @@
-package codefragment
+package code_fragment
 
 import (
 	"fmt"

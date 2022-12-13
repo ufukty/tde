@@ -1,4 +1,4 @@
-module models
+module tde
 
 go 1.19
 

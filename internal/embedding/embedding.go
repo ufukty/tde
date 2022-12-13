@@ -1,15 +1,15 @@
 package embedding
 
 import (
-	"GoGP/agent/code"
-	"bytes"
-	"go/printer"
-	"go/token"
-	"models/in_program_models"
-	"os"
+	"tde/internal/code"
+	"tde/models/in_program_models"
 
+	"bytes"
 	_ "embed"
 	"fmt"
+	"go/printer"
+	"go/token"
+	"os"
 
 	"github.com/pkg/errors"
 )

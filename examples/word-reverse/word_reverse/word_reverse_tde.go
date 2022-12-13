@@ -1,10 +1,10 @@
 //go:build tde
 // +build tde
 
-package wordreverse
+package word_reverse
 
 import (
-	"GoGP/testing/evolution"
+	"tde/pkg/evolution"
 )
 
 func TDE_WordReverse(e *evolution.E) {

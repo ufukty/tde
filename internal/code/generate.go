@@ -1,9 +1,9 @@
 package code
 
 import (
-	"GoGP/evolve/evolution"
-	"GoGP/evolve/utility"
 	"go/ast"
+	"tde/internal/evolution"
+	"tde/internal/utility"
 )
 
 type NodeType int

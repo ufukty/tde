@@ -4,12 +4,15 @@
 package main
 
 import (
-	wordreverse "GoGP/examples/word-reverse/word_reverse"
-	"GoGP/testing/evolution"
+	"tde/examples/word-reverse/word_reverse"
+	models "tde/models/in_program_models"
+	"tde/pkg/evolution"
 )
+
+var candidates = map[models.CandidateID]evolution.TargetFunctionType{}
 
 func main() {
 	e := evolution.NewE(candidates)
-	wordreverse.TDE_WordReverse(e)
+	word_reverse.TDE_WordReverse(e)
 	e.Export()
 }

@@ -1,4 +1,4 @@
-package wordreverse
+package word_reverse
 
 type St struct {
 	Ds string

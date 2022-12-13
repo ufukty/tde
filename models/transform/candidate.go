@@ -1,8 +1,8 @@
 package transform
 
 import (
-	"models/in_program_models"
-	"models/network_models"
+	"tde/models/in_program_models"
+	"tde/models/network_models"
 
 	"encoding/base64"
 

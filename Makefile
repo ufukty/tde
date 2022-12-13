@@ -1,6 +1,10 @@
+all: ast-inspect client server
+
 ast-inspect:
-	go build -o build/ast-inspect GoGP/agent/cmd/ast-inspect
+	go build -o build/ast-inspect ./cmd/ast-inspect
 
-agent:
-	go build -o build/agent GoGP/agent/cmd/server
+client:
+	go build -o build/agent ./cmd/client
 
+server:
+	go build -o build/server ./cmd/server

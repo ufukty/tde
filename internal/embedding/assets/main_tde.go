@@ -4,8 +4,8 @@
 package main
 
 import (
-	wordreverse "GoGP/examples/word-reverse/word_reverse"
-	"GoGP/testing/evolution"
+	wordreverse "tde/examples/word-reverse/word_reverse"
+	"tde/pkg/evolution"
 )
 
 func main() {

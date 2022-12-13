@@ -3,7 +3,7 @@ package main
 // usage from commandline:
 //   evolve "implementation_file_path.go" "test_file_path.go" "function_name"
 import (
-	"GoGP/agent/server"
+	"tde/internal/server"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package evolution
 
 import (
-	models "models/in_program_models"
+	models "tde/models/in_program_models"
 
 	"encoding/json"
 	"fmt"

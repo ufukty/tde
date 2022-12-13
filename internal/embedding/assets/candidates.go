@@ -4,8 +4,8 @@
 package main
 
 import (
-	"GoGP/testing/evolution"
-	"models/in_program_models"
+	"tde/models/in_program_models"
+	"tde/pkg/evolution"
 )
 
 func candidate1(s string) string {
