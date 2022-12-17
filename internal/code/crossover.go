@@ -3,8 +3,6 @@ package code
 import (
 	"fmt"
 	"go/ast"
-	"go/token"
-	"reflect"
 	"tde/internal/utilities"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -64,25 +62,29 @@ func FindParentNodeAndChildIndex(root ast.Node, child ast.Node) (parent ast.Node
 	return nil, -1
 }
 
-// func PickCrossOverPoint(fn Function, nodeClass NodeClass) (parent, child *ast.Node) {
-// 	linearized := ListSubNodesThatConforms(fn.Root.Body)
-// 	childRoot := **utilities.Pick(linearized)
-// 	var (
-// 		parentOfChild ast.Node
-// 	)
-// 	astutil.Apply(fn.Root.Body, func(c *astutil.Cursor) bool {
-// 		if c.Node() == childRoot {
+func AreSameNodeType(l, r ast.Node) bool {
+	switch l.(type) {
+	case ast.Decl:
+		if _, ok := r.(ast.Decl); ok {
+			return true
+		}
+	case ast.Expr:
+		if _, ok := r.(ast.Expr); ok {
+			return true
+		}
+	case ast.Stmt:
+		if _, ok := r.(ast.Stmt); ok {
+			return true
+		}
+	case ast.Spec:
+		if _, ok := r.(ast.Spec); ok {
+			return true
+		}
+	}
+	return false
+}
 
-// 			c.Index()
-// 			parentOfChild = c.Parent()
-// 		}
-// 		return parentOfChild == nil
-// 	}, nil)
-// 	return &childRoot, &parentOfChild
-// }
-
-func CrossOver(parentA, parentB *Function, fsetA, fsetB *token.FileSet) bool {
-	// targetNodeClass := *utilities.Pick([]NodeClass{Statement, Expression})
+func CrossOver(parentA, parentB *Function) bool {
 
 	var (
 		nodesA   = ListSubNodes(parentA.Root)
@@ -99,7 +101,7 @@ func CrossOver(parentA, parentB *Function, fsetA, fsetB *token.FileSet) bool {
 	for !selected {
 		subA = **utilities.Pick(nodesA)
 		subB = **utilities.Pick(nodesB)
-		if reflect.TypeOf(subA) == reflect.TypeOf(subB) {
+		if AreSameNodeType(subA, subB) {
 			selected = true
 		}
 	}
@@ -130,45 +132,5 @@ func CrossOver(parentA, parentB *Function, fsetA, fsetB *token.FileSet) bool {
 		return !replacedB
 	}, nil).(*ast.BlockStmt)
 
-	fmt.Println("+++")
-	// printer.Fprint(os.Stdout, fsetA, parentA.Root.Body)
-	fmt.Println("+++")
-
-	fmt.Println(&subA, &subB)
-	// switch subA := subA.(type) {
-	// case ast.Decl:
-	// 	if subB, ok := subB.(ast.Decl); ok {
-	// 		sub
-	// 	}
-	// case ast.Expr:
-	// 	if subB, ok := subB.(ast.Expr); ok {
-	// 		sub
-	// 	}
-	// case ast.Stmt:
-	// 	if subB, ok := subB.(ast.Stmt); ok {
-	// 		sub
-	// 	}
-	// case ast.Spec:
-	// 	if subB, ok := subB.(ast.Spec); ok {
-	// 		sub
-	// 	}
-	// }
-
-	// switch targetNodeClass {
-	// case Statement:
-	// 	crsOvrParentA, okA := (*crsOvrParentA).(ast.Stmt)
-	// 	crsOvrParentB, okB := (*crsOvrParentB).(ast.Stmt)
-	// 	if okA && okB {
-	// 		break
-
-	// 	}
-	// case Expression:
-	// 	// crsOvrParentA, okA := (*crsOvrParentA).(ast.Expr)
-	// 	// crsOvrParentB, okB := (*crsOvrParentB).(ast.Expr)
-	// 	// if okA && okB {
-
-	// 	// }
-	// }
-
-	return replacedA //&& replacedB
+	return replacedA && replacedB
 }

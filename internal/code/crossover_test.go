@@ -23,10 +23,6 @@ func CompareSlices[T comparable](l, r []T) bool {
 	return true
 }
 
-func CompareNodes(l, r ast.Node) bool {
-	return &l == &r
-}
-
 func TestFindParentNode(t *testing.T) {
 	var err error
 
@@ -43,7 +39,7 @@ func TestFindParentNode(t *testing.T) {
 				}
 				a = a * 5
 				fmt.Println("Hello %s", 
-					fmt.Sprintf("world")
+					fmt.Sprintf("world"),
 				)
 			}
 
@@ -102,7 +98,19 @@ func TestPickCrossOverPoint(t *testing.T) {
 		import "fmt"
 		
 		func HelloWorld(s string) {
-			fmt.Println(s)
+			var b int
+
+			if a != 0 {
+				if a == 1 {
+					return -1
+				}
+				a = a * 5
+				fmt.Println("Hello %s", 
+					fmt.Sprintf("world"),
+				)
+			}
+
+			return a * b
 		}`,
 	)
 	if err != nil {
@@ -113,10 +121,19 @@ func TestPickCrossOverPoint(t *testing.T) {
 		t.Error(errors.Wrap(err, "Could not get Function from Code"))
 	}
 
-	ok := CrossOver(fn1, fn2, c1.fset, c2.fset)
-	// ok = CrossOver(fn1, fn2, c1.fset, c2.fset)
-	// ok = CrossOver(fn1, fn2, c1.fset, c2.fset)
-	// ok = CrossOver(fn1, fn2, c1.fset, c2.fset)
+	ok := CrossOver(fn1, fn2)
+	if !ok {
+		t.Error("CrossOver has not performed")
+	}
+	ok = CrossOver(fn1, fn2)
+	if !ok {
+		t.Error("CrossOver has not performed")
+	}
+	ok = CrossOver(fn1, fn2)
+	if !ok {
+		t.Error("CrossOver has not performed")
+	}
+	ok = CrossOver(fn1, fn2)
 	if !ok {
 		t.Error("CrossOver has not performed")
 	}
