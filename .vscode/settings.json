@@ -1,5 +1,5 @@
 {
-    "go.testFlags": ["-v"],
+    "go.testFlags": ["-v", "-count=1"],
     "gopls": {
         "build.buildFlags": ["-tags=tde"]
     }
