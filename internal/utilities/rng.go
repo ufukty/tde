@@ -21,3 +21,9 @@ func URandFloatForCrypto() float64 {
 	floated, _ := randomBigFloat.Float64()
 	return floated
 }
+
+func Pick[T any](values []T) *T {
+	length := len(values)
+	rnd := int(URandFloatForCrypto() * float64(length))
+	return &values[rnd]
+}

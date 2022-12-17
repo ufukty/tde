@@ -69,18 +69,23 @@ const (
 
 var probabilities = map[NodeType]float64{
 	// first level type
-	DeclStmt:     0.1,
-	AssignStmt:   0.1,
-	CompositeLit: 0.1, // a literal that combines other type of nodes and used as value to fill an Ident
-	IfStmt:       0.0,
-	ForStmt:      0.0,
-	ReturnStmt:   0.0,
+	DeclStmt:   0.1,
+	AssignStmt: 0.1,
+	IfStmt:     0.0,
+	ForStmt:    0.0,
+	ReturnStmt: 0.0,
+	BlockStmt:  0.0,
 
-	// second level type
-	BasicLit:  0.0, // basic literal, like string, int, float value
-	Ident:     0.0, // ref a variable (to declare/assign/access)
-	ArrayType: 0.0,
-	MapType:   0.0,
+	CallExpr: 0.0, // function call
+
+	// variable type
+	Ident:        0.0, // ref a variable (to declare/assign/access)
+	BasicLit:     0.0, // basic literal, like string, int, float value
+	CompositeLit: 0.1, // a literal that combines other type of nodes and used as value to fill an Ident
+	ArrayType:    0.0,
+	MapType:      0.0,
+	// FuncType:  0.0,
+	// ChanType:  0.0,
 
 	// third level type
 
@@ -104,15 +109,12 @@ var probabilities = map[NodeType]float64{
 	IndexListExpr:  0.0,
 	SliceExpr:      0.0,
 	TypeAssertExpr: 0.0,
-	CallExpr:       0.0,
 	StarExpr:       0.0,
 	UnaryExpr:      0.0,
 	BinaryExpr:     0.0,
 	KeyValueExpr:   0.0,
 	StructType:     0.0,
-	FuncType:       0.0,
 	InterfaceType:  0.0,
-	ChanType:       0.0,
 	EmptyStmt:      0.0,
 	LabeledStmt:    0.0,
 	ExprStmt:       0.0,
@@ -121,7 +123,7 @@ var probabilities = map[NodeType]float64{
 	GoStmt:         0.0,
 	DeferStmt:      0.0,
 	BranchStmt:     0.0,
-	BlockStmt:      0.0,
+
 	CaseClause:     0.0,
 	SwitchStmt:     0.0,
 	TypeSwitchStmt: 0.0,
@@ -196,14 +198,14 @@ var stringRepresentation = map[NodeType]string{
 	Package:        "Package",
 }
 
-type NodeTypeClass int
+type NodeClass int
 
 const (
-	Expression = NodeTypeClass(iota)
+	Expression = NodeClass(iota)
 	Statement
 )
 
-var NodeTypeClasses = map[NodeTypeClass][]NodeType{
+var NodeTypeClasses = map[NodeClass][]NodeType{
 	Expression: {
 		BadExpr,
 		Ident,
@@ -254,7 +256,7 @@ var NodeTypeClasses = map[NodeTypeClass][]NodeType{
 	},
 }
 
-var NodeTydpeClasses = map[NodeType]NodeTypeClass{
+var NodeTydpeClasses = map[NodeType]NodeClass{
 	BadExpr:        Expression,
 	Ident:          Expression,
 	Ellipsis:       Expression,
@@ -342,118 +344,151 @@ func Generate(kind NodeType) ast.Node {
 	var node ast.Node
 
 	switch kind {
+	// TODO:
 	case BasicLit:
-		node = &ast.BasicLit{
-			ValuePos: 0,
-			Kind:     0,
-			Value:    "",
-		}
+		node = &ast.BasicLit{}
 
+	// TODO:
 	case Field:
 		node = &ast.Field{}
 
+	// TODO:
 	case FieldList:
 		node = &ast.FieldList{}
 
+	// TODO:
 	case Ellipsis:
 		node = &ast.Ellipsis{}
 
+	// TODO:
 	case FuncLit:
 		node = &ast.FuncLit{}
 
+	// TODO:
 	case CompositeLit:
 		node = &ast.CompositeLit{}
 
+	// TODO:
 	case ParenExpr:
 		node = &ast.ParenExpr{}
 
+	// TODO:
 	case SelectorExpr:
 		node = &ast.SelectorExpr{}
 
+	// TODO:
 	case IndexExpr:
 		node = &ast.IndexExpr{}
 
+	// TODO:
 	case IndexListExpr:
 		node = &ast.IndexListExpr{}
 
+	// TODO:
 	case SliceExpr:
 		node = &ast.SliceExpr{}
 
+	// TODO:
 	case TypeAssertExpr:
 		node = &ast.TypeAssertExpr{}
 
+	// TODO:
 	case CallExpr:
 		node = &ast.CallExpr{}
 
+	// TODO:
 	case StarExpr:
 		node = &ast.StarExpr{}
 
+	// TODO:
 	case UnaryExpr:
 		node = &ast.UnaryExpr{}
 
+	// TODO:
 	case BinaryExpr:
 		node = &ast.BinaryExpr{}
 
+	// TODO:
 	case KeyValueExpr:
 		node = &ast.KeyValueExpr{}
 
+	// TODO:
 	case ArrayType:
 		node = &ast.ArrayType{}
 
+	// TODO:
 	case StructType:
 		node = &ast.StructType{}
 
+	// TODO:
 	case FuncType:
 		node = &ast.FuncType{}
 
+	// TODO:
 	case InterfaceType:
 		node = &ast.InterfaceType{}
 
+	// TODO:
 	case MapType:
 		node = &ast.MapType{}
 
+	// TODO:
 	case ChanType:
 		node = &ast.ChanType{}
 
+	// TODO:
 	case BadStmt:
 		node = &ast.BadStmt{}
 
+	// TODO:
 	case DeclStmt:
 		node = &ast.DeclStmt{}
 
+	// TODO:
 	case EmptyStmt:
 		node = &ast.EmptyStmt{}
 
+	// TODO:
 	case LabeledStmt:
 		node = &ast.LabeledStmt{}
 
+	// TODO:
 	case ExprStmt:
 		node = &ast.ExprStmt{}
 
+	// TODO:
 	case SendStmt:
 		node = &ast.SendStmt{}
 
+	// TODO:
 	case IncDecStmt:
 		node = &ast.IncDecStmt{}
 
+	// TODO:
 	case AssignStmt:
 		node = &ast.AssignStmt{}
 
+	// TODO:
 	case GoStmt:
 		node = &ast.GoStmt{}
 
+	// TODO:
 	case DeferStmt:
 		node = &ast.DeferStmt{}
 
+	// TODO:
 	case ReturnStmt:
 		node = &ast.ReturnStmt{}
 
+	// TODO:
 	case BranchStmt:
 		node = &ast.BranchStmt{}
 
+	// TODO:
 	case BlockStmt:
 		node = &ast.BlockStmt{}
 
+	// TODO:
 	case IfStmt:
 		node = &ast.IfStmt{
 			If:   0,
@@ -463,42 +498,55 @@ func Generate(kind NodeType) ast.Node {
 			Else: nil,
 		}
 
+	// TODO:
 	case CaseClause:
 		node = &ast.CaseClause{}
 
+	// TODO:
 	case SwitchStmt:
 		node = &ast.SwitchStmt{}
 
+	// TODO:
 	case TypeSwitchStmt:
 		node = &ast.TypeSwitchStmt{}
 
+	// TODO:
 	case CommClause:
 		node = &ast.CommClause{}
 
+	// TODO:
 	case SelectStmt:
 		node = &ast.SelectStmt{}
 
+	// TODO:
 	case ForStmt:
 		node = &ast.ForStmt{}
 
+	// TODO:
 	case RangeStmt:
 		node = &ast.RangeStmt{}
 
+	// TODO:
 	case ImportSpec:
 		node = &ast.ImportSpec{}
 
+	// TODO:
 	case ValueSpec:
 		node = &ast.ValueSpec{}
 
+	// TODO:
 	case TypeSpec:
 		node = &ast.TypeSpec{}
 
+	// TODO:
 	case BadDecl:
 		node = &ast.BadDecl{}
 
+	// TODO:
 	case GenDecl:
 		node = &ast.GenDecl{}
 
+	// TODO:
 	case FuncDecl:
 		node = &ast.FuncDecl{
 			Doc:  &ast.CommentGroup{},
@@ -508,9 +556,11 @@ func Generate(kind NodeType) ast.Node {
 			Body: &ast.BlockStmt{},
 		}
 
+	// TODO:
 	case File:
 		node = &ast.File{}
 
+	// TODO:
 	case Package:
 		node = &ast.Package{}
 

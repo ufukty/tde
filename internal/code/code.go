@@ -64,29 +64,29 @@ func (c *Code) RenameFunction(oldName, newName string) error {
 	return nil
 }
 
-// func (c *Code) FindFunction(funcName string) (*ast.FuncDecl, error) {
-// 	found := []*ast.FuncDecl{}
+func (c *Code) FindFunction(funcName string) (*ast.FuncDecl, error) {
+	found := []*ast.FuncDecl{}
 
-// 	ast.Inspect(c.astFile, func(n ast.Node) bool {
-// 		if n != nil {
-// 			if functionDeclaration, ok := n.(*ast.FuncDecl); ok {
-// 				if functionDeclaration.Name.Name == funcName {
-// 					found = append(found, functionDeclaration)
-// 					return false
-// 				}
-// 			}
-// 		}
-// 		return true
-// 	})
+	ast.Inspect(c.astFile, func(n ast.Node) bool {
+		if n != nil {
+			if functionDeclaration, ok := n.(*ast.FuncDecl); ok {
+				if functionDeclaration.Name.Name == funcName {
+					found = append(found, functionDeclaration)
+					return false
+				}
+			}
+		}
+		return true
+	})
 
-// 	if len(found) == 0 {
-// 		return nil, fmt.Errorf("could not find function '%s'", funcName)
-// 	} else if len(found) > 1 {
-// 		return nil, fmt.Errorf("more than one function definition with the name  '%s'", funcName)
-// 	} else {
-// 		return found[0], nil
-// 	}
-// }
+	if len(found) == 0 {
+		return nil, fmt.Errorf("could not find function '%s'", funcName)
+	} else if len(found) > 1 {
+		return nil, fmt.Errorf("more than one function definition with the name  '%s'", funcName)
+	} else {
+		return found[0], nil
+	}
+}
 
 // func (c *Code) ReplaceFunctionName(n *ast.FuncDecl, newName string) {
 // 	n.Name.Name = newName
@@ -124,4 +124,15 @@ func (c *Code) Print(w io.Writer) {
 // Performance notice: This will print&parse the tree, avoid using excessively
 func (c *Code) Reload() error {
 	return c.LoadFromString(c.String())
+}
+
+func (c *Code) GetFunction(funcName string) (*Function, error) {
+	fdec, err := c.FindFunction(funcName)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not find function")
+	}
+	f := Function{
+		Root: fdec,
+	}
+	return &f, nil
 }
