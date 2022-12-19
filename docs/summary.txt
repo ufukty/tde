@@ -68,3 +68,29 @@ able to inspect the software as the team makes progress in development to spot
 * Limitations
 
 - Since panics are used to distinguish bad programs (or anomalies, as in the context of evolution), there should not be any expectation to produce a solution that uses panic/recover features for error handling (as some programmers may). There is no limitation for producing solutions that uses error-wrapping method. This should not be a problem since error-wrapping is more frequently suggested over panic/recover feature for most usual cases by programmers and [https://go.dev/blog/error-handling-and-go](official documentation of Go programming language).
+
+
+* Random code-fragment generation
+
+- Generation of Go codes that have valid syntaxes and compatible with compiler can be challenging. Three methods used in research: Generating sequence of random characters, tokens and AST nodes. 
+
+- Tokens consist by keywords and symbols (operators) that are allowed to be placed in a valid Go program by specification. 
+
+- AST (Abstract-Syntax-Tree) is used to represent computer programs in a tree of nodes. Each node represents a section of the code and any node can consists by one or more nodes that each represents smaller portion of code that the parent node represents.
+
+- Ordering 3 methods from left to right, it can be seen that while the complexity of program that creates valid codes is increasing, rate of codes with invalid syntax created by that program decreases. With that; since the both token and AST node generation methods need details about the structure (both lexical tokens and syntax) of programming language; it can be forseeable that keeping search-space as all valid Go programs are reachable with initialization process at start and after performing genetic operations is tied with the success on implementing the token/node generating program in a way that is has no missing information on its due.
+
+- An example to the complexity of generating AST-nodes could be the amount of node types that has to be considered. In the time of that counting; (Version of Go compiler and libraries used is 1.19.3); there are more than 50 node types for representing some-nested structures that varies in the size and functionality of the area they represents. Examples can be given as "Package" and "File" for relatively bigger structures; and "Field", "IfStmt" ("If Statement"), "SliceExpr" ("Slice Expression") and "MapType" for smaller ones. Most of node types consists by more than one type and number subnodes. Thus, implementing an AST node based code generator is challanging and detailed task.
+
+- More importantly, that kind of code generator is language-specific. That means a code generator for Go won't be able to used for generating codes in different languages.
+
+
+* Turing completeness
+
+- A computational environment is Turing-complete only if it can reproduce itself. One  thing to prove that the TDE can find solution when it is theorically possible can be trying to produce TDE with TDE.
+
+* Comparing with alternative methods
+
+- Generating code from configuration files: Such, recently developed tools promise generating domain-specific computer programs in return of user-provided configuration files. Examples can be given as Swagger, 
+
+- AI models trained on publicly accessible internet dataset: Github Copilot, ChatGPT. Those solutions work in a way that accept a text promt that explains the problem the user wants service to solve.
