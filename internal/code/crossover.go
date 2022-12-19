@@ -1,23 +1,11 @@
 package code
 
 import (
-	"fmt"
 	"go/ast"
 	"tde/internal/utilities"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
-
-func ListSubNodes(root ast.Node) []*ast.Node {
-	nodes := []*ast.Node{}
-	ast.Inspect(root, func(n ast.Node) bool {
-		if n != nil && n != root {
-			nodes = append(nodes, &n)
-		}
-		return true
-	})
-	return nodes
-}
 
 func FindParentNodeAndChildIndex(root ast.Node, child ast.Node) (parent ast.Node, childIndex int) {
 	var (
@@ -87,8 +75,8 @@ func AreSameNodeType(l, r ast.Node) bool {
 func CrossOver(parentA, parentB *Function) bool {
 
 	var (
-		nodesA   = ListSubNodes(parentA.Root)
-		nodesB   = ListSubNodes(parentB.Root)
+		nodesA   = ListSubnodes(parentA.Root)[1:]
+		nodesB   = ListSubnodes(parentB.Root)[1:]
 		selected = false
 		subA     ast.Node
 		subB     ast.Node
@@ -106,15 +94,12 @@ func CrossOver(parentA, parentB *Function) bool {
 		}
 	}
 
-	fmt.Println(&subA, &subB)
-
 	// supA, _ = FindParentNodeAndChildIndex(parentA.Root, subA)
 	// supB, indB = FindParentNodeAndChildIndex(parentB.Root, subB)
 
 	replacedA := false
 	parentA.Root.Body = astutil.Apply(parentA.Root.Body, func(c *astutil.Cursor) bool {
 		if c.Node() == subA {
-			fmt.Println("a")
 			c.Replace(subB)
 			replacedA = true
 		}
@@ -125,7 +110,6 @@ func CrossOver(parentA, parentB *Function) bool {
 	parentB.Root.Body = astutil.Apply(parentB.Root.Body, func(c *astutil.Cursor) bool {
 		// if c.Parent() == supB && ((c.Index() < 0 && c.Index() == indB) || (c.Index() == indB)) {
 		if c.Node() == subB {
-			fmt.Println("b")
 			c.Replace(subA)
 			replacedB = true
 		}

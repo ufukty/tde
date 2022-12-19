@@ -17,7 +17,3 @@ func ExternalLibraryCall() error { return nil }
 var allowedPackagesToImport = []string{
 	"math", "fmt", "tde/pkg/httpmitm",
 }
-
-type Function struct {
-	Root *ast.FuncDecl
-}
