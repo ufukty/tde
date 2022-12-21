@@ -37,15 +37,15 @@ func TestFindParentNode(t *testing.T) {
 		t.Error(errors.Wrap(err, "Could not load file"))
 	}
 
-	fn1, err := c1.GetFunction("HelloWorld")
+	fn1, err := c1.FindFunction("HelloWorld")
 	if err != nil {
 		t.Error(errors.Wrap(err, "Could not get Function from Code"))
 	}
 
-	parentWant := fn1.Root.Body.List[1].(*ast.IfStmt).Body
+	parentWant := fn1.Body.List[1].(*ast.IfStmt).Body
 	child := parentWant.List[1].(*ast.AssignStmt)
 
-	parentGot, childIndex := FindParentNodeAndChildIndex(fn1.Root, child)
+	parentGot, childIndex := FindParentNodeAndChildIndex(fn1, child)
 	if parentGot.(*ast.BlockStmt) != parentWant {
 		t.Errorf("Expected to get '%+v' (addr: %p) (type: %s), got '%+v' (addr: %p) (type: %s) for parent node",
 			parentWant, &parentWant, reflect.TypeOf(parentWant), parentGot, &parentGot, reflect.TypeOf(parentGot))
@@ -73,7 +73,7 @@ func TestPickCrossOverPoint(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrap(err, "Could not load file"))
 	}
-	fn1, err := c1.GetFunction("HelloWorld")
+	fn1, err := c1.FindFunction("HelloWorld")
 	if err != nil {
 		t.Error(errors.Wrap(err, "Could not get Function from Code"))
 	}
@@ -103,7 +103,7 @@ func TestPickCrossOverPoint(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrap(err, "Could not load file"))
 	}
-	fn2, err := c2.GetFunction("HelloWorld")
+	fn2, err := c2.FindFunction("HelloWorld")
 	if err != nil {
 		t.Error(errors.Wrap(err, "Could not get Function from Code"))
 	}

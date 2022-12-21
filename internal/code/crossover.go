@@ -72,11 +72,11 @@ func AreSameNodeType(l, r ast.Node) bool {
 	return false
 }
 
-func CrossOver(parentA, parentB *Function) bool {
+func CrossOver(parentA, parentB *ast.FuncDecl) bool {
 
 	var (
-		nodesA   = ListSubnodes(parentA.Root)[1:]
-		nodesB   = ListSubnodes(parentB.Root)[1:]
+		nodesA   = ListSubnodes(parentA)[1:]
+		nodesB   = ListSubnodes(parentB)[1:]
 		selected = false
 		subA     ast.Node
 		subB     ast.Node
@@ -94,11 +94,11 @@ func CrossOver(parentA, parentB *Function) bool {
 		}
 	}
 
-	// supA, _ = FindParentNodeAndChildIndex(parentA.Root, subA)
-	// supB, indB = FindParentNodeAndChildIndex(parentB.Root, subB)
+	// supA, _ = FindParentNodeAndChildIndex(parentA, subA)
+	// supB, indB = FindParentNodeAndChildIndex(parentB, subB)
 
 	replacedA := false
-	parentA.Root.Body = astutil.Apply(parentA.Root.Body, func(c *astutil.Cursor) bool {
+	parentA.Body = astutil.Apply(parentA.Body, func(c *astutil.Cursor) bool {
 		if c.Node() == subA {
 			c.Replace(subB)
 			replacedA = true
@@ -107,7 +107,7 @@ func CrossOver(parentA, parentB *Function) bool {
 	}, nil).(*ast.BlockStmt)
 
 	replacedB := false
-	parentB.Root.Body = astutil.Apply(parentB.Root.Body, func(c *astutil.Cursor) bool {
+	parentB.Body = astutil.Apply(parentB.Body, func(c *astutil.Cursor) bool {
 		// if c.Parent() == supB && ((c.Index() < 0 && c.Index() == indB) || (c.Index() == indB)) {
 		if c.Node() == subB {
 			c.Replace(subA)

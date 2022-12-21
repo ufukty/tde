@@ -27,3 +27,7 @@ func Pick[T any](values []T) *T {
 	rnd := int(URandFloatForCrypto() * float64(length))
 	return &values[rnd]
 }
+
+func Coin() bool {
+	return *Pick([]bool{true, false})
+}

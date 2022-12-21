@@ -23,9 +23,9 @@ func MutateBlockStatement(stm *ast.BlockStmt) {
 	// partial regenerate
 }
 
-func Mutate(fn *Function) {
+func Mutate(fn *ast.FuncDecl) {
 
-	node := **utilities.Pick(ListSubnodes(fn.Root.Body))
+	node := **utilities.Pick(ListSubnodes(fn.Body))
 	mutated := false
 
 	for !mutated {

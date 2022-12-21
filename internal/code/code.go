@@ -16,8 +16,9 @@ import (
 )
 
 type Code struct {
-	fset    *token.FileSet
-	astFile *ast.File
+	fset                      *token.FileSet
+	astFile                   *ast.File
+	overwrittenFunctionBodies map[*ast.FuncDecl]string
 }
 
 func (c *Code) LoadFromFile(path string) error {
@@ -96,16 +97,28 @@ func (c *Code) InspectAST(f func(n ast.Node) bool) {
 	ast.Inspect(c.astFile, f)
 }
 
-func (c *Code) PartialString(node any) string {
+func (c *Code) PartialString(node ast.Node) string {
 	sw := utilities.NewStringWriter()
 	printer.Fprint(sw, c.fset, node)
-	return sw.String()
+	export := sw.String()
+	insertedCharacters := 0
+	ast.Inspect(node, func(n ast.Node) bool {
+		if n, ok := n.(*ast.FuncDecl); ok {
+			if overwrittenBody, ok := c.overwrittenFunctionBodies[n]; ok {
+				export = export[:int(n.Body.Lbrace)+insertedCharacters] + " " + overwrittenBody + " " + export[int(n.Body.Rbrace)+insertedCharacters-1:]
+				insertedCharacters += len(overwrittenBody)
+			}
+		}
+		return true
+	})
+	return export
 }
 
 func (c *Code) String() string {
 	return c.PartialString(c.astFile)
 }
 
+// ignores overwritten bodies
 func (c *Code) PrintListOfTokens() {
 	ast.Inspect(c.astFile, func(n ast.Node) bool {
 		if n != nil {
@@ -117,7 +130,8 @@ func (c *Code) PrintListOfTokens() {
 }
 
 func (c *Code) Print(w io.Writer) {
-	printer.Fprint(w, c.fset, c.astFile)
+	// printer.Fprint(w, c.fset, c.astFile)
+	fmt.Print(c.String())
 }
 
 // Use this to refresh token positions after tree manipulation
@@ -126,13 +140,6 @@ func (c *Code) Reload() error {
 	return c.LoadFromString(c.String())
 }
 
-func (c *Code) GetFunction(funcName string) (*Function, error) {
-	fdec, err := c.FindFunction(funcName)
-	if err != nil {
-		return nil, errors.Wrap(err, "could not find function")
-	}
-	f := Function{
-		Root: fdec,
-	}
-	return &f, nil
+func (c *Code) OverwriteFunction(f *ast.FuncDecl, content string) {
+	c.overwrittenFunctionBodies[f] = content
 }
