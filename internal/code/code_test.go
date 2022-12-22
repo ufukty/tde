@@ -2,6 +2,7 @@ package code
 
 import (
 	"os"
+	"tde/internal/cfg/caast"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -49,4 +50,24 @@ func TestRenameFunction(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrap(err, "should pass"))
 	}
+}
+
+func TestCAASTCFG(t *testing.T) {
+	txt := `package main
+	
+	import "fmt"
+
+	func Main() {
+		return
+	}
+	`
+
+	c := Code{}
+	c.LoadFromString(txt)
+	f, _ := c.FindFunction("Main")
+
+	caast := caast.CAAST{}
+	caast.Develop()
+
+	c.Print(os.Stdout)
 }

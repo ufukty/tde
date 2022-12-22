@@ -1,4 +1,4 @@
-package code_fragment
+package character
 
 import (
 	"fmt"

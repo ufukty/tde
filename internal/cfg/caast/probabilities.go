@@ -1,4 +1,4 @@
-package code
+package caast
 
 var probabilities = map[NodeType]float64{
 	// first level type

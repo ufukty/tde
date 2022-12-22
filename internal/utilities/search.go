@@ -31,3 +31,12 @@ func BinaryRangeSearch(values []float64, key float64) int {
 
 	return -1
 }
+
+func IsInSlice[T comparable](key T, slice []T) bool {
+	for _, v := range slice {
+		if key == v {
+			return true
+		}
+	}
+	return false
+}

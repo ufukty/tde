@@ -1,4 +1,4 @@
-package code
+package caast
 
 type NodeType int
 
@@ -122,112 +122,6 @@ var stringRepresentation = map[NodeType]string{
 
 func (n NodeType) String() string {
 	return stringRepresentation[n]
-}
-
-type NodeTypeClass int
-
-const (
-	Expression = NodeTypeClass(iota)
-	Statement
-	Declaration
-)
-
-var NodeTypeClasses = map[NodeTypeClass][]NodeType{
-	Expression: {
-		BadExpr,
-		Ident,
-		Ellipsis,
-		BasicLit,
-		FuncLit,
-		CompositeLit,
-		ParenExpr,
-		SelectorExpr,
-		IndexExpr,
-		IndexListExpr,
-		SliceExpr,
-		TypeAssertExpr,
-		CallExpr,
-		StarExpr,
-		UnaryExpr,
-		BinaryExpr,
-		KeyValueExpr,
-		ArrayType,
-		StructType,
-		FuncType,
-		InterfaceType,
-		MapType,
-		ChanType,
-	},
-	Statement: {
-		BadStmt,
-		DeclStmt,
-		EmptyStmt,
-		LabeledStmt,
-		ExprStmt,
-		SendStmt,
-		IncDecStmt,
-		AssignStmt,
-		GoStmt,
-		DeferStmt,
-		ReturnStmt,
-		BranchStmt,
-		BlockStmt,
-		IfStmt,
-		CaseClause,
-		SwitchStmt,
-		TypeSwitchStmt,
-		CommClause,
-		SelectStmt,
-		ForStmt,
-		RangeStmt,
-	},
-}
-
-var NodeTydpeClasses = map[NodeType]NodeTypeClass{
-	BadExpr:        Expression,
-	Ident:          Expression,
-	Ellipsis:       Expression,
-	BasicLit:       Expression,
-	FuncLit:        Expression,
-	CompositeLit:   Expression,
-	ParenExpr:      Expression,
-	SelectorExpr:   Expression,
-	IndexExpr:      Expression,
-	IndexListExpr:  Expression,
-	SliceExpr:      Expression,
-	TypeAssertExpr: Expression,
-	CallExpr:       Expression,
-	StarExpr:       Expression,
-	UnaryExpr:      Expression,
-	BinaryExpr:     Expression,
-	KeyValueExpr:   Expression,
-	ArrayType:      Expression,
-	StructType:     Expression,
-	FuncType:       Expression,
-	InterfaceType:  Expression,
-	MapType:        Expression,
-	ChanType:       Expression,
-	BadStmt:        Statement,
-	DeclStmt:       Statement,
-	EmptyStmt:      Statement,
-	LabeledStmt:    Statement,
-	ExprStmt:       Statement,
-	SendStmt:       Statement,
-	IncDecStmt:     Statement,
-	AssignStmt:     Statement,
-	GoStmt:         Statement,
-	DeferStmt:      Statement,
-	ReturnStmt:     Statement,
-	BranchStmt:     Statement,
-	BlockStmt:      Statement,
-	IfStmt:         Statement,
-	CaseClause:     Statement,
-	SwitchStmt:     Statement,
-	TypeSwitchStmt: Statement,
-	CommClause:     Statement,
-	SelectStmt:     Statement,
-	ForStmt:        Statement,
-	RangeStmt:      Statement,
 }
 
 var orderedNodeTypes = []NodeType{}

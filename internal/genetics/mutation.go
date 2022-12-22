@@ -1,4 +1,4 @@
-package code
+package genetics
 
 import (
 	"go/ast"
@@ -25,7 +25,7 @@ func MutateBlockStatement(stm *ast.BlockStmt) {
 
 func Mutate(fn *ast.FuncDecl) {
 
-	node := **utilities.Pick(ListSubnodes(fn.Body))
+	node := **utilities.Pick(utilities.ListSubnodes(fn.Body))
 	mutated := false
 
 	for !mutated {

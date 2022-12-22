@@ -1,7 +1,7 @@
 package in_program_models
 
 import (
-	"tde/internal/code_fragment"
+	"tde/internal/cfg/character"
 
 	"go/format"
 	"log"
@@ -31,7 +31,7 @@ func NewCandidate() *Candidate {
 }
 
 func (c *Candidate) RandomInit() {
-	c.Body = code_fragment.ProduceRandomFragment()
+	c.Body = character.ProduceRandomFragment()
 }
 
 func (c *Candidate) CheckSyntax() bool {

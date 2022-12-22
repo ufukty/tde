@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/format"
 	"go/parser"
-	"tde/internal/code_fragment"
+	"tde/internal/cfg/character"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -40,7 +40,7 @@ func TestInsertGeneretedTextIntoFunctionBody(t *testing.T) {
 
 	// fmt.Println(input[:f.Body.Lbrace] + "\nreturn \"Goodbye\"\n" + input[f.Body.Rbrace-1:])
 
-	st := input[:f.Body.Lbrace] + " " + string(code_fragment.ProduceRandomFragment()) + " " + input[f.Body.Rbrace-1:]
+	st := input[:f.Body.Lbrace] + " " + string(character.ProduceRandomFragment()) + " " + input[f.Body.Rbrace-1:]
 
 	// "return \"Goodbye\""
 

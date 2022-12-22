@@ -1,10 +1,11 @@
-package code
+package genetics
 
 import (
 	"fmt"
 	"go/ast"
 	"os"
 	"reflect"
+	"tde/internal/code"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -13,7 +14,7 @@ import (
 func TestFindParentNode(t *testing.T) {
 	var err error
 
-	c1 := Code{}
+	c1 := code.Code{}
 	err = c1.LoadFromString(
 		`package main
 		
@@ -58,7 +59,7 @@ func TestFindParentNode(t *testing.T) {
 func TestPickCrossOverPoint(t *testing.T) {
 	var err error
 
-	c1 := Code{}
+	c1 := code.Code{}
 	err = c1.LoadFromString(
 		`package main
 		
@@ -78,7 +79,7 @@ func TestPickCrossOverPoint(t *testing.T) {
 		t.Error(errors.Wrap(err, "Could not get Function from Code"))
 	}
 
-	c2 := Code{}
+	c2 := code.Code{}
 	err = c2.LoadFromString(
 		`package main
 
