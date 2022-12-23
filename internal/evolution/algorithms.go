@@ -7,20 +7,6 @@ import (
 	"math/rand"
 )
 
-type Number64 interface {
-	~float64 | ~int64
-}
-
-func CumulativeArray[N Number64](input []N) []N {
-	var output = []N{}
-	var total = N(0)
-	for _, v := range input {
-		total += v
-		output = append(output, total)
-	}
-	return output
-}
-
 func GetFitnessArray(individuals []models.Candidate) []float64 {
 	fitnesses := []float64{}
 	for _, individual := range individuals {
@@ -41,9 +27,9 @@ func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 	var (
 		fitnesses             = GetFitnessArray(individuals)
 		reversedFitnesses     = ReversedFitnesses(fitnesses)
-		cumulativeFitnesses   = CumulativeArray(reversedFitnesses)
+		cumulativeFitnesses   = utilities.GetCumulative(reversedFitnesses)
 		upperBoundLastFitness = cumulativeFitnesses[len(cumulativeFitnesses)-1]
-		choosedIndividuals    = []int{selectionSize}
+		choosenIndividuals    = []int{selectionSize}
 		choosen               int
 		rouletteBullet        float64
 	)
@@ -51,7 +37,7 @@ func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 	for i := 0; i < selectionSize; i++ {
 		rouletteBullet = rand.Float64() * upperBoundLastFitness
 		choosen = utilities.BinaryRangeSearch(cumulativeFitnesses, rouletteBullet)
-		choosedIndividuals = append(choosedIndividuals, choosen)
+		choosenIndividuals = append(choosenIndividuals, choosen)
 	}
 
 }
