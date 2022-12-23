@@ -1,8 +1,6 @@
 package in_program_models
 
 import (
-	"tde/internal/cfg/character"
-
 	"go/format"
 	"log"
 	"math/rand"
@@ -28,10 +26,6 @@ func NewCandidate() *Candidate {
 	return &Candidate{
 		UUID: CandidateID(newUUID.String()),
 	}
-}
-
-func (c *Candidate) RandomInit() {
-	c.Body = character.ProduceRandomFragment()
 }
 
 func (c *Candidate) CheckSyntax() bool {

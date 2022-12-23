@@ -14,15 +14,9 @@ type Evolution struct {
 func (e *Evolution) InitPopulation(n int) {
 	for i := 0; i < n; i++ {
 		var candidate = models.NewCandidate()
-		candidate.RandomInit()
+		// init candidate body randomly
 		e.Candidates[models.CandidateID(candidate.UUID)] = candidate
 	}
-}
-
-func (e *Evolution) Select() {
-	// for _, individual := range e.Individuals {
-	// 	individual.Fitness
-	// }
 }
 
 func (e *Evolution) Measure() {
@@ -35,6 +29,12 @@ func (e *Evolution) Measure() {
 	// count failed assert rate
 
 	// penalty for bloat
+}
+
+func (e *Evolution) Select() {
+	// for _, individual := range e.Individuals {
+	// 	individual.Fitness
+	// }
 }
 
 func (e *Evolution) SortedByFitness() []*models.Candidate {

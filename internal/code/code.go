@@ -21,10 +21,14 @@ type Code struct {
 	overwrittenFunctionBodies map[*ast.FuncDecl]string
 }
 
+func NewCode() *Code {
+	return &Code{
+		overwrittenFunctionBodies: map[*ast.FuncDecl]string{},
+	}
+}
+
 func (c *Code) LoadFromFile(path string) error {
-	var (
-		err error
-	)
+	var err error
 	c.fset = token.NewFileSet()
 	c.astFile, err = parser.ParseFile(c.fset, path, nil, parser.AllErrors)
 	if err != nil {
