@@ -1,9 +1,12 @@
 package discovery
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -31,4 +34,25 @@ func (r *Request) Discover() {
 		log.Panicln(errors.Wrap(err, "Couldn't list the entries of this directory."))
 	}
 	fmt.Println(entries)
+}
+
+func findImportPath() (string, error) {
+	cmd := exec.Command("go", "list")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
+	}
+	lines := strings.Split(out.String(), "\n")
+	if len(lines) < 2 {
+		return "", errors.New("'go list' don't print anything")
+	} else if len(lines) > 2 {
+		return "", errors.New("expected 1 lines of output from 'go list', got many")
+	}
+	return lines[0], nil
+}
+
+func InspectPackage(packagePath string) {
+	return
 }
