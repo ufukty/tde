@@ -1,10 +1,8 @@
 package discovery
 
 import (
-	"fmt"
-	"log"
-	"os"
 	"path/filepath"
+	"tde/models/in_program_models"
 
 	"github.com/pkg/errors"
 )
@@ -12,31 +10,6 @@ import (
 var (
 	ModuleNotFound = errors.New("this directory is not part of a Go module")
 )
-
-type Request struct {
-	functionName string
-	dir          string
-	testfile     string
-	// evolution
-	lineStart int
-	lineEnd   int
-}
-
-func NewRequest(evolvingFilePath string, targetBlockStartingLine int, targetBlockEndingLine int) *Request {
-	return &Request{
-		// file:      evolvingFilePath,
-		lineStart: targetBlockStartingLine,
-		lineEnd:   targetBlockEndingLine,
-	}
-}
-
-func (r *Request) Discover() {
-	entries, err := os.ReadDir(".")
-	if err != nil {
-		log.Panicln(errors.Wrap(err, "Couldn't list the entries of this directory."))
-	}
-	fmt.Println(entries)
-}
 
 // Returns the import path for the package inside working directory
 func FindImportPathOfThePackage() (string, error) {
@@ -61,4 +34,19 @@ func FindModulePath() (string, error) {
 		return "", ModuleNotFound
 	}
 	return filepath.Dir(path), nil
+}
+
+func Discover() (*in_program_models.DiscoveryResponse, error) {
+	modulePath, err := FindModulePath()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed on finding module absoute path")
+	}
+	packageImportPath, err := FindImportPathOfThePackage()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed on target package's import path")
+	}
+	return &in_program_models.DiscoveryResponse{
+		ModuleAbsolutePath:      modulePath,
+		TargetPackageImportPath: packageImportPath,
+	}, nil
 }

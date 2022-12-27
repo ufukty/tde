@@ -1,9 +1,8 @@
 package in_program_models
 
 import (
-	"go/format"
+	"go/ast"
 	"log"
-	"math/rand"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -14,6 +13,7 @@ type CandidateID string
 type Candidate struct {
 	UUID         CandidateID
 	Body         []byte
+	AST          *ast.Node
 	Fitness      float64
 	ExecTimeInMs int
 }
@@ -28,27 +28,16 @@ func NewCandidate() *Candidate {
 	}
 }
 
-func (c *Candidate) CheckSyntax() bool {
-	_, err := format.Source(c.Body)
-	return err == nil
-}
+// func (c *Candidate) Measure() {
+// 	if !c.CheckSyntax() {
+// 		c.Fitness = 1.1 // fitness for invalid-syntax programs exceeds the "1.0" treshold
+// 		return
+// 	}
 
-func (c *Candidate) PickCrossoverPoint() int {
-	length := len(c.Body)
-	randomPoint := rand.Intn(length)
-	return randomPoint
-}
+// 	// t := &Testing{}
+// 	// var timeStart = time.Now()
+// 	// (*(i.TestFunction))(t)
 
-func (c *Candidate) Measure() {
-	if !c.CheckSyntax() {
-		c.Fitness = 1.1 // fitness for invalid-syntax programs exceeds the "1.0" treshold
-		return
-	}
-
-	// t := &Testing{}
-	// var timeStart = time.Now()
-	// (*(i.TestFunction))(t)
-
-	// i.Fitness = float64(t.TotalErrors) / float64(t.TotalCalls)
-	// i.ExecTimeInMs = int(time.Since(timeStart))
-}
+// 	// i.Fitness = float64(t.TotalErrors) / float64(t.TotalCalls)
+// 	// i.ExecTimeInMs = int(time.Since(timeStart))
+// }

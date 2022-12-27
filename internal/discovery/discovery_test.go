@@ -37,8 +37,3 @@ func Test_FindImportPath(t *testing.T) {
 
 	fmt.Println("Import path for package:", path)
 }
-
-func Test_FindModulePath(t *testing.T) {
-
-	fmt.Println(FindModulePath())
-}
