@@ -3,6 +3,7 @@ package embedding
 import (
 	"testing"
 
+	"github.com/kylelemons/godebug/diff"
 	"github.com/pkg/errors"
 )
 
@@ -26,16 +27,30 @@ func Test_PrepareTemplateForMainFile(t *testing.T) {
 package main
 
 import (
-	"tde/examples/word-reverse/word_reverse/word_reverse"
+	targetPackage "tde/examples/word-reverse/word_reverse/word_reverse"
 	"tde/models/in_program_models"
 	"tde/pkg/tde"
+
+	"flag"
 )
 
+var candidateUUID string
+
+func init() {
+	flag.StringVar(
+		&candidateUUID,
+		"candidate-uuid",
+		"",
+		"Tested candidate's identifier. The program will use this only for output and it is not essential for program to run.",
+	)
+}
+
 func main() {
+	flag.Parse()
 	var (
-		testFunction  = "TDE_Sudoku"
-		candidateUUID = in_program_models.CandidateID("00000000-0000-0000-0000-000000000001")
-		e 			  = tde.NewE(candidateUUID)
+		testFunction  = targetPackage.TDE_WordReverse
+		candidateUUID = in_program_models.CandidateID(candidateUUID)
+		e			  = tde.NewE(candidateUUID)
 	)
 	testFunction(e)
 	e.Export()
@@ -45,7 +60,7 @@ func main() {
 		t.Error(errors.Wrap(err, "call to prepare main_tde.go is failed"))
 	}
 	if got != want {
-		t.Error("got != want, content got:\n\n", got)
+		t.Error("got != want, content got:\n\n", diff.Diff(got, want))
 	}
 }
 

@@ -27,7 +27,7 @@ func main() {
 	var (
 		testFunction  = targetPackage.{{ .TestFunctionName }}
 		candidateUUID = in_program_models.CandidateID(candidateUUID)
-		e 			  = tde.NewE(candidateUUID)
+		e			  = tde.NewE(candidateUUID)
 	)
 	testFunction(e)
 	e.Export()
