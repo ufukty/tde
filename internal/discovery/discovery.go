@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"path/filepath"
+	"tde/internal/utilities"
 	"tde/models/in_program_models"
 
 	"github.com/pkg/errors"
@@ -13,20 +14,20 @@ var (
 
 // Returns the import path for the package inside working directory
 func FindImportPathOfThePackage() (string, error) {
-	out, err := RunCommandForOutput("go", "list")
+	out, err := utilities.RunCommandForOutput("go", "list")
 	if err != nil {
 		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
 	}
-	return StripOnlyLineFromCommandOuput(out)
+	return utilities.StripOnlyLineFromCommandOuput(out)
 }
 
 // Returns the absolute path of the module that working directory is in it
 func FindModulePath() (string, error) {
-	path, err := RunCommandForOutput("go", "env", "GOMOD")
+	path, err := utilities.RunCommandForOutput("go", "env", "GOMOD")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
 	}
-	path, err = StripOnlyLineFromCommandOuput(path)
+	path, err = utilities.StripOnlyLineFromCommandOuput(path)
 	if err != nil {
 		return "", errors.Wrap(err, "could not strip GOMOD path from the output of 'go env GOMOD'")
 	}
