@@ -2,6 +2,7 @@ package utilities
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -31,5 +32,27 @@ func StripOnlyLineFromCommandOuput(output string) (string, error) {
 	} else if len(lines) > 2 {
 		return "", MoreThanOneLineFound
 	}
-	return lines[0], nil
+	lastLine := lines[0]
+
+	if strings.LastIndex(lastLine, "\r\n") != -1 {
+		fmt.Println("========1")
+		return strings.TrimSuffix(lastLine, "\r\n"), nil
+	} else if strings.LastIndex(lastLine, "\n") != -1 {
+		fmt.Println("========2")
+		return strings.TrimSuffix(lastLine, "\n"), nil
+	} else {
+		return lastLine, nil
+	}
+}
+
+func CurrentDir() (string, error) {
+	dir, err := RunCommandForOutput("pwd", "-P")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to run 'pwd'")
+	}
+	dir, err = StripOnlyLineFromCommandOuput(dir)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to get current dir from output of 'pwd'")
+	}
+	return dir, nil
 }

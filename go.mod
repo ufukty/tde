@@ -7,3 +7,5 @@ require (
 	github.com/pkg/errors v0.9.1
 	golang.org/x/tools v0.4.0
 )
+
+require github.com/kylelemons/godebug v1.1.0 // indirect

@@ -1,7 +1,10 @@
 package discovery
 
 import (
+	"go/ast"
 	"path/filepath"
+	"strings"
+	"tde/internal/code"
 	"tde/internal/utilities"
 	"tde/models/in_program_models"
 
@@ -35,6 +38,50 @@ func FindModulePath() (string, error) {
 		return "", ModuleNotFound
 	}
 	return filepath.Dir(path), nil
+}
+
+// func FindTestFunctionName(filepath string, lineStart int, lineEnd int) (string, error) {
+// 	c := code.Code{}
+// 	err := c.LoadFromFile(filepath)
+// 	if err != nil {
+// 		return "", errors.Wrap(err, "failed on load test file")
+// 	}
+// }
+
+type TestFunctionDetails struct {
+	Name     string // function name
+	Position int    // character position
+	Line     int    // starts with 1
+}
+
+// TODO: Use it by language-server
+func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
+	c := code.NewCode()
+	err := c.LoadFromFile(filepath)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to load file and parse into AST tree")
+	}
+
+	testFunctions := []TestFunctionDetails{}
+
+	c.InspectWithTrace(func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+		depth := len(parentTrace)
+		if depth == 2 {
+			if n, ok := n.(*ast.FuncDecl); ok {
+				functionName := n.Name.Name
+				if strings.Index(functionName, "TDE") == 0 {
+					testFunctions = append(testFunctions, TestFunctionDetails{
+						Name:     functionName,
+						Line:     c.LineNumberOfPosition(n.Pos()),
+						Position: int(n.Pos()),
+					})
+				}
+			}
+		}
+		return depth < 2
+	})
+
+	return testFunctions, nil
 }
 
 func Discover() (*in_program_models.DiscoveryResponse, error) {
