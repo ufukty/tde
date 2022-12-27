@@ -40,14 +40,13 @@ func main() {
 	testFunction(e)
 	e.Export()
 }`
-	got, err := PrepareTemplateForMainFile("tde/examples/word-reverse/word_reverse/word_reverse", "TDE_Sudoku", "00000000-0000-0000-0000-000000000001")
+	got, err := PrepareTemplateForMainFile("tde/examples/word-reverse/word_reverse/word_reverse", "TDE_WordReverse", "00000000-0000-0000-0000-000000000001")
 	if err != nil {
 		t.Error(errors.Wrap(err, "call to prepare main_tde.go is failed"))
 	}
 	if got != want {
 		t.Error("got != want, content got:\n\n", got)
 	}
-
 }
 
 func Test_EmbeddingConfig(t *testing.T) {
@@ -57,7 +56,8 @@ func Test_EmbeddingConfig(t *testing.T) {
 		"../../examples/word-reverse/word_reverse",
 		"../../examples/word-reverse/word_reverse/word_reverse.go",
 		"../../examples/word-reverse/word_reverse/word_reverse_tde.go",
-		"tde/examples/word-reverse/word_reverse/word_reverse",
+		"tde/examples/word-reverse/word_reverse",
+		"TDE_WordReverse",
 	)
 	err = ec.Embed()
 	if err != nil {

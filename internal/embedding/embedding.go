@@ -3,42 +3,37 @@ package embedding
 import (
 	"tde/internal/code"
 	"tde/internal/utilities"
-	"tde/models/in_program_models"
 	"text/template"
 
-	"bytes"
 	_ "embed"
 	"fmt"
-	"go/printer"
-	"go/token"
 	"os"
 
 	"github.com/pkg/errors"
 )
 
-//go:embed assets/main_tde.go
+//go:embed _assets/main_tde.go
 var mainFileContent string
 
 type EmbeddingConfig struct {
-	ImplementationPackagePath string // .../userPackage
-	ImplementationFilePath    string // .../userPackage/userFile.go
-	TestFunctionPath          string // .../userPackage/userFile_tde.go
-	TargetPackageImportPath   string // userModule/path/to/userPackageDir/userPackage
-	TDEPackagePath            string // .../userPackage/tde
-	MainFilePath              string // .../userPackage/tde/main_tde.go
-	CandidatesFilePath        string // .../userPackage/tde/candidates_tde.go
-	TargetFileContent         []byte
+	ImplementationPackagePath string // eg. .../userPackage
+	ImplementationFilePath    string // eg. .../userPackage/userFile.go
+	TestFunctionPath          string // eg. .../userPackage/userFile_tde.go
+	TestFunctionName          string // eg. TDE_WordReverse
+	TargetPackageImportPath   string // eg. userModule/path/to/userPackageDir/userPackage
+	TDEPackagePath            string // eg. .../userPackage/tde
+	MainFilePath              string // eg. .../userPackage/tde/main_tde.go
 }
 
-func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath, targetPackageImportPath string) *EmbeddingConfig {
+func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath, targetPackageImportPath, testFunctionName string) *EmbeddingConfig {
 	f := &EmbeddingConfig{
 		ImplementationPackagePath: implementationPackageFile,
 		ImplementationFilePath:    implementationFilePath,
 		TestFunctionPath:          testFunctionPath,
+		TestFunctionName:          testFunctionName,
 		TargetPackageImportPath:   targetPackageImportPath,
 		TDEPackagePath:            fmt.Sprintf("%s/tde", implementationPackageFile),
 		MainFilePath:              fmt.Sprintf("%s/tde/main_tde.go", implementationPackageFile),
-		CandidatesFilePath:        fmt.Sprintf("%s/tde/candidates.go", implementationPackageFile),
 	}
 	return f
 }
@@ -101,7 +96,7 @@ func (ec *EmbeddingConfig) ReadImplementationFileContent() error {
 }
 
 func (ec *EmbeddingConfig) CreateTDEPackage() error {
-	err := os.Mkdir(ec.TDEPackagePath, 0_755)
+	err := os.MkdirAll(ec.TDEPackagePath, 0_755)
 	if err != nil {
 		return errors.Wrap(err, "could not create 'tde' package folder")
 	}
@@ -133,58 +128,14 @@ func (ec *EmbeddingConfig) WriteMainFile() error {
 	if err != nil {
 		return errors.Wrap(err, "could not place file 'main_tde.go'")
 	}
-	_, err = fmt.Fprint(f, mainFileContent)
+	str, err := PrepareTemplateForMainFile(ec.TargetPackageImportPath, ec.TestFunctionName, "00000000-0000-0000-0000-000000000002")
+	if err != nil {
+		return errors.Wrap(err, "PrepareTemplateForMainFile() is failed for 'main_tde.go'")
+	}
+	_, err = fmt.Fprint(f, str)
 	if err != nil {
 		return errors.Wrap(err, "could not write into file 'main_tde.go'")
 	}
-	return nil
-}
-
-func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []*in_program_models.Candidate) error {
-	var (
-		f   *os.File
-		err error
-	)
-	defer f.Close()
-
-	f, err = os.Create(ec.CandidatesFilePath)
-	if err != nil {
-		return errors.Wrap(err, "Could not create a file for writing candidates")
-	}
-	fset := token.NewFileSet()
-	buf := bytes.NewBuffer([]byte{})
-
-	for _, cand := range candidates {
-
-		// d := ast.File{}
-
-		// funcName := fmt.Sprintf("candidate%s", strings.ReplaceAll(string(cand.UUID), "-", ""))
-
-		printer.Fprint(buf, fset, cand) // printer to buffer
-	}
-
-	s := buf.String() // buffer to string
-	fmt.Fprint(f, s)  // string to file
-
-	// 	fileHeader := `//go:build tde
-	// package main`
-
-	// // os.OpenFile(f.Path, write, 0_666)
-	// for _, candidate := range candidates {
-
-	// 	var (
-	// 		functionOriginalPrototype = "func (config *EmbeddingConfig) EmbedIntoFile(candidates []in_program_models.Candidate)"
-	// 		functionEditedPrototype   = "func ()"
-	// 		functionNameSafe          = strings.ReplaceAll(string(candidate.UUID), "-", "_")
-	// 		functionParameterList     = ""
-	// 		function                  = fmt.Sprintf("func %sCandidate_%s(%s) {%s}}\n\n", functionNameSafe, functionParameterList, candidate.Body)
-	// 	)
-	// 	_, err := file.Write([]byte(*candidate.Program))
-	// 	if err != nil {
-	// 		errors.Wrap(err, "Could not inject candidate program to compilation file.")
-	// 	}
-	// }
-
 	return nil
 }
 
@@ -209,16 +160,6 @@ func (ec *EmbeddingConfig) Embed() error {
 	err = ec.ReadImplementationFileContent()
 	if err != nil {
 		return errors.Wrap(err, "Could not read implementation file")
-	}
-
-	// embed candidates into a new file target package
-	err = ec.WriteCandidatesIntoFile([]*in_program_models.Candidate{{
-		UUID: "414ecb09-3025-51c9-918a-e5f278e1a0f4",
-		Body: []byte(`s := ""
-return s`),
-	}})
-	if err != nil {
-		return errors.Wrap(err, "Could not write candidates")
 	}
 
 	return nil
