@@ -1,14 +1,16 @@
 package discovery
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
+	"path/filepath"
 
 	"github.com/pkg/errors"
+)
+
+var (
+	ModuleNotFound = errors.New("this directory is not part of a Go module")
 )
 
 type Request struct {
@@ -36,23 +38,27 @@ func (r *Request) Discover() {
 	fmt.Println(entries)
 }
 
-func findImportPath() (string, error) {
-	cmd := exec.Command("go", "list")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
+// Returns the import path for the package inside working directory
+func FindImportPathOfThePackage() (string, error) {
+	out, err := RunCommandForOutput("go", "list")
 	if err != nil {
 		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
 	}
-	lines := strings.Split(out.String(), "\n")
-	if len(lines) < 2 {
-		return "", errors.New("'go list' don't print anything")
-	} else if len(lines) > 2 {
-		return "", errors.New("expected 1 lines of output from 'go list', got many")
-	}
-	return lines[0], nil
+	return StripOnlyLineFromCommandOuput(out)
 }
 
-func InspectPackage(packagePath string) {
-	return
+// Returns the absolute path of the module that working directory is in it
+func FindModulePath() (string, error) {
+	path, err := RunCommandForOutput("go", "env", "GOMOD")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
+	}
+	path, err = StripOnlyLineFromCommandOuput(path)
+	if err != nil {
+		return "", errors.Wrap(err, "could not strip GOMOD path from the output of 'go env GOMOD'")
+	}
+	if path == "/dev/null" {
+		return "", ModuleNotFound
+	}
+	return filepath.Dir(path), nil
 }
