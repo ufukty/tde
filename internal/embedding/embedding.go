@@ -2,7 +2,9 @@ package embedding
 
 import (
 	"tde/internal/code"
+	"tde/internal/utilities"
 	"tde/models/in_program_models"
+	"text/template"
 
 	"bytes"
 	_ "embed"
@@ -21,17 +23,19 @@ type EmbeddingConfig struct {
 	ImplementationPackagePath string // .../userPackage
 	ImplementationFilePath    string // .../userPackage/userFile.go
 	TestFunctionPath          string // .../userPackage/userFile_tde.go
+	TargetPackageImportPath   string // userModule/path/to/userPackageDir/userPackage
 	TDEPackagePath            string // .../userPackage/tde
 	MainFilePath              string // .../userPackage/tde/main_tde.go
 	CandidatesFilePath        string // .../userPackage/tde/candidates_tde.go
 	TargetFileContent         []byte
 }
 
-func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath string) *EmbeddingConfig {
+func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath, targetPackageImportPath string) *EmbeddingConfig {
 	f := &EmbeddingConfig{
 		ImplementationPackagePath: implementationPackageFile,
 		ImplementationFilePath:    implementationFilePath,
 		TestFunctionPath:          testFunctionPath,
+		TargetPackageImportPath:   targetPackageImportPath,
 		TDEPackagePath:            fmt.Sprintf("%s/tde", implementationPackageFile),
 		MainFilePath:              fmt.Sprintf("%s/tde/main_tde.go", implementationPackageFile),
 		CandidatesFilePath:        fmt.Sprintf("%s/tde/candidates.go", implementationPackageFile),
@@ -104,6 +108,20 @@ func (ec *EmbeddingConfig) CreateTDEPackage() error {
 	return nil
 }
 
+func PrepareTemplateForMainFile(targetPackageImportPath, testFunctionName, candidateID string) (string, error) {
+	sw := utilities.NewStringWriter()
+	templ := template.Must(template.New("").Parse(mainFileContent))
+	err := templ.Execute(sw, struct {
+		TargetPackageImportPath string
+		TestFunctionName        string
+		CandidateID             string
+	}{targetPackageImportPath, testFunctionName, candidateID})
+	if err != nil {
+		return "", errors.Wrap(err, "could not execute the template 'main_tde.go' with given details")
+	}
+	return sw.String(), nil
+}
+
 func (ec *EmbeddingConfig) WriteMainFile() error {
 	var (
 		f   *os.File
@@ -122,7 +140,7 @@ func (ec *EmbeddingConfig) WriteMainFile() error {
 	return nil
 }
 
-func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []in_program_models.Candidate) error {
+func (ec *EmbeddingConfig) WriteCandidatesIntoFile(candidates []*in_program_models.Candidate) error {
 	var (
 		f   *os.File
 		err error
@@ -194,7 +212,7 @@ func (ec *EmbeddingConfig) Embed() error {
 	}
 
 	// embed candidates into a new file target package
-	err = ec.WriteCandidatesIntoFile([]in_program_models.Candidate{{
+	err = ec.WriteCandidatesIntoFile([]*in_program_models.Candidate{{
 		UUID: "414ecb09-3025-51c9-918a-e5f278e1a0f4",
 		Body: []byte(`s := ""
 return s`),

@@ -19,6 +19,37 @@ func Test_StampFunctionPrototype(t *testing.T) {
 	}
 }
 
+func Test_PrepareTemplateForMainFile(t *testing.T) {
+	want := `//go:build tde
+// +build tde
+
+package main
+
+import (
+	"tde/examples/word-reverse/word_reverse/word_reverse"
+	"tde/models/in_program_models"
+	"tde/pkg/tde"
+)
+
+func main() {
+	var (
+		testFunction  = "TDE_Sudoku"
+		candidateUUID = in_program_models.CandidateID("00000000-0000-0000-0000-000000000001")
+		e 			  = tde.NewE(candidateUUID)
+	)
+	testFunction(e)
+	e.Export()
+}`
+	got, err := PrepareTemplateForMainFile("tde/examples/word-reverse/word_reverse/word_reverse", "TDE_Sudoku", "00000000-0000-0000-0000-000000000001")
+	if err != nil {
+		t.Error(errors.Wrap(err, "call to prepare main_tde.go is failed"))
+	}
+	if got != want {
+		t.Error("got != want, content got:\n\n", got)
+	}
+
+}
+
 func Test_EmbeddingConfig(t *testing.T) {
 	var err error
 
@@ -26,6 +57,7 @@ func Test_EmbeddingConfig(t *testing.T) {
 		"../../examples/word-reverse/word_reverse",
 		"../../examples/word-reverse/word_reverse/word_reverse.go",
 		"../../examples/word-reverse/word_reverse/word_reverse_tde.go",
+		"tde/examples/word-reverse/word_reverse/word_reverse",
 	)
 	err = ec.Embed()
 	if err != nil {

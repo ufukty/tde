@@ -4,12 +4,17 @@
 package main
 
 import (
-	wordreverse "tde/examples/word-reverse/word_reverse"
+	"{{ .TargetPackageImportPath }}"
+	"tde/models/in_program_models"
 	"tde/pkg/tde"
 )
 
 func main() {
-	e := tde.NewE(candidates)
-	wordreverse.TDE_WordReverse(e)
+	var (
+		testFunction  = "{{ .TestFunctionName }}"
+		candidateUUID = in_program_models.CandidateID("{{ .CandidateID }}")
+		e 			  = tde.NewE(candidateUUID)
+	)
+	testFunction(e)
 	e.Export()
 }
