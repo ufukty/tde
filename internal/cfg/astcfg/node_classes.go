@@ -1,5 +1,7 @@
 package astcfg
 
+import "go/ast"
+
 type NodeTypeClass int
 
 const (
@@ -8,100 +10,27 @@ const (
 	Declaration
 )
 
-var NodeTypeClasses = map[NodeTypeClass][]NodeType{
-	Expression: {
-		BadExpr,
-		Ident,
-		Ellipsis,
-		BasicLit,
-		FuncLit,
-		CompositeLit,
-		ParenExpr,
-		SelectorExpr,
-		IndexExpr,
-		IndexListExpr,
-		SliceExpr,
-		TypeAssertExpr,
-		CallExpr,
-		StarExpr,
-		UnaryExpr,
-		BinaryExpr,
-		KeyValueExpr,
-		ArrayType,
-		StructType,
-		FuncType,
-		InterfaceType,
-		MapType,
-		ChanType,
-	},
-	Statement: {
-		BadStmt,
-		DeclStmt,
-		EmptyStmt,
-		LabeledStmt,
-		ExprStmt,
-		SendStmt,
-		IncDecStmt,
-		AssignStmt,
-		GoStmt,
-		DeferStmt,
-		ReturnStmt,
-		BranchStmt,
-		BlockStmt,
-		IfStmt,
-		CaseClause,
-		SwitchStmt,
-		TypeSwitchStmt,
-		CommClause,
-		SelectStmt,
-		ForStmt,
-		RangeStmt,
-	},
+var Dict_NodeTypeClassToNodeType = map[NodeTypeClass][]NodeType{
+	Expression:  {},
+	Statement:   {},
+	Declaration: {},
 }
 
-var NodeTydpeClasses = map[NodeType]NodeTypeClass{
-	BadExpr:        Expression,
-	Ident:          Expression,
-	Ellipsis:       Expression,
-	BasicLit:       Expression,
-	FuncLit:        Expression,
-	CompositeLit:   Expression,
-	ParenExpr:      Expression,
-	SelectorExpr:   Expression,
-	IndexExpr:      Expression,
-	IndexListExpr:  Expression,
-	SliceExpr:      Expression,
-	TypeAssertExpr: Expression,
-	CallExpr:       Expression,
-	StarExpr:       Expression,
-	UnaryExpr:      Expression,
-	BinaryExpr:     Expression,
-	KeyValueExpr:   Expression,
-	ArrayType:      Expression,
-	StructType:     Expression,
-	FuncType:       Expression,
-	InterfaceType:  Expression,
-	MapType:        Expression,
-	ChanType:       Expression,
-	BadStmt:        Statement,
-	DeclStmt:       Statement,
-	EmptyStmt:      Statement,
-	LabeledStmt:    Statement,
-	ExprStmt:       Statement,
-	SendStmt:       Statement,
-	IncDecStmt:     Statement,
-	AssignStmt:     Statement,
-	GoStmt:         Statement,
-	DeferStmt:      Statement,
-	ReturnStmt:     Statement,
-	BranchStmt:     Statement,
-	BlockStmt:      Statement,
-	IfStmt:         Statement,
-	CaseClause:     Statement,
-	SwitchStmt:     Statement,
-	TypeSwitchStmt: Statement,
-	CommClause:     Statement,
-	SelectStmt:     Statement,
-	ForStmt:        Statement,
-	RangeStmt:      Statement,
+var Dict_NodeTypeToNodeTypeClass = map[NodeType]NodeTypeClass{}
+
+func init() {
+	for nodeType, constructor := range NodeConstructors {
+		node := constructor()
+		switch node.(type) {
+		case ast.Expr:
+			Dict_NodeTypeClassToNodeType[Expression] = append(Dict_NodeTypeClassToNodeType[Expression], nodeType)
+			Dict_NodeTypeToNodeTypeClass[nodeType] = Expression
+		case ast.Stmt:
+			Dict_NodeTypeClassToNodeType[Statement] = append(Dict_NodeTypeClassToNodeType[Statement], nodeType)
+			Dict_NodeTypeToNodeTypeClass[nodeType] = Statement
+		case ast.Decl:
+			Dict_NodeTypeClassToNodeType[Declaration] = append(Dict_NodeTypeClassToNodeType[Declaration], nodeType)
+			Dict_NodeTypeToNodeTypeClass[nodeType] = Declaration
+		}
+	}
 }

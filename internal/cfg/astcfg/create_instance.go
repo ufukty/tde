@@ -2,7 +2,7 @@ package astcfg
 
 import "go/ast"
 
-func Construct(node ast.Node, nodeType NodeType) ast.Node {
+func CreateInstance(nodeType NodeType) ast.Node {
 	switch nodeType {
 
 	// MARK: Expressions and types
@@ -39,7 +39,7 @@ func Construct(node ast.Node, nodeType NodeType) ast.Node {
 		return &ast.IndexListExpr{}
 	case SliceExpr:
 		return &ast.SliceExpr{}
-	case TypeAssertExpr:
+	case TypeAssertExpr: 
 		return &ast.TypeAssertExpr{}
 	case CallExpr:
 		return &ast.CallExpr{}

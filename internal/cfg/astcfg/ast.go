@@ -10,12 +10,22 @@ import (
 
 type CAAST struct{}
 
-func (c *CAAST) Develop() {
+func (c *CAAST) Develop(funcDeclaration *ast.FuncDecl) {
 	// TODO: Pick a valid insertion point: []BlockStatement etc.
 	// TODO: Pick compatible node class for child node according to insertion point's type: Statement, Expression etc.
 	// TODO: Pick a node type from node class: IfStatement, ForStatement etc.
 	// TODO: Initialize an instance with the node type: IfStatement{}
 	// TODO: Append the instance to insertion point
+}
+
+func (c *CAAST) PickRandomCrossOverPoint() {}
+
+func (c *CAAST) PickCompatibleCrossOverPoint(nodeTypeClass NodeTypeClass) {
+
+}
+
+func (c *CAAST) PickCutPoint() ast.Node {
+	return &ast.BadExpr{}
 }
 
 func GenerateRandomSubtree(nodeTypeClass NodeTypeClass) ast.Node {

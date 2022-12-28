@@ -3,11 +3,11 @@ package astcfg
 import "tde/internal/utilities"
 
 func PickStatemenNodetType() NodeType {
-	return *utilities.Pick(NodeTypeClasses[Statement])
+	return *utilities.Pick(Dict_NodeTypeClassToNodeType[Statement])
 }
 
 func PickExpressionNodeType() NodeType {
-	return *utilities.Pick(NodeTypeClasses[Expression])
+	return *utilities.Pick(Dict_NodeTypeClassToNodeType[Expression])
 }
 
 func PickRandomNodeType() NodeType {
