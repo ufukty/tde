@@ -1,6 +1,10 @@
 package astcfg
 
-import "go/ast"
+import (
+	"go/ast"
+	"go/token"
+	"tde/internal/utilities"
+)
 
 var NodeConstructors = map[NodeType]func() ast.Node{
 	// Comment:        func() ast.Node { return &ast.Comment{} },
@@ -9,13 +13,40 @@ var NodeConstructors = map[NodeType]func() ast.Node{
 	// FieldList:      func() ast.Node { return &ast.FieldList{} },
 	// File:           func() ast.Node { return &ast.File{} },
 	// Package:        func() ast.Node { return &ast.Package{} },
-	ArrayType:      func() ast.Node { return &ast.ArrayType{} },
-	AssignStmt:     func() ast.Node { return &ast.AssignStmt{} },
-	BadDecl:        func() ast.Node { return &ast.BadDecl{} },
-	BadExpr:        func() ast.Node { return &ast.BadExpr{} },
-	BadStmt:        func() ast.Node { return &ast.BadStmt{} },
-	BasicLit:       func() ast.Node { return &ast.BasicLit{} },
-	BinaryExpr:     func() ast.Node { return &ast.BinaryExpr{} },
+	ArrayType: func() ast.Node { return &ast.ArrayType{} },
+	AssignStmt: func() ast.Node {
+		return &ast.AssignStmt{
+			Lhs:    []ast.Expr{},
+			TokPos: 0,
+			Tok:    0,
+			Rhs:    []ast.Expr{},
+		}
+	},
+	BadDecl: func() ast.Node { return &ast.BadDecl{} },
+	BadExpr: func() ast.Node { return &ast.BadExpr{} },
+	BadStmt: func() ast.Node { return &ast.BadStmt{} },
+	BasicLit: func() ast.Node { // DONE:
+		literalKind := *utilities.Pick([]token.Token{token.INT, token.FLOAT, token.IMAG, token.CHAR, token.STRING})
+		literalValue := map[token.Token]string{
+			token.INT:    "0",
+			token.FLOAT:  "0.0",
+			token.IMAG:   "0.0i",
+			token.CHAR:   "'0'",
+			token.STRING: `""`,
+		}[literalKind]
+		return &ast.BasicLit{
+			Kind:  literalKind,
+			Value: literalValue,
+		}
+	},
+	BinaryExpr: func() ast.Node {
+		return &ast.BinaryExpr{
+			X:     nil,
+			OpPos: 0,
+			Op:    0,
+			Y:     nil,
+		}
+	},
 	BlockStmt:      func() ast.Node { return &ast.BlockStmt{} },
 	BranchStmt:     func() ast.Node { return &ast.BranchStmt{} },
 	CallExpr:       func() ast.Node { return &ast.CallExpr{} },
