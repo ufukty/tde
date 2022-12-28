@@ -1,41 +1,8 @@
-package caast
+package astcfg
 
 import "go/ast"
 
 func Construct(node ast.Node, nodeType NodeType) ast.Node {
-	var (
-		stack       = Stack{}
-		isPerformed = false
-	)
-
-	ancestry := []ast.Node{}
-
-	ast.Inspect(node, func(n ast.Node) bool {
-
-		if !isPerformed {
-			return false
-		}
-
-		if n == nil {
-			stack.Return()
-		}
-
-		if n == node {
-
-		} else if IsInPath(ancestry, n) {
-			stack.Fill(n)
-			stack.Recurse()
-			return true
-		} else {
-			return false
-		}
-
-		// if utilities.Coin() {
-
-		// }
-		return false
-	})
-
 	switch nodeType {
 
 	// MARK: Expressions and types

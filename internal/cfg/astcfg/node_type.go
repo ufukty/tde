@@ -1,4 +1,4 @@
-package caast
+package astcfg
 
 type NodeType int
 

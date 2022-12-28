@@ -1,10 +1,10 @@
-package caast
+package cacfg
 
 import (
 	"testing"
 )
 
 func TestDevelop(t *testing.T) {
-	c := CAAST{}
-	c.Develop()
+	cfg := ContextAwareCFG{}
+	cfg.Develop()
 }

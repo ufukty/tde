@@ -14,4 +14,5 @@ import (
 //   - Context-Aware Random AST-nodes
 type CFG interface {
 	Develop(code.Code, ast.BlockStmt)
+	PickCutPoint(code.Code) int
 }

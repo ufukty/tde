@@ -1,4 +1,4 @@
-package caast
+package astcfg
 
 var probabilities = map[NodeType]float64{
 	// first level type

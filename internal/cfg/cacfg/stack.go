@@ -1,4 +1,4 @@
-package caast
+package cacfg
 
 import (
 	"go/ast"
@@ -55,4 +55,41 @@ func IsInPath(ancestry []ast.Node, node ast.Node) bool {
 		}
 	}
 	return false
+}
+
+func InspectStack(root ast.Node) Stack {
+	var (
+		stack       = Stack{}
+		isPerformed = false
+	)
+
+	ancestry := []ast.Node{}
+
+	ast.Inspect(root, func(n ast.Node) bool {
+
+		if !isPerformed {
+			return false
+		}
+
+		if n == nil {
+			stack.Return()
+		}
+
+		if n == root {
+
+		} else if IsInPath(ancestry, n) {
+			stack.Fill(n)
+			stack.Recurse()
+			return true
+		} else {
+			return false
+		}
+
+		// if utilities.Coin() {
+
+		// }
+		return false
+	})
+
+	return stack
 }

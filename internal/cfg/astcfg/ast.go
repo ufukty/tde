@@ -1,8 +1,9 @@
-package caast
+package astcfg
 
 import (
-	"go/ast"
 	"tde/internal/utilities"
+
+	"go/ast"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -10,7 +11,11 @@ import (
 type CAAST struct{}
 
 func (c *CAAST) Develop() {
-
+	// TODO: Pick a valid insertion point: []BlockStatement etc.
+	// TODO: Pick compatible node class for child node according to insertion point's type: Statement, Expression etc.
+	// TODO: Pick a node type from node class: IfStatement, ForStatement etc.
+	// TODO: Initialize an instance with the node type: IfStatement{}
+	// TODO: Append the instance to insertion point
 }
 
 func GenerateRandomSubtree(nodeTypeClass NodeTypeClass) ast.Node {

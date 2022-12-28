@@ -1,7 +1,8 @@
-package caast
+package cacfg
 
 import (
 	"fmt"
+	"tde/internal/cfg/astcfg"
 	"tde/internal/utilities"
 
 	"go/ast"
@@ -22,10 +23,10 @@ func GenerateRandomLiteral() (kind token.Token, value string) {
 	}))()
 }
 
-func GenerateRandomNumberOfInstance(nodeTypeClass NodeTypeClass) []ast.Node {
+func GenerateRandomNumberOfInstance(nodeTypeClass astcfg.NodeTypeClass) []ast.Node {
 	list := []ast.Node{}
 	switch nodeTypeClass {
-	case Statement:
+	case astcfg.Statement:
 		return nil
 	}
 	return list
@@ -33,7 +34,7 @@ func GenerateRandomNumberOfInstance(nodeTypeClass NodeTypeClass) []ast.Node {
 
 func GenerateRandomNumberOfStatements() []ast.Stmt {
 	stmts := []ast.Stmt{}
-	for _, n := range GenerateRandomNumberOfInstance(Statement) {
+	for _, n := range GenerateRandomNumberOfInstance(astcfg.Statement) {
 		if n, ok := n.(ast.Stmt); ok {
 			stmts = append(stmts, n)
 		} else {
