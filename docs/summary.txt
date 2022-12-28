@@ -96,3 +96,12 @@
 
 - AI models trained on publicly accessible internet dataset: Github Copilot, ChatGPT. Those solutions work in a way that accept a text promt that explains the problem the user wants service to solve.
 
+* Measure against the potential harm that might caused by running arbitrary code in a computer
+
+- Throughout n generation and m candidate at each; n*m arbitrarily created computer codes are executed with full access on the computer with nothing between them with the hardware. Also filesystem and network access are also given to candidates for the scope of this research being creating production-ready code.
+
+- By its nature, the GP suits to the needs of generating harmful software, due to that, its capabilities are utilized by many on research of producing new computer viruses.
+
+- Alternative methods found for running arbitrary code without giving full access of the computer and file system to the program are sandboxing, virtualization and containerization. Popular choices are FireJail, AppArmor, SELinux for sandboxing; VirtualBox for virtualization; and Docker for containerization.
+
+- Similar use case is implemented for "Go Playground" (https://go.dev/play) which is a website that compiles user-provided Go code in a server, runs it and sends the output back to the user. Codebase shows that (https://go.googlesource.com/playground access date 26.12.2022) the method choosen for executing user-provided code is using a set of Docker containers with addition of a container isolation solution called gVisor. With that addition, communication between host device and the user code is intercepted by gVisor. 
