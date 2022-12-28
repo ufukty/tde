@@ -3,121 +3,121 @@ package astcfg
 type NodeType int
 
 const (
-	BasicLit NodeType = iota
+	ArrayType = NodeType(iota)
+	AssignStmt
+	BadDecl
 	BadExpr
+	BadStmt
+	BasicLit
+	BinaryExpr
+	BlockStmt
+	BranchStmt
+	CallExpr
+	CaseClause
+	ChanType
+	CommClause
 	Comment
 	CommentGroup
-	Ident
+	CompositeLit
+	DeclStmt
+	DeferStmt
+	Ellipsis
+	EmptyStmt
+	ExprStmt
 	Field
 	FieldList
-	Ellipsis
+	File
+	ForStmt
+	FuncDecl
 	FuncLit
-	CompositeLit
-	ParenExpr
-	SelectorExpr
+	FuncType
+	GenDecl
+	GoStmt
+	Ident
+	IfStmt
+	ImportSpec
+	IncDecStmt
 	IndexExpr
 	IndexListExpr
-	SliceExpr
-	TypeAssertExpr
-	CallExpr
-	StarExpr
-	UnaryExpr
-	BinaryExpr
-	KeyValueExpr
-	ArrayType
-	StructType
-	FuncType
 	InterfaceType
-	MapType
-	ChanType
-	BadStmt
-	DeclStmt
-	EmptyStmt
+	KeyValueExpr
 	LabeledStmt
-	ExprStmt
-	SendStmt
-	IncDecStmt
-	AssignStmt
-	GoStmt
-	DeferStmt
-	ReturnStmt
-	BranchStmt
-	BlockStmt
-	IfStmt
-	CaseClause
-	SwitchStmt
-	TypeSwitchStmt
-	CommClause
-	SelectStmt
-	ForStmt
-	RangeStmt
-	ImportSpec
-	ValueSpec
-	TypeSpec
-	BadDecl
-	GenDecl
-	FuncDecl
-	File
+	MapType
 	Package
+	ParenExpr
+	RangeStmt
+	ReturnStmt
+	SelectorExpr
+	SelectStmt
+	SendStmt
+	SliceExpr
+	StarExpr
+	StructType
+	SwitchStmt
+	TypeAssertExpr
+	TypeSpec
+	TypeSwitchStmt
+	UnaryExpr
+	ValueSpec
 )
 
 var stringRepresentation = map[NodeType]string{
-	BasicLit:       "BasicLit",
+	ArrayType:      "ArrayType",
+	AssignStmt:     "AssignStmt",
+	BadDecl:        "BadDecl",
 	BadExpr:        "BadExpr",
+	BadStmt:        "BadStmt",
+	BasicLit:       "BasicLit",
+	BinaryExpr:     "BinaryExpr",
+	BlockStmt:      "BlockStmt",
+	BranchStmt:     "BranchStmt",
+	CallExpr:       "CallExpr",
+	CaseClause:     "CaseClause",
+	ChanType:       "ChanType",
+	CommClause:     "CommClause",
 	Comment:        "Comment",
 	CommentGroup:   "CommentGroup",
-	Ident:          "Ident",
+	CompositeLit:   "CompositeLit",
+	DeclStmt:       "DeclStmt",
+	DeferStmt:      "DeferStmt",
+	Ellipsis:       "Ellipsis",
+	EmptyStmt:      "EmptyStmt",
+	ExprStmt:       "ExprStmt",
 	Field:          "Field",
 	FieldList:      "FieldList",
-	Ellipsis:       "Ellipsis",
+	File:           "File",
+	ForStmt:        "ForStmt",
+	FuncDecl:       "FuncDecl",
 	FuncLit:        "FuncLit",
-	CompositeLit:   "CompositeLit",
-	ParenExpr:      "ParenExpr",
-	SelectorExpr:   "SelectorExpr",
+	FuncType:       "FuncType",
+	GenDecl:        "GenDecl",
+	GoStmt:         "GoStmt",
+	Ident:          "Ident",
+	IfStmt:         "IfStmt",
+	ImportSpec:     "ImportSpec",
+	IncDecStmt:     "IncDecStmt",
 	IndexExpr:      "IndexExpr",
 	IndexListExpr:  "IndexListExpr",
-	SliceExpr:      "SliceExpr",
-	TypeAssertExpr: "TypeAssertExpr",
-	CallExpr:       "CallExpr",
-	StarExpr:       "StarExpr",
-	UnaryExpr:      "UnaryExpr",
-	BinaryExpr:     "BinaryExpr",
-	KeyValueExpr:   "KeyValueExpr",
-	ArrayType:      "ArrayType",
-	StructType:     "StructType",
-	FuncType:       "FuncType",
 	InterfaceType:  "InterfaceType",
-	MapType:        "MapType",
-	ChanType:       "ChanType",
-	BadStmt:        "BadStmt",
-	DeclStmt:       "DeclStmt",
-	EmptyStmt:      "EmptyStmt",
+	KeyValueExpr:   "KeyValueExpr",
 	LabeledStmt:    "LabeledStmt",
-	ExprStmt:       "ExprStmt",
-	SendStmt:       "SendStmt",
-	IncDecStmt:     "IncDecStmt",
-	AssignStmt:     "AssignStmt",
-	GoStmt:         "GoStmt",
-	DeferStmt:      "DeferStmt",
-	ReturnStmt:     "ReturnStmt",
-	BranchStmt:     "BranchStmt",
-	BlockStmt:      "BlockStmt",
-	IfStmt:         "IfStmt",
-	CaseClause:     "CaseClause",
-	SwitchStmt:     "SwitchStmt",
-	TypeSwitchStmt: "TypeSwitchStmt",
-	CommClause:     "CommClause",
-	SelectStmt:     "SelectStmt",
-	ForStmt:        "ForStmt",
-	RangeStmt:      "RangeStmt",
-	ImportSpec:     "ImportSpec",
-	ValueSpec:      "ValueSpec",
-	TypeSpec:       "TypeSpec",
-	BadDecl:        "BadDecl",
-	GenDecl:        "GenDecl",
-	FuncDecl:       "FuncDecl",
-	File:           "File",
+	MapType:        "MapType",
 	Package:        "Package",
+	ParenExpr:      "ParenExpr",
+	RangeStmt:      "RangeStmt",
+	ReturnStmt:     "ReturnStmt",
+	SelectorExpr:   "SelectorExpr",
+	SelectStmt:     "SelectStmt",
+	SendStmt:       "SendStmt",
+	SliceExpr:      "SliceExpr",
+	StarExpr:       "StarExpr",
+	StructType:     "StructType",
+	SwitchStmt:     "SwitchStmt",
+	TypeAssertExpr: "TypeAssertExpr",
+	TypeSpec:       "TypeSpec",
+	TypeSwitchStmt: "TypeSwitchStmt",
+	UnaryExpr:      "UnaryExpr",
+	ValueSpec:      "ValueSpec",
 }
 
 func (n NodeType) String() string {

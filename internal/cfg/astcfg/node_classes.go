@@ -8,12 +8,14 @@ const (
 	Expression = NodeTypeClass(iota)
 	Statement
 	Declaration
+	Spec
 )
 
 var Dict_NodeTypeClassToNodeType = map[NodeTypeClass][]NodeType{
 	Expression:  {},
 	Statement:   {},
 	Declaration: {},
+	Spec:        {},
 }
 
 var Dict_NodeTypeToNodeTypeClass = map[NodeType]NodeTypeClass{}
@@ -31,6 +33,9 @@ func init() {
 		case ast.Decl:
 			Dict_NodeTypeClassToNodeType[Declaration] = append(Dict_NodeTypeClassToNodeType[Declaration], nodeType)
 			Dict_NodeTypeToNodeTypeClass[nodeType] = Declaration
+		case ast.Spec:
+			Dict_NodeTypeClassToNodeType[Spec] = append(Dict_NodeTypeClassToNodeType[Spec], nodeType)
+			Dict_NodeTypeToNodeTypeClass[nodeType] = Spec
 		}
 	}
 }
