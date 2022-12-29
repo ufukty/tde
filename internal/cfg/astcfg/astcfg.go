@@ -8,9 +8,9 @@ import (
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-type CAAST struct{}
+type ASTCFG struct{}
 
-func (c *CAAST) Develop(funcDeclaration *ast.FuncDecl) {
+func (c *ASTCFG) Develop(funcDeclaration *ast.FuncDecl) {
 	// TODO: Pick a valid insertion point: []BlockStatement etc.
 	// TODO: Pick compatible node class for child node according to insertion point's type: Statement, Expression etc.
 	// TODO: Pick a node type from node class: IfStatement, ForStatement etc.
@@ -18,13 +18,13 @@ func (c *CAAST) Develop(funcDeclaration *ast.FuncDecl) {
 	// TODO: Append the instance to insertion point
 }
 
-func (c *CAAST) PickRandomCrossOverPoint() {}
+func (c *ASTCFG) PickRandomCrossOverPoint() {}
 
-func (c *CAAST) PickCompatibleCrossOverPoint(nodeTypeClass NodeTypeClass) {
+func (c *ASTCFG) PickCompatibleCrossOverPoint(nodeTypeClass NodeTypeClass) {
 
 }
 
-func (c *CAAST) PickCutPoint() ast.Node {
+func (c *ASTCFG) PickCutPoint() ast.Node {
 	return &ast.BadExpr{}
 }
 
