@@ -21,7 +21,7 @@ var Dict_NodeTypeClassToNodeType = map[NodeTypeClass][]NodeType{
 var Dict_NodeTypeToNodeTypeClass = map[NodeType]NodeTypeClass{}
 
 func init() {
-	for nodeType, constructor := range nc.Dictionary {
+	for nodeType, constructor := range nodeConstructor.Dictionary {
 		node := constructor()
 		switch node.(type) {
 		case ast.Expr:
