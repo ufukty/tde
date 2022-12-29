@@ -17,7 +17,7 @@ var (
 
 // Returns the import path for the package inside working directory
 func FindImportPathOfThePackage() (string, error) {
-	out, err := utilities.RunCommandForOutput("go", "list")
+	out, _, err := utilities.RunCommandForOutput("go", "list")
 	if err != nil {
 		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
 	}
@@ -26,7 +26,7 @@ func FindImportPathOfThePackage() (string, error) {
 
 // Returns the absolute path of the module that working directory is in it
 func FindModulePath() (string, error) {
-	path, err := utilities.RunCommandForOutput("go", "env", "GOMOD")
+	path, _, err := utilities.RunCommandForOutput("go", "env", "GOMOD")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
 	}

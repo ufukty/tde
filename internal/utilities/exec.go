@@ -14,15 +14,20 @@ var (
 	NoLinesFound         = errors.New("given command output has no output that is terminated with '\\n' character")
 )
 
-func RunCommandForOutput(commandName string, arguments ...string) (string, error) {
+func RunCommandForOutput(commandName string, arguments ...string) (stdout string, stderr string, err error) {
 	cmd := exec.Command(commandName, arguments...)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		return "", errors.Wrapf(err, "exec.Command is failed for command %s", commandName)
+	var (
+		outputStream bytes.Buffer
+		errStream    bytes.Buffer
+	)
+	cmd.Stdout = &outputStream
+	cmd.Stderr = &errStream
+	err_ := cmd.Run()
+	if err_ != nil {
+		return outputStream.String(), errStream.String(),
+			errors.Wrapf(err_, "exec.Command is failed for command %s", commandName)
 	}
-	return out.String(), nil
+	return outputStream.String(), errStream.String(), nil
 }
 
 func StripOnlyLineFromCommandOuput(output string) (string, error) {
@@ -46,7 +51,7 @@ func StripOnlyLineFromCommandOuput(output string) (string, error) {
 }
 
 func CurrentDir() (string, error) {
-	dir, err := RunCommandForOutput("pwd", "-P")
+	dir, _, err := RunCommandForOutput("pwd", "-P")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to run 'pwd'")
 	}
