@@ -3,7 +3,7 @@
 
                           Test Driven Evolution: 
           Combining Genetic Programming with Test Driven Development 
-                  to assist software developers in creating and 
+           to give software developers a helper tool to creating and 
                         maintaining production-ready code 
 
 
@@ -15,7 +15,17 @@
 
 * Meaning of production-ready
 
-- Just like any company workers of other departments, software developers should be able to inspect the software as the team makes progress in development to spot 
+- Just like workers of companies' other product departments, software developers should be able to inspect the prior work as the team makes progress in development to spot unfitting progress to everchanging requirements. 
+
+- The aim is to present the Genetic Programming within a tool to software developers for helping them to build their commercial purposed software. The tool eventually should have features like familiarity, easy-to-learn
+
+- Most of the companies develop CRUD programs. That is a software runs on a computer accessible to clients. Exposes an stable interface consists by serial of endpoints each creates/reads/updates/deletes a resource. Resources are abstract objects, meaningful for the domain: like users, posts, photos for a social media platform; or employees, customers, e-mails, calls for a customer relation management software. Developer teams from variety of companies operates on different sector, or industries; it is safe to say that most of the teams specialized on developing CRUD programs and their skill-sets are shaped around the requirements of developing CRUD programs. 
+
+- CI/CD is trending topic for nearly 20 years. That is automating the cycle of integration and deployment which is expected to be a loop because of everchanging set of requirements and priorities that are faced by organizations produce software, in addition to a work force that consists by employees don't stay forever on same company and have different degrees of experiences on the field. Steps of CI/CD are mainly considered as code, build, test, release, deploy, operate, monitor and plan (for next round).
+
+- Familiarity: Most of the devs are experienced in building CRUD applications and their skill set don't cover the Genetic Programming or another EA variation. In order to enable those developers leveraging from fruits of GP, the method should be delivered to them in a tool that presents a 
+
+- For the sake of our will to make Genetic Programming widely used method for generating computer programs it is necessary to make sure a regular dev team of a standard organization that is hired for developing CRUD programs with popular programming languages of domain (eg. Java, C#, Go) should be able to 
 
 * Changing requirements of projects
 
@@ -61,6 +71,11 @@
 * Limitations
 
 - Since panics are used to distinguish bad programs (or anomalies, as in the context of evolution), there should not be any expectation to produce a solution that uses panic/recover features for error handling (as some programmers may). There is no limitation for producing solutions that uses error-wrapping method. This should not be a problem since error-wrapping is more frequently suggested over panic/recover feature for most usual cases by programmers and [https://go.dev/blog/error-handling-and-go](official documentation of Go programming language).
+
+- The number of generations before the serial selections discards a candidate's breed from the population and blocks it from further development is limited with the case that number of candidates with at least better fitnesses are covering the contingent
+
+
+Thus, local minumums may be expected to become pit-falls, impossible to get out from. One way to deal with that problem; is switching to exploratory behaviour rather than staying exploatitave. That means increasing the rate of crossovers by decreasing mutations or increasing genetic operations all together. Although, that appoach naively expects that selections won't discard all members of the breed (starts from the member, ends on the grandparent that has the progress in its genotype but not exposed in the fenotype because of a syntax-error raised from the statement/expression is not finizalized [or supported by prior declarations/assignments]) from the population before it gets chance to find supplementary modification.
 
 * Random code-fragment generation
 
