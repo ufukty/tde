@@ -12,6 +12,7 @@ import (
 type NodeConstructor struct {
 	CreatedVariables      []*ast.Ident
 	DeclaredFunctionNames []*ast.Ident
+	GeneratedBranchLabels []*ast.Ident
 	Dictionary            map[NodeType]func() ast.Node
 }
 
@@ -120,31 +121,38 @@ func (nc *NodeConstructor) generateFunctionName() *ast.Ident {
 	return ident
 }
 
-func (*NodeConstructor) basicIntegerLiteral() *ast.BasicLit {
+func (nc *NodeConstructor) generateBranchLabel() *ast.Ident {
+	ident := ast.NewIdent(fmt.Sprintf("BranchLabel%d", len(nc.GeneratedBranchLabels)+1))
+	nc.GeneratedBranchLabels = append(nc.GeneratedBranchLabels, ident)
+	return ident
+}
+
+func (nc *NodeConstructor) basicIntegerLiteral() *ast.BasicLit {
 	return &ast.BasicLit{Kind: token.INT, Value: string(*utilities.Pick([]int{0, 1}))}
 }
 
-func (*NodeConstructor) basicFloatLiteral() *ast.BasicLit {
+func (nc *NodeConstructor) basicFloatLiteral() *ast.BasicLit {
 	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(utilities.URandFloatForCrypto()), ValuePos: token.NoPos}
 }
 
-func (*NodeConstructor) basicStringLiteral() *ast.BasicLit {
+func (nc *NodeConstructor) basicStringLiteral() *ast.BasicLit {
 	return &ast.BasicLit{Kind: token.STRING, Value: "", ValuePos: token.NoPos}
 }
 
-func (*NodeConstructor) basicCharacterLiteral() *ast.BasicLit {
+func (nc *NodeConstructor) basicCharacterLiteral() *ast.BasicLit {
 	return &ast.BasicLit{Kind: token.CHAR, Value: *utilities.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
 }
 
 // MARK: Node types
 
-func (*NodeConstructor) ArrayType() ast.Node {
-	return &ast.ArrayType{}
+func (nc *NodeConstructor) ArrayType() ast.Node { // FIXME: // is there any usecase thar is not achievable with a slice but only with a ...T array
+	return &ast.ArrayType{Lbrack: token.NoPos, Len: nil, Elt: nc.Expr()}
 }
 
 func (nc *NodeConstructor) AssignStmt() ast.Node {
 	return &ast.AssignStmt{Lhs: []ast.Expr{nc.Expr()}, TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AccepetedByAssignStmt), Rhs: []ast.Expr{nc.Expr()}}
 }
+
 func (nc *NodeConstructor) BasicLit() ast.Node {
 	return (*utilities.Pick([]func() *ast.BasicLit{nc.basicIntegerLiteral, nc.basicStringLiteral, nc.basicFloatLiteral, nc.basicCharacterLiteral}))()
 }
@@ -153,31 +161,36 @@ func (nc *NodeConstructor) BinaryExpr() ast.Node {
 	return &ast.BinaryExpr{X: nc.Expr(), OpPos: token.NoPos, Op: *utilities.Pick(tokenConstructor.AcceptedByBinaryExpr), Y: nc.Expr()}
 }
 
-func (*NodeConstructor) BlockStmt() ast.Node {
+func (nc *NodeConstructor) BlockStmt() ast.Node {
 	return &ast.BlockStmt{List: []ast.Stmt{}, Lbrace: token.NoPos, Rbrace: token.NoPos}
 }
 
-func (*NodeConstructor) BranchStmt() ast.Node {
-	return &ast.BranchStmt{}
+func (nc *NodeConstructor) BranchStmt() ast.Node {
+	return &ast.BranchStmt{TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AcceptedByBranchStmt), Label: nc.generateBranchLabel()}
 }
 
-func (*NodeConstructor) CallExpr() ast.Node {
-	return &ast.CallExpr{}
+func (nc *NodeConstructor) CallExpr() ast.Node { // FIXME: Consider function calls with more than 1 arguments
+	return &ast.CallExpr{Fun: nc.Expr(), Lparen: token.NoPos, Args: []ast.Expr{nc.Expr()}, Ellipsis: token.NoPos, Rparen: token.NoPos}
 }
 
-func (*NodeConstructor) CaseClause() ast.Node {
-	return &ast.CaseClause{}
+func (nc *NodeConstructor) CaseClause() ast.Node {
+	return &ast.CaseClause{
+		Case:  token.NoPos,
+		List:  []ast.Expr{nc.Expr()},
+		Colon: token.NoPos,
+		Body:  []ast.Stmt{nc.Stmt()},
+	}
 }
 
-func (*NodeConstructor) ChanType() ast.Node {
+func (nc *NodeConstructor) ChanType() ast.Node {
 	return &ast.ChanType{}
 }
 
-func (*NodeConstructor) CommClause() ast.Node {
+func (nc *NodeConstructor) CommClause() ast.Node {
 	return &ast.CommClause{}
 }
 
-func (*NodeConstructor) CompositeLit() ast.Node {
+func (nc *NodeConstructor) CompositeLit() ast.Node {
 	return &ast.CompositeLit{}
 }
 
@@ -185,40 +198,39 @@ func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value as
 	return &ast.DeclStmt{Decl: nc.GenDecl().(*ast.GenDecl)}
 }
 
-func (*NodeConstructor) DeferStmt() ast.Node {
+func (nc *NodeConstructor) DeferStmt() ast.Node {
 	return &ast.DeferStmt{}
 }
 
-func (*NodeConstructor) Ellipsis() ast.Node {
+func (nc *NodeConstructor) Ellipsis() ast.Node {
 	return &ast.Ellipsis{}
 }
 
-func (*NodeConstructor) EmptyStmt() ast.Node {
+func (nc *NodeConstructor) EmptyStmt() ast.Node {
 	return &ast.EmptyStmt{}
 }
 
-func (*NodeConstructor) ExprStmt() ast.Node {
+func (nc *NodeConstructor) ExprStmt() ast.Node {
 	return &ast.ExprStmt{}
 }
 
-func (*NodeConstructor) ForStmt() ast.Node {
+func (nc *NodeConstructor) ForStmt() ast.Node {
 	return &ast.ForStmt{}
 }
 
-func (*NodeConstructor) FuncDeclAsMethod() ast.Node {
+func (nc *NodeConstructor) FuncDeclAsMethod() ast.Node {
 	return &ast.FuncDecl{}
 }
 
 func (nc *NodeConstructor) FuncDecl() ast.Node {
-	ident := nc.generateFunctionName()
-	return &ast.FuncDecl{Name: ident}
+	return &ast.FuncDecl{Name: nc.generateFunctionName(), Type: nc.FuncType().(*ast.FuncType), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
-func (*NodeConstructor) FuncLit() ast.Node {
+func (nc *NodeConstructor) FuncLit() ast.Node {
 	return &ast.FuncLit{}
 }
 
-func (*NodeConstructor) FuncType() ast.Node {
+func (nc *NodeConstructor) FuncType() ast.Node {
 	return &ast.FuncType{}
 }
 
@@ -227,7 +239,7 @@ func (nc *NodeConstructor) GenDecl() ast.Node {
 	return &ast.GenDecl{TokPos: token.NoPos, Tok: token.VAR, Lparen: token.NoPos, Rparen: token.NoPos, Specs: []ast.Spec{nc.ValueSpec().(*ast.ValueSpec)}}
 }
 
-func (*NodeConstructor) GoStmt() ast.Node {
+func (nc *NodeConstructor) GoStmt() ast.Node {
 	return &ast.GoStmt{}
 }
 
@@ -239,91 +251,91 @@ func (nc *NodeConstructor) IfStmt() ast.Node {
 	return &ast.IfStmt{If: token.NoPos, Init: nil, Cond: nc.Expr(), Body: &ast.BlockStmt{Lbrace: token.NoPos, List: []ast.Stmt{nc.Stmt()}, Rbrace: token.NoPos}, Else: nil}
 }
 
-func (*NodeConstructor) ImportSpec() ast.Node {
+func (nc *NodeConstructor) ImportSpec() ast.Node {
 	return &ast.ImportSpec{}
 }
 
-func (*NodeConstructor) IncDecStmt() ast.Node {
+func (nc *NodeConstructor) IncDecStmt() ast.Node {
 	return &ast.IncDecStmt{}
 }
 
-func (*NodeConstructor) IndexExpr() ast.Node {
+func (nc *NodeConstructor) IndexExpr() ast.Node {
 	return &ast.IndexExpr{}
 }
 
-func (*NodeConstructor) IndexListExpr() ast.Node {
+func (nc *NodeConstructor) IndexListExpr() ast.Node {
 	return &ast.IndexListExpr{}
 }
 
-func (*NodeConstructor) InterfaceType() ast.Node {
+func (nc *NodeConstructor) InterfaceType() ast.Node {
 	return &ast.InterfaceType{}
 }
 
-func (*NodeConstructor) KeyValueExpr() ast.Node {
+func (nc *NodeConstructor) KeyValueExpr() ast.Node {
 	return &ast.KeyValueExpr{}
 }
 
-func (*NodeConstructor) LabeledStmt() ast.Node {
+func (nc *NodeConstructor) LabeledStmt() ast.Node {
 	return &ast.LabeledStmt{}
 }
 
-func (*NodeConstructor) MapType() ast.Node {
+func (nc *NodeConstructor) MapType() ast.Node {
 	return &ast.MapType{}
 }
 
-func (*NodeConstructor) ParenExpr() ast.Node {
+func (nc *NodeConstructor) ParenExpr() ast.Node {
 	return &ast.ParenExpr{}
 }
 
-func (*NodeConstructor) RangeStmt() ast.Node {
+func (nc *NodeConstructor) RangeStmt() ast.Node {
 	return &ast.RangeStmt{}
 }
 
-func (*NodeConstructor) ReturnStmt() ast.Node {
+func (nc *NodeConstructor) ReturnStmt() ast.Node {
 	return &ast.ReturnStmt{}
 }
 
-func (*NodeConstructor) SelectorExpr() ast.Node {
+func (nc *NodeConstructor) SelectorExpr() ast.Node {
 	return &ast.SelectorExpr{}
 }
 
-func (*NodeConstructor) SelectStmt() ast.Node {
+func (nc *NodeConstructor) SelectStmt() ast.Node {
 	return &ast.SelectStmt{}
 }
 
-func (*NodeConstructor) SendStmt() ast.Node {
+func (nc *NodeConstructor) SendStmt() ast.Node {
 	return &ast.SendStmt{}
 }
 
-func (*NodeConstructor) SliceExpr() ast.Node {
+func (nc *NodeConstructor) SliceExpr() ast.Node {
 	return &ast.SliceExpr{}
 }
 
-func (*NodeConstructor) StarExpr() ast.Node {
+func (nc *NodeConstructor) StarExpr() ast.Node {
 	return &ast.StarExpr{}
 }
 
-func (*NodeConstructor) StructType() ast.Node {
+func (nc *NodeConstructor) StructType() ast.Node {
 	return &ast.StructType{}
 }
 
-func (*NodeConstructor) SwitchStmt() ast.Node {
+func (nc *NodeConstructor) SwitchStmt() ast.Node {
 	return &ast.SwitchStmt{}
 }
 
-func (*NodeConstructor) TypeAssertExpr() ast.Node {
+func (nc *NodeConstructor) TypeAssertExpr() ast.Node {
 	return &ast.TypeAssertExpr{}
 }
 
-func (*NodeConstructor) TypeSpec() ast.Node {
+func (nc *NodeConstructor) TypeSpec() ast.Node {
 	return &ast.TypeSpec{}
 }
 
-func (*NodeConstructor) TypeSwitchStmt() ast.Node {
+func (nc *NodeConstructor) TypeSwitchStmt() ast.Node {
 	return &ast.TypeSwitchStmt{}
 }
 
-func (*NodeConstructor) UnaryExpr() ast.Node {
+func (nc *NodeConstructor) UnaryExpr() ast.Node {
 	return &ast.UnaryExpr{}
 }
 
