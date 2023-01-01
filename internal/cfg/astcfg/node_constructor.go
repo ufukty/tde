@@ -4,15 +4,20 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strings"
 	"tde/internal/utilities"
 )
 
+// struct is used to avoid cluttering the namespace with the names of node constructor functions
 type NodeConstructor struct {
-	Dictionary map[NodeType]func() ast.Node
+	CreatedVariables  []*ast.Ident
+	DeclaredFunctions []*ast.FuncDecl
+	Dictionary        map[NodeType]func() ast.Node
 }
 
 func NewNodeConstructor() *NodeConstructor {
 	nc := NodeConstructor{}
+	nc.CreatedVariables = []*ast.Ident{}
 	nc.Dictionary = map[NodeType]func() ast.Node{
 		// BECAUSE: Those are currently available structures in ast package and their usage is not planned.
 		// Comment:        func() ast.Node {},
@@ -26,16 +31,16 @@ func NewNodeConstructor() *NodeConstructor {
 		// BadStmt:        func() ast.Node {},
 		ArrayType:      nc.ArrayType,
 		AssignStmt:     nc.AssignStmt,
-		BasicLit:       nc.BasicLit,
+		BasicLit:       nc.BasicLit, // DONE:
 		BinaryExpr:     nc.BinaryExpr,
-		BlockStmt:      nc.BlockStmt,
+		BlockStmt:      nc.BlockStmt, // DONE:
 		BranchStmt:     nc.BranchStmt,
 		CallExpr:       nc.CallExpr,
 		CaseClause:     nc.CaseClause,
 		ChanType:       nc.ChanType,
 		CommClause:     nc.CommClause,
 		CompositeLit:   nc.CompositeLit,
-		DeclStmt:       nc.DeclStmt,
+		DeclStmt:       nc.DeclStmt, // DONE:
 		DeferStmt:      nc.DeferStmt,
 		Ellipsis:       nc.Ellipsis,
 		EmptyStmt:      nc.EmptyStmt,
@@ -87,19 +92,24 @@ func (*NodeConstructor) AssignStmt() ast.Node {
 	return &ast.AssignStmt{}
 }
 
-func (*NodeConstructor) BasicLit() ast.Node {
-	litKind := *utilities.Pick([]token.Token{token.INT, token.FLOAT, token.IMAG, token.CHAR, token.STRING})
-	litValue := map[token.Token]string{
-		token.INT:    "0",
-		token.FLOAT:  fmt.Sprint(utilities.URandFloatForCrypto()),
-		token.IMAG:   "0.0i",
-		token.CHAR:   "'0'",
-		token.STRING: `""`,
-	}[litKind]
-	return &ast.BasicLit{
-		Kind:  litKind,
-		Value: litValue,
-	}
+func (*NodeConstructor) basicIntegerLiteral() *ast.BasicLit {
+	return &ast.BasicLit{Kind: token.INT, Value: string(*utilities.Pick([]int{0, 1}))}
+}
+
+func (*NodeConstructor) basicFloatLiteral() *ast.BasicLit {
+	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(utilities.URandFloatForCrypto()), ValuePos: token.NoPos}
+}
+
+func (*NodeConstructor) basicStringLiteral() *ast.BasicLit {
+	return &ast.BasicLit{Kind: token.STRING, Value: "", ValuePos: token.NoPos}
+}
+
+func (*NodeConstructor) basicCharacterLiteral() *ast.BasicLit {
+	return &ast.BasicLit{Kind: token.CHAR, Value: *utilities.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
+}
+
+func (nc *NodeConstructor) BasicLit() *ast.BasicLit {
+	return (*utilities.Pick([]func() *ast.BasicLit{nc.basicIntegerLiteral, nc.basicStringLiteral, nc.basicFloatLiteral, nc.basicCharacterLiteral}))()
 }
 
 func (*NodeConstructor) BinaryExpr() ast.Node {
@@ -107,7 +117,7 @@ func (*NodeConstructor) BinaryExpr() ast.Node {
 }
 
 func (*NodeConstructor) BlockStmt() ast.Node {
-	return &ast.BlockStmt{}
+	return &ast.BlockStmt{List: []ast.Stmt{}, Lbrace: token.NoPos, Rbrace: token.NoPos}
 }
 
 func (*NodeConstructor) BranchStmt() ast.Node {
@@ -134,8 +144,28 @@ func (*NodeConstructor) CompositeLit() ast.Node {
 	return &ast.CompositeLit{}
 }
 
-func (*NodeConstructor) DeclStmt() ast.Node {
-	return &ast.DeclStmt{}
+func (nc *NodeConstructor) generateVariableName() *ast.Ident {
+	ident := ast.NewIdent(fmt.Sprintf("var%d", len(nc.CreatedVariables)+1))
+	nc.CreatedVariables = append(nc.CreatedVariables, ident)
+	return ident
+}
+
+func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value assignment or declaration only
+	ident, value := nc.generateVariableName(), nc.BasicLit()
+	return &ast.DeclStmt{
+		Decl: &ast.GenDecl{
+			TokPos: token.NoPos,
+			Tok:    token.VAR,
+			Lparen: token.NoPos,
+			Rparen: token.NoPos,
+			Specs: []ast.Spec{
+				&ast.ValueSpec{
+					Names:  []*ast.Ident{ident},
+					Values: []ast.Expr{value},
+				},
+			},
+		},
+	}
 }
 
 func (*NodeConstructor) DeferStmt() ast.Node {
@@ -158,8 +188,19 @@ func (*NodeConstructor) ForStmt() ast.Node {
 	return &ast.ForStmt{}
 }
 
-func (*NodeConstructor) FuncDecl() ast.Node {
+func (nc *NodeConstructor) generateFunctionName() *ast.Ident {
+	ident := ast.NewIdent(fmt.Sprintf("HelperFunction%d", len(nc.CreatedVariables)+1))
+	nc.CreatedVariables = append(nc.CreatedVariables, ident)
+	return ident
+}
+
+func (*NodeConstructor) FuncDeclAsMethod() ast.Node {
 	return &ast.FuncDecl{}
+}
+
+func (nc *NodeConstructor) FuncDecl() ast.Node {
+	ident := nc.generateFunctionName()
+	return &ast.FuncDecl{Name: ident}
 }
 
 func (*NodeConstructor) FuncLit() ast.Node {
@@ -183,7 +224,13 @@ func (*NodeConstructor) Ident() ast.Node {
 }
 
 func (*NodeConstructor) IfStmt() ast.Node {
-	return &ast.IfStmt{}
+	return &ast.IfStmt{
+		If:   0,
+		Init: nil,
+		Cond: nil,
+		Body: &ast.BlockStmt{},
+		Else: nil,
+	}
 }
 
 func (*NodeConstructor) ImportSpec() ast.Node {
@@ -275,6 +322,7 @@ func (*NodeConstructor) UnaryExpr() ast.Node {
 }
 
 func (*NodeConstructor) ValueSpec() ast.Node {
+	// Also created by GenDecl method
 	return &ast.ValueSpec{}
 }
 

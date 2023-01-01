@@ -3,13 +3,22 @@ package astcfg
 import "go/token"
 
 type TokenConstructor struct {
+	// classified by type
 	Literals             []token.Token
 	Arithmetic           []token.Token
 	ArithmeticAssignment []token.Token
 	Bitwise              []token.Token
+	BitwiseAssignment    []token.Token
 	Logical              []token.Token
 	LogicalAssignment    []token.Token
 	Comparison           []token.Token
+	Structure            []token.Token
+	Misc                 []token.Token
+	Keywords             []token.Token
+	Additional           []token.Token
+
+	// classified by nodes accept as parameter value
+	BasicLit []token.Token
 }
 
 func NewTokenConstructor() *TokenConstructor {
@@ -44,20 +53,21 @@ func NewTokenConstructor() *TokenConstructor {
 			token.SHR,     // >>
 			token.AND_NOT, // &^
 		},
-		Logical: []token.Token{
-			token.LAND,  // &&
-			token.LOR,   // ||
-			token.ARROW, // <-
-			token.INC,   // ++
-			token.DEC,   // --
-		},
-		LogicalAssignment: []token.Token{
+		BitwiseAssignment: []token.Token{
 			token.AND_ASSIGN,     // &=
 			token.OR_ASSIGN,      // |=
 			token.XOR_ASSIGN,     // ^=
 			token.SHL_ASSIGN,     // <<=
 			token.SHR_ASSIGN,     // >>=
 			token.AND_NOT_ASSIGN, // &^=
+		},
+		Logical: []token.Token{
+			token.NOT,   // !
+			token.LAND,  // &&
+			token.LOR,   // ||
+			token.ARROW, // <-
+			token.INC,   // ++
+			token.DEC,   // --
 		},
 		Comparison: []token.Token{
 			token.EQL, // ==
@@ -67,77 +77,64 @@ func NewTokenConstructor() *TokenConstructor {
 			token.LEQ, // <=
 			token.GEQ, // >=
 		},
+		Structure: []token.Token{
+			token.ASSIGN,    // =
+			token.DEFINE,    // :=
+			token.LPAREN,    // (
+			token.RPAREN,    // )
+			token.LBRACK,    // [
+			token.RBRACK,    // ]
+			token.LBRACE,    // {
+			token.RBRACE,    // }
+			token.ELLIPSIS,  // ...
+			token.COMMA,     // ,
+			token.PERIOD,    // .
+			token.SEMICOLON, // ;
+			token.COLON,     // :
+		},
+		Misc: []token.Token{
+			token.ILLEGAL,
+			token.EOF,
+			token.COMMENT,
+		},
+		Keywords: []token.Token{
+			token.BREAK,
+			token.CASE,
+			token.CHAN,
+			token.CONST,
+			token.CONTINUE,
+			token.DEFAULT,
+			token.DEFER,
+			token.ELSE,
+			token.FALLTHROUGH,
+			token.FOR,
+			token.FUNC,
+			token.GO,
+			token.GOTO,
+			token.IF,
+			token.IMPORT,
+			token.INTERFACE,
+			token.MAP,
+			token.PACKAGE,
+			token.RANGE,
+			token.RETURN,
+			token.SELECT,
+			token.STRUCT,
+			token.SWITCH,
+			token.TYPE,
+			token.VAR,
+		},
+		Additional: []token.Token{
+			token.TILDE,
+		},
+		BasicLit: []token.Token{
+			token.INT,
+			token.FLOAT,
+			// token.IMAG,
+			// token.CHAR,
+			token.STRING,
+		},
 	}
 }
 
-var tokenConstructor = NewNodeConstructor()
-
-const (
-	ILLEGAL token.Token = iota
-	EOF
-	COMMENT
-
-	literal_beg
-	// Identifiers and basic type literals
-	// (these tokens stand for classes of literals)
-
-	operator_beg
-	// Operators and delimiters
-
-	ASSIGN // =
-	NOT    // !
-
-	DEFINE   // :=
-	ELLIPSIS // ...
-
-	LPAREN // (
-	LBRACK // [
-	LBRACE // {
-	COMMA  // ,
-	PERIOD // .
-
-	RPAREN    // )
-	RBRACK    // ]
-	RBRACE    // }
-	SEMICOLON // ;
-	COLON     // :
-	operator_end
-
-	keyword_beg
-	// Keywords
-	BREAK
-	CASE
-	CHAN
-	CONST
-	CONTINUE
-
-	DEFAULT
-	DEFER
-	ELSE
-	FALLTHROUGH
-	FOR
-
-	FUNC
-	GO
-	GOTO
-	IF
-	IMPORT
-
-	INTERFACE
-	MAP
-	PACKAGE
-	RANGE
-	RETURN
-
-	SELECT
-	STRUCT
-	SWITCH
-	TYPE
-	VAR
-	keyword_end
-
-	additional_beg
-	// additional tokens, handled in an ad-hoc manner
-	TILDE
-	additional_end
-)
+var tokenConstructor = NewTokenConstructor()

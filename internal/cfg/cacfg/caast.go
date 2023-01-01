@@ -57,3 +57,10 @@ func NewLine(f *ast.FuncDecl) {
 		return !isInserted
 	}, nil)
 }
+
+func NewVar(stack *Stack) (declaration *ast.DeclStmt, access *ast.Ident) {
+	// TODO: Find available variable name (not in use currently)
+	// TODO: Prepare declaration and access statements
+
+	return
+}
