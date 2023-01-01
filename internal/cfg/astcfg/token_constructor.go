@@ -18,7 +18,9 @@ type TokenConstructor struct {
 	Additional           []token.Token
 
 	// classified by nodes accept as parameter value
-	BasicLit []token.Token
+	BasicLit              []token.Token
+	AcceptedByBinaryExpr  []token.Token
+	AccepetedByAssignStmt []token.Token
 }
 
 func NewTokenConstructor() *TokenConstructor {
@@ -133,6 +135,21 @@ func NewTokenConstructor() *TokenConstructor {
 			// token.IMAG,
 			// token.CHAR,
 			token.STRING,
+		},
+		AcceptedByBinaryExpr: []token.Token{
+			token.NOT,  // !
+			token.LAND, // &&
+			token.LOR,  // ||
+			token.EQL,  // ==
+			token.LSS,  // <
+			token.GTR,  // >
+			token.NEQ,  // !=
+			token.LEQ,  // <=
+			token.GEQ,  // >=
+		},
+		AccepetedByAssignStmt: []token.Token{
+			token.ASSIGN, // =
+			token.DEFINE, // :=
 		},
 	}
 }

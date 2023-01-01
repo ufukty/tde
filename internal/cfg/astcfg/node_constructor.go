@@ -10,9 +10,9 @@ import (
 
 // struct is used to avoid cluttering the namespace with the names of node constructor functions
 type NodeConstructor struct {
-	CreatedVariables  []*ast.Ident
-	DeclaredFunctions []*ast.FuncDecl
-	Dictionary        map[NodeType]func() ast.Node
+	CreatedVariables      []*ast.Ident
+	DeclaredFunctionNames []*ast.Ident
+	Dictionary            map[NodeType]func() ast.Node
 }
 
 func NewNodeConstructor() *NodeConstructor {
@@ -30,10 +30,10 @@ func NewNodeConstructor() *NodeConstructor {
 		// BadExpr:        func() ast.Node {},
 		// BadStmt:        func() ast.Node {},
 		ArrayType:      nc.ArrayType,
-		AssignStmt:     nc.AssignStmt,
-		BasicLit:       nc.BasicLit, // DONE:
-		BinaryExpr:     nc.BinaryExpr,
-		BlockStmt:      nc.BlockStmt, // DONE:
+		AssignStmt:     nc.AssignStmt, // DONE:
+		BasicLit:       nc.BasicLit,   // DONE:
+		BinaryExpr:     nc.BinaryExpr, // DONE:
+		BlockStmt:      nc.BlockStmt,  // DONE:
 		BranchStmt:     nc.BranchStmt,
 		CallExpr:       nc.CallExpr,
 		CaseClause:     nc.CaseClause,
@@ -49,10 +49,10 @@ func NewNodeConstructor() *NodeConstructor {
 		FuncDecl:       nc.FuncDecl,
 		FuncLit:        nc.FuncLit,
 		FuncType:       nc.FuncType,
-		GenDecl:        nc.GenDecl,
+		GenDecl:        nc.GenDecl, // DONE:
 		GoStmt:         nc.GoStmt,
-		Ident:          nc.Ident,
-		IfStmt:         nc.IfStmt,
+		Ident:          nc.Ident,  // DONE:
+		IfStmt:         nc.IfStmt, // DONE:
 		ImportSpec:     nc.ImportSpec,
 		IncDecStmt:     nc.IncDecStmt,
 		IndexExpr:      nc.IndexExpr,
@@ -75,7 +75,7 @@ func NewNodeConstructor() *NodeConstructor {
 		TypeSpec:       nc.TypeSpec,
 		TypeSwitchStmt: nc.TypeSwitchStmt,
 		UnaryExpr:      nc.UnaryExpr,
-		ValueSpec:      nc.ValueSpec,
+		ValueSpec:      nc.ValueSpec, // DONE:
 	}
 	return &nc
 }
@@ -84,12 +84,40 @@ func (nc *NodeConstructor) Construct(nodeType NodeType) ast.Node {
 	return nc.Dictionary[nodeType]()
 }
 
-func (*NodeConstructor) ArrayType() ast.Node {
-	return &ast.ArrayType{}
+// MARK: Compliying Interface instance
+
+// Chooses a node type that confirms ast.Spec interface; initializes and returns
+func (nc *NodeConstructor) Spec() ast.Spec {
+	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Spec])).(ast.Spec)
 }
 
-func (*NodeConstructor) AssignStmt() ast.Node {
-	return &ast.AssignStmt{}
+// Chooses a node type that confirms ast.Decl interface; initializes and returns
+func (nc *NodeConstructor) Decl() ast.Decl {
+	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Declaration])).(ast.Decl)
+}
+
+// Chooses a node type that confirms ast.Expr interface; initializes and returns
+func (nc *NodeConstructor) Expr() ast.Expr {
+	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Expression])).(ast.Expr)
+}
+
+// Chooses a node type that confirms ast.Stmt interface; initializes and returns
+func (nc *NodeConstructor) Stmt() ast.Stmt {
+	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Statement])).(ast.Stmt)
+}
+
+// MARK: Helper methods
+
+func (nc *NodeConstructor) generateVariableName() *ast.Ident {
+	ident := ast.NewIdent(fmt.Sprintf("var%d", len(nc.CreatedVariables)+1))
+	nc.CreatedVariables = append(nc.CreatedVariables, ident)
+	return ident
+}
+
+func (nc *NodeConstructor) generateFunctionName() *ast.Ident {
+	ident := ast.NewIdent(fmt.Sprintf("HelperFunction%d", len(nc.DeclaredFunctionNames)+1))
+	nc.DeclaredFunctionNames = append(nc.DeclaredFunctionNames, ident)
+	return ident
 }
 
 func (*NodeConstructor) basicIntegerLiteral() *ast.BasicLit {
@@ -108,12 +136,21 @@ func (*NodeConstructor) basicCharacterLiteral() *ast.BasicLit {
 	return &ast.BasicLit{Kind: token.CHAR, Value: *utilities.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
 }
 
-func (nc *NodeConstructor) BasicLit() *ast.BasicLit {
+// MARK: Node types
+
+func (*NodeConstructor) ArrayType() ast.Node {
+	return &ast.ArrayType{}
+}
+
+func (nc *NodeConstructor) AssignStmt() ast.Node {
+	return &ast.AssignStmt{Lhs: []ast.Expr{nc.Expr()}, TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AccepetedByAssignStmt), Rhs: []ast.Expr{nc.Expr()}}
+}
+func (nc *NodeConstructor) BasicLit() ast.Node {
 	return (*utilities.Pick([]func() *ast.BasicLit{nc.basicIntegerLiteral, nc.basicStringLiteral, nc.basicFloatLiteral, nc.basicCharacterLiteral}))()
 }
 
-func (*NodeConstructor) BinaryExpr() ast.Node {
-	return &ast.BinaryExpr{}
+func (nc *NodeConstructor) BinaryExpr() ast.Node {
+	return &ast.BinaryExpr{X: nc.Expr(), OpPos: token.NoPos, Op: *utilities.Pick(tokenConstructor.AcceptedByBinaryExpr), Y: nc.Expr()}
 }
 
 func (*NodeConstructor) BlockStmt() ast.Node {
@@ -144,28 +181,8 @@ func (*NodeConstructor) CompositeLit() ast.Node {
 	return &ast.CompositeLit{}
 }
 
-func (nc *NodeConstructor) generateVariableName() *ast.Ident {
-	ident := ast.NewIdent(fmt.Sprintf("var%d", len(nc.CreatedVariables)+1))
-	nc.CreatedVariables = append(nc.CreatedVariables, ident)
-	return ident
-}
-
 func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value assignment or declaration only
-	ident, value := nc.generateVariableName(), nc.BasicLit()
-	return &ast.DeclStmt{
-		Decl: &ast.GenDecl{
-			TokPos: token.NoPos,
-			Tok:    token.VAR,
-			Lparen: token.NoPos,
-			Rparen: token.NoPos,
-			Specs: []ast.Spec{
-				&ast.ValueSpec{
-					Names:  []*ast.Ident{ident},
-					Values: []ast.Expr{value},
-				},
-			},
-		},
-	}
+	return &ast.DeclStmt{Decl: nc.GenDecl().(*ast.GenDecl)}
 }
 
 func (*NodeConstructor) DeferStmt() ast.Node {
@@ -188,12 +205,6 @@ func (*NodeConstructor) ForStmt() ast.Node {
 	return &ast.ForStmt{}
 }
 
-func (nc *NodeConstructor) generateFunctionName() *ast.Ident {
-	ident := ast.NewIdent(fmt.Sprintf("HelperFunction%d", len(nc.CreatedVariables)+1))
-	nc.CreatedVariables = append(nc.CreatedVariables, ident)
-	return ident
-}
-
 func (*NodeConstructor) FuncDeclAsMethod() ast.Node {
 	return &ast.FuncDecl{}
 }
@@ -211,26 +222,21 @@ func (*NodeConstructor) FuncType() ast.Node {
 	return &ast.FuncType{}
 }
 
-func (*NodeConstructor) GenDecl() ast.Node {
-	return &ast.GenDecl{}
+func (nc *NodeConstructor) GenDecl() ast.Node {
+	// Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
+	return &ast.GenDecl{TokPos: token.NoPos, Tok: token.VAR, Lparen: token.NoPos, Rparen: token.NoPos, Specs: []ast.Spec{nc.ValueSpec().(*ast.ValueSpec)}}
 }
 
 func (*NodeConstructor) GoStmt() ast.Node {
 	return &ast.GoStmt{}
 }
 
-func (*NodeConstructor) Ident() ast.Node {
-	return &ast.Ident{}
+func (nc *NodeConstructor) Ident() ast.Node {
+	return nc.generateVariableName()
 }
 
-func (*NodeConstructor) IfStmt() ast.Node {
-	return &ast.IfStmt{
-		If:   0,
-		Init: nil,
-		Cond: nil,
-		Body: &ast.BlockStmt{},
-		Else: nil,
-	}
+func (nc *NodeConstructor) IfStmt() ast.Node {
+	return &ast.IfStmt{If: token.NoPos, Init: nil, Cond: nc.Expr(), Body: &ast.BlockStmt{Lbrace: token.NoPos, List: []ast.Stmt{nc.Stmt()}, Rbrace: token.NoPos}, Else: nil}
 }
 
 func (*NodeConstructor) ImportSpec() ast.Node {
@@ -321,9 +327,9 @@ func (*NodeConstructor) UnaryExpr() ast.Node {
 	return &ast.UnaryExpr{}
 }
 
-func (*NodeConstructor) ValueSpec() ast.Node {
-	// Also created by GenDecl method
-	return &ast.ValueSpec{}
+// Returns ValueSpec which is list of pairs of variable names and values to assign
+func (nc *NodeConstructor) ValueSpec() ast.Node {
+	return &ast.ValueSpec{Names: []*ast.Ident{nc.generateVariableName()}, Values: []ast.Expr{nc.Expr()}}
 }
 
 var nodeConstructor = NewNodeConstructor()
