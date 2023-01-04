@@ -13,70 +13,104 @@ type NodeConstructor struct {
 	CreatedVariables      []*ast.Ident
 	DeclaredFunctionNames []*ast.Ident
 	GeneratedBranchLabels []*ast.Ident
+	Classes               map[NodeTypeClass][]NodeType
 	Dictionary            map[NodeType]func() ast.Node
 }
 
+// TODO: Consider adding those:
+// Comment:        func() ast.Node {},
+// CommentGroup:   func() ast.Node {},
+// Field:          func() ast.Node {},
+// FieldList:      func() ast.Node {},
+// File:           func() ast.Node {},
+// Package:        func() ast.Node {},
+// BadDecl:        func() ast.Node {},
+// BadExpr:        func() ast.Node {},
+// BadStmt:        func() ast.Node {},
+// BECAUSE: Those are currently available structures in ast package and their usage is not planned.
 func NewNodeConstructor() *NodeConstructor {
 	nc := NodeConstructor{}
 	nc.CreatedVariables = []*ast.Ident{}
+	nc.Classes = map[NodeTypeClass][]NodeType{
+		Expression: {
+			ArrayType, BasicLit, BinaryExpr, CallExpr, ChanType,
+			CompositeLit, Ellipsis, FuncLit, FuncType, Ident, IndexExpr,
+			IndexListExpr, InterfaceType, KeyValueExpr, MapType, ParenExpr,
+			SelectorExpr, SliceExpr, StarExpr, StructType, TypeAssertExpr,
+			UnaryExpr,
+		},
+		Statement: {
+			AssignStmt, BlockStmt, BranchStmt, CaseClause,
+			CommClause, DeclStmt, DeferStmt, EmptyStmt, ExprStmt, ForStmt,
+			GoStmt, IfStmt, IncDecStmt, LabeledStmt, RangeStmt, ReturnStmt,
+			SelectStmt, SendStmt, SwitchStmt, TypeSwitchStmt,
+		},
+		Declaration: {
+			FuncDecl, GenDecl,
+		},
+		Specification: {
+			ImportSpec, TypeSpec, ValueSpec,
+		},
+		TypeDeclaration: {
+			ArrayType, ChanType, FuncType, InterfaceType, MapType, StructType,
+			Ident, ParenExpr, SelectorExpr, StarExpr,
+		},
+	}
 	nc.Dictionary = map[NodeType]func() ast.Node{
-		// BECAUSE: Those are currently available structures in ast package and their usage is not planned.
-		// Comment:        func() ast.Node {},
-		// CommentGroup:   func() ast.Node {},
-		// Field:          func() ast.Node {},
-		// FieldList:      func() ast.Node {},
-		// File:           func() ast.Node {},
-		// Package:        func() ast.Node {},
-		// BadDecl:        func() ast.Node {},
-		// BadExpr:        func() ast.Node {},
-		// BadStmt:        func() ast.Node {},
-		ArrayType:      nc.ArrayType,
+		Ident: nc.Ident, // DONE:
+
+		ArrayType:     nc.ArrayType,
+		ChanType:      nc.ChanType,
+		FuncType:      nc.FuncType,
+		InterfaceType: nc.InterfaceType,
+		MapType:       nc.MapType,
+		StructType:    nc.StructType,
+
 		AssignStmt:     nc.AssignStmt, // DONE:
-		BasicLit:       nc.BasicLit,   // DONE:
-		BinaryExpr:     nc.BinaryExpr, // DONE:
 		BlockStmt:      nc.BlockStmt,  // DONE:
 		BranchStmt:     nc.BranchStmt,
-		CallExpr:       nc.CallExpr,
-		CaseClause:     nc.CaseClause,
-		ChanType:       nc.ChanType,
-		CommClause:     nc.CommClause,
-		CompositeLit:   nc.CompositeLit,
 		DeclStmt:       nc.DeclStmt, // DONE:
 		DeferStmt:      nc.DeferStmt,
-		Ellipsis:       nc.Ellipsis,
 		EmptyStmt:      nc.EmptyStmt,
 		ExprStmt:       nc.ExprStmt,
 		ForStmt:        nc.ForStmt,
-		FuncDecl:       nc.FuncDecl,
-		FuncLit:        nc.FuncLit,
-		FuncType:       nc.FuncType,
-		GenDecl:        nc.GenDecl, // DONE:
 		GoStmt:         nc.GoStmt,
-		Ident:          nc.Ident,  // DONE:
 		IfStmt:         nc.IfStmt, // DONE:
-		ImportSpec:     nc.ImportSpec,
 		IncDecStmt:     nc.IncDecStmt,
-		IndexExpr:      nc.IndexExpr,
-		IndexListExpr:  nc.IndexListExpr,
-		InterfaceType:  nc.InterfaceType,
-		KeyValueExpr:   nc.KeyValueExpr,
 		LabeledStmt:    nc.LabeledStmt,
-		MapType:        nc.MapType,
-		ParenExpr:      nc.ParenExpr,
 		RangeStmt:      nc.RangeStmt,
 		ReturnStmt:     nc.ReturnStmt,
-		SelectorExpr:   nc.SelectorExpr,
 		SelectStmt:     nc.SelectStmt,
 		SendStmt:       nc.SendStmt,
+		SwitchStmt:     nc.SwitchStmt,
+		TypeSwitchStmt: nc.TypeSwitchStmt,
+
+		BasicLit:     nc.BasicLit, // DONE:
+		CompositeLit: nc.CompositeLit,
+		FuncLit:      nc.FuncLit,
+
+		BinaryExpr:     nc.BinaryExpr, // DONE:
+		CallExpr:       nc.CallExpr,
+		IndexExpr:      nc.IndexExpr,
+		IndexListExpr:  nc.IndexListExpr,
+		KeyValueExpr:   nc.KeyValueExpr,
+		ParenExpr:      nc.ParenExpr,
+		SelectorExpr:   nc.SelectorExpr,
 		SliceExpr:      nc.SliceExpr,
 		StarExpr:       nc.StarExpr,
-		StructType:     nc.StructType,
-		SwitchStmt:     nc.SwitchStmt,
 		TypeAssertExpr: nc.TypeAssertExpr,
-		TypeSpec:       nc.TypeSpec,
-		TypeSwitchStmt: nc.TypeSwitchStmt,
 		UnaryExpr:      nc.UnaryExpr,
-		ValueSpec:      nc.ValueSpec, // DONE:
+
+		FuncDecl: nc.FuncDecl,
+		GenDecl:  nc.GenDecl, // DONE:
+
+		CaseClause: nc.CaseClause,
+		CommClause: nc.CommClause,
+		Ellipsis:   nc.Ellipsis,
+
+		ImportSpec: nc.ImportSpec,
+		TypeSpec:   nc.TypeSpec,
+		ValueSpec:  nc.ValueSpec, // DONE:
 	}
 	return &nc
 }
@@ -89,22 +123,27 @@ func (nc *NodeConstructor) Construct(nodeType NodeType) ast.Node {
 
 // Chooses a node type that confirms ast.Spec interface; initializes and returns
 func (nc *NodeConstructor) Spec() ast.Spec {
-	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Spec])).(ast.Spec)
+	return nc.Construct(*utilities.Pick(nc.Classes[Specification])).(ast.Spec)
 }
 
 // Chooses a node type that confirms ast.Decl interface; initializes and returns
 func (nc *NodeConstructor) Decl() ast.Decl {
-	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Declaration])).(ast.Decl)
+	return nc.Construct(*utilities.Pick(nc.Classes[Declaration])).(ast.Decl)
 }
 
 // Chooses a node type that confirms ast.Expr interface; initializes and returns
 func (nc *NodeConstructor) Expr() ast.Expr {
-	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Expression])).(ast.Expr)
+	return nc.Construct(*utilities.Pick(nc.Classes[Expression])).(ast.Expr)
 }
 
 // Chooses a node type that confirms ast.Stmt interface; initializes and returns
 func (nc *NodeConstructor) Stmt() ast.Stmt {
-	return nc.Construct(*utilities.Pick(Dict_NodeTypeClassToNodeType[Statement])).(ast.Stmt)
+	return nc.Construct(*utilities.Pick(nc.Classes[Statement])).(ast.Stmt)
+}
+
+// Chooses, initialized and returns an instance of random Type Declaration (Expression)
+func (nc *NodeConstructor) Type() ast.Expr {
+	return nc.Construct(*utilities.Pick(nc.Classes[TypeDeclaration])).(ast.Expr)
 }
 
 // MARK: Helper methods
@@ -128,7 +167,7 @@ func (nc *NodeConstructor) generateBranchLabel() *ast.Ident {
 }
 
 func (nc *NodeConstructor) basicIntegerLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.INT, Value: string(*utilities.Pick([]int{0, 1}))}
+	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(*utilities.Pick([]int{0, 1}))}
 }
 
 func (nc *NodeConstructor) basicFloatLiteral() *ast.BasicLit {
@@ -162,7 +201,7 @@ func (nc *NodeConstructor) BinaryExpr() ast.Node {
 }
 
 func (nc *NodeConstructor) BlockStmt() ast.Node {
-	return &ast.BlockStmt{List: []ast.Stmt{}, Lbrace: token.NoPos, Rbrace: token.NoPos}
+	return &ast.BlockStmt{List: []ast.Stmt{nc.Stmt()}, Lbrace: token.NoPos, Rbrace: token.NoPos}
 }
 
 func (nc *NodeConstructor) BranchStmt() ast.Node {
@@ -174,24 +213,25 @@ func (nc *NodeConstructor) CallExpr() ast.Node { // FIXME: Consider function cal
 }
 
 func (nc *NodeConstructor) CaseClause() ast.Node {
-	return &ast.CaseClause{
-		Case:  token.NoPos,
-		List:  []ast.Expr{nc.Expr()},
-		Colon: token.NoPos,
-		Body:  []ast.Stmt{nc.Stmt()},
-	}
+	return &ast.CaseClause{Case: token.NoPos, List: []ast.Expr{nc.Expr()}, Colon: token.NoPos, Body: []ast.Stmt{nc.Stmt()}}
 }
 
 func (nc *NodeConstructor) ChanType() ast.Node {
-	return &ast.ChanType{}
+	return &ast.ChanType{Begin: token.NoPos, Arrow: token.NoPos, Dir: *utilities.Pick([]ast.ChanDir{ast.SEND, ast.RECV}), Value: nc.Type()}
 }
 
 func (nc *NodeConstructor) CommClause() ast.Node {
-	return &ast.CommClause{}
+	return &ast.CommClause{Case: token.NoPos, Colon: token.NoPos, Body: []ast.Stmt{nc.Stmt()}}
 }
 
 func (nc *NodeConstructor) CompositeLit() ast.Node {
-	return &ast.CompositeLit{}
+	return &ast.CompositeLit{
+		Type:       nc.Type(),
+		Lbrace:     token.NoPos,
+		Elts:       []ast.Expr{nc.Expr()},
+		Rbrace:     token.NoPos,
+		Incomplete: false,
+	}
 }
 
 func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value assignment or declaration only
@@ -226,7 +266,7 @@ func (nc *NodeConstructor) FuncDecl() ast.Node {
 	return &ast.FuncDecl{Name: nc.generateFunctionName(), Type: nc.FuncType().(*ast.FuncType), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
-func (nc *NodeConstructor) FuncLit() ast.Node {
+func (nc *NodeConstructor) FuncLit() ast.Node { // TODO:
 	return &ast.FuncLit{}
 }
 
