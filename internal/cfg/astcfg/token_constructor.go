@@ -22,6 +22,8 @@ type TokenConstructor struct {
 	AcceptedByBinaryExpr  []token.Token
 	AccepetedByAssignStmt []token.Token
 	AcceptedByBranchStmt  []token.Token
+	AccepetedByIncDecStmt []token.Token
+	AcceptedByRangeStmt   []token.Token
 }
 
 func NewTokenConstructor() *TokenConstructor {
@@ -157,6 +159,14 @@ func NewTokenConstructor() *TokenConstructor {
 			token.CONTINUE,
 			token.GOTO,
 			token.FALLTHROUGH,
+		},
+		AccepetedByIncDecStmt: []token.Token{
+			token.INC,
+			token.DEC,
+		},
+		AcceptedByRangeStmt: []token.Token{
+			token.ASSIGN,
+			token.DEFINE,
 		},
 	}
 }

@@ -10,23 +10,22 @@ import (
 
 // struct is used to avoid cluttering the namespace with the names of node constructor functions
 type NodeConstructor struct {
-	CreatedVariables      []*ast.Ident
-	DeclaredFunctionNames []*ast.Ident
-	GeneratedBranchLabels []*ast.Ident
-	Classes               map[NodeTypeClass][]NodeType
-	Dictionary            map[NodeType]func() ast.Node
+	CreatedVariables        []*ast.Ident
+	DeclaredFunctionNames   []*ast.Ident
+	GeneratedBranchLabels   []*ast.Ident
+	AllowedPackagesToImport []string
+	Classes                 map[NodeTypeClass][]NodeType
+	Dictionary              map[NodeType]func() ast.Node
 }
 
 // TODO: Consider adding those:
-// Comment:        func() ast.Node {},
-// CommentGroup:   func() ast.Node {},
-// Field:          func() ast.Node {},
-// FieldList:      func() ast.Node {},
-// File:           func() ast.Node {},
-// Package:        func() ast.Node {},
-// BadDecl:        func() ast.Node {},
-// BadExpr:        func() ast.Node {},
-// BadStmt:        func() ast.Node {},
+// Comment
+// CommentGroup
+// File
+// Package
+// BadDecl
+// BadExpr
+// BadStmt
 // BECAUSE: Those are currently available structures in ast package and their usage is not planned.
 func NewNodeConstructor() *NodeConstructor {
 	nc := NodeConstructor{}
@@ -55,6 +54,9 @@ func NewNodeConstructor() *NodeConstructor {
 			ArrayType, ChanType, FuncType, InterfaceType, MapType, StructType,
 			Ident, ParenExpr, SelectorExpr, StarExpr,
 		},
+	}
+	nc.AllowedPackagesToImport = []string{
+		"fmt", "strings", "math",
 	}
 	nc.Dictionary = map[NodeType]func() ast.Node{
 		Ident: nc.Ident, // DONE:
@@ -111,6 +113,9 @@ func NewNodeConstructor() *NodeConstructor {
 		ImportSpec: nc.ImportSpec,
 		TypeSpec:   nc.TypeSpec,
 		ValueSpec:  nc.ValueSpec, // DONE:
+
+		Field:     nc.Field,
+		FieldList: nc.FieldList,
 	}
 	return &nc
 }
@@ -205,10 +210,10 @@ func (nc *NodeConstructor) BlockStmt() ast.Node {
 }
 
 func (nc *NodeConstructor) BranchStmt() ast.Node {
-	return &ast.BranchStmt{TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AcceptedByBranchStmt), Label: nc.generateBranchLabel()}
+	return &ast.BranchStmt{TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AcceptedByBranchStmt), Label: *utilities.Pick(nc.GeneratedBranchLabels)}
 }
 
-func (nc *NodeConstructor) CallExpr() ast.Node { // FIXME: Consider function calls with more than 1 arguments
+func (nc *NodeConstructor) CallExpr() ast.Node { // TODO: function calls with more than 1 arguments
 	return &ast.CallExpr{Fun: nc.Expr(), Lparen: token.NoPos, Args: []ast.Expr{nc.Expr()}, Ellipsis: token.NoPos, Rparen: token.NoPos}
 }
 
@@ -224,14 +229,8 @@ func (nc *NodeConstructor) CommClause() ast.Node {
 	return &ast.CommClause{Case: token.NoPos, Colon: token.NoPos, Body: []ast.Stmt{nc.Stmt()}}
 }
 
-func (nc *NodeConstructor) CompositeLit() ast.Node {
-	return &ast.CompositeLit{
-		Type:       nc.Type(),
-		Lbrace:     token.NoPos,
-		Elts:       []ast.Expr{nc.Expr()},
-		Rbrace:     token.NoPos,
-		Incomplete: false,
-	}
+func (nc *NodeConstructor) CompositeLit() ast.Node { // TODO: check Incomplete property
+	return &ast.CompositeLit{Type: nc.Type(), Lbrace: token.NoPos, Elts: []ast.Expr{nc.Expr()}, Rbrace: token.NoPos, Incomplete: false}
 }
 
 func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value assignment or declaration only
@@ -239,48 +238,52 @@ func (nc *NodeConstructor) DeclStmt() ast.Node { // either with initial value as
 }
 
 func (nc *NodeConstructor) DeferStmt() ast.Node {
-	return &ast.DeferStmt{}
+	return &ast.DeferStmt{Defer: token.NoPos, Call: nc.CallExpr().(*ast.CallExpr)}
 }
 
 func (nc *NodeConstructor) Ellipsis() ast.Node {
-	return &ast.Ellipsis{}
+	return &ast.Ellipsis{Ellipsis: token.NoPos, Elt: nc.Expr()}
 }
 
 func (nc *NodeConstructor) EmptyStmt() ast.Node {
-	return &ast.EmptyStmt{}
+	return &ast.EmptyStmt{Semicolon: token.NoPos, Implicit: false}
 }
 
 func (nc *NodeConstructor) ExprStmt() ast.Node {
-	return &ast.ExprStmt{}
+	return &ast.ExprStmt{X: nc.Expr()}
+}
+
+func (nc *NodeConstructor) Field() ast.Node {
+	return &ast.Field{Names: []*ast.Ident{nc.Ident().(*ast.Ident)}, Type: nc.Type(), Tag: nil}
+}
+
+func (nc *NodeConstructor) FieldList() ast.Node {
+	return &ast.FieldList{Opening: token.NoPos, List: []*ast.Field{nc.Field().(*ast.Field)}, Closing: token.NoPos}
 }
 
 func (nc *NodeConstructor) ForStmt() ast.Node {
-	return &ast.ForStmt{}
+	return &ast.ForStmt{For: token.NoPos, Init: nc.Stmt(), Cond: nc.Expr(), Post: nc.Stmt(), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
-func (nc *NodeConstructor) FuncDeclAsMethod() ast.Node {
-	return &ast.FuncDecl{}
-}
-
-func (nc *NodeConstructor) FuncDecl() ast.Node {
+func (nc *NodeConstructor) FuncDecl() ast.Node { // TODO: Consider adding receiver functions (methods)
 	return &ast.FuncDecl{Name: nc.generateFunctionName(), Type: nc.FuncType().(*ast.FuncType), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
 func (nc *NodeConstructor) FuncLit() ast.Node { // TODO:
-	return &ast.FuncLit{}
+	return &ast.FuncLit{Type: nc.FuncType().(*ast.FuncType), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
-func (nc *NodeConstructor) FuncType() ast.Node {
-	return &ast.FuncType{}
+func (nc *NodeConstructor) FuncType() ast.Node { // FIXME:
+	return &ast.FuncType{Func: token.NoPos, TypeParams: nc.FieldList().(*ast.FieldList), Params: nc.FieldList().(*ast.FieldList), Results: nc.FieldList().(*ast.FieldList)}
 }
 
+// Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
 func (nc *NodeConstructor) GenDecl() ast.Node {
-	// Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
 	return &ast.GenDecl{TokPos: token.NoPos, Tok: token.VAR, Lparen: token.NoPos, Rparen: token.NoPos, Specs: []ast.Spec{nc.ValueSpec().(*ast.ValueSpec)}}
 }
 
 func (nc *NodeConstructor) GoStmt() ast.Node {
-	return &ast.GoStmt{}
+	return &ast.GoStmt{Go: token.NoPos, Call: nc.CallExpr().(*ast.CallExpr)}
 }
 
 func (nc *NodeConstructor) Ident() ast.Node {
@@ -291,52 +294,52 @@ func (nc *NodeConstructor) IfStmt() ast.Node {
 	return &ast.IfStmt{If: token.NoPos, Init: nil, Cond: nc.Expr(), Body: &ast.BlockStmt{Lbrace: token.NoPos, List: []ast.Stmt{nc.Stmt()}, Rbrace: token.NoPos}, Else: nil}
 }
 
-func (nc *NodeConstructor) ImportSpec() ast.Node {
-	return &ast.ImportSpec{}
+func (nc *NodeConstructor) ImportSpec() ast.Node { // TODO: Store imported packages for later use
+	return &ast.ImportSpec{Name: nil, Path: &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: *utilities.Pick(nc.AllowedPackagesToImport)}, EndPos: token.NoPos}
 }
 
 func (nc *NodeConstructor) IncDecStmt() ast.Node {
-	return &ast.IncDecStmt{}
+	return &ast.IncDecStmt{X: nc.Expr(), TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AccepetedByIncDecStmt)}
 }
 
 func (nc *NodeConstructor) IndexExpr() ast.Node {
-	return &ast.IndexExpr{}
+	return &ast.IndexExpr{X: nc.Expr(), Lbrack: token.NoPos, Index: nc.Expr(), Rbrack: token.NoPos}
 }
 
-func (nc *NodeConstructor) IndexListExpr() ast.Node {
-	return &ast.IndexListExpr{}
+func (nc *NodeConstructor) IndexListExpr() ast.Node { // TODO: Multi-dimensional arrays
+	return &ast.IndexListExpr{X: nc.Expr(), Lbrack: token.NoPos, Indices: []ast.Expr{nc.Expr()}, Rbrack: token.NoPos}
 }
 
 func (nc *NodeConstructor) InterfaceType() ast.Node {
-	return &ast.InterfaceType{}
+	return &ast.InterfaceType{Interface: token.NoPos, Methods: nc.FieldList().(*ast.FieldList), Incomplete: false}
 }
 
 func (nc *NodeConstructor) KeyValueExpr() ast.Node {
-	return &ast.KeyValueExpr{}
+	return &ast.KeyValueExpr{Key: nc.Expr(), Colon: token.NoPos, Value: nc.Expr()}
 }
 
 func (nc *NodeConstructor) LabeledStmt() ast.Node {
-	return &ast.LabeledStmt{}
+	return &ast.LabeledStmt{Label: nc.generateBranchLabel(), Colon: token.NoPos, Stmt: nc.Stmt()}
 }
 
 func (nc *NodeConstructor) MapType() ast.Node {
-	return &ast.MapType{}
+	return &ast.MapType{Map: token.NoPos, Key: nc.Type(), Value: nc.Type()}
 }
 
 func (nc *NodeConstructor) ParenExpr() ast.Node {
-	return &ast.ParenExpr{}
+	return &ast.ParenExpr{Lparen: token.NoPos, X: nc.Expr(), Rparen: token.NoPos}
 }
 
 func (nc *NodeConstructor) RangeStmt() ast.Node {
-	return &ast.RangeStmt{}
+	return &ast.RangeStmt{For: token.NoPos, Key: nc.Expr(), Value: nc.Expr(), TokPos: token.NoPos, Tok: *utilities.Pick(tokenConstructor.AcceptedByRangeStmt), X: nc.Expr(), Body: nc.BlockStmt().(*ast.BlockStmt)}
 }
 
-func (nc *NodeConstructor) ReturnStmt() ast.Node {
-	return &ast.ReturnStmt{}
+func (nc *NodeConstructor) ReturnStmt() ast.Node { // TODO: multiple return values
+	return &ast.ReturnStmt{Return: token.NoPos, Results: []ast.Expr{nc.Expr()}}
 }
 
-func (nc *NodeConstructor) SelectorExpr() ast.Node {
-	return &ast.SelectorExpr{}
+func (nc *NodeConstructor) SelectorExpr() ast.Node { // FIXME: randomly produced X and Sel values will never work, maybe choose from imported libraries' exported functions, or previously declared struct instances that has methods
+	return &ast.SelectorExpr{X: nc.Expr(), Sel: &ast.Ident{}}
 }
 
 func (nc *NodeConstructor) SelectStmt() ast.Node {
