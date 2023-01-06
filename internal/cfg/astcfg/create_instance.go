@@ -39,7 +39,7 @@ func CreateInstance(nodeType NodeType) ast.Node {
 		return &ast.IndexListExpr{}
 	case SliceExpr:
 		return &ast.SliceExpr{}
-	case TypeAssertExpr: 
+	case TypeAssertExpr:
 		return &ast.TypeAssertExpr{}
 	case CallExpr:
 		return &ast.CallExpr{}

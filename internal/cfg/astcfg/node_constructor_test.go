@@ -1,6 +1,7 @@
 package astcfg
 
 import (
+	"go/ast"
 	"go/printer"
 	"go/token"
 	"os"
@@ -14,8 +15,8 @@ func Test_NodeConstructorSerial(t *testing.T) {
 }
 
 func Test_PrintAST(t *testing.T) {
-	n := nodeConstructor.Construct(BlockStmt)
+	n := nodeConstructor.BlockStmt()
 	fset := token.NewFileSet()
-	// ast.Print(fset, n)
+	ast.Print(fset, n)
 	printer.Fprint(os.Stdout, fset, n)
 }
