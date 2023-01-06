@@ -26,3 +26,9 @@ func GetCumulative[N Number64](input []N) []N {
 	}
 	return output
 }
+
+func ForEach[T any](slice []T, callback func(index int, value T)) {
+	for i, v := range slice {
+		callback(i, v)
+	}
+}
