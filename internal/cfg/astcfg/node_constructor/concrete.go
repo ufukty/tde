@@ -6,33 +6,33 @@ import (
 	"tde/internal/utilities"
 )
 
-func ArrayType(counter int) *ast.ArrayType {
+func ArrayType(limit int) *ast.ArrayType {
 	// FIXME: // is there any usecase thar is not achievable with a slice but only with a ...T array
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 
 	}
 	return &ast.ArrayType{
 		Lbrack: token.NoPos,
 		Len:    nil,
-		Elt:    Expr(counter - 1),
+		Elt:    Expr(limit - 1),
 	}
 }
 
-func AssignStmt(counter int) *ast.AssignStmt {
-	if counter == 0 {
+func AssignStmt(limit int) *ast.AssignStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.AssignStmt{
-		Lhs:    []ast.Expr{Expr(counter - 1)},
+		Lhs:    []ast.Expr{Expr(limit - 1)},
 		TokPos: token.NoPos,
 		Tok:    *utilities.Pick(tokenConstructor.AccepetedByAssignStmt),
-		Rhs:    []ast.Expr{Expr(counter - 1)},
+		Rhs:    []ast.Expr{Expr(limit - 1)},
 	}
 }
 
-func BasicLit(counter int) *ast.BasicLit {
-	if counter == 0 {
+func BasicLit(limit int) *ast.BasicLit {
+	if limit == 0 {
 		return nil
 	}
 	return (*utilities.Pick([]func() *ast.BasicLit{
@@ -43,33 +43,33 @@ func BasicLit(counter int) *ast.BasicLit {
 	}))()
 }
 
-func BinaryExpr(counter int) *ast.BinaryExpr {
-	if counter == 0 {
+func BinaryExpr(limit int) *ast.BinaryExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.BinaryExpr{
-		X:     Expr(counter - 1),
+		X:     Expr(limit - 1),
 		OpPos: token.NoPos,
 		Op:    *utilities.Pick(tokenConstructor.AcceptedByBinaryExpr),
-		Y:     Expr(counter - 1),
+		Y:     Expr(limit - 1),
 	}
 }
 
-func BlockStmt(counter int) *ast.BlockStmt {
-	if counter == 0 {
+func BlockStmt(limit int) *ast.BlockStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.BlockStmt{
 		List: []ast.Stmt{
-			Stmt(counter - 1),
+			Stmt(limit - 1),
 		},
 		Lbrace: token.NoPos,
 		Rbrace: token.NoPos,
 	}
 }
 
-func BranchStmt(counter int) *ast.BranchStmt {
-	if counter == 0 {
+func BranchStmt(limit int) *ast.BranchStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.BranchStmt{
@@ -79,36 +79,36 @@ func BranchStmt(counter int) *ast.BranchStmt {
 	}
 }
 
-func CallExpr(counter int) *ast.CallExpr {
+func CallExpr(limit int) *ast.CallExpr {
 	// TODO: function calls with more than 1 arguments
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.CallExpr{
-		Fun:      Expr(counter - 1),
+		Fun:      Expr(limit - 1),
 		Lparen:   token.NoPos,
-		Args:     []ast.Expr{Expr(counter - 1)},
+		Args:     []ast.Expr{Expr(limit - 1)},
 		Ellipsis: token.NoPos,
 		Rparen:   token.NoPos,
 	}
 }
 
-func CaseClause(counter int) *ast.CaseClause {
-	if counter == 0 {
+func CaseClause(limit int) *ast.CaseClause {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.CaseClause{
 		Case:  token.NoPos,
-		List:  []ast.Expr{Expr(counter - 1)},
+		List:  []ast.Expr{Expr(limit - 1)},
 		Colon: token.NoPos,
 		Body: []ast.Stmt{
-			Stmt(counter - 1),
+			Stmt(limit - 1),
 		},
 	}
 }
 
-func ChanType(counter int) *ast.ChanType {
-	if counter == 0 {
+func ChanType(limit int) *ast.ChanType {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ChanType{
@@ -118,69 +118,69 @@ func ChanType(counter int) *ast.ChanType {
 			ast.SEND,
 			ast.RECV,
 		}),
-		Value: Type(counter - 1),
+		Value: Type(limit - 1),
 	}
 }
 
-func CommClause(counter int) *ast.CommClause {
-	if counter == 0 {
+func CommClause(limit int) *ast.CommClause {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.CommClause{
 		Case:  token.NoPos,
 		Colon: token.NoPos,
 		Body: []ast.Stmt{
-			Stmt(counter - 1),
+			Stmt(limit - 1),
 		},
 	}
 }
 
-func CompositeLit(counter int) *ast.CompositeLit {
+func CompositeLit(limit int) *ast.CompositeLit {
 	// TODO: check Incomplete property
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.CompositeLit{
-		Type:       Type(counter - 1),
+		Type:       Type(limit - 1),
 		Lbrace:     token.NoPos,
-		Elts:       []ast.Expr{Expr(counter - 1)},
+		Elts:       []ast.Expr{Expr(limit - 1)},
 		Rbrace:     token.NoPos,
 		Incomplete: false,
 	}
 }
 
-func DeclStmt(counter int) *ast.DeclStmt {
+func DeclStmt(limit int) *ast.DeclStmt {
 	// either with initial value assignment or declaration only
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.DeclStmt{
-		Decl: GenDecl(counter - 1),
+		Decl: GenDecl(limit - 1),
 	}
 }
 
-func DeferStmt(counter int) *ast.DeferStmt {
-	if counter == 0 {
+func DeferStmt(limit int) *ast.DeferStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.DeferStmt{
 		Defer: token.NoPos,
-		Call:  CallExpr(counter - 1),
+		Call:  CallExpr(limit - 1),
 	}
 }
 
-func Ellipsis(counter int) *ast.Ellipsis {
-	if counter == 0 {
+func Ellipsis(limit int) *ast.Ellipsis {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.Ellipsis{
 		Ellipsis: token.NoPos,
-		Elt:      Expr(counter - 1),
+		Elt:      Expr(limit - 1),
 	}
 }
 
-func EmptyStmt(counter int) *ast.EmptyStmt {
-	if counter == 0 {
+func EmptyStmt(limit int) *ast.EmptyStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.EmptyStmt{
@@ -189,93 +189,93 @@ func EmptyStmt(counter int) *ast.EmptyStmt {
 	}
 }
 
-func ExprStmt(counter int) *ast.ExprStmt {
-	if counter == 0 {
+func ExprStmt(limit int) *ast.ExprStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ExprStmt{
-		X: Expr(counter - 1),
+		X: Expr(limit - 1),
 	}
 }
 
-func Field(counter int) *ast.Field {
-	if counter == 0 {
+func Field(limit int) *ast.Field {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.Field{
 		Names: []*ast.Ident{
-			Ident(counter - 1),
+			Ident(limit - 1),
 		},
-		Type: Type(counter - 1),
+		Type: Type(limit - 1),
 		Tag:  nil,
 	}
 }
 
-func FieldList(counter int) *ast.FieldList {
-	if counter == 0 {
+func FieldList(limit int) *ast.FieldList {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.FieldList{
 		Opening: token.NoPos,
 		List: []*ast.Field{
-			Field(counter - 1),
+			Field(limit - 1),
 		},
 		Closing: token.NoPos,
 	}
 }
 
-func ForStmt(counter int) *ast.ForStmt {
-	if counter == 0 {
+func ForStmt(limit int) *ast.ForStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ForStmt{
 		For:  token.NoPos,
-		Init: Stmt(counter - 1),
-		Cond: Expr(counter - 1),
-		Post: Stmt(counter - 1),
-		Body: BlockStmt(counter - 1),
+		Init: Stmt(limit - 1),
+		Cond: Expr(limit - 1),
+		Post: Stmt(limit - 1),
+		Body: BlockStmt(limit - 1),
 	}
 }
 
-func FuncDecl(counter int) *ast.FuncDecl {
+func FuncDecl(limit int) *ast.FuncDecl {
 	// TODO: Consider adding receiver functions (methods)
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.FuncDecl{
 		Name: generateFunctionName(),
-		Type: FuncType(counter - 1),
-		Body: BlockStmt(counter - 1),
+		Type: FuncType(limit - 1),
+		Body: BlockStmt(limit - 1),
 	}
 }
 
-func FuncLit(counter int) *ast.FuncLit {
+func FuncLit(limit int) *ast.FuncLit {
 	// TODO:
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.FuncLit{
-		Type: FuncType(counter - 1),
-		Body: BlockStmt(counter - 1),
+		Type: FuncType(limit - 1),
+		Body: BlockStmt(limit - 1),
 	}
 }
 
-func FuncType(counter int) *ast.FuncType {
+func FuncType(limit int) *ast.FuncType {
 	// FIXME:
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.FuncType{
 		Func:       token.NoPos,
-		TypeParams: FieldList(counter - 1),
-		Params:     FieldList(counter - 1),
-		Results:    FieldList(counter - 1),
+		TypeParams: FieldList(limit - 1),
+		Params:     FieldList(limit - 1),
+		Results:    FieldList(limit - 1),
 	}
 }
 
 // Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
-func GenDecl(counter int) *ast.GenDecl {
-	if counter == 0 {
+func GenDecl(limit int) *ast.GenDecl {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.GenDecl{
@@ -284,56 +284,56 @@ func GenDecl(counter int) *ast.GenDecl {
 		Lparen: token.NoPos,
 		Rparen: token.NoPos,
 		Specs: []ast.Spec{
-			ValueSpec(counter - 1),
+			ValueSpec(limit - 1),
 		},
 	}
 }
 
-func GoStmt(counter int) *ast.GoStmt {
-	if counter == 0 {
+func GoStmt(limit int) *ast.GoStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.GoStmt{
 		Go:   token.NoPos,
-		Call: CallExpr(counter - 1),
+		Call: CallExpr(limit - 1),
 	}
 }
 
-func Ident(counter int) *ast.Ident {
-	if counter == 0 {
+func Ident(limit int) *ast.Ident {
+	if limit == 0 {
 		return nil
 	}
 	return generateVariableName()
 }
 
 // only valid values are types such int, float, string, bool
-func IdentType(counter int) *ast.Ident {
-	if counter == 0 {
+func IdentType(limit int) *ast.Ident {
+	if limit == 0 {
 		return nil
 	}
 	return ast.NewIdent(*utilities.Pick([]string{"int", "float", "string", "bool"}))
 }
 
-func IfStmt(counter int) *ast.IfStmt {
-	if counter == 0 {
+func IfStmt(limit int) *ast.IfStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.IfStmt{
 		If:   token.NoPos,
 		Init: nil,
-		Cond: Expr(counter - 1),
+		Cond: Expr(limit - 1),
 		Body: &ast.BlockStmt{
 			Lbrace: token.NoPos,
-			List:   []ast.Stmt{Stmt(counter - 1)},
+			List:   []ast.Stmt{Stmt(limit - 1)},
 			Rbrace: token.NoPos,
 		},
 		Else: nil,
 	}
 }
 
-func ImportSpec(counter int) *ast.ImportSpec {
+func ImportSpec(limit int) *ast.ImportSpec {
 	// TODO: Store imported packages for later use
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ImportSpec{
@@ -347,136 +347,136 @@ func ImportSpec(counter int) *ast.ImportSpec {
 	}
 }
 
-func IncDecStmt(counter int) *ast.IncDecStmt {
-	if counter == 0 {
+func IncDecStmt(limit int) *ast.IncDecStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.IncDecStmt{
-		X:      Expr(counter - 1),
+		X:      Expr(limit - 1),
 		TokPos: token.NoPos,
 		Tok:    *utilities.Pick(tokenConstructor.AccepetedByIncDecStmt),
 	}
 }
 
-func IndexExpr(counter int) *ast.IndexExpr {
-	if counter == 0 {
+func IndexExpr(limit int) *ast.IndexExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.IndexExpr{
-		X:      Expr(counter - 1),
+		X:      Expr(limit - 1),
 		Lbrack: token.NoPos,
-		Index:  Expr(counter - 1),
+		Index:  Expr(limit - 1),
 		Rbrack: token.NoPos,
 	}
 }
 
-func IndexListExpr(counter int) *ast.IndexListExpr {
+func IndexListExpr(limit int) *ast.IndexListExpr {
 	// TODO: Multi-dimensional arrays
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.IndexListExpr{
-		X:       Expr(counter - 1),
+		X:       Expr(limit - 1),
 		Lbrack:  token.NoPos,
-		Indices: []ast.Expr{Expr(counter - 1)},
+		Indices: []ast.Expr{Expr(limit - 1)},
 		Rbrack:  token.NoPos,
 	}
 }
 
-func InterfaceType(counter int) *ast.InterfaceType {
-	if counter == 0 {
+func InterfaceType(limit int) *ast.InterfaceType {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.InterfaceType{
 		Interface:  token.NoPos,
-		Methods:    FieldList(counter - 1),
+		Methods:    FieldList(limit - 1),
 		Incomplete: false,
 	}
 }
 
-func KeyValueExpr(counter int) *ast.KeyValueExpr {
-	if counter == 0 {
+func KeyValueExpr(limit int) *ast.KeyValueExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.KeyValueExpr{
-		Key:   Expr(counter - 1),
+		Key:   Expr(limit - 1),
 		Colon: token.NoPos,
-		Value: Expr(counter - 1),
+		Value: Expr(limit - 1),
 	}
 }
 
-func LabeledStmt(counter int) *ast.LabeledStmt {
-	if counter == 0 {
+func LabeledStmt(limit int) *ast.LabeledStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.LabeledStmt{
 		Label: generateBranchLabel(),
 		Colon: token.NoPos,
-		Stmt:  Stmt(counter - 1),
+		Stmt:  Stmt(limit - 1),
 	}
 }
 
-func MapType(counter int) *ast.MapType {
-	if counter == 0 {
+func MapType(limit int) *ast.MapType {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.MapType{
 		Map:   token.NoPos,
-		Key:   Type(counter - 1),
-		Value: Type(counter - 1),
+		Key:   Type(limit - 1),
+		Value: Type(limit - 1),
 	}
 }
 
-func ParenExpr(counter int) *ast.ParenExpr {
-	if counter == 0 {
+func ParenExpr(limit int) *ast.ParenExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ParenExpr{
 		Lparen: token.NoPos,
-		X:      Expr(counter - 1),
+		X:      Expr(limit - 1),
 		Rparen: token.NoPos,
 	}
 }
 
-func RangeStmt(counter int) *ast.RangeStmt {
-	if counter == 0 {
+func RangeStmt(limit int) *ast.RangeStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.RangeStmt{
 		For:    token.NoPos,
-		Key:    Expr(counter - 1),
-		Value:  Expr(counter - 1),
+		Key:    Expr(limit - 1),
+		Value:  Expr(limit - 1),
 		TokPos: token.NoPos,
 		Tok:    *utilities.Pick(tokenConstructor.AcceptedByRangeStmt),
-		X:      Expr(counter - 1),
-		Body:   BlockStmt(counter - 1),
+		X:      Expr(limit - 1),
+		Body:   BlockStmt(limit - 1),
 	}
 }
 
-func ReturnStmt(counter int) *ast.ReturnStmt {
+func ReturnStmt(limit int) *ast.ReturnStmt {
 	// TODO: multiple return values
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ReturnStmt{
 		Return:  token.NoPos,
-		Results: []ast.Expr{Expr(counter - 1)},
+		Results: []ast.Expr{Expr(limit - 1)},
 	}
 }
 
-func SelectorExpr(counter int) *ast.SelectorExpr {
+func SelectorExpr(limit int) *ast.SelectorExpr {
 	// FIXME: randomly produced X and Sel values will never work, maybe choose from imported libraries' exported functions, or previously declared struct instances that has methods
-	if counter == 0 {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.SelectorExpr{
-		X:   Expr(counter - 1),
+		X:   Expr(limit - 1),
 		Sel: &ast.Ident{},
 	}
 }
 
-func SelectStmt(counter int) *ast.SelectStmt {
-	if counter == 0 {
+func SelectStmt(limit int) *ast.SelectStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.SelectStmt{
@@ -485,124 +485,124 @@ func SelectStmt(counter int) *ast.SelectStmt {
 	}
 }
 
-func SendStmt(counter int) *ast.SendStmt {
-	if counter == 0 {
+func SendStmt(limit int) *ast.SendStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.SendStmt{
-		Chan:  Expr(counter - 1),
+		Chan:  Expr(limit - 1),
 		Arrow: token.NoPos,
-		Value: Expr(counter - 1),
+		Value: Expr(limit - 1),
 	}
 }
 
-func SliceExpr(counter int) *ast.SliceExpr {
-	if counter == 0 {
+func SliceExpr(limit int) *ast.SliceExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.SliceExpr{
-		X:      Expr(counter - 1),
+		X:      Expr(limit - 1),
 		Lbrack: token.NoPos,
-		Low:    Expr(counter - 1),
-		High:   Expr(counter - 1),
+		Low:    Expr(limit - 1),
+		High:   Expr(limit - 1),
 		Max:    nil,
 		Slice3: false,
 		Rbrack: token.NoPos,
 	}
 }
 
-func StarExpr(counter int) *ast.StarExpr {
-	if counter == 0 {
+func StarExpr(limit int) *ast.StarExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.StarExpr{
 		Star: token.NoPos,
-		X:    Expr(counter - 1),
+		X:    Expr(limit - 1),
 	}
 }
 
-func StructType(counter int) *ast.StructType {
-	if counter == 0 {
+func StructType(limit int) *ast.StructType {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.StructType{
 		Struct:     token.NoPos,
-		Fields:     FieldList(counter - 1),
+		Fields:     FieldList(limit - 1),
 		Incomplete: false,
 	}
 }
 
-func SwitchStmt(counter int) *ast.SwitchStmt {
-	if counter == 0 {
+func SwitchStmt(limit int) *ast.SwitchStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.SwitchStmt{
 		Switch: token.NoPos,
-		Init:   Stmt(counter - 1),
+		Init:   Stmt(limit - 1),
 		Tag:    nil,
-		Body:   BlockStmt(counter - 1),
+		Body:   BlockStmt(limit - 1),
 	}
 }
 
-func TypeAssertExpr(counter int) *ast.TypeAssertExpr {
-	if counter == 0 {
+func TypeAssertExpr(limit int) *ast.TypeAssertExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.TypeAssertExpr{
-		X:      Expr(counter - 1),
+		X:      Expr(limit - 1),
 		Lparen: token.NoPos,
-		Type:   InterfaceType(counter - 1),
+		Type:   InterfaceType(limit - 1),
 		Rparen: token.NoPos,
 	}
 }
 
 // rel. type keyword
-func TypeSpec(counter int) *ast.TypeSpec {
-	if counter == 0 {
+func TypeSpec(limit int) *ast.TypeSpec {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.TypeSpec{
 		Doc:        nil,
-		Name:       Ident(counter - 1),
-		TypeParams: FieldList(counter - 1),
+		Name:       Ident(limit - 1),
+		TypeParams: FieldList(limit - 1),
 		Assign:     token.NoPos,
 		Type:       nil,
 		Comment:    nil,
 	}
 }
 
-func TypeSwitchStmt(counter int) *ast.TypeSwitchStmt {
-	if counter == 0 {
+func TypeSwitchStmt(limit int) *ast.TypeSwitchStmt {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.TypeSwitchStmt{
 		Switch: token.NoPos,
-		Init:   Stmt(counter - 1),
-		Assign: Stmt(counter - 1),
-		Body:   BlockStmt(counter - 1),
+		Init:   Stmt(limit - 1),
+		Assign: Stmt(limit - 1),
+		Body:   BlockStmt(limit - 1),
 	}
 }
 
-func UnaryExpr(counter int) *ast.UnaryExpr {
-	if counter == 0 {
+func UnaryExpr(limit int) *ast.UnaryExpr {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.UnaryExpr{
 		OpPos: token.NoPos,
 		Op:    *utilities.Pick(tokenConstructor.AcceptedByUnaryExpr),
-		X:     Expr(counter - 1),
+		X:     Expr(limit - 1),
 	}
 }
 
 // Returns ValueSpec which is list of pairs of variable names and values to assign
-func ValueSpec(counter int) *ast.ValueSpec {
-	if counter == 0 {
+func ValueSpec(limit int) *ast.ValueSpec {
+	if limit == 0 {
 		return nil
 	}
 	return &ast.ValueSpec{
 		Names: []*ast.Ident{
 			generateVariableName(),
 		},
-		Values: []ast.Expr{Expr(counter - 1)},
+		Values: []ast.Expr{Expr(limit - 1)},
 	}
 }

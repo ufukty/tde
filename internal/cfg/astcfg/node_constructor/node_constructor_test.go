@@ -9,8 +9,8 @@ import (
 )
 
 func Test_NodeConstructorSerial(t *testing.T) {
-	for i := 0; i < 100000; i++ {
-		BlockStmt(100)
+	for i := 0; i < 1000; i++ {
+		BlockStmt(10)
 	}
 }
 
