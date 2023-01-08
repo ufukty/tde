@@ -1,4 +1,4 @@
-package astcfg
+package node_construtor
 
 import (
 	"go/ast"
@@ -9,13 +9,13 @@ import (
 )
 
 func Test_NodeConstructorSerial(t *testing.T) {
-	for i := 0; i < 10; i++ {
-		nodeConstructor.BlockStmt()
+	for i := 0; i < 100000; i++ {
+		BlockStmt(100)
 	}
 }
 
 func Test_PrintAST(t *testing.T) {
-	n := nodeConstructor.BlockStmt()
+	n := BlockStmt(100)
 	fset := token.NewFileSet()
 	ast.Print(fset, n)
 	printer.Fprint(os.Stdout, fset, n)

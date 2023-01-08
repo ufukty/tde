@@ -1,4 +1,4 @@
-package astcfg
+package node_construtor
 
 import "go/token"
 
