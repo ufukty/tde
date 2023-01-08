@@ -59,70 +59,9 @@ const (
 	TypeSwitchStmt
 	UnaryExpr
 	ValueSpec
+	// Custom types:
+	IdentType
 )
-
-var stringRepresentation = map[NodeType]string{
-	ArrayType:      "ArrayType",
-	AssignStmt:     "AssignStmt",
-	BadDecl:        "BadDecl",
-	BadExpr:        "BadExpr",
-	BadStmt:        "BadStmt",
-	BasicLit:       "BasicLit",
-	BinaryExpr:     "BinaryExpr",
-	BlockStmt:      "BlockStmt",
-	BranchStmt:     "BranchStmt",
-	CallExpr:       "CallExpr",
-	CaseClause:     "CaseClause",
-	ChanType:       "ChanType",
-	CommClause:     "CommClause",
-	Comment:        "Comment",
-	CommentGroup:   "CommentGroup",
-	CompositeLit:   "CompositeLit",
-	DeclStmt:       "DeclStmt",
-	DeferStmt:      "DeferStmt",
-	Ellipsis:       "Ellipsis",
-	EmptyStmt:      "EmptyStmt",
-	ExprStmt:       "ExprStmt",
-	Field:          "Field",
-	FieldList:      "FieldList",
-	File:           "File",
-	ForStmt:        "ForStmt",
-	FuncDecl:       "FuncDecl",
-	FuncLit:        "FuncLit",
-	FuncType:       "FuncType",
-	GenDecl:        "GenDecl",
-	GoStmt:         "GoStmt",
-	Ident:          "Ident",
-	IfStmt:         "IfStmt",
-	ImportSpec:     "ImportSpec",
-	IncDecStmt:     "IncDecStmt",
-	IndexExpr:      "IndexExpr",
-	IndexListExpr:  "IndexListExpr",
-	InterfaceType:  "InterfaceType",
-	KeyValueExpr:   "KeyValueExpr",
-	LabeledStmt:    "LabeledStmt",
-	MapType:        "MapType",
-	Package:        "Package",
-	ParenExpr:      "ParenExpr",
-	RangeStmt:      "RangeStmt",
-	ReturnStmt:     "ReturnStmt",
-	SelectorExpr:   "SelectorExpr",
-	SelectStmt:     "SelectStmt",
-	SendStmt:       "SendStmt",
-	SliceExpr:      "SliceExpr",
-	StarExpr:       "StarExpr",
-	StructType:     "StructType",
-	SwitchStmt:     "SwitchStmt",
-	TypeAssertExpr: "TypeAssertExpr",
-	TypeSpec:       "TypeSpec",
-	TypeSwitchStmt: "TypeSwitchStmt",
-	UnaryExpr:      "UnaryExpr",
-	ValueSpec:      "ValueSpec",
-}
-
-func (n NodeType) String() string {
-	return stringRepresentation[n]
-}
 
 var orderedNodeTypes = []NodeType{}
 

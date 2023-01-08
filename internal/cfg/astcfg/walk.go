@@ -13,13 +13,72 @@ func walkEachNode[T ast.Node](nodeSlice []T, parentTrace []ast.Node, childIndexT
 	}
 }
 
+// var FieldMap = map[ast.Node][]any{
+
+// 	// *ast.Comment:
+// 	// *ast.BadExpr:
+// 	// *ast.Ident:
+// 	// *ast.BasicLit:
+// 	// *ast.BadStmt
+// 	// *ast.EmptyStmt
+// 	// *ast.BadDecl:
+// 	// *ast.Package
+// 	// *ast.File
+// 	*ast.CommentGroup: []any{n.List},
+// 	*ast.Field:        []any{n.Names, n.Type, n.Tag},
+// 	*ast.FieldList:    []any{n.List},
+// 	// Expressions
+// 	*ast.Ellipsis:       []any{n.Elt},
+// 	*ast.FuncLit:        []any{n.Type, n.Body},
+// 	*ast.CompositeLit:   []any{n.Type, n.Elts},
+// 	*ast.ParenExpr:      []any{n.X},
+// 	*ast.SelectorExpr:   []any{n.X, n.Sel},
+// 	*ast.IndexExpr:      []any{n.X, n.Index},
+// 	*ast.IndexListExpr:  []any{n.X, n.Indices},
+// 	*ast.SliceExpr:      []any{n.X, n.Low, n.High, n.Max},
+// 	*ast.TypeAssertExpr: []any{n.X, n.Type},
+// 	*ast.CallExpr:       []any{n.Fun, n.Args},
+// 	*ast.StarExpr:       []any{n.X},
+// 	*ast.UnaryExpr:      []any{n.X},
+// 	*ast.BinaryExpr:     []any{n.X, n.Y},
+// 	*ast.KeyValueExpr:   []any{n.Key, n.Value},
+// 	// Types
+// 	*ast.ArrayType:     []any{n.Len, n.Elt},
+// 	*ast.StructType:    []any{n.Fields},
+// 	*ast.FuncType:      []any{n.TypeParams, n.Params, n.Results},
+// 	*ast.InterfaceType: []any{n.Methods},
+// 	*ast.MapType:       []any{n.Key, n.Value},
+// 	*ast.ChanType:      []any{n.Value},
+// 	// Statements
+// 	*ast.DeclStmt:       []any{n.Decl},
+// 	*ast.LabeledStmt:    []any{n.Label, n.Stmt},
+// 	*ast.ExprStmt:       []any{n.X},
+// 	*ast.SendStmt:       []any{n.Chan, n.Value},
+// 	*ast.IncDecStmt:     []any{n.X},
+// 	*ast.AssignStmt:     []any{n.Lhs, n.Rhs},
+// 	*ast.GoStmt:         []any{n.Call},
+// 	*ast.DeferStmt:      []any{n.Call},
+// 	*ast.ReturnStmt:     []any{n.Results},
+// 	*ast.BranchStmt:     []any{n.Label},
+// 	*ast.BlockStmt:      []any{n.List},
+// 	*ast.IfStmt:         []any{n.Init, n.Cond, n.Body, n.Else},
+// 	*ast.CaseClause:     []any{n.List, n.Body},
+// 	*ast.SwitchStmt:     []any{n.Init, n.Tag, n.Body},
+// 	*ast.TypeSwitchStmt: []any{n.Init, n.Assign, n.Body},
+// 	*ast.CommClause:     []any{n.Comm, n.Body},
+// 	*ast.SelectStmt:     []any{n.Body},
+// 	*ast.ForStmt:        []any{n.Init, n.Cond, n.Post, n.Body},
+// 	*ast.RangeStmt:      []any{n.Key, n.Value, n.X, n.Body},
+// 	// Declarations
+// 	*ast.ImportSpec: []any{n.Name, n.Path},
+// 	*ast.ValueSpec:  []any{n.Names, n.Type, n.Values},
+// 	*ast.TypeSpec:   []any{n.Name, n.TypeParams, n.Type},
+// 	*ast.GenDecl:    []any{n.Specs},
+// 	*ast.FuncDecl:   []any{n.Recv, n.Name, n.Type, n.Body},
+// }
+
 func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callback func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int)) {
 	callback(n, parentTrace, childIndexTrace)
-
-	if n == nil {
-		return
-	}
-
 	parentTrace = append(parentTrace, n)
 	switch n := n.(type) {
 
@@ -29,15 +88,25 @@ func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callb
 		// nothing to do
 
 	case *ast.CommentGroup:
-		walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		if n.List != nil {
+			walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.Field:
-		walkEachNode(n.Names, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Tag, parentTrace, append(childIndexTrace, 2), callback)
+		if n.Names != nil {
+			walkEachNode(n.Names, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Tag != nil {
+			walkHelper(n.Tag, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.FieldList:
-		walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		if n.List != nil {
+			walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	// MARK: Expressions
 
@@ -45,82 +114,154 @@ func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callb
 		// nothing to do
 
 	case *ast.Ellipsis:
-		walkHelper(n.Elt, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Elt != nil {
+			walkHelper(n.Elt, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.FuncLit:
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.CompositeLit:
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Elts, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Elts != nil {
+			walkEachNode(n.Elts, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.ParenExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.SelectorExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Sel, parentTrace, append(childIndexTrace, 1), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Sel != nil {
+			walkHelper(n.Sel, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.IndexExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Index, parentTrace, append(childIndexTrace, 1), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Index != nil {
+			walkHelper(n.Index, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.IndexListExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Indices, parentTrace, append(childIndexTrace, 1), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Indices != nil {
+			walkEachNode(n.Indices, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.SliceExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Low, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.High, parentTrace, append(childIndexTrace, 2), callback)
-		walkHelper(n.Max, parentTrace, append(childIndexTrace, 3), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Low != nil {
+			walkHelper(n.Low, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.High != nil {
+			walkHelper(n.High, parentTrace, append(childIndexTrace, 2), callback)
+		}
+		if n.Max != nil {
+			walkHelper(n.Max, parentTrace, append(childIndexTrace, 3), callback)
+		}
 
 	case *ast.TypeAssertExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.CallExpr:
-		walkHelper(n.Fun, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Args, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Fun != nil {
+			walkHelper(n.Fun, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Args != nil {
+			walkEachNode(n.Args, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.StarExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.UnaryExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.BinaryExpr:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Y, parentTrace, append(childIndexTrace, 1), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Y != nil {
+			walkHelper(n.Y, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.KeyValueExpr:
-		walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Key != nil {
+			walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Value != nil {
+			walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	// MARK: Types
 
 	case *ast.ArrayType:
-		walkHelper(n.Len, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Elt, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Len != nil {
+			walkHelper(n.Len, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Elt != nil {
+			walkHelper(n.Elt, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.StructType:
-		walkHelper(n.Fields, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Fields != nil {
+			walkHelper(n.Fields, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.FuncType:
-		walkHelper(n.TypeParams, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Params, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Results, parentTrace, append(childIndexTrace, 2), callback)
+		if n.TypeParams != nil {
+			walkHelper(n.TypeParams, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Params != nil {
+			walkHelper(n.Params, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Results != nil {
+			walkHelper(n.Results, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.InterfaceType:
-		walkHelper(n.Methods, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Methods != nil {
+			walkHelper(n.Methods, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.MapType:
-		walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Key != nil {
+			walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Value != nil {
+			walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.ChanType:
-		walkHelper(n.Value, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Value != nil {
+			walkHelper(n.Value, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	// MARK: Statements
 
@@ -128,121 +269,226 @@ func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callb
 		// nothing to do
 
 	case *ast.DeclStmt:
-		walkHelper(n.Decl, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Decl != nil {
+			walkHelper(n.Decl, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.EmptyStmt:
 		// nothing to do
 
 	case *ast.LabeledStmt:
-		walkHelper(n.Label, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Stmt, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Label != nil {
+			walkHelper(n.Label, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Stmt != nil {
+			walkHelper(n.Stmt, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.ExprStmt:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.SendStmt:
-		walkHelper(n.Chan, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Chan != nil {
+			walkHelper(n.Chan, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Value != nil {
+			walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.IncDecStmt:
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.AssignStmt:
-		walkEachNode(n.Lhs, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Rhs, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Lhs != nil {
+			walkEachNode(n.Lhs, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Rhs != nil {
+			walkEachNode(n.Rhs, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.GoStmt:
-		walkHelper(n.Call, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Call != nil {
+			walkHelper(n.Call, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.DeferStmt:
-		walkHelper(n.Call, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Call != nil {
+			walkHelper(n.Call, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.ReturnStmt:
-		walkEachNode(n.Results, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Results != nil {
+			walkEachNode(n.Results, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.BranchStmt:
-		walkHelper(n.Label, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Label != nil {
+			walkHelper(n.Label, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.BlockStmt:
-		walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		if n.List != nil {
+			walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.IfStmt:
-		walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Cond, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
-		walkHelper(n.Else, parentTrace, append(childIndexTrace, 3), callback)
+		if n.Init != nil {
+			walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Cond != nil {
+			walkHelper(n.Cond, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
+		}
+		if n.Else != nil {
+			walkHelper(n.Else, parentTrace, append(childIndexTrace, 3), callback)
+		}
 
 	case *ast.CaseClause:
-		walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		if n.List != nil {
+			walkEachNode(n.List, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Body != nil {
+			walkEachNode(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.SwitchStmt:
-		walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Tag, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
+		if n.Init != nil {
+			walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Tag != nil {
+			walkHelper(n.Tag, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.TypeSwitchStmt:
-		walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Assign, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
+		if n.Init != nil {
+			walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Assign != nil {
+			walkHelper(n.Assign, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.CommClause:
-		walkHelper(n.Comm, parentTrace, append(childIndexTrace, 0), callback)
-		walkEachNode(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Comm != nil {
+			walkHelper(n.Comm, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Body != nil {
+			walkEachNode(n.Body, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.SelectStmt:
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.ForStmt:
-		walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Cond, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Post, parentTrace, append(childIndexTrace, 2), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		if n.Init != nil {
+			walkHelper(n.Init, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Cond != nil {
+			walkHelper(n.Cond, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Post != nil {
+			walkHelper(n.Post, parentTrace, append(childIndexTrace, 2), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		}
 
 	case *ast.RangeStmt:
-		walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.X, parentTrace, append(childIndexTrace, 2), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		if n.Key != nil {
+			walkHelper(n.Key, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Value != nil {
+			walkHelper(n.Value, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.X != nil {
+			walkHelper(n.X, parentTrace, append(childIndexTrace, 2), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		}
 
 	// MARK: Declarations
 
 	case *ast.ImportSpec:
-		walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Path, parentTrace, append(childIndexTrace, 1), callback)
+		if n.Name != nil {
+			walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Path != nil {
+			walkHelper(n.Path, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
 	case *ast.ValueSpec:
-		walkEachNode(n.Names, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
-		walkEachNode(n.Values, parentTrace, append(childIndexTrace, 2), callback)
+		if n.Names != nil {
+			walkEachNode(n.Names, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Values != nil {
+			walkEachNode(n.Values, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.TypeSpec:
-		walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.TypeParams, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 2), callback)
+		if n.Name != nil {
+			walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.TypeParams != nil {
+			walkHelper(n.TypeParams, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 2), callback)
+		}
 
 	case *ast.BadDecl:
 		// nothing to do
 
 	case *ast.GenDecl:
-		walkEachNode(n.Specs, parentTrace, append(childIndexTrace, 0), callback)
+		if n.Specs != nil {
+			walkEachNode(n.Specs, parentTrace, append(childIndexTrace, 0), callback)
+		}
 
 	case *ast.FuncDecl:
-		walkHelper(n.Recv, parentTrace, append(childIndexTrace, 0), callback)
-		walkHelper(n.Name, parentTrace, append(childIndexTrace, 1), callback)
-		walkHelper(n.Type, parentTrace, append(childIndexTrace, 2), callback)
-		walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		if n.Recv != nil {
+			walkHelper(n.Recv, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Name != nil {
+			walkHelper(n.Name, parentTrace, append(childIndexTrace, 1), callback)
+		}
+		if n.Type != nil {
+			walkHelper(n.Type, parentTrace, append(childIndexTrace, 2), callback)
+		}
+		if n.Body != nil {
+			walkHelper(n.Body, parentTrace, append(childIndexTrace, 3), callback)
+		}
 
-		// case *ast.File:
-		// 	walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
-		// 	walkEachNd(n.Decls, parentTrace, append(childIndexTrace, 1), callback)
+	case *ast.File:
+		if n.Name != nil {
+			walkHelper(n.Name, parentTrace, append(childIndexTrace, 0), callback)
+		}
+		if n.Decls != nil {
+			walkEachNode(n.Decls, parentTrace, append(childIndexTrace, 1), callback)
+		}
 
-		// case *ast.Package:
-		// 	for _, f := range n.Files {
-		// 		walkHelper(f, parentTrace, append(childIndexTrace, 0), callback)
-		// 	}
+	case *ast.Package:
+		for _, f := range n.Files {
+			if f != nil {
+				walkHelper(f, parentTrace, append(childIndexTrace, 0), callback)
+			}
+		}
 
-		// }
 	}
 }
 

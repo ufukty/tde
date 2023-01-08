@@ -35,35 +35,34 @@ type NodeConstructor struct {
 // BadStmt
 // BECAUSE: Those are currently available structures in ast package and their usage is not planned.
 func NewNodeConstructor() *NodeConstructor {
-	nc := NodeConstructor{}
-	nc.CreatedVariables = []*ast.Ident{}
-	nc.Classes = map[NodeTypeClass][]NodeType{
-		Expression: {
-			ArrayType, BasicLit, BinaryExpr, CallExpr, ChanType,
-			CompositeLit, Ellipsis, FuncLit, FuncType, Ident, IndexExpr,
-			IndexListExpr, InterfaceType, KeyValueExpr, MapType, ParenExpr,
-			SelectorExpr, SliceExpr, StarExpr, StructType, TypeAssertExpr,
-			UnaryExpr,
+	nc := NodeConstructor{
+		CreatedVariables: []*ast.Ident{},
+		Classes: map[NodeTypeClass][]NodeType{
+			Expression: {
+				ArrayType, BasicLit, BinaryExpr, CallExpr, ChanType,
+				CompositeLit, Ellipsis, FuncLit, FuncType, Ident, IndexExpr,
+				IndexListExpr, InterfaceType, KeyValueExpr, MapType, ParenExpr,
+				SelectorExpr, SliceExpr, StarExpr, StructType, TypeAssertExpr,
+				UnaryExpr,
+			},
+			Statement: {
+				AssignStmt, BlockStmt, BranchStmt, CaseClause,
+				CommClause, DeclStmt, DeferStmt, EmptyStmt, ExprStmt, ForStmt,
+				GoStmt, IfStmt, IncDecStmt, LabeledStmt, RangeStmt, ReturnStmt,
+				SelectStmt, SendStmt, SwitchStmt, TypeSwitchStmt,
+			},
+			Declaration: {
+				FuncDecl, GenDecl,
+			},
+			Specification: {
+				ImportSpec, TypeSpec, ValueSpec,
+			},
+			TypeDeclaration: {
+				ArrayType, ChanType, FuncType, InterfaceType, MapType, StructType,
+				IdentType, ParenExpr, SelectorExpr, StarExpr,
+			},
 		},
-		Statement: {
-			AssignStmt, BlockStmt, BranchStmt, CaseClause,
-			CommClause, DeclStmt, DeferStmt, EmptyStmt, ExprStmt, ForStmt,
-			GoStmt, IfStmt, IncDecStmt, LabeledStmt, RangeStmt, ReturnStmt,
-			SelectStmt, SendStmt, SwitchStmt, TypeSwitchStmt,
-		},
-		Declaration: {
-			FuncDecl, GenDecl,
-		},
-		Specification: {
-			ImportSpec, TypeSpec, ValueSpec,
-		},
-		TypeDeclaration: {
-			ArrayType, ChanType, FuncType, InterfaceType, MapType, StructType,
-			Ident, ParenExpr, SelectorExpr, StarExpr,
-		},
-	}
-	nc.AllowedPackagesToImport = []string{
-		"fmt", "strings", "math",
+		AllowedPackagesToImport: []string{"fmt", "strings", "math"},
 	}
 	nc.Dictionaries = struct {
 		Statement       map[NodeType]func() ast.Stmt
@@ -134,7 +133,7 @@ func NewNodeConstructor() *NodeConstructor {
 			InterfaceType: func() ast.Expr { return nc.InterfaceType() },
 			MapType:       func() ast.Expr { return nc.MapType() },
 			StructType:    func() ast.Expr { return nc.StructType() },
-			Ident:         func() ast.Expr { return nc.Ident() },
+			IdentType:     func() ast.Expr { return nc.IdentType() },
 			ParenExpr:     func() ast.Expr { return nc.ParenExpr() },
 			SelectorExpr:  func() ast.Expr { return nc.SelectorExpr() },
 			StarExpr:      func() ast.Expr { return nc.StarExpr() },
@@ -144,6 +143,7 @@ func NewNodeConstructor() *NodeConstructor {
 	nc.Dictionary = map[NodeType]any{
 		Ident: nc.Ident,
 
+		IdentType:     nc.IdentType,
 		ArrayType:     nc.ArrayType,
 		ChanType:      nc.ChanType,
 		FuncType:      nc.FuncType,
@@ -378,6 +378,11 @@ func (nc *NodeConstructor) Ident() *ast.Ident {
 	return nc.generateVariableName()
 }
 
+// only valid values are types such int, float, string, bool
+func (nc *NodeConstructor) IdentType() *ast.Ident {
+	return ast.NewIdent(*utilities.Pick([]string{"int", "float", "string", "bool"}))
+}
+
 func (nc *NodeConstructor) IfStmt() *ast.IfStmt {
 	return &ast.IfStmt{If: token.NoPos, Init: nil, Cond: nc.Expr(), Body: &ast.BlockStmt{Lbrace: token.NoPos, List: []ast.Stmt{nc.Stmt()}, Rbrace: token.NoPos}, Else: nil}
 }
@@ -458,31 +463,45 @@ func (nc *NodeConstructor) SwitchStmt() *ast.SwitchStmt {
 }
 
 func (nc *NodeConstructor) TypeAssertExpr() *ast.TypeAssertExpr {
-	return &ast.TypeAssertExpr{
-		X:      nc.Expr(),
-		Lparen: token.NoPos,
-		Type:   nc.InterfaceType(),
-		Rparen: token.NoPos,
-	}
+	return &ast.TypeAssertExpr{X: nc.Expr(), Lparen: token.NoPos, Type: nc.InterfaceType(), Rparen: token.NoPos}
 }
 
+// rel. type keyword
 func (nc *NodeConstructor) TypeSpec() *ast.TypeSpec {
-	return &ast.TypeSpec{
-		Doc:        &ast.CommentGroup{},
-		Name:       &ast.Ident{},
-		TypeParams: &ast.FieldList{},
-		Assign:     token.NoPos,
-		Type:       nil,
-		Comment:    &ast.CommentGroup{},
+	return &ast.TypeSpec{Doc: nil, Name: nc.Ident(), TypeParams: nc.FieldList(), Assign: token.NoPos, Type: nil, Comment: nil}
+}
+
+// if "x.(type)" is intended assertedType should be nil
+func (nc *NodeConstructor) TypeSwitchStmtWithAssignStmt(ident *ast.Ident, assertedType ast.Expr, caseClauses []ast.Stmt) *ast.TypeSwitchStmt {
+	return &ast.TypeSwitchStmt{
+		Switch: token.NoPos,
+		Init:   nil,
+		Assign: &ast.AssignStmt{
+			Lhs:    []ast.Expr{ident},
+			TokPos: token.NoPos,
+			Tok:    token.DEFINE,
+			Rhs: []ast.Expr{&ast.TypeAssertExpr{
+				X:      ident,
+				Lparen: token.NoPos,
+				Type:   assertedType,
+				Rparen: token.NoPos,
+			}},
+		},
+		Body: &ast.BlockStmt{
+			Lbrace: token.NoPos,
+			List:   caseClauses,
+			Rbrace: token.NoPos,
+		},
 	}
 }
 
 func (nc *NodeConstructor) TypeSwitchStmt() *ast.TypeSwitchStmt {
+
 	return &ast.TypeSwitchStmt{
 		Switch: token.NoPos,
 		Init:   nil,
 		Assign: nil,
-		Body:   &ast.BlockStmt{},
+		Body:   nc.BlockStmt(),
 	}
 }
 
@@ -490,7 +509,7 @@ func (nc *NodeConstructor) UnaryExpr() *ast.UnaryExpr {
 	return &ast.UnaryExpr{
 		OpPos: token.NoPos,
 		Op:    *utilities.Pick(tokenConstructor.AcceptedByUnaryExpr),
-		X:     nil,
+		X:     nc.Expr(),
 	}
 }
 

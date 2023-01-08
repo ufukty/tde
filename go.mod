@@ -8,4 +8,7 @@ require (
 	golang.org/x/tools v0.4.0
 )
 
-require github.com/kylelemons/godebug v1.1.0 // indirect
+require (
+	github.com/kylelemons/godebug v1.1.0
+	golang.org/x/exp v0.0.0-20230105202349-8879d0199aa3
+)
