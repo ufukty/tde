@@ -1,30 +1,45 @@
 package astcfg
 
 import (
-	"tde/internal/code"
-	"tde/pkg/tde"
+	"tde/internal/ast_wrapper"
 	"testing"
+
+	"github.com/pkg/errors"
 )
+
+const TEST_FILE = `package main
+	
+func Addition(a, b int) int {
+	return a + b
+}
+`
+
+func Test_NoSyntaxError(t *testing.T) {
+	_, astNode, _ := ast_wrapper.ParseString(TEST_FILE)
+	funcDecl, _ := ast_wrapper.FindFuncDecl(astNode, "Addition")
+	cfg := ASTCFG{}
+	cfg.Develop(funcDecl)
+}
 
 func Test_Develop(t *testing.T) {
 	// TODO: Give valid go function body
 	// TODO: Compare output with input; Expected: less than 10% difference; more than 0% difference; still valid syntax
 
-	c := code.NewCode()
-	c.LoadFromString(`package main
-	
-	func Foo() {
-
+	_, astFile, err := ast_wrapper.ParseString(TEST_FILE)
+	if err != nil {
+		t.Error(errors.Wrapf(err, "failed ParseString"))
 	}
-	`)
-	f, _ := c.FindFunction("Foo")
-	original := c.PartialString(f)
+	funcDecl, err := ast_wrapper.FindFuncDecl(astFile, "Addition")
+	if err != nil {
+		t.Error(errors.Wrapf(err, "failed FindFuncDecl"))
+	}
+	funcDeclModified := funcDecl
 
-	cfg := ASTCFG{}
-	cfg.Develop(f)
-	developed := c.PartialString(f)
+	if funcDecl == funcDeclModified {
+		t.Error("failed on comparison. no change found.")
+	}
 
-	if dist := tde.StringDistance(original, developed); !(0 < dist && dist < 0.1) {
-		t.Error("More difference than expected:", dist)
+	if _, err := ast_wrapper.String(funcDeclModified); err != nil {
+		t.Error(errors.Wrap(err, "Has no valid syntax anymore."))
 	}
 }

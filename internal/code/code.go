@@ -1,6 +1,7 @@
 package code
 
 import (
+	"tde/internal/ast_wrapper"
 	"tde/internal/utilities"
 
 	"fmt"
@@ -70,32 +71,12 @@ func (c *Code) RenameFunction(oldName, newName string) error {
 }
 
 func (c *Code) FindFunction(funcName string) (*ast.FuncDecl, error) {
-	found := []*ast.FuncDecl{}
-
-	ast.Inspect(c.astFile, func(n ast.Node) bool {
-		if n != nil {
-			if functionDeclaration, ok := n.(*ast.FuncDecl); ok {
-				if functionDeclaration.Name.Name == funcName {
-					found = append(found, functionDeclaration)
-					return false
-				}
-			}
-		}
-		return true
-	})
-
-	if len(found) == 0 {
-		return nil, fmt.Errorf("could not find function '%s'", funcName)
-	} else if len(found) > 1 {
-		return nil, fmt.Errorf("more than one function definition with the name  '%s'", funcName)
-	} else {
-		return found[0], nil
-	}
+	return ast_wrapper.FindFuncDecl(c.astFile, funcName)
 }
 
-// func (c *Code) ReplaceFunctionName(n *ast.FuncDecl, newName string) {
-// 	n.Name.Name = newName
-// }
+func (c *Code) ReplaceFunctionName(n *ast.FuncDecl, newName string) {
+	n.Name.Name = newName
+}
 
 func (c *Code) InspectAST(f func(n ast.Node) bool) {
 	ast.Inspect(c.astFile, f)
