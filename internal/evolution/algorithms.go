@@ -1,6 +1,7 @@
 package evolution
 
 import (
+	"go/format"
 	"tde/internal/utilities"
 	models "tde/models/in_program_models"
 
@@ -40,4 +41,9 @@ func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 		choosenIndividuals = append(choosenIndividuals, choosen)
 	}
 
+}
+
+func CheckSyntax(c *models.Candidate) bool {
+	_, err := format.Source(c.Body)
+	return err == nil
 }

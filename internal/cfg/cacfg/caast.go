@@ -3,6 +3,7 @@ package cacfg
 import (
 	"go/ast"
 
+	"tde/internal/ast_wrapper"
 	"tde/internal/cfg/astcfg"
 	"tde/internal/utilities"
 
@@ -38,13 +39,13 @@ func GenerateRandomSubtree(nodeTypeClass astcfg.NodeTypeClass) ast.Node {
 func NewLine(f *ast.FuncDecl) {
 	body := f.Body
 
-	parentNode := *utilities.Pick(utilities.FilterSubNodes(body, func(n ast.Node) bool {
+	parentNode := *utilities.Pick(ast_wrapper.FilterSubNodes(body, func(n ast.Node) bool {
 		if _, ok := n.(*ast.BlockStmt); ok {
 			return true
 		}
 		return false
 	}))
-	siblingNode := *utilities.Pick(utilities.ChildNodes(parentNode))
+	siblingNode := *utilities.Pick(ast_wrapper.ChildNodes(parentNode))
 	isInserted := false
 	astutil.Apply(parentNode, func(c *astutil.Cursor) bool {
 		if !isInserted {

@@ -1,4 +1,4 @@
-package astcfg
+package ast_wrapper
 
 import (
 	"fmt"

@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"path/filepath"
 	"strings"
-	"tde/internal/code"
+	"tde/internal/ast_wrapper"
 	"tde/internal/utilities"
 	"tde/models/in_program_models"
 
@@ -54,17 +54,15 @@ type TestFunctionDetails struct {
 	Line     int    // starts with 1
 }
 
-// TODO: Use it by language-server
+// TODO: Call it from language-server
 func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
-	c := code.NewCode()
-	err := c.LoadFromFile(filepath)
+	fset, root, err := ast_wrapper.LoadFile(filepath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to load file and parse into AST tree")
 	}
 
 	testFunctions := []TestFunctionDetails{}
-
-	c.InspectWithTrace(func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	ast_wrapper.Inspect(root, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		depth := len(parentTrace)
 		if depth == 2 {
 			if n, ok := n.(*ast.FuncDecl); ok {
@@ -72,7 +70,7 @@ func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
 				if strings.Index(functionName, "TDE") == 0 {
 					testFunctions = append(testFunctions, TestFunctionDetails{
 						Name:     functionName,
-						Line:     c.LineNumberOfPosition(n.Pos()),
+						Line:     ast_wrapper.LineNumberOfPosition(fset, n.Pos()),
 						Position: int(n.Pos()),
 					})
 				}

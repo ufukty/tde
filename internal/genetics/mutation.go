@@ -3,6 +3,7 @@ package genetics
 import (
 	"go/ast"
 	"go/token"
+	"tde/internal/ast_wrapper"
 	"tde/internal/utilities"
 )
 
@@ -25,7 +26,7 @@ func MutateBlockStatement(stm *ast.BlockStmt) {
 
 func Mutate(fn *ast.FuncDecl) {
 
-	node := **utilities.Pick(utilities.ListSubnodes(fn.Body))
+	node := **utilities.Pick(ast_wrapper.ListSubnodes(fn.Body))
 	mutated := false
 
 	for !mutated {

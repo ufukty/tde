@@ -26,7 +26,7 @@ type EmbeddingConfig struct {
 }
 
 func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testFunctionPath, targetPackageImportPath, testFunctionName string) *EmbeddingConfig {
-	f := &EmbeddingConfig{
+	return &EmbeddingConfig{
 		ImplementationPackagePath: implementationPackageFile,
 		ImplementationFilePath:    implementationFilePath,
 		TestFunctionPath:          testFunctionPath,
@@ -35,7 +35,6 @@ func NewEmbeddingConfig(implementationPackageFile, implementationFilePath, testF
 		TDEPackagePath:            fmt.Sprintf("%s/tde", implementationPackageFile),
 		MainFilePath:              fmt.Sprintf("%s/tde/main_tde.go", implementationPackageFile),
 	}
-	return f
 }
 
 func (ec *EmbeddingConfig) ReadImplementationFileContent() error {

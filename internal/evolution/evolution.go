@@ -1,6 +1,7 @@
 package evolution
 
 import (
+	"tde/internal/embedding"
 	models "tde/models/in_program_models"
 
 	"sort"
@@ -19,10 +20,16 @@ func (e *Evolution) InitPopulation(n int) {
 	}
 }
 
-func (e *Evolution) Measure() {
+func (e *Evolution) Measure(embed embedding.EmbeddingConfig) {
+	validCandidates := []*models.Candidate{}
+
 	for _, candidate := range e.Candidates {
-		candidate.Measure()
+		if CheckSyntax(candidate) {
+			validCandidates = append(validCandidates, candidate)
+		}
 	}
+
+	embed.WriteCandidatesIntoFile(validCandidates)
 
 	// test
 

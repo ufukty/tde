@@ -13,7 +13,7 @@ type Declaration struct {
 }
 
 type Blocks struct {
-	Parent *ast.Block
+	Parent *ast.BlockStmt
 }
 
 func NewVariable(file File, scope Scope, line Offset)    {}
@@ -23,4 +23,4 @@ func EmbedInNewFunction(children []ast.Node)             {}
 func MoveIntoExistingFunction()                          {}
 func GenerateErrorCheckBlock(err *ast.Ident) *ast.IfStmt { return &ast.IfStmt{} }
 func ConditionalizeScope() *ast.IfStmt                   { return &ast.IfStmt{} }
-func IterateOverArray(ds *ast.Ident)                     { return &ast.ForStmt{Init: ast.} }
+func IterateOverArray(ds *ast.Ident) *ast.ForStmt        { return &ast.ForStmt{} }

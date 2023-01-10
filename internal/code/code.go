@@ -101,6 +101,14 @@ func (c *Code) InspectAST(f func(n ast.Node) bool) {
 	ast.Inspect(c.astFile, f)
 }
 
+func (c *Code) InspectExceptRoot(f func(n ast.Node) bool) {
+	ast.Inspect(c.astFile, func(n ast.Node) bool {
+		if n == c.astFile {
+			return true
+		}
+		return f(n)
+	})
+}
 func (c *Code) PartialString(node ast.Node) string {
 	sw := utilities.NewStringWriter()
 	printer.Fprint(sw, c.fset, node)
@@ -146,4 +154,8 @@ func (c *Code) Reload() error {
 
 func (c *Code) OverwriteFunction(f *ast.FuncDecl, content string) {
 	c.overwrittenFunctionBodies[f] = content
+}
+
+func (c *Code) LineNumberOfPosition(pos token.Pos) int {
+	return c.fset.Position(pos).Line
 }

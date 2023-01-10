@@ -1,4 +1,4 @@
-package astcfg
+package ast_wrapper
 
 import (
 	"go/ast"
@@ -6,14 +6,17 @@ import (
 
 var NodeSlice ast.Node // Used by "walkEachNd" in parentTrace to imply traversed struct field is a slice type eg: []Expr, []Stmt
 
-func walkEachNode[T ast.Node](nodeSlice []T, parentTrace []ast.Node, childIndexTrace []int, callback func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int)) {
+func walkEachNode[T ast.Node](
+	nodeSlice []T,
+	parentTrace []ast.Node,
+	childIndexTrace []int,
+	callback func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int),
+) {
 	parentTrace = append(parentTrace, NodeSlice)
 	for i, v := range nodeSlice {
 		walkHelper(v, parentTrace, append(childIndexTrace, i), callback)
 	}
 }
-
-// var FieldMap = map[ast.Node][]any{
 
 // 	// *ast.Comment:
 // 	// *ast.BadExpr:
@@ -75,7 +78,7 @@ func walkEachNode[T ast.Node](nodeSlice []T, parentTrace []ast.Node, childIndexT
 // 	*ast.TypeSpec:   []any{n.Name, n.TypeParams, n.Type},
 // 	*ast.GenDecl:    []any{n.Specs},
 // 	*ast.FuncDecl:   []any{n.Recv, n.Name, n.Type, n.Body},
-// }
+
 
 func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callback func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int)) {
 	callback(n, parentTrace, childIndexTrace)
