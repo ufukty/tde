@@ -1,4 +1,4 @@
-package code
+package hcast
 
 import "go/ast"
 
