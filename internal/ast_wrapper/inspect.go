@@ -47,7 +47,11 @@ func InspectWithTrace(startNode ast.Node, callback func(currentNode ast.Node, pa
 	})
 }
 
-func InspectTwiceWithTrace(startNode ast.Node, pre, post func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool) {
+func InspectTwiceWithTrace(
+	startNode ast.Node,
+	pre func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool,
+	post func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int),
+) {
 	var (
 		parentTrace     []ast.Node
 		childIndexTrace []int
@@ -74,7 +78,7 @@ func InspectTwiceWithTrace(startNode ast.Node, pre, post func(currentNode ast.No
 		}
 	)
 	ast.Inspect(startNode, func(n ast.Node) bool {
-		var ret bool
+		var ret = false
 		if n != nil {
 			ret = pre(n, parentTrace, childIndexTrace)
 			updateParentTrace(n)
@@ -83,7 +87,7 @@ func InspectTwiceWithTrace(startNode ast.Node, pre, post func(currentNode ast.No
 			ntemp := utl.SliceLast(parentTrace)
 			updateParentTrace(n)
 			updateChildIndexTraceItems(n)
-			ret = post(ntemp, parentTrace, childIndexTrace)
+			post(ntemp, parentTrace, childIndexTrace)
 			updateChildIndexTraceLastCounter(n)
 		}
 		return ret

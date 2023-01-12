@@ -136,9 +136,8 @@ func Test_InspectTwiceWithTrace(t *testing.T) {
 		// fmt.Printf("1st %-30s %-60s %-100s\n", fmt.Sprint(reflect.TypeOf(currentNode)), fmt.Sprint(parentTrace), fmt.Sprint(childIndexTrace))
 		tester(currentNode, parentTrace, childIndexTrace)
 		return true
-	}, func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	}, func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) {
 		// fmt.Printf("2nd %-30s %-60s %-100s\n", fmt.Sprint(reflect.TypeOf(currentNode)), fmt.Sprint(parentTrace), fmt.Sprint(childIndexTrace))
 		tester(currentNode, parentTrace, childIndexTrace)
-		return true
 	})
 }
