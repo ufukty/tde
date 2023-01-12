@@ -38,20 +38,20 @@ func (ctx *Context) GetCurrentScope() *Scope {
 	return &ctx.Scopes[len(ctx.Scopes)-1]
 }
 
-func (ctx *Context) AddFunction(funcDecl ast.FuncDecl) {
-	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, *funcDecl.Name)
+func (ctx *Context) AddFunction(item ast.Ident) {
+	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, item)
 }
 
-func (ctx *Context) AddLibrary(funcDecl ast.FuncDecl) {
-	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, *funcDecl.Name)
+func (ctx *Context) AddLibrary(item ast.Ident) {
+	ctx.GetCurrentScope().Libraries = append(ctx.GetCurrentScope().Libraries, item)
 }
 
-func (ctx *Context) AddType(funcDecl ast.FuncDecl) {
-	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, *funcDecl.Name)
+func (ctx *Context) AddType(item ast.Expr) {
+	ctx.GetCurrentScope().Types = append(ctx.GetCurrentScope().Types, item)
 }
 
-func (ctx *Context) AddVariable(funcDecl ast.FuncDecl) {
-	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, *funcDecl.Name)
+func (ctx *Context) AddVariable(item ast.Ident) {
+	ctx.GetCurrentScope().Variables = append(ctx.GetCurrentScope().Variables, item)
 }
 
 func (ctx *Context) GetFunctions() []ast.Ident {
