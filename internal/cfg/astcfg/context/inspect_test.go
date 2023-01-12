@@ -15,6 +15,7 @@ func Test_InspectWithContext(t *testing.T) {
 	returnStmt := TEST_TREE.Decls[0].(*ast.FuncDecl).Body.List[1].(*ast.ReturnStmt)
 
 	InspectWithContext(TEST_TREE, func(ctx Context, node ast.Node) {
+		// fmt.Println(reflect.TypeOf(node), ctx.Scopes)
 		if node == returnStmt {
 			if slices.Index(ctx.GetVariables(), *identA) == -1 {
 				t.Error("failed, input parameter 'a' is not detected")

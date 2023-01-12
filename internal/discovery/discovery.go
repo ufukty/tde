@@ -62,7 +62,7 @@ func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
 	}
 
 	testFunctions := []TestFunctionDetails{}
-	ast_wrapper.Inspect(root, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	ast_wrapper.InspectWithTrace(root, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		depth := len(parentTrace)
 		if depth == 2 {
 			if n, ok := n.(*ast.FuncDecl); ok {

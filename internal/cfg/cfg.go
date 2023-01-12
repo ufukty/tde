@@ -2,7 +2,6 @@ package cfg
 
 import (
 	"go/ast"
-	"tde/internal/code"
 )
 
 // Code Fragment Generator
@@ -13,6 +12,6 @@ import (
 //   - Random AST-nodes
 //   - Context-Aware Random AST-nodes
 type CFG interface {
-	Develop(code.Code, ast.BlockStmt)
-	PickCutPoint(code.Code) int
+	Develop(*ast.File, *ast.FuncDecl)
+	PickCutPoint(*ast.File, *ast.FuncDecl) *ast.Node
 }

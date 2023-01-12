@@ -6,15 +6,36 @@ import (
 	"tde/internal/ast_wrapper"
 )
 
-// TODO: Checking for if entering to or leaving BlockStmt might not be enough for detecting scopes; since parent node of block could be the scope defining one; eg. FuncDecl
 func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.Node)) {
 	ctx := NewContext()
 	ast_wrapper.InspectTwiceWithTrace(startNode,
 		// before visit children
 		func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
-			switch currentNode.(type) {
-			case *ast.BlockStmt:
+			switch currentNode := currentNode.(type) {
+			case
+				*ast.BlockStmt,
+				*ast.FuncDecl,
+				*ast.ForStmt,
+				*ast.IfStmt,
+				*ast.SwitchStmt,
+				*ast.TypeSwitchStmt:
 				ctx.ScopeIn()
+			case
+				*ast.Package:
+				for _, file := range currentNode.Files {
+					for _, decl := range file.Decls {
+						if funcDecl, ok := decl.(*ast.FuncDecl); ok {
+							ctx.AddVariable(*funcDecl.Name)
+						}
+					}
+				}
+			case
+				*ast.File:
+				for _, decl := range currentNode.Decls {
+					if funcDecl, ok := decl.(*ast.FuncDecl); ok {
+						ctx.AddVariable(*funcDecl.Name)
+					}
+				}
 			}
 			callback(ctx, currentNode)
 			return true
@@ -22,9 +43,17 @@ func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.
 		// after visit children
 		func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) {
 			switch node := currentNode.(type) {
-			case *ast.BlockStmt:
+			case
+				*ast.BlockStmt,
+				*ast.FuncDecl,
+				*ast.ForStmt,
+				*ast.IfStmt,
+				*ast.SwitchStmt,
+				*ast.TypeSwitchStmt:
 				ctx.ScopeOut()
-			case *ast.AssignStmt:
+
+			case
+				*ast.AssignStmt:
 				if node.Tok == token.DEFINE {
 					for _, expr := range node.Lhs {
 						if ident, ok := expr.(*ast.Ident); ok {
@@ -32,7 +61,9 @@ func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.
 						}
 					}
 				}
-			case *ast.FuncType:
+
+			case
+				*ast.FuncType:
 				if fieldList := node.Params.List; fieldList != nil {
 					for _, field := range fieldList {
 						for _, ident := range field.Names {

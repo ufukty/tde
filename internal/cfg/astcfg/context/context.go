@@ -3,18 +3,18 @@ package context
 import "go/ast"
 
 type Scope struct {
-	Functions []ast.Ident
-	Libraries []ast.Ident
-	Types     []ast.Expr
-	Variables []ast.Ident
+	// Functions []ast.Ident
+	Libraries        []ast.Ident
+	TypeDeclarations []ast.Expr
+	Variables        []ast.Ident
 }
 
 func NewScope() Scope {
 	return Scope{
-		Functions: []ast.Ident{},
-		Libraries: []ast.Ident{},
-		Types:     []ast.Expr{},
-		Variables: []ast.Ident{},
+		// Functions: []ast.Ident{},
+		Libraries:        []ast.Ident{},
+		TypeDeclarations: []ast.Expr{},
+		Variables:        []ast.Ident{},
 	}
 }
 
@@ -38,28 +38,16 @@ func (ctx *Context) GetCurrentScope() *Scope {
 	return &ctx.Scopes[len(ctx.Scopes)-1]
 }
 
-func (ctx *Context) AddFunction(item ast.Ident) {
-	ctx.GetCurrentScope().Functions = append(ctx.GetCurrentScope().Functions, item)
-}
-
 func (ctx *Context) AddLibrary(item ast.Ident) {
 	ctx.GetCurrentScope().Libraries = append(ctx.GetCurrentScope().Libraries, item)
 }
 
-func (ctx *Context) AddType(item ast.Expr) {
-	ctx.GetCurrentScope().Types = append(ctx.GetCurrentScope().Types, item)
+func (ctx *Context) AddTypeDeclaration(item ast.Expr) {
+	ctx.GetCurrentScope().TypeDeclarations = append(ctx.GetCurrentScope().TypeDeclarations, item)
 }
 
 func (ctx *Context) AddVariable(item ast.Ident) {
 	ctx.GetCurrentScope().Variables = append(ctx.GetCurrentScope().Variables, item)
-}
-
-func (ctx *Context) GetFunctions() []ast.Ident {
-	ret := []ast.Ident{}
-	for _, scope := range ctx.Scopes {
-		ret = append(ret, scope.Functions...)
-	}
-	return ret
 }
 
 func (ctx *Context) GetLibraries() []ast.Ident {
@@ -70,10 +58,10 @@ func (ctx *Context) GetLibraries() []ast.Ident {
 	return ret
 }
 
-func (ctx *Context) GetTypes() []ast.Expr {
+func (ctx *Context) GetTypeDeclarations() []ast.Expr {
 	ret := []ast.Expr{}
 	for _, scope := range ctx.Scopes {
-		ret = append(ret, scope.Types...)
+		ret = append(ret, scope.TypeDeclarations...)
 	}
 	return ret
 }
