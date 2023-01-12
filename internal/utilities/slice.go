@@ -32,3 +32,11 @@ func ForEach[T any](slice []T, callback func(index int, value T)) {
 		callback(i, v)
 	}
 }
+
+func SliceRemoveLast[T any](slice []T) []T {
+	return slice[:len(slice)-1]
+}
+
+func SliceLast[T any](slice []T) T {
+	return slice[len(slice)-1]
+}
