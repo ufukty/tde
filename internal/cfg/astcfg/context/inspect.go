@@ -6,6 +6,7 @@ import (
 	"tde/internal/ast_wrapper"
 )
 
+// TODO: Detect FuncLit's in code and add to Context
 func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.Node)) {
 	ctx := NewContext()
 	ast_wrapper.InspectTwiceWithTrace(startNode,
@@ -20,6 +21,7 @@ func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.
 				*ast.SwitchStmt,
 				*ast.TypeSwitchStmt:
 				ctx.ScopeIn()
+
 			case
 				*ast.Package:
 				for _, file := range currentNode.Files {
@@ -29,6 +31,7 @@ func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.
 						}
 					}
 				}
+
 			case
 				*ast.File:
 				for _, decl := range currentNode.Decls {
@@ -37,6 +40,7 @@ func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.
 					}
 				}
 			}
+
 			callback(ctx, currentNode)
 			return true
 		},
