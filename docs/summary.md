@@ -158,7 +158,7 @@ AST representations (simplified):
 
 One way to solve this changing the expression that is given to Return node
 
-## Eliminating inconsistencies: Homologous structures
+## Dealing with inconsistencies: Evolving homologous structures at once
 
 ```cpp
 Fenotype = GenotypeToFenotypeGenerator(AST-based-data-structure)
@@ -167,3 +167,15 @@ Fenotype = GenotypeToFenotypeGenerator(AST-based-data-structure)
 One change in one property of one structure (instance of either Decl, Stmt, Spec, Expr) will reflect to every occurances of that instance in the actual code. Thus inconsistencies among occurances are elimintated by design.
 
 As one approach; GenotypeToFenotypeGenerator function will be a kind of a permutation generator; since what all it does is generating a layout for the Go code by placing prebuilt building blocks in some order by choosing from given set. This approach satifies the above case.
+
+## Getting the right one among the set of passing solutions: evolving from basic to complex
+
+Producing a code piece that passes a test is easier challange than selecting the simplest one amongst set of passing solutions. Because of two reasons, the search space may contain more than one passing solution: alternative solutions and bloated solutions.
+
+Alternative solutions can be thought as different implementations of same algorithm, or alternative algorithms to solve same problem each are valid (and more imporantly fitting) but varies between compute and memory utilization.
+
+Bloated solutions are the ones that not only satisfy all requirements but also performs unnecessary actions for unrequested and sometimes harmful purposes. For example a simple string reversing function has no need to access a website in addition to a simple reversed for loop. An average software developer should not be expected to write tests that will exclude all bloated solutions. Deploying bloated solution into a server can be a problem; because (from cyber-security perspective) a system must only perform operations its meant to do and nothing else. Normally, when a developer fails to produce fitting solution, cyber-attackers explores those unfitting points as potential attack-surfaces and try to combine those with others to plan a cyber-attack.
+
+It might be harder to filter those bloated solutions after they emerged rather than designing the evolution process in a way to reduce the possibility of producing them at first place.
+
+(and possible more complicated than the ideal and has additional features that are not required or even wanted) from getting marked as approved. So, producing code with tests can only be viable if the tool presents to the coder the simplest one as solution from the set of passing solutions.
