@@ -1,4 +1,4 @@
-package node_construtor
+package node_constructor
 
 import (
 	"fmt"
