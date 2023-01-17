@@ -1,64 +1,39 @@
 package ast_wrapper
 
 import (
-	"fmt"
 	"go/ast"
-	"go/token"
+	"reflect"
 	"testing"
+
+	"golang.org/x/exp/slices"
 )
 
 func Test_Walk(t *testing.T) {
-	testFunction := ast.FuncDecl{
-		Doc:  nil,
-		Recv: nil,
-		Name: ast.NewIdent("Addition"),
-		Type: &ast.FuncType{
-			Func:       token.NoPos,
-			TypeParams: nil, // related with generics?
-			Params: &ast.FieldList{
-				Opening: token.NoPos,
-				List: []*ast.Field{{
-					Doc:     nil,
-					Names:   []*ast.Ident{ast.NewIdent("a"), ast.NewIdent("b")},
-					Type:    ast.NewIdent("int"),
-					Tag:     nil,
-					Comment: nil,
-				}},
-				Closing: token.NoPos,
-			},
-			Results: &ast.FieldList{
-				Opening: token.NoPos,
-				List: []*ast.Field{{
-					Doc:     nil,
-					Names:   nil,
-					Type:    ast.NewIdent("int"),
-					Tag:     nil,
-					Comment: nil,
-				}},
-				Closing: token.NoPos,
-			},
-		},
-		Body: &ast.BlockStmt{
-			Lbrace: token.NoPos,
-			List: []ast.Stmt{
-				&ast.ReturnStmt{
-					Return: token.NoPos,
-					Results: []ast.Expr{
-						&ast.BinaryExpr{
-							X:     ast.NewIdent("a"),
-							OpPos: token.NoPos,
-							Op:    token.ADD,
-							Y:     ast.NewIdent("b"),
-						},
-					},
-				},
-			},
-			Rbrace: token.NoPos,
-		},
+
+	testCasesChildIndexTrace := map[ast.Node][]int{
+		TEST_TREE:          {},
+		TEST_TREE.Name:     {0},
+		TEST_TREE.Decls[0]: {1},
+		// TEST_TREE.Decls[0].(*ast.FuncDecl).Recv: {1, 0}, // will FAIL because can't compare nil values
+		TEST_TREE.Decls[0].(*ast.FuncDecl).Name: {1, 1},
+		TEST_TREE.Decls[0].(*ast.FuncDecl).Type: {1, 2},
+		TEST_TREE.Decls[0].(*ast.FuncDecl).Body: {1, 3},
 	}
 
-	Walk(&testFunction, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) {
-		fmt.Printf("%+v   %+v    %+v\n", parentTrace, childIndexTrace, n)
+	isFaulty := func(node ast.Node, got []int, t *testing.T) {
+		for forNode, want := range testCasesChildIndexTrace {
+			if node == forNode {
+				if slices.Compare(want, got) != 0 {
+					t.Errorf("failure for %s: want %v got: %v", reflect.TypeOf(node).String(), want, got)
+				}
+			}
+		}
+	}
+
+	Walk(TEST_TREE, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+		// fmt.Printf("%-60s %-20s %v %#v\n", fmt.Sprintf("%+v", parentTrace), fmt.Sprintf("%+v", childIndexTrace), reflect.TypeOf(n).String(), n)
+		isFaulty(n, childIndexTrace, t)
+		return true
 	})
 
 }
