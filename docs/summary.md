@@ -1,4 +1,4 @@
-# **Test Driven Evolution**: Combining Genetic Programming with Test Driven Development to help software developers on creating and maintaining in-prod code
+# **Test Driven Evolution**: Combining Genetic Programming with Test Driven Development to put evolution to average programmer's toolboxg
 
 ## Liability and responsibility in Software Development
 
