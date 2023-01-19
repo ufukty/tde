@@ -377,6 +377,9 @@ func walkHelper(n ast.Node, passUnassignedFields bool, parentTrace []ast.Node, c
 //
 // Note: Remember to check if n != nil before accessing it, if the
 // passUnassignedFields is set to false.
+//
+// Warning: Use slices.Clone() on traces, if their storage for later use is necessary.
+// Because of performance concerns, same instance of slices are used for entire traversal.
 func Walk(root ast.Node, passUnassignedFields bool, callback WalkCallbackFunction) {
 	walkHelper(root, passUnassignedFields, []ast.Node{}, []int{}, callback)
 }

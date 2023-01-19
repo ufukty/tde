@@ -41,15 +41,24 @@ func Test_WalkPersistentChildIndexTraces(t *testing.T) {
 }
 
 func Test_WalkCoveringTypes(t *testing.T) {
-	_, astFile, _ := LoadFile("./walk.go")
-	Walk(astFile, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
-		if n != nil {
-			fmt.Printf("%s\n%v\n\n", reflect.TypeOf(n).String(), childIndexTrace)
-		} else {
-			fmt.Printf("%s\n%v\n\n", "nil", childIndexTrace)
+	_, astPkgs, _ := LoadDir(".")
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Error(fmt.Sprint("Failed on walking syntax trees of entire package: ", r))
 		}
-		return true
-	})
+	}()
+
+	for _, pkg := range astPkgs {
+		Walk(pkg, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+			if n != nil {
+				fmt.Printf("%-20s %v\n", reflect.TypeOf(n).String(), childIndexTrace)
+			} else {
+				fmt.Printf("%-20s %v\n", "nil", childIndexTrace)
+			}
+			return true
+		})
+	}
 }
 
 func Test_WalkListLeaves(t *testing.T) {
@@ -60,13 +69,17 @@ func Test_WalkListLeaves(t *testing.T) {
 
 	Walk(astFile, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		if n == nil {
-			indices = append(indices, childIndexTrace)
-			parents = append(parents, parentTrace)
+			indices = append(indices, slices.Clone(childIndexTrace))
+			parents = append(parents, slices.Clone(parentTrace))
 		}
 		return true
 	})
 
 	for i := 0; i < len(indices); i++ {
-		fmt.Printf("%p, %s, %v, %v\n", parents[i][len(parents[i])-1], reflect.TypeOf(parents[i][len(parents[i])-1]).String(), indices[i], ast.Print(token.NewFileSet(), parents[i][len(parents[i])-1]))
+		fmt.Printf("%p, %s, %v\n", parents[i][len(parents[i])-1], reflect.TypeOf(parents[i][len(parents[i])-1]).String(), indices[i])
+	}
+
+	for i := 0; i < len(indices); i++ {
+		ast.Print(token.NewFileSet(), parents[i][len(parents[i])-1])
 	}
 }
