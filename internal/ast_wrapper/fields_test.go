@@ -151,64 +151,63 @@ func TestFields(t *testing.T) {
 	// }()
 
 	for _, testCase := range testCases {
-		fields, types := Fields(testCase)
-		for i := 0; i < len(types); i++ {
-			fieldType := types[i]
+		fields := NodeFields(testCase)
+		for _, field := range fields {
 
-			if fieldType.IsSliceType() {
-				switch fieldType {
+			if field.Type.IsSliceType() {
+				switch field.Type {
 				case ExprSlice:
-					fields[i] = []ast.Expr{}
-					if _, ok := fields[i].([]ast.Expr); !ok {
+					field.Value = []ast.Expr{}
+					if _, ok := field.Value.([]ast.Expr); !ok {
 						t.Errorf("Failed on case ExprSlice, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case StmtSlice:
-					fields[i] = []ast.Stmt{}
-					if _, ok := fields[i].([]ast.Stmt); !ok {
+					field.Value = []ast.Stmt{}
+					if _, ok := field.Value.([]ast.Stmt); !ok {
 						t.Errorf("Failed on case StmtSlice, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case DeclSlice:
-					fields[i] = []ast.Decl{}
-					if _, ok := fields[i].([]ast.Decl); !ok {
+					field.Value = []ast.Decl{}
+					if _, ok := field.Value.([]ast.Decl); !ok {
 						t.Errorf("Failed on case DeclSlice, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case SpecSlice:
-					fields[i] = []ast.Spec{}
-					if _, ok := fields[i].([]ast.Spec); !ok {
+					field.Value = []ast.Spec{}
+					if _, ok := field.Value.([]ast.Spec); !ok {
 						t.Errorf("Failed on case SpecSlice, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case IdentSlice:
-					fields[i] = []*ast.Ident{}
-					if _, ok := fields[i].([]*ast.Ident); !ok {
+					field.Value = []*ast.Ident{}
+					if _, ok := field.Value.([]*ast.Ident); !ok {
 						t.Errorf("Failed on case IdentSlice, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				}
-			} else if fieldType.IsInterfaceType() {
-				switch fieldType {
+			} else if field.Type.IsInterfaceType() {
+				switch field.Type {
 				case Expr:
-					fields[i] = forTestingInterfaceFields.Expr
-					if _, ok := fields[i].(ast.Expr); !ok {
+					field.Value = forTestingInterfaceFields.Expr
+					if _, ok := field.Value.(ast.Expr); !ok {
 						t.Errorf("Failed on case Expr, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case Stmt:
-					fields[i] = forTestingInterfaceFields.Stmt
-					if _, ok := fields[i].(ast.Stmt); !ok {
+					field.Value = forTestingInterfaceFields.Stmt
+					if _, ok := field.Value.(ast.Stmt); !ok {
 						t.Errorf("Failed on case Stmt, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case Decl:
-					fields[i] = forTestingInterfaceFields.Decl
-					if _, ok := fields[i].(ast.Decl); !ok {
+					field.Value = forTestingInterfaceFields.Decl
+					if _, ok := field.Value.(ast.Decl); !ok {
 						t.Errorf("Failed on case Decl, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				case Spec:
-					fields[i] = forTestingInterfaceFields.Spec
-					if _, ok := fields[i].(ast.Spec); !ok {
+					field.Value = forTestingInterfaceFields.Spec
+					if _, ok := field.Value.(ast.Spec); !ok {
 						t.Errorf("Failed on case Spec, testCase type %s: ", reflect.TypeOf(testCase))
 					}
 				}
 
 			} else {
-				fields[i] = (constructors[types[i]])()
+				field.Value = (constructors[field.Type])()
 			}
 		}
 	}
