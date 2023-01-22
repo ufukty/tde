@@ -7,6 +7,7 @@ type NodeField struct {
 	Type  NodeType
 }
 
+// NodeFields don't cover every "NodeType", but only structs that comply ast.Node
 func NodeFields(n ast.Node) []NodeField {
 	switch n := n.(type) {
 
