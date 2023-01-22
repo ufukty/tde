@@ -32,7 +32,7 @@ func Test_WalkPersistentChildIndexTraces(t *testing.T) {
 		}
 	}
 
-	Walk(TEST_TREE, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	WalkWithNils(TEST_TREE, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		// fmt.Printf("%-60s %-20s %v %#v\n", fmt.Sprintf("%+v", parentTrace), fmt.Sprintf("%+v", childIndexTrace), reflect.TypeOf(n).String(), n)
 		isFaulty(n, childIndexTrace, t)
 		return true
@@ -50,7 +50,7 @@ func Test_WalkCoveringTypes(t *testing.T) {
 	}()
 
 	for _, pkg := range astPkgs {
-		Walk(pkg, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+		WalkWithNils(pkg, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 			if n != nil {
 				fmt.Printf("%-20s %v\n", reflect.TypeOf(n).String(), childIndexTrace)
 			} else {
@@ -67,7 +67,7 @@ func Test_WalkListLeaves(t *testing.T) {
 	var indices = [][]int{}
 	var parents = [][]ast.Node{}
 
-	Walk(astFile, false, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	WalkWithNils(astFile, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		if n == nil {
 			indices = append(indices, slices.Clone(childIndexTrace))
 			parents = append(parents, slices.Clone(parentTrace))

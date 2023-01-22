@@ -17,8 +17,7 @@ func Addition(a, b int) int {
 func Test_NoSyntaxError(t *testing.T) {
 	_, astNode, _ := ast_wrapper.ParseString(TEST_FILE)
 	funcDecl, _ := ast_wrapper.FindFuncDecl(astNode, "Addition")
-	cfg := ASTCFG{}
-	cfg.Develop(funcDecl)
+	MakeAddition(funcDecl)
 }
 
 func Test_Develop(t *testing.T) {
