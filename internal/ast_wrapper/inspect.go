@@ -5,6 +5,11 @@ import (
 	utl "tde/internal/utilities"
 )
 
+// Simple ast.Inspect() wrapper.
+//
+// Additionally, sends traces of parents and childIndices to callback for each node.
+//
+// If visiting nil valued nodes is necessary then use WalkWithNils() instead.
 func InspectWithTrace(startNode ast.Node, callback func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool) {
 	var (
 		parentTrace     []ast.Node
@@ -47,6 +52,9 @@ func InspectWithTrace(startNode ast.Node, callback func(currentNode ast.Node, pa
 	})
 }
 
+// The Pre function will be called before subnodes are visited and the Post function will be called for nodes after it is called for all of the subnodes.
+//
+// Won't visit nil valued nodes.
 func InspectTwiceWithTrace(
 	startNode ast.Node,
 	pre func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool,
