@@ -227,7 +227,8 @@ func (nt NodeType) String() string {
 
 func (nt NodeType) IsSliceType() bool {
 	switch nt {
-	case ExprSlice, StmtSlice, DeclSlice, SpecSlice, IdentSlice:
+	case CommentGroupSlice, CommentSlice, DeclSlice, ExprSlice, FieldSlice,
+		IdentSlice, ImportSpecSlice, SpecSlice, StmtSlice:
 		return true
 	default:
 		return false
