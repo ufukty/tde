@@ -1,7 +1,5 @@
 package ast_wrapper
 
-import "go/ast"
-
 // One TraversableNode's TraversableSubnodes are
 //  1. If the TraversableNode is Node-Slice: Items of the slice
 //  2. If the TraversableNode is Node-like: Fields of the struct that are either Node-like or Node-slice
@@ -20,23 +18,18 @@ func (tNode *TraversableNode) GetTraversableSubnodes() []TraversableNode {
 	// return []TraversableNode{}
 }
 
-type TraverseTraceItem struct {
-	parent *TraversableNode
-	index  int
-}
-
-func traverseHelper(parent TraversableNode, trace []TraverseTraceItem, callback func(node TraversableNode, trace []TraverseTraceItem) bool) {
-	if cont := callback(parent, trace); !cont {
+func traverseHelper(parent TraversableNode, callback func(node TraversableNode) bool) {
+	if cont := callback(parent); !cont {
 		return
 	}
-	for i, field := range parent.GetTraversableSubnodes() {
-		traverseHelper(field, append(trace, TraverseTraceItem{&parent, i}), callback)
+	for _, field := range parent.GetTraversableSubnodes() {
+		traverseHelper(field, callback)
 	}
 }
 
 // There are 2 differences compared to WalkWithNil:
 //  1. Sends the information of expected type for nil values
 //  2. Threats slices are individual nodes, their items will have isolated indices from sibling nodes.
-func Traverse(n ast.Node, callback func(n TraversableNode, trace []TraverseTraceItem) bool) {
-	traverseHelper(GetTraversableNodeForASTNode(n), []TraverseTraceItem{}, callback)
+func Traverse(tNode TraversableNode, callback func(tNode TraversableNode) bool) {
+	traverseHelper(tNode, callback)
 }

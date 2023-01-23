@@ -2,15 +2,28 @@ package ast_wrapper
 
 import (
 	"fmt"
+
 	"testing"
 )
 
+// Pass if no panic
 func Test_Traverse(t *testing.T) {
 	_, astFile, _ := LoadFile("walk.go")
 
-	Traverse(astFile, func(n TraversableNode, trace []TraverseTraceItem) bool {
+	appandableNodes := []TraversableNode{}
 
-		fmt.Println(n.ExpectedType, n.IsNil)
+	Traverse(GetTraversableNodeForASTNode(astFile), func(tNode TraversableNode) bool {
+		if tNode.IsNil {
+			fmt.Printf("%-20s nil\n", tNode.ExpectedType)
+		} else {
+			fmt.Printf("%-20s %v\n", tNode.ExpectedType, tNode.Value)
+		}
+
+		if tNode.IsNil || tNode.ExpectedType.IsSliceType() {
+			appandableNodes = append(appandableNodes, tNode)
+		}
+
 		return true
 	})
+
 }
