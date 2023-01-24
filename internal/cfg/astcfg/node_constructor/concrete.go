@@ -76,8 +76,8 @@ func BranchStmt(ctx context.Context, limit int) *ast.BranchStmt {
 	}
 	return &ast.BranchStmt{
 		TokPos: token.NoPos,
-		Tok:    *utilities.Pick(tokenConstructor.AcceptedByBranchStmt),
-		Label:  *utilities.Pick(GeneratedBranchLabels),
+		Tok:    *utilities.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
+		Label:  *utilities.Pick(GeneratedBranchLabels),                 // FIXME:
 	}
 }
 
