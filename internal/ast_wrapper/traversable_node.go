@@ -19,7 +19,7 @@ func GetTraversableNodeForASTNode(node ast.Node) TraversableNode {
 	}
 }
 
-func TraversableNodesFromSliceTypeNode(tNode *TraversableNode) (tSubnodes []TraversableNode) {
+func TraversableNodesFromSliceTypeNode(tNode *TraversableNode) (tSubnodes []*TraversableNode) {
 	if tNode == nil {
 		return
 	}
@@ -27,51 +27,51 @@ func TraversableNodesFromSliceTypeNode(tNode *TraversableNode) (tSubnodes []Trav
 	switch slice := tNode.Value.(type) {
 	case []*ast.Comment:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, Comment, item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, Comment, item == nil, tNode})
 		}
 	case []*ast.CommentGroup:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, CommentGroup, item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, CommentGroup, item == nil, tNode})
 		}
 	case []*ast.ImportSpec:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, ImportSpec, item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, ImportSpec, item == nil, tNode})
 		}
 	case []*ast.Ident:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, Ident, item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, Ident, item == nil, tNode})
 		}
 	case []*ast.Field:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, Field, item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, Field, item == nil, tNode})
 		}
 	case []ast.Stmt:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
 		}
 	case []ast.Decl:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
 		}
 	case []ast.Spec:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
 		}
 	case []ast.Expr:
 		for _, item := range slice {
-			tSubnodes = append(tSubnodes, TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
+			tSubnodes = append(tSubnodes, &TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
 		}
 		// case []ast.Node:
 		// 	for _, item := range slice {
-		// 		tSubnodes = append(tSubnodes, TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
+		// 		tSubnodes = append(tSubnodes, &TraversableNode{item, GetNodeTypeForASTNode(item), item == nil, tNode})
 		// 	}
 	}
 	return
 }
 
-func TraversableNodesFromInterfaceTypeNode(tNode *TraversableNode) []TraversableNode {
+func TraversableNodesFromInterfaceTypeNode(tNode *TraversableNode) []*TraversableNode {
 	if tNode.IsNil {
-		return []TraversableNode{}
+		return []*TraversableNode{}
 	}
 	switch (*tNode).Value.(type) {
 	case ast.Expr:
@@ -83,85 +83,85 @@ func TraversableNodesFromInterfaceTypeNode(tNode *TraversableNode) []Traversable
 	case ast.Spec:
 		return TraversableNodesFromConcreteTypeNode(tNode)
 	}
-	return []TraversableNode{}
+	return []*TraversableNode{}
 }
 
-func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableNode {
+func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*TraversableNode {
 	if (*tNode).IsNil {
-		return []TraversableNode{}
+		return []*TraversableNode{}
 	}
 
 	switch n := (*tNode).Value.(type) {
 
 	case *ast.Comment:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.CommentGroup:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.Field:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Names, IdentSlice, n.Names == nil, tNode},
 			{n.Type, Expr, n.Type == nil, tNode},
 			{n.Tag, BasicLit, n.Tag == nil, tNode},
 		}
 
 	case *ast.FieldList:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.List, FieldSlice, n.List == nil, tNode},
 		}
 
 	case *ast.BadExpr:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.Ident:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.Ellipsis:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Elt, Expr, n.Elt == nil, tNode},
 		}
 
 	case *ast.BasicLit:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.FuncLit:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Type, FuncType, n.Type == nil, tNode},
 			{n.Body, BlockStmt, n.Body == nil, tNode},
 		}
 
 	case *ast.CompositeLit:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Type, Expr, n.Type == nil, tNode},
 			{n.Elts, ExprSlice, n.Elts == nil, tNode},
 		}
 
 	case *ast.ParenExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 		}
 
 	case *ast.SelectorExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Sel, Ident, n.Sel == nil, tNode},
 		}
 
 	case *ast.IndexExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Index, Expr, n.Index == nil, tNode},
 		}
 
 	case *ast.IndexListExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Indices, ExprSlice, n.Indices == nil, tNode},
 		}
 
 	case *ast.SliceExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Low, Expr, n.Low == nil, tNode},
 			{n.High, Expr, n.High == nil, tNode},
@@ -169,139 +169,139 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 	case *ast.TypeAssertExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Type, Expr, n.Type == nil, tNode},
 		}
 
 	case *ast.CallExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Fun, Expr, n.Fun == nil, tNode},
 			{n.Args, ExprSlice, n.Args == nil, tNode},
 		}
 
 	case *ast.StarExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 		}
 
 	case *ast.UnaryExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 		}
 
 	case *ast.BinaryExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 			{n.Y, Expr, n.Y == nil, tNode},
 		}
 
 	case *ast.KeyValueExpr:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Key, Expr, n.Key == nil, tNode},
 			{n.Value, Expr, n.Value == nil, tNode},
 		}
 
 	case *ast.ArrayType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Len, Expr, n.Len == nil, tNode},
 			{n.Elt, Expr, n.Elt == nil, tNode},
 		}
 
 	case *ast.StructType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Fields, FieldList, n.Fields == nil, tNode},
 		}
 
 	case *ast.FuncType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.TypeParams, FieldList, n.TypeParams == nil, tNode},
 			{n.Params, FieldList, n.Params == nil, tNode},
 			{n.Results, FieldList, n.Results == nil, tNode},
 		}
 
 	case *ast.InterfaceType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Methods, FieldList, n.Methods == nil, tNode},
 		}
 
 	case *ast.MapType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Key, Expr, n.Key == nil, tNode},
 			{n.Value, Expr, n.Value == nil, tNode},
 		}
 
 	case *ast.ChanType:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Value, Expr, n.Value == nil, tNode},
 		}
 
 	case *ast.BadStmt:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.DeclStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Decl, Decl, n.Decl == nil, tNode},
 		}
 
 	case *ast.EmptyStmt:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.LabeledStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Label, Ident, n.Label == nil, tNode},
 			{n.Stmt, Stmt, n.Stmt == nil, tNode},
 		}
 
 	case *ast.ExprStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 		}
 
 	case *ast.SendStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Chan, Expr, n.Chan == nil, tNode},
 			{n.Value, Expr, n.Value == nil, tNode},
 		}
 
 	case *ast.IncDecStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.X, Expr, n.X == nil, tNode},
 		}
 
 	case *ast.AssignStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Lhs, ExprSlice, n.Lhs == nil, tNode},
 			{n.Rhs, ExprSlice, n.Rhs == nil, tNode},
 		}
 
 	case *ast.GoStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Call, CallExpr, n.Call == nil, tNode},
 		}
 
 	case *ast.DeferStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Call, CallExpr, n.Call == nil, tNode},
 		}
 
 	case *ast.ReturnStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Results, ExprSlice, n.Results == nil, tNode},
 		}
 
 	case *ast.BranchStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Label, Ident, n.Label == nil, tNode},
 		}
 
 	case *ast.BlockStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.List, StmtSlice, n.List == nil, tNode},
 		}
 
 	case *ast.IfStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Init, Stmt, n.Init == nil, tNode},
 			{n.Cond, Expr, n.Cond == nil, tNode},
 			{n.Body, BlockStmt, n.Body == nil, tNode},
@@ -309,38 +309,38 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 	case *ast.CaseClause:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.List, ExprSlice, n.List == nil, tNode},
 			{n.Body, StmtSlice, n.Body == nil, tNode},
 		}
 
 	case *ast.SwitchStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Init, Stmt, n.Init == nil, tNode},
 			{n.Tag, Expr, n.Tag == nil, tNode},
 			{n.Body, BlockStmt, n.Body == nil, tNode},
 		}
 
 	case *ast.TypeSwitchStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Init, Stmt, n.Init == nil, tNode},
 			{n.Assign, Stmt, n.Assign == nil, tNode},
 			{n.Body, BlockStmt, n.Body == nil, tNode},
 		}
 
 	case *ast.CommClause:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Comm, Stmt, n.Comm == nil, tNode},
 			{n.Body, StmtSlice, n.Body == nil, tNode},
 		}
 
 	case *ast.SelectStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Body, BlockStmt, n.Body == nil, tNode},
 		}
 
 	case *ast.ForStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Init, Stmt, n.Init == nil, tNode},
 			{n.Cond, Expr, n.Cond == nil, tNode},
 			{n.Post, Stmt, n.Post == nil, tNode},
@@ -348,7 +348,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 	case *ast.RangeStmt:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Key, Expr, n.Key == nil, tNode},
 			{n.Value, Expr, n.Value == nil, tNode},
 			{n.X, Expr, n.X == nil, tNode},
@@ -356,35 +356,35 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 	case *ast.ImportSpec:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Name, Ident, n.Name == nil, tNode},
 			{n.Path, BasicLit, n.Path == nil, tNode},
 		}
 
 	case *ast.ValueSpec:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Names, IdentSlice, n.Names == nil, tNode},
 			{n.Type, Expr, n.Type == nil, tNode},
 			{n.Values, ExprSlice, n.Values == nil, tNode},
 		}
 
 	case *ast.TypeSpec:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Name, Ident, n.Name == nil, tNode},
 			{n.TypeParams, FieldList, n.TypeParams == nil, tNode},
 			{n.Type, Expr, n.Type == nil, tNode},
 		}
 
 	case *ast.BadDecl:
-		return []TraversableNode{}
+		return []*TraversableNode{}
 
 	case *ast.GenDecl:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Specs, SpecSlice, n.Specs == nil, tNode},
 		}
 
 	case *ast.FuncDecl:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Recv, FieldList, n.Recv == nil, tNode},
 			{n.Name, Ident, n.Name == nil, tNode},
 			{n.Type, FuncType, n.Type == nil, tNode},
@@ -392,7 +392,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 	case *ast.File:
-		return []TraversableNode{
+		return []*TraversableNode{
 			{n.Name, Ident, n.Name == nil, tNode},
 			{n.Decls, DeclSlice, n.Decls == nil, tNode},
 			{n.Imports, ImportSpecSlice, n.Imports == nil, tNode},
@@ -400,10 +400,10 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []TraversableN
 		}
 
 		// case ast*.*ast.Package:
-		// 	return []TraversableNode{
+		// 	return []*TraversableNode{
 		// 	{n.Files, map[string]*File},
 		// }
 
 	}
-	return []TraversableNode{}
+	return []*TraversableNode{}
 }

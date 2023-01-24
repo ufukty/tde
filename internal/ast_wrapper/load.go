@@ -17,7 +17,7 @@ func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
 	return fset, pkgs, nil
 }
 
-func LoadFile(filepath string) (*token.FileSet, ast.Node, error) {
+func LoadFile(filepath string) (*token.FileSet, *ast.File, error) {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, filepath, nil, parser.AllErrors)
 	if err != nil {

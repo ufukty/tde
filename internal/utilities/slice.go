@@ -40,3 +40,4 @@ func SliceRemoveLast[T any](slice []T) []T {
 func SliceLast[T any](slice []T) T {
 	return slice[len(slice)-1]
 }
+
