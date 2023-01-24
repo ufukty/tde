@@ -1,6 +1,7 @@
 package evolution
 
 import (
+	"fmt"
 	"tde/internal/embedding"
 	models "tde/models/in_program_models"
 
@@ -28,6 +29,8 @@ func (e *Evolution) Measure(embed embedding.EmbeddingConfig) {
 			validCandidates = append(validCandidates, candidate)
 		}
 	}
+
+	fmt.Println(validCandidates)
 
 	// embed.WriteCandidatesIntoFile(validCandidates)
 
