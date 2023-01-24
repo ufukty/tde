@@ -15,9 +15,7 @@ func NodeFields(n ast.Node) []NodeField {
 		return []NodeField{}
 
 	case *ast.CommentGroup:
-		return []NodeField{
-			// {n.List, CommentSlice},
-		}
+		return []NodeField{}
 
 	case *ast.Field:
 		return []NodeField{

@@ -1,6 +1,7 @@
 package ast_wrapper
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,11 +12,11 @@ func Test_Traverse(t *testing.T) {
 	appandableNodes := []*TraversableNode{}
 
 	Traverse(GetTraversableNodeForASTNode(astFile), func(tNodePtr *TraversableNode) bool {
-		// if tNode.IsNil {
-		// 	fmt.Printf("%-20s nil\n", tNode.ExpectedType)
-		// } else {
-		// 	fmt.Printf("%-20s %v\n", tNode.ExpectedType, tNode.Value)
-		// }
+		if tNodePtr.IsNil {
+			fmt.Printf("%-20s nil\n", tNodePtr.ExpectedType)
+		} else {
+			fmt.Printf("%-20s %v\n", tNodePtr.ExpectedType, tNodePtr.Value)
+		}
 
 		if tNodePtr.IsNil || tNodePtr.ExpectedType.IsSliceType() {
 			appandableNodes = append(appandableNodes, tNodePtr)
