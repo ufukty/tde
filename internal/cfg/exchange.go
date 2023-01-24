@@ -1,4 +1,4 @@
-package astcfg
+package cfg
 
 import "go/ast"
 

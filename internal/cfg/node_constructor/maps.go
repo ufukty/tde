@@ -1,7 +1,7 @@
 package node_constructor
 
 import (
-	"tde/internal/cfg/astcfg/context"
+	"tde/internal/cfg/context"
 
 	"go/ast"
 	"reflect"

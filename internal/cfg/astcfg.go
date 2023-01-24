@@ -1,1 +1,1 @@
-package astcfg
+package cfg

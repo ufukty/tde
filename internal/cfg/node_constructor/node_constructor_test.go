@@ -5,7 +5,7 @@ import (
 	"go/printer"
 	"go/token"
 	"os"
-	"tde/internal/cfg/astcfg/context"
+	"tde/internal/cfg/context"
 	"testing"
 )
 

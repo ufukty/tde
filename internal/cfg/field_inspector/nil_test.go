@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
-	"tde/internal/cfg/astcfg/context"
+	"tde/internal/cfg/context"
 	"testing"
 )
 

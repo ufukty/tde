@@ -5,8 +5,8 @@ import (
 	"go/ast"
 	"go/token"
 	"reflect"
-	"tde/internal/cfg/astcfg/context"
-	"tde/internal/cfg/astcfg/node_constructor"
+	"tde/internal/cfg/context"
+	"tde/internal/cfg/node_constructor"
 )
 
 func GetConstructor(typeOf reflect.Type) func(context.Context, int) ast.Node {

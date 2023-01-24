@@ -2,7 +2,7 @@ package node_constructor
 
 import (
 	"go/ast"
-	"tde/internal/cfg/astcfg/context"
+	"tde/internal/cfg/context"
 )
 
 var AllowedPackagesToImport = []string{"fmt", "strings", "math"}
