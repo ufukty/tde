@@ -1,4 +1,4 @@
-package ast_wrapper
+package astw
 
 import (
 	"fmt"

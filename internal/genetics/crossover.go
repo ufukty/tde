@@ -2,7 +2,7 @@ package genetics
 
 import (
 	"go/ast"
-	"tde/internal/ast_wrapper"
+	"tde/internal/astw"
 	"tde/internal/utilities"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -11,8 +11,8 @@ import (
 func CrossOver(parentA, parentB *ast.FuncDecl) bool {
 
 	var (
-		nodesA   = ast_wrapper.ListSubnodes(parentA)[1:]
-		nodesB   = ast_wrapper.ListSubnodes(parentB)[1:]
+		nodesA   = astw.ListSubnodes(parentA)[1:]
+		nodesB   = astw.ListSubnodes(parentB)[1:]
 		selected = false
 		subA     ast.Node
 		subB     ast.Node

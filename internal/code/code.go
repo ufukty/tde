@@ -1,7 +1,7 @@
 package code
 
 import (
-	"tde/internal/ast_wrapper"
+	"tde/internal/astw"
 	"tde/internal/utilities"
 
 	"fmt"
@@ -71,7 +71,7 @@ func (c *Code) RenameFunction(oldName, newName string) error {
 }
 
 func (c *Code) FindFunction(funcName string) (*ast.FuncDecl, error) {
-	return ast_wrapper.FindFuncDecl(c.astFile, funcName)
+	return astw.FindFuncDecl(c.astFile, funcName)
 }
 
 func (c *Code) ReplaceFunctionName(n *ast.FuncDecl, newName string) {

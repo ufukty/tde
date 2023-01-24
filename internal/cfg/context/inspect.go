@@ -3,13 +3,13 @@ package context
 import (
 	"go/ast"
 	"go/token"
-	"tde/internal/ast_wrapper"
+	"tde/internal/astw"
 )
 
 // TODO: Detect FuncLit's in code and add to Context
 func InspectWithContext(startNode ast.Node, callback func(ctx Context, node ast.Node)) {
 	ctx := NewContext()
-	ast_wrapper.InspectTwiceWithTrace(startNode,
+	astw.InspectTwiceWithTrace(startNode,
 		// before visit children
 		func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 			switch currentNode := currentNode.(type) {

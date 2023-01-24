@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	astw "tde/internal/ast_wrapper"
+	astw "tde/internal/astw"
 	"tde/internal/cfg/context"
 	nc "tde/internal/cfg/node_constructor"
 	utl "tde/internal/utilities"
