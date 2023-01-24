@@ -13,5 +13,5 @@ import (
 //   - Context-Aware Random AST-nodes
 type CFG interface {
 	Develop(*ast.File, *ast.FuncDecl)
-	PickCutPoint(*ast.File, *ast.FuncDecl) *ast.Node
+	Exchange(*ast.File, *ast.FuncDecl, *ast.File, *ast.FuncDecl)
 }
