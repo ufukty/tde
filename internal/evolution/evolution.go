@@ -29,7 +29,7 @@ func (e *Evolution) Measure(embed embedding.EmbeddingConfig) {
 		}
 	}
 
-	embed.WriteCandidatesIntoFile(validCandidates)
+	// embed.WriteCandidatesIntoFile(validCandidates)
 
 	// test
 
