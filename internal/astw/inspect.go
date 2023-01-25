@@ -10,45 +10,50 @@ import (
 // Additionally, sends traces of parents and childIndices to callback for each node.
 //
 // If visiting nil valued nodes is necessary then use WalkWithNils() instead.
-func InspectWithTrace(startNode ast.Node, callback func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool) {
+// FIXME: Change value parameters with pointers; to let callback compare currentNode based on address instead of values
+func InspectWithTrace(start ast.Node, callback func(node ast.Node, parents []ast.Node, indices []int) bool) {
 	var (
-		parentTrace     []ast.Node
-		childIndexTrace []int
+		parents []ast.Node
+		indices []int
 	)
 	var (
-		updateParentTrace = func(n ast.Node) {
+		updateParents = func(n ast.Node) {
 			if n != nil {
-				parentTrace = append(parentTrace, n)
+				parents = append(parents, n)
 			} else {
-				parentTrace = utl.SliceRemoveLast(parentTrace)
+				parents = utl.SliceRemoveLast(parents)
 			}
 		}
-		updateChildIndexTraceItems = func(n ast.Node) {
+		updateIndices = func(n ast.Node) {
 			if n != nil {
-				childIndexTrace = append(childIndexTrace, 0)
+				indices = append(indices, 0)
 			} else {
-				childIndexTrace = utl.SliceRemoveLast(childIndexTrace)
+				indices = utl.SliceRemoveLast(indices)
 			}
 		}
-		updateChildIndexTraceLastCounter = func(n ast.Node) {
-			if l := len(childIndexTrace); (n == nil) && (l > 0) {
-				childIndexTrace[l-1]++
+		updateLastIndex = func() {
+			if l := len(indices); l > 0 {
+				indices[l-1]++
 			}
 		}
 	)
-	ast.Inspect(startNode, func(n ast.Node) bool {
-		var ret bool
+	ast.Inspect(start, func(n ast.Node) bool {
+		var recurse = false
 		if n != nil {
-			ret = callback(n, parentTrace, childIndexTrace)
-			updateParentTrace(n)
-			updateChildIndexTraceItems(n)
+			recurse = callback(n, parents, indices)
+			if recurse {
+				updateParents(n)
+				updateIndices(n)
+			} else {
+				updateLastIndex()
+			}
 		} else {
-			updateParentTrace(n)
-			updateChildIndexTraceItems(n)
-			ret = callback(n, parentTrace, childIndexTrace)
-			updateChildIndexTraceLastCounter(n)
+			updateParents(n)
+			updateIndices(n)
+			callback(n, parents, indices)
+			updateLastIndex()
 		}
-		return ret
+		return recurse
 	})
 }
 
@@ -61,44 +66,52 @@ func InspectTwiceWithTrace(
 	post func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int),
 ) {
 	var (
-		parentTrace     []ast.Node
-		childIndexTrace []int
+		parents []ast.Node
+		indices []int
 	)
 	var (
-		updateParentTrace = func(n ast.Node) {
+		updateParents = func(n ast.Node) {
 			if n != nil {
-				parentTrace = append(parentTrace, n)
+				parents = append(parents, n)
 			} else {
-				parentTrace = utl.SliceRemoveLast(parentTrace)
+				parents = utl.SliceRemoveLast(parents)
 			}
 		}
-		updateChildIndexTraceItems = func(n ast.Node) {
+		updateIndices = func(n ast.Node) {
 			if n != nil {
-				childIndexTrace = append(childIndexTrace, 0)
+				indices = append(indices, 0)
 			} else {
-				childIndexTrace = utl.SliceRemoveLast(childIndexTrace)
+				indices = utl.SliceRemoveLast(indices)
 			}
 		}
-		updateChildIndexTraceLastCounter = func(n ast.Node) {
-			if l := len(childIndexTrace); (n == nil) && (l > 0) {
-				childIndexTrace[l-1]++
+		updateLastIndex = func() {
+			if l := len(indices); l > 0 {
+				indices[l-1]++
 			}
 		}
 	)
 	ast.Inspect(startNode, func(n ast.Node) bool {
-		var ret = false
+		var recurse = true
 		if n != nil {
-			ret = pre(n, parentTrace, childIndexTrace)
-			updateParentTrace(n)
-			updateChildIndexTraceItems(n)
+			if pre != nil {
+				recurse = pre(n, parents, indices)
+			}
+			if recurse {
+				updateParents(n)
+				updateIndices(n)
+			} else {
+				updateLastIndex()
+			}
 		} else {
-			ntemp := utl.SliceLast(parentTrace)
-			updateParentTrace(n)
-			updateChildIndexTraceItems(n)
-			post(ntemp, parentTrace, childIndexTrace)
-			updateChildIndexTraceLastCounter(n)
+			ntemp := utl.SliceLast(parents)
+			updateParents(n)
+			updateIndices(n)
+			if post != nil {
+				post(ntemp, parents, indices)
+			}
+			updateLastIndex()
 		}
-		return ret
+		return recurse
 
 	})
 }
