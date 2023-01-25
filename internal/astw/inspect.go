@@ -116,21 +116,17 @@ func InspectTwiceWithTrace(
 	})
 }
 
-// Different than Inspect function, ignores subnodes far than 1 depth.
-func InspectChildren(startNode ast.Node, callback func(currentNode ast.Node, childIndex int)) {
-	InspectWithTrace(startNode, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
-		switch len(parentTrace) {
+// Calls the callback for every child of the node, ignores itself of the node and all of the nodes deeper than 1 level.
+func InspectChildren(node ast.Node, callback func(node ast.Node, indices int)) {
+	InspectWithTrace(node, func(n ast.Node, parents []ast.Node, indices []int) bool {
+		switch len(parents) {
 		case 0:
 			return true
 		case 1:
-			callback(n, childIndexTrace[len(childIndexTrace)-1])
+			callback(n, indices[len(indices)-1])
 			return false
 		default:
 			return false
 		}
 	})
-}
-
-func FindNodeWithChildIndexTrace(childIndexTrace []int) ast.Node {
-	return &ast.AssignStmt{}
 }
