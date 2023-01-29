@@ -17,13 +17,13 @@ func Test_InspectWithContext(t *testing.T) {
 	InspectWithContext(TEST_TREE, func(ctx Context, node ast.Node) {
 		// fmt.Println(reflect.TypeOf(node), ctx.Scopes)
 		if node == returnStmt {
-			if slices.Index(ctx.GetVariables(), *identA) == -1 {
+			if slices.Index(ctx.GetVariables(), identA) == -1 {
 				t.Error("failed, input parameter 'a' is not detected")
 			}
-			if slices.Index(ctx.GetVariables(), *identB) == -1 {
+			if slices.Index(ctx.GetVariables(), identB) == -1 {
 				t.Error("failed, input parameter 'b' is not detected")
 			}
-			if slices.Index(ctx.GetVariables(), *identC) == -1 {
+			if slices.Index(ctx.GetVariables(), identC) == -1 {
 				t.Error("failed, variable 'c' is not detected")
 			}
 		}

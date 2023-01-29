@@ -21,7 +21,7 @@ func ExamineEnteringNode(ctx *Context, node ast.Node) {
 		for _, file := range node.Files {
 			for _, decl := range file.Decls {
 				if funcDecl, ok := decl.(*ast.FuncDecl); ok {
-					ctx.AddVariable(*funcDecl.Name)
+					ctx.AddVariable(funcDecl.Name)
 				}
 			}
 		}
@@ -30,7 +30,7 @@ func ExamineEnteringNode(ctx *Context, node ast.Node) {
 		*ast.File:
 		for _, decl := range node.Decls {
 			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
-				ctx.AddVariable(*funcDecl.Name)
+				ctx.AddVariable(funcDecl.Name)
 			}
 		}
 	}
@@ -52,7 +52,7 @@ func ExamineLeavingNode(ctx *Context, node ast.Node) {
 		if node.Tok == token.DEFINE {
 			for _, expr := range node.Lhs {
 				if ident, ok := expr.(*ast.Ident); ok {
-					ctx.AddVariable(*ident)
+					ctx.AddVariable(ident)
 				}
 			}
 		}
@@ -62,7 +62,7 @@ func ExamineLeavingNode(ctx *Context, node ast.Node) {
 		if fieldList := node.Params.List; fieldList != nil {
 			for _, field := range fieldList {
 				for _, ident := range field.Names {
-					ctx.AddVariable(*ident)
+					ctx.AddVariable(ident)
 				}
 			}
 		}
