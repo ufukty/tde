@@ -11,7 +11,7 @@ import (
 //
 // If visiting nil valued nodes is necessary then use WalkWithNils() instead.
 // FIXME: Change value parameters with pointers; to let callback compare currentNode based on address instead of values
-func InspectWithTrace(start ast.Node, callback func(node ast.Node, parents []ast.Node, indices []int) bool) {
+func InspectWithTrace(node ast.Node, callback func(node ast.Node, parents []ast.Node, indices []int) bool) {
 	var (
 		parents []ast.Node
 		indices []int
@@ -37,20 +37,20 @@ func InspectWithTrace(start ast.Node, callback func(node ast.Node, parents []ast
 			}
 		}
 	)
-	ast.Inspect(start, func(n ast.Node) bool {
+	ast.Inspect(node, func(currentNode ast.Node) bool {
 		var recurse = false
-		if n != nil {
-			recurse = callback(n, parents, indices)
+		if currentNode != nil {
+			recurse = callback(currentNode, parents, indices)
 			if recurse {
-				updateParents(n)
-				updateIndices(n)
+				updateParents(currentNode)
+				updateIndices(currentNode)
 			} else {
 				updateLastIndex()
 			}
 		} else {
-			updateParents(n)
-			updateIndices(n)
-			callback(n, parents, indices)
+			updateParents(currentNode)
+			updateIndices(currentNode)
+			callback(currentNode, parents, indices)
 			updateLastIndex()
 		}
 		return recurse
@@ -61,9 +61,9 @@ func InspectWithTrace(start ast.Node, callback func(node ast.Node, parents []ast
 //
 // Won't visit nil valued nodes.
 func InspectTwiceWithTrace(
-	startNode ast.Node,
-	pre func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool,
-	post func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int),
+	node ast.Node,
+	pre func(node ast.Node, parents []ast.Node, indices []int) bool,
+	post func(node ast.Node, parents []ast.Node, indices []int),
 ) {
 	var (
 		parents []ast.Node
@@ -90,43 +90,67 @@ func InspectTwiceWithTrace(
 			}
 		}
 	)
-	ast.Inspect(startNode, func(n ast.Node) bool {
+	ast.Inspect(node, func(currentNode ast.Node) bool {
 		var recurse = true
-		if n != nil {
+		if currentNode != nil {
 			if pre != nil {
-				recurse = pre(n, parents, indices)
+				recurse = pre(currentNode, parents, indices)
 			}
 			if recurse {
-				updateParents(n)
-				updateIndices(n)
+				updateParents(currentNode)
+				updateIndices(currentNode)
 			} else {
 				updateLastIndex()
 			}
 		} else {
 			ntemp := utl.SliceLast(parents)
-			updateParents(n)
-			updateIndices(n)
+			updateParents(currentNode)
+			updateIndices(currentNode)
 			if post != nil {
 				post(ntemp, parents, indices)
 			}
 			updateLastIndex()
 		}
 		return recurse
-
 	})
 }
 
 // Calls the callback for every child of the node, ignores itself of the node and all of the nodes deeper than 1 level.
 func InspectChildren(node ast.Node, callback func(node ast.Node, indices int)) {
-	InspectWithTrace(node, func(n ast.Node, parents []ast.Node, indices []int) bool {
+	InspectWithTrace(node, func(currentNode ast.Node, parents []ast.Node, indices []int) bool {
 		switch len(parents) {
 		case 0:
 			return true
 		case 1:
-			callback(n, indices[len(indices)-1])
+			callback(currentNode, indices[len(indices)-1])
 			return false
 		default:
 			return false
 		}
 	})
+}
+
+// Calls the callback for every child of the node, ignores itself of the node and all of the nodes deeper than 1 level.
+func InspectChildrenTwice(node ast.Node, pre func(node ast.Node, indices int), post func(node ast.Node, indices int)) {
+	InspectTwiceWithTrace(node,
+		func(currentNode ast.Node, parents []ast.Node, indices []int) bool {
+			switch len(parents) {
+			case 0:
+				return true
+			case 1:
+				if pre != nil {
+					pre(currentNode, indices[len(indices)-1])
+				}
+				return false
+			default:
+				return false
+			}
+		}, func(currentNode ast.Node, parents []ast.Node, indices []int) {
+			if len(parents) == 1 {
+				if post != nil {
+					post(currentNode, indices[len(indices)-1])
+				}
+			}
+		},
+	)
 }
