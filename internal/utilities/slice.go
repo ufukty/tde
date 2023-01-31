@@ -1,5 +1,7 @@
 package utilities
 
+import "math"
+
 func CompareSlices[T comparable](l, r []T) bool {
 	if len(l) != len(r) {
 		return false
@@ -41,3 +43,11 @@ func SliceLast[T any](slice []T) T {
 	return slice[len(slice)-1]
 }
 
+func SliceZip[K comparable, V any](a []K, b []V) map[K]V {
+	pairs := map[K]V{}
+	l := int(math.Floor(math.Min(float64(len(a)), float64(len(b)))))
+	for i := 0; i < l; i++ {
+		pairs[a[i]] = b[i]
+	}
+	return pairs
+}
