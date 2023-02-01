@@ -23,8 +23,8 @@ type Context struct {
 	Scopes []Scope
 }
 
-func NewContext() Context {
-	return Context{Scopes: []Scope{NewScope()}}
+func NewContext() *Context {
+	return &Context{Scopes: []Scope{NewScope()}}
 }
 
 func (ctx *Context) ScopeIn() {

@@ -1,4 +1,4 @@
-package astw
+package test_package
 
 import (
 	"fmt"

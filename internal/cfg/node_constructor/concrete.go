@@ -8,7 +8,7 @@ import (
 	"go/token"
 )
 
-func ArrayType(ctx context.Context, limit int) *ast.ArrayType {
+func ArrayType(ctx *context.Context, limit int) *ast.ArrayType {
 	// FIXME: // is there any usecase thar is not achievable with a slice but only with a ...T array
 	if limit == 0 {
 		return nil
@@ -21,7 +21,7 @@ func ArrayType(ctx context.Context, limit int) *ast.ArrayType {
 	}
 }
 
-func AssignStmt(ctx context.Context, limit int) *ast.AssignStmt {
+func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -33,7 +33,7 @@ func AssignStmt(ctx context.Context, limit int) *ast.AssignStmt {
 	}
 }
 
-func BasicLit(ctx context.Context, limit int) *ast.BasicLit {
+func BasicLit(ctx *context.Context, limit int) *ast.BasicLit {
 	if limit == 0 {
 		return nil
 	}
@@ -45,7 +45,7 @@ func BasicLit(ctx context.Context, limit int) *ast.BasicLit {
 	}))()
 }
 
-func BinaryExpr(ctx context.Context, limit int) *ast.BinaryExpr {
+func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -57,7 +57,7 @@ func BinaryExpr(ctx context.Context, limit int) *ast.BinaryExpr {
 	}
 }
 
-func BlockStmt(ctx context.Context, limit int) *ast.BlockStmt {
+func BlockStmt(ctx *context.Context, limit int) *ast.BlockStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -70,7 +70,7 @@ func BlockStmt(ctx context.Context, limit int) *ast.BlockStmt {
 	}
 }
 
-func BranchStmt(ctx context.Context, limit int) *ast.BranchStmt {
+func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -81,7 +81,7 @@ func BranchStmt(ctx context.Context, limit int) *ast.BranchStmt {
 	}
 }
 
-func CallExpr(ctx context.Context, limit int) *ast.CallExpr {
+func CallExpr(ctx *context.Context, limit int) *ast.CallExpr {
 	// TODO: function calls with more than 1 arguments
 	if limit == 0 {
 		return nil
@@ -95,7 +95,7 @@ func CallExpr(ctx context.Context, limit int) *ast.CallExpr {
 	}
 }
 
-func CaseClause(ctx context.Context, limit int) *ast.CaseClause {
+func CaseClause(ctx *context.Context, limit int) *ast.CaseClause {
 	if limit == 0 {
 		return nil
 	}
@@ -109,7 +109,7 @@ func CaseClause(ctx context.Context, limit int) *ast.CaseClause {
 	}
 }
 
-func ChanType(ctx context.Context, limit int) *ast.ChanType {
+func ChanType(ctx *context.Context, limit int) *ast.ChanType {
 	if limit == 0 {
 		return nil
 	}
@@ -124,7 +124,7 @@ func ChanType(ctx context.Context, limit int) *ast.ChanType {
 	}
 }
 
-func CommClause(ctx context.Context, limit int) *ast.CommClause {
+func CommClause(ctx *context.Context, limit int) *ast.CommClause {
 	if limit == 0 {
 		return nil
 	}
@@ -137,7 +137,7 @@ func CommClause(ctx context.Context, limit int) *ast.CommClause {
 	}
 }
 
-func CompositeLit(ctx context.Context, limit int) *ast.CompositeLit {
+func CompositeLit(ctx *context.Context, limit int) *ast.CompositeLit {
 	// TODO: check Incomplete property
 	if limit == 0 {
 		return nil
@@ -151,7 +151,7 @@ func CompositeLit(ctx context.Context, limit int) *ast.CompositeLit {
 	}
 }
 
-func DeclStmt(ctx context.Context, limit int) *ast.DeclStmt {
+func DeclStmt(ctx *context.Context, limit int) *ast.DeclStmt {
 	// either with initial value assignment or declaration only
 	if limit == 0 {
 		return nil
@@ -161,7 +161,7 @@ func DeclStmt(ctx context.Context, limit int) *ast.DeclStmt {
 	}
 }
 
-func DeferStmt(ctx context.Context, limit int) *ast.DeferStmt {
+func DeferStmt(ctx *context.Context, limit int) *ast.DeferStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -171,7 +171,7 @@ func DeferStmt(ctx context.Context, limit int) *ast.DeferStmt {
 	}
 }
 
-func Ellipsis(ctx context.Context, limit int) *ast.Ellipsis {
+func Ellipsis(ctx *context.Context, limit int) *ast.Ellipsis {
 	if limit == 0 {
 		return nil
 	}
@@ -181,7 +181,7 @@ func Ellipsis(ctx context.Context, limit int) *ast.Ellipsis {
 	}
 }
 
-func EmptyStmt(ctx context.Context, limit int) *ast.EmptyStmt {
+func EmptyStmt(ctx *context.Context, limit int) *ast.EmptyStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -191,7 +191,7 @@ func EmptyStmt(ctx context.Context, limit int) *ast.EmptyStmt {
 	}
 }
 
-func ExprStmt(ctx context.Context, limit int) *ast.ExprStmt {
+func ExprStmt(ctx *context.Context, limit int) *ast.ExprStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -200,7 +200,7 @@ func ExprStmt(ctx context.Context, limit int) *ast.ExprStmt {
 	}
 }
 
-func Field(ctx context.Context, limit int) *ast.Field {
+func Field(ctx *context.Context, limit int) *ast.Field {
 	if limit == 0 {
 		return nil
 	}
@@ -213,7 +213,7 @@ func Field(ctx context.Context, limit int) *ast.Field {
 	}
 }
 
-func FieldList(ctx context.Context, limit int) *ast.FieldList {
+func FieldList(ctx *context.Context, limit int) *ast.FieldList {
 	if limit == 0 {
 		return nil
 	}
@@ -226,7 +226,7 @@ func FieldList(ctx context.Context, limit int) *ast.FieldList {
 	}
 }
 
-func ForStmt(ctx context.Context, limit int) *ast.ForStmt {
+func ForStmt(ctx *context.Context, limit int) *ast.ForStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -239,7 +239,7 @@ func ForStmt(ctx context.Context, limit int) *ast.ForStmt {
 	}
 }
 
-func FuncDecl(ctx context.Context, limit int) *ast.FuncDecl {
+func FuncDecl(ctx *context.Context, limit int) *ast.FuncDecl {
 	// TODO: Consider adding receiver functions (methods)
 	if limit == 0 {
 		return nil
@@ -251,7 +251,7 @@ func FuncDecl(ctx context.Context, limit int) *ast.FuncDecl {
 	}
 }
 
-func FuncLit(ctx context.Context, limit int) *ast.FuncLit {
+func FuncLit(ctx *context.Context, limit int) *ast.FuncLit {
 	// TODO:
 	if limit == 0 {
 		return nil
@@ -262,7 +262,7 @@ func FuncLit(ctx context.Context, limit int) *ast.FuncLit {
 	}
 }
 
-func FuncType(ctx context.Context, limit int) *ast.FuncType {
+func FuncType(ctx *context.Context, limit int) *ast.FuncType {
 	// FIXME:
 	if limit == 0 {
 		return nil
@@ -276,7 +276,7 @@ func FuncType(ctx context.Context, limit int) *ast.FuncType {
 }
 
 // Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
-func GenDecl(ctx context.Context, limit int) *ast.GenDecl {
+func GenDecl(ctx *context.Context, limit int) *ast.GenDecl {
 	if limit == 0 {
 		return nil
 	}
@@ -291,7 +291,7 @@ func GenDecl(ctx context.Context, limit int) *ast.GenDecl {
 	}
 }
 
-func GoStmt(ctx context.Context, limit int) *ast.GoStmt {
+func GoStmt(ctx *context.Context, limit int) *ast.GoStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -301,7 +301,7 @@ func GoStmt(ctx context.Context, limit int) *ast.GoStmt {
 	}
 }
 
-func Ident(ctx context.Context, limit int) *ast.Ident {
+func Ident(ctx *context.Context, limit int) *ast.Ident {
 	if limit == 0 {
 		return nil
 	}
@@ -309,14 +309,14 @@ func Ident(ctx context.Context, limit int) *ast.Ident {
 }
 
 // only valid values are types such int, float, string, bool
-func IdentType(ctx context.Context, limit int) *ast.Ident {
+func IdentType(ctx *context.Context, limit int) *ast.Ident {
 	if limit == 0 {
 		return nil
 	}
 	return ast.NewIdent(*utilities.Pick([]string{"int", "float", "string", "bool"}))
 }
 
-func IfStmt(ctx context.Context, limit int) *ast.IfStmt {
+func IfStmt(ctx *context.Context, limit int) *ast.IfStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -333,7 +333,7 @@ func IfStmt(ctx context.Context, limit int) *ast.IfStmt {
 	}
 }
 
-func ImportSpec(ctx context.Context, limit int) *ast.ImportSpec {
+func ImportSpec(ctx *context.Context, limit int) *ast.ImportSpec {
 	// TODO: Store imported packages for later use
 	if limit == 0 {
 		return nil
@@ -349,7 +349,7 @@ func ImportSpec(ctx context.Context, limit int) *ast.ImportSpec {
 	}
 }
 
-func IncDecStmt(ctx context.Context, limit int) *ast.IncDecStmt {
+func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -360,7 +360,7 @@ func IncDecStmt(ctx context.Context, limit int) *ast.IncDecStmt {
 	}
 }
 
-func IndexExpr(ctx context.Context, limit int) *ast.IndexExpr {
+func IndexExpr(ctx *context.Context, limit int) *ast.IndexExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -372,7 +372,7 @@ func IndexExpr(ctx context.Context, limit int) *ast.IndexExpr {
 	}
 }
 
-func IndexListExpr(ctx context.Context, limit int) *ast.IndexListExpr {
+func IndexListExpr(ctx *context.Context, limit int) *ast.IndexListExpr {
 	// TODO: Multi-dimensional arrays
 	if limit == 0 {
 		return nil
@@ -385,7 +385,7 @@ func IndexListExpr(ctx context.Context, limit int) *ast.IndexListExpr {
 	}
 }
 
-func InterfaceType(ctx context.Context, limit int) *ast.InterfaceType {
+func InterfaceType(ctx *context.Context, limit int) *ast.InterfaceType {
 	if limit == 0 {
 		return nil
 	}
@@ -396,7 +396,7 @@ func InterfaceType(ctx context.Context, limit int) *ast.InterfaceType {
 	}
 }
 
-func KeyValueExpr(ctx context.Context, limit int) *ast.KeyValueExpr {
+func KeyValueExpr(ctx *context.Context, limit int) *ast.KeyValueExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -407,7 +407,7 @@ func KeyValueExpr(ctx context.Context, limit int) *ast.KeyValueExpr {
 	}
 }
 
-func LabeledStmt(ctx context.Context, limit int) *ast.LabeledStmt {
+func LabeledStmt(ctx *context.Context, limit int) *ast.LabeledStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -418,7 +418,7 @@ func LabeledStmt(ctx context.Context, limit int) *ast.LabeledStmt {
 	}
 }
 
-func MapType(ctx context.Context, limit int) *ast.MapType {
+func MapType(ctx *context.Context, limit int) *ast.MapType {
 	if limit == 0 {
 		return nil
 	}
@@ -429,7 +429,7 @@ func MapType(ctx context.Context, limit int) *ast.MapType {
 	}
 }
 
-func ParenExpr(ctx context.Context, limit int) *ast.ParenExpr {
+func ParenExpr(ctx *context.Context, limit int) *ast.ParenExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -440,7 +440,7 @@ func ParenExpr(ctx context.Context, limit int) *ast.ParenExpr {
 	}
 }
 
-func RangeStmt(ctx context.Context, limit int) *ast.RangeStmt {
+func RangeStmt(ctx *context.Context, limit int) *ast.RangeStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -455,7 +455,7 @@ func RangeStmt(ctx context.Context, limit int) *ast.RangeStmt {
 	}
 }
 
-func ReturnStmt(ctx context.Context, limit int) *ast.ReturnStmt {
+func ReturnStmt(ctx *context.Context, limit int) *ast.ReturnStmt {
 	// TODO: multiple return values
 	if limit == 0 {
 		return nil
@@ -466,7 +466,7 @@ func ReturnStmt(ctx context.Context, limit int) *ast.ReturnStmt {
 	}
 }
 
-func SelectorExpr(ctx context.Context, limit int) *ast.SelectorExpr {
+func SelectorExpr(ctx *context.Context, limit int) *ast.SelectorExpr {
 	// FIXME: randomly produced X and Sel values will never work, maybe choose from imported libraries' exported functions, or previously declared struct instances that has methods
 	if limit == 0 {
 		return nil
@@ -477,7 +477,7 @@ func SelectorExpr(ctx context.Context, limit int) *ast.SelectorExpr {
 	}
 }
 
-func SelectStmt(ctx context.Context, limit int) *ast.SelectStmt {
+func SelectStmt(ctx *context.Context, limit int) *ast.SelectStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -487,7 +487,7 @@ func SelectStmt(ctx context.Context, limit int) *ast.SelectStmt {
 	}
 }
 
-func SendStmt(ctx context.Context, limit int) *ast.SendStmt {
+func SendStmt(ctx *context.Context, limit int) *ast.SendStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -498,7 +498,7 @@ func SendStmt(ctx context.Context, limit int) *ast.SendStmt {
 	}
 }
 
-func SliceExpr(ctx context.Context, limit int) *ast.SliceExpr {
+func SliceExpr(ctx *context.Context, limit int) *ast.SliceExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -513,7 +513,7 @@ func SliceExpr(ctx context.Context, limit int) *ast.SliceExpr {
 	}
 }
 
-func StarExpr(ctx context.Context, limit int) *ast.StarExpr {
+func StarExpr(ctx *context.Context, limit int) *ast.StarExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -523,7 +523,7 @@ func StarExpr(ctx context.Context, limit int) *ast.StarExpr {
 	}
 }
 
-func StructType(ctx context.Context, limit int) *ast.StructType {
+func StructType(ctx *context.Context, limit int) *ast.StructType {
 	if limit == 0 {
 		return nil
 	}
@@ -534,7 +534,7 @@ func StructType(ctx context.Context, limit int) *ast.StructType {
 	}
 }
 
-func SwitchStmt(ctx context.Context, limit int) *ast.SwitchStmt {
+func SwitchStmt(ctx *context.Context, limit int) *ast.SwitchStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -546,7 +546,7 @@ func SwitchStmt(ctx context.Context, limit int) *ast.SwitchStmt {
 	}
 }
 
-func TypeAssertExpr(ctx context.Context, limit int) *ast.TypeAssertExpr {
+func TypeAssertExpr(ctx *context.Context, limit int) *ast.TypeAssertExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -559,7 +559,7 @@ func TypeAssertExpr(ctx context.Context, limit int) *ast.TypeAssertExpr {
 }
 
 // rel. type keyword
-func TypeSpec(ctx context.Context, limit int) *ast.TypeSpec {
+func TypeSpec(ctx *context.Context, limit int) *ast.TypeSpec {
 	if limit == 0 {
 		return nil
 	}
@@ -573,7 +573,7 @@ func TypeSpec(ctx context.Context, limit int) *ast.TypeSpec {
 	}
 }
 
-func TypeSwitchStmt(ctx context.Context, limit int) *ast.TypeSwitchStmt {
+func TypeSwitchStmt(ctx *context.Context, limit int) *ast.TypeSwitchStmt {
 	if limit == 0 {
 		return nil
 	}
@@ -585,7 +585,7 @@ func TypeSwitchStmt(ctx context.Context, limit int) *ast.TypeSwitchStmt {
 	}
 }
 
-func UnaryExpr(ctx context.Context, limit int) *ast.UnaryExpr {
+func UnaryExpr(ctx *context.Context, limit int) *ast.UnaryExpr {
 	if limit == 0 {
 		return nil
 	}
@@ -597,7 +597,7 @@ func UnaryExpr(ctx context.Context, limit int) *ast.UnaryExpr {
 }
 
 // Returns ValueSpec which is list of pairs of variable names and values to assign
-func ValueSpec(ctx context.Context, limit int) *ast.ValueSpec {
+func ValueSpec(ctx *context.Context, limit int) *ast.ValueSpec {
 	if limit == 0 {
 		return nil
 	}

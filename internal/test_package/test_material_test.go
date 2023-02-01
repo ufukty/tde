@@ -1,9 +1,16 @@
-package field_inspector
+package test_package
 
 import (
 	"go/ast"
 	"go/token"
 )
+
+const TEST_FILE = `package main
+	
+func Addition(a, b int) int {
+	return a + b
+}
+`
 
 var TEST_TREE_OBJ_FUNC = ast.NewObj(ast.Fun, "Addition")
 var TEST_TREE_OBJ_A = ast.NewObj(ast.Var, "a")
