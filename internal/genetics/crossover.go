@@ -1,9 +1,10 @@
 package genetics
 
 import (
-	"go/ast"
-	"tde/internal/astw"
+	ast_utl "tde/internal/astw/utilities"
 	"tde/internal/utilities"
+	
+	"go/ast"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -11,8 +12,8 @@ import (
 func CrossOver(parentA, parentB *ast.FuncDecl) bool {
 
 	var (
-		nodesA   = astw.ListSubnodes(parentA)[1:]
-		nodesB   = astw.ListSubnodes(parentB)[1:]
+		nodesA   = ast_utl.ListSubnodes(parentA)[1:]
+		nodesB   = ast_utl.ListSubnodes(parentB)[1:]
 		selected = false
 		subA     ast.Node
 		subB     ast.Node
@@ -23,8 +24,8 @@ func CrossOver(parentA, parentB *ast.FuncDecl) bool {
 	)
 
 	for !selected {
-		subA = **utilities.Pick(nodesA)
-		subB = **utilities.Pick(nodesB)
+		subA = *utilities.Pick(nodesA)
+		subB = *utilities.Pick(nodesB)
 		if AreSameNodeType(subA, subB) {
 			selected = true
 		}

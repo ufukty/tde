@@ -2,7 +2,7 @@ package node_constructor
 
 import (
 	"tde/internal/cfg/context"
-	"tde/internal/utilities"
+	utl "tde/internal/utilities"
 
 	"go/ast"
 	"go/token"
@@ -28,7 +28,7 @@ func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 	return &ast.AssignStmt{
 		Lhs:    []ast.Expr{Expr(ctx, limit-1)},
 		TokPos: token.NoPos,
-		Tok:    *utilities.Pick(tokenConstructor.AccepetedByAssignStmt),
+		Tok:    *utl.Pick(tokenConstructor.AccepetedByAssignStmt),
 		Rhs:    []ast.Expr{Expr(ctx, limit-1)},
 	}
 }
@@ -37,7 +37,7 @@ func BasicLit(ctx *context.Context, limit int) *ast.BasicLit {
 	if limit == 0 {
 		return nil
 	}
-	return (*utilities.Pick([]func() *ast.BasicLit{
+	return (*utl.Pick([]func() *ast.BasicLit{
 		basicIntegerLiteral,
 		basicStringLiteral,
 		basicFloatLiteral,
@@ -52,7 +52,7 @@ func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
 	return &ast.BinaryExpr{
 		X:     Expr(ctx, limit-1),
 		OpPos: token.NoPos,
-		Op:    *utilities.Pick(tokenConstructor.AcceptedByBinaryExpr),
+		Op:    *utl.Pick(tokenConstructor.AcceptedByBinaryExpr),
 		Y:     Expr(ctx, limit-1),
 	}
 }
@@ -76,8 +76,8 @@ func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 	}
 	return &ast.BranchStmt{
 		TokPos: token.NoPos,
-		Tok:    *utilities.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
-		Label:  *utilities.Pick(GeneratedBranchLabels),                 // FIXME:
+		Tok:    *utl.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
+		Label:  *utl.Pick(GeneratedBranchLabels),                 // FIXME:
 	}
 }
 
@@ -116,7 +116,7 @@ func ChanType(ctx *context.Context, limit int) *ast.ChanType {
 	return &ast.ChanType{
 		Begin: token.NoPos,
 		Arrow: token.NoPos,
-		Dir: *utilities.Pick([]ast.ChanDir{
+		Dir: *utl.Pick([]ast.ChanDir{
 			ast.SEND,
 			ast.RECV,
 		}),
@@ -313,7 +313,7 @@ func IdentType(ctx *context.Context, limit int) *ast.Ident {
 	if limit == 0 {
 		return nil
 	}
-	return ast.NewIdent(*utilities.Pick([]string{"int", "float", "string", "bool"}))
+	return ast.NewIdent(*utl.Pick([]string{"int", "float", "string", "bool"}))
 }
 
 func IfStmt(ctx *context.Context, limit int) *ast.IfStmt {
@@ -343,7 +343,7 @@ func ImportSpec(ctx *context.Context, limit int) *ast.ImportSpec {
 		Path: &ast.BasicLit{
 			ValuePos: token.NoPos,
 			Kind:     token.STRING,
-			Value:    *utilities.Pick(AllowedPackagesToImport),
+			Value:    *utl.Pick(AllowedPackagesToImport),
 		},
 		EndPos: token.NoPos,
 	}
@@ -356,7 +356,7 @@ func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 	return &ast.IncDecStmt{
 		X:      Expr(ctx, limit-1),
 		TokPos: token.NoPos,
-		Tok:    *utilities.Pick(tokenConstructor.AccepetedByIncDecStmt),
+		Tok:    *utl.Pick(tokenConstructor.AccepetedByIncDecStmt),
 	}
 }
 
@@ -449,7 +449,7 @@ func RangeStmt(ctx *context.Context, limit int) *ast.RangeStmt {
 		Key:    Expr(ctx, limit-1),
 		Value:  Expr(ctx, limit-1),
 		TokPos: token.NoPos,
-		Tok:    *utilities.Pick(tokenConstructor.AcceptedByRangeStmt),
+		Tok:    *utl.Pick(tokenConstructor.AcceptedByRangeStmt),
 		X:      Expr(ctx, limit-1),
 		Body:   BlockStmt(ctx, limit-1),
 	}
@@ -591,7 +591,7 @@ func UnaryExpr(ctx *context.Context, limit int) *ast.UnaryExpr {
 	}
 	return &ast.UnaryExpr{
 		OpPos: token.NoPos,
-		Op:    *utilities.Pick(tokenConstructor.AcceptedByUnaryExpr),
+		Op:    *utl.Pick(tokenConstructor.AcceptedByUnaryExpr),
 		X:     Expr(ctx, limit-1),
 	}
 }

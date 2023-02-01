@@ -1,4 +1,4 @@
-package astw
+package traverse
 
 // One TraversableNode's TraversableSubnodes are
 //  1. If the TraversableNode is Node-Slice: Items of the slice

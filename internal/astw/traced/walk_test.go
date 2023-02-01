@@ -1,6 +1,8 @@
-package astw
+package traced
 
 import (
+	ast_utl "tde/internal/astw/utilities"
+
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -41,7 +43,7 @@ func Test_WalkPersistentChildIndexTraces(t *testing.T) {
 }
 
 func Test_WalkCoveringTypes(t *testing.T) {
-	_, astPkgs, _ := LoadDir(".")
+	_, astPkgs, _ := ast_utl.LoadDir(".")
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -62,7 +64,7 @@ func Test_WalkCoveringTypes(t *testing.T) {
 }
 
 func Test_WalkListLeaves(t *testing.T) {
-	_, astFile, _ := LoadFile("./walk.go")
+	_, astFile, _ := ast_utl.LoadFile("./walk.go")
 
 	var indices = [][]int{}
 	var parents = [][]ast.Node{}

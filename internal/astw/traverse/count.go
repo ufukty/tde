@@ -1,4 +1,4 @@
-package astw
+package traverse
 
 import "go/ast"
 

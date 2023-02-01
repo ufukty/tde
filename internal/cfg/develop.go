@@ -1,7 +1,8 @@
 package cfg
 
 import (
-	"tde/internal/astw"
+	trav "tde/internal/astw/traverse"
+	ast_types "tde/internal/astw/types"
 	"tde/internal/cfg/context"
 	nc "tde/internal/cfg/node_constructor"
 	utl "tde/internal/utilities"
@@ -11,8 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func listAppendableSpots(node ast.Node) (appandableNodes []*astw.TraversableNode) {
-	astw.Traverse(astw.GetTraversableNodeForASTNode(node), func(tNode *astw.TraversableNode) bool {
+func listAppendableSpots(node ast.Node) (appandableNodes []*trav.TraversableNode) {
+	trav.Traverse(trav.GetTraversableNodeForASTNode(node), func(tNode *trav.TraversableNode) bool {
 		if tNode.PointsToNilSpot || tNode.ExpectedType.IsSliceType() {
 			appandableNodes = append(appandableNodes, tNode)
 		}
@@ -21,7 +22,7 @@ func listAppendableSpots(node ast.Node) (appandableNodes []*astw.TraversableNode
 	return
 }
 
-func appendRandomly(tNode *astw.TraversableNode, ctx *context.Context) {
+func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context) {
 
 	if tNode.ExpectedType.IsSliceType() {
 		switch tNode.Value.(type) {
@@ -56,117 +57,117 @@ func appendRandomly(tNode *astw.TraversableNode, ctx *context.Context) {
 	} else if tNode.ExpectedType.IsConcreteType() {
 
 		switch tNode.ExpectedType {
-		// case astw.BadDecl:
+		// case types.BadDecl:
 		// 	tNode.Ref.Set(nc.BadDecl(ctx, 1))
-		// case astw.BadExpr:
+		// case types.BadExpr:
 		// 	tNode.Ref.Set(nc.BadExpr(ctx, 1))
-		// case astw.BadStmt:
+		// case types.BadStmt:
 		// 	tNode.Ref.Set(nc.BadStmt(ctx, 1))
-		// case astw.Comment:
+		// case types.Comment:
 		// 	tNode.Ref.Set(nc.Comment(ctx, 1))
-		// case astw.CommentGroup:
+		// case types.CommentGroup:
 		// 	tNode.Ref.Set(nc.CommentGroup(ctx, 1))
-		// case astw.File:
+		// case types.File:
 		// 	tNode.Ref.Set(nc.File(ctx, 1))
-		// case astw.Package:
+		// case types.Package:
 		// 	tNode.Ref.Set(nc.Package(ctx, 1))
-		case astw.ArrayType:
+		case ast_types.ArrayType:
 			tNode.Ref.Set(nc.ArrayType(ctx, 1))
-		case astw.AssignStmt:
+		case ast_types.AssignStmt:
 			tNode.Ref.Set(nc.AssignStmt(ctx, 1))
-		case astw.BasicLit:
+		case ast_types.BasicLit:
 			tNode.Ref.Set(nc.BasicLit(ctx, 1))
-		case astw.BinaryExpr:
+		case ast_types.BinaryExpr:
 			tNode.Ref.Set(nc.BinaryExpr(ctx, 1))
-		case astw.BlockStmt:
+		case ast_types.BlockStmt:
 			tNode.Ref.Set(nc.BlockStmt(ctx, 1))
-		case astw.BranchStmt:
+		case ast_types.BranchStmt:
 			tNode.Ref.Set(nc.BranchStmt(ctx, 1))
-		case astw.CallExpr:
+		case ast_types.CallExpr:
 			tNode.Ref.Set(nc.CallExpr(ctx, 1))
-		case astw.CaseClause:
+		case ast_types.CaseClause:
 			tNode.Ref.Set(nc.CaseClause(ctx, 1))
-		case astw.ChanType:
+		case ast_types.ChanType:
 			tNode.Ref.Set(nc.ChanType(ctx, 1))
-		case astw.CommClause:
+		case ast_types.CommClause:
 			tNode.Ref.Set(nc.CommClause(ctx, 1))
-		case astw.CompositeLit:
+		case ast_types.CompositeLit:
 			tNode.Ref.Set(nc.CompositeLit(ctx, 1))
-		case astw.DeclStmt:
+		case ast_types.DeclStmt:
 			tNode.Ref.Set(nc.DeclStmt(ctx, 1))
-		case astw.DeferStmt:
+		case ast_types.DeferStmt:
 			tNode.Ref.Set(nc.DeferStmt(ctx, 1))
-		case astw.Ellipsis:
+		case ast_types.Ellipsis:
 			tNode.Ref.Set(nc.Ellipsis(ctx, 1))
-		case astw.EmptyStmt:
+		case ast_types.EmptyStmt:
 			tNode.Ref.Set(nc.EmptyStmt(ctx, 1))
-		case astw.ExprStmt:
+		case ast_types.ExprStmt:
 			tNode.Ref.Set(nc.ExprStmt(ctx, 1))
-		case astw.Field:
+		case ast_types.Field:
 			tNode.Ref.Set(nc.Field(ctx, 1))
-		case astw.FieldList:
+		case ast_types.FieldList:
 			tNode.Ref.Set(nc.FieldList(ctx, 1))
-		case astw.ForStmt:
+		case ast_types.ForStmt:
 			tNode.Ref.Set(nc.ForStmt(ctx, 1))
-		case astw.FuncDecl:
+		case ast_types.FuncDecl:
 			tNode.Ref.Set(nc.FuncDecl(ctx, 1))
-		case astw.FuncLit:
+		case ast_types.FuncLit:
 			tNode.Ref.Set(nc.FuncLit(ctx, 1))
-		case astw.FuncType:
+		case ast_types.FuncType:
 			tNode.Ref.Set(nc.FuncType(ctx, 1))
-		case astw.GenDecl:
+		case ast_types.GenDecl:
 			tNode.Ref.Set(nc.GenDecl(ctx, 1))
-		case astw.GoStmt:
+		case ast_types.GoStmt:
 			tNode.Ref.Set(nc.GoStmt(ctx, 1))
-		case astw.Ident:
+		case ast_types.Ident:
 			tNode.Ref.Set(nc.Ident(ctx, 1))
-		case astw.IfStmt:
+		case ast_types.IfStmt:
 			tNode.Ref.Set(nc.IfStmt(ctx, 1))
-		case astw.ImportSpec:
+		case ast_types.ImportSpec:
 			tNode.Ref.Set(nc.ImportSpec(ctx, 1))
-		case astw.IncDecStmt:
+		case ast_types.IncDecStmt:
 			tNode.Ref.Set(nc.IncDecStmt(ctx, 1))
-		case astw.IndexExpr:
+		case ast_types.IndexExpr:
 			tNode.Ref.Set(nc.IndexExpr(ctx, 1))
-		case astw.IndexListExpr:
+		case ast_types.IndexListExpr:
 			tNode.Ref.Set(nc.IndexListExpr(ctx, 1))
-		case astw.InterfaceType:
+		case ast_types.InterfaceType:
 			tNode.Ref.Set(nc.InterfaceType(ctx, 1))
-		case astw.KeyValueExpr:
+		case ast_types.KeyValueExpr:
 			tNode.Ref.Set(nc.KeyValueExpr(ctx, 1))
-		case astw.LabeledStmt:
+		case ast_types.LabeledStmt:
 			tNode.Ref.Set(nc.LabeledStmt(ctx, 1))
-		case astw.MapType:
+		case ast_types.MapType:
 			tNode.Ref.Set(nc.MapType(ctx, 1))
-		case astw.ParenExpr:
+		case ast_types.ParenExpr:
 			tNode.Ref.Set(nc.ParenExpr(ctx, 1))
-		case astw.RangeStmt:
+		case ast_types.RangeStmt:
 			tNode.Ref.Set(nc.RangeStmt(ctx, 1))
-		case astw.ReturnStmt:
+		case ast_types.ReturnStmt:
 			tNode.Ref.Set(nc.ReturnStmt(ctx, 1))
-		case astw.SelectorExpr:
+		case ast_types.SelectorExpr:
 			tNode.Ref.Set(nc.SelectorExpr(ctx, 1))
-		case astw.SelectStmt:
+		case ast_types.SelectStmt:
 			tNode.Ref.Set(nc.SelectStmt(ctx, 1))
-		case astw.SendStmt:
+		case ast_types.SendStmt:
 			tNode.Ref.Set(nc.SendStmt(ctx, 1))
-		case astw.SliceExpr:
+		case ast_types.SliceExpr:
 			tNode.Ref.Set(nc.SliceExpr(ctx, 1))
-		case astw.StarExpr:
+		case ast_types.StarExpr:
 			tNode.Ref.Set(nc.StarExpr(ctx, 1))
-		case astw.StructType:
+		case ast_types.StructType:
 			tNode.Ref.Set(nc.StructType(ctx, 1))
-		case astw.SwitchStmt:
+		case ast_types.SwitchStmt:
 			tNode.Ref.Set(nc.SwitchStmt(ctx, 1))
-		case astw.TypeAssertExpr:
+		case ast_types.TypeAssertExpr:
 			tNode.Ref.Set(nc.TypeAssertExpr(ctx, 1))
-		case astw.TypeSpec:
+		case ast_types.TypeSpec:
 			tNode.Ref.Set(nc.TypeSpec(ctx, 1))
-		case astw.TypeSwitchStmt:
+		case ast_types.TypeSwitchStmt:
 			tNode.Ref.Set(nc.TypeSwitchStmt(ctx, 1))
-		case astw.UnaryExpr:
+		case ast_types.UnaryExpr:
 			tNode.Ref.Set(nc.UnaryExpr(ctx, 1))
-		case astw.ValueSpec:
+		case ast_types.ValueSpec:
 			tNode.Ref.Set(nc.ValueSpec(ctx, 1))
 		}
 
@@ -183,7 +184,7 @@ func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl) 
 	choosenSpot := *utl.Pick(availableSpots)
 	ctx, err := context.GetContextForSpot(
 		astPkg,
-		astw.GetTraversableNodeForASTNode(astFuncDecl),
+		trav.GetTraversableNodeForASTNode(astFuncDecl),
 		choosenSpot,
 	)
 	if err != nil {

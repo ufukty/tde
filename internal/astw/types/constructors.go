@@ -1,4 +1,4 @@
-package astw
+package types
 
 import "go/ast"
 

@@ -4,7 +4,8 @@ import (
 	"go/ast"
 	"path/filepath"
 	"strings"
-	"tde/internal/astw"
+	"tde/internal/astw/traced"
+	astw_utl "tde/internal/astw/utilities"
 	"tde/internal/utilities"
 	"tde/models/in_program_models"
 
@@ -56,13 +57,13 @@ type TestFunctionDetails struct {
 
 // TODO: Call it from language-server
 func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
-	fset, root, err := astw.LoadFile(filepath)
+	fset, root, err := astw_utl.LoadFile(filepath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to load file and parse into AST tree")
 	}
 
 	testFunctions := []TestFunctionDetails{}
-	astw.InspectWithTrace(root, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
+	traced.InspectWithTrace(root, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		depth := len(parentTrace)
 		if depth == 2 {
 			if n, ok := n.(*ast.FuncDecl); ok {
@@ -70,7 +71,7 @@ func DetectTestFunctions(filepath string) ([]TestFunctionDetails, error) {
 				if strings.Index(functionName, "TDE") == 0 {
 					testFunctions = append(testFunctions, TestFunctionDetails{
 						Name:     functionName,
-						Line:     astw.LineNumberOfPosition(fset, n.Pos()),
+						Line:     astw_utl.LineNumberOfPosition(fset, n.Pos()),
 						Position: int(n.Pos()),
 					})
 				}

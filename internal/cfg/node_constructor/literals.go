@@ -1,11 +1,12 @@
 package node_constructor
 
 import (
+	utl "tde/internal/utilities"
+
 	"fmt"
 	"go/ast"
 	"go/token"
 	"strings"
-	"tde/internal/utilities"
 )
 
 var CreatedVariables []*ast.Ident
@@ -35,11 +36,11 @@ func generateBranchLabel() *ast.Ident {
 }
 
 func basicIntegerLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(*utilities.Pick([]int{0, 1}))}
+	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(*utl.Pick([]int{0, 1}))}
 }
 
 func basicFloatLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(utilities.URandFloatForCrypto()), ValuePos: token.NoPos}
+	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(utl.URandFloatForCrypto()), ValuePos: token.NoPos}
 }
 
 func basicStringLiteral() *ast.BasicLit {
@@ -47,5 +48,5 @@ func basicStringLiteral() *ast.BasicLit {
 }
 
 func basicCharacterLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.CHAR, Value: *utilities.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
+	return &ast.BasicLit{Kind: token.CHAR, Value: *utl.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
 }

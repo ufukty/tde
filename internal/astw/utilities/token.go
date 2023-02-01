@@ -1,4 +1,4 @@
-package astw
+package utilities
 
 import "go/token"
 

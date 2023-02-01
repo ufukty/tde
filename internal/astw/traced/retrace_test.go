@@ -1,4 +1,4 @@
-package astw
+package traced
 
 import (
 	"go/ast"

@@ -1,11 +1,12 @@
 package node_constructor
 
 import (
+	"tde/internal/cfg/context"
+
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"os"
-	"tde/internal/cfg/context"
 	"testing"
 )
 

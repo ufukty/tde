@@ -1,10 +1,11 @@
 package genetics
 
 import (
+	ast_utl "tde/internal/astw/utilities"
+	utl "tde/internal/utilities"
+
 	"go/ast"
 	"go/token"
-	"tde/internal/astw"
-	"tde/internal/utilities"
 )
 
 func MutateStringLiteral(s *string) {
@@ -26,7 +27,7 @@ func MutateBlockStatement(stm *ast.BlockStmt) {
 
 func Mutate(fn *ast.FuncDecl) {
 
-	node := **utilities.Pick(astw.ListSubnodes(fn.Body))
+	node := *utl.Pick(ast_utl.ListSubnodes(fn.Body))
 	mutated := false
 
 	for !mutated {

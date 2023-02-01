@@ -1,10 +1,12 @@
 package context
 
 import (
+	"tde/internal/astw/traverse"
+	"tde/internal/astw/types"
+	
 	"fmt"
 	"go/ast"
 	"go/token"
-	"tde/internal/astw"
 )
 
 // func examineEnteringNode(ctx *Context, node ast.Node) {
@@ -94,10 +96,10 @@ func examineDeclStmt(ctx *Context, declStmt *ast.DeclStmt) {
 	}
 }
 
-func FillContextForFunctionDeclaration(ctx *Context, funcDecl, insertionPoint *astw.TraversableNode) {
+func FillContextForFunctionDeclaration(ctx *Context, funcDecl, insertionPoint *traverse.TraversableNode) {
 	var isCompleted = false
-	astw.TraverseTwice(funcDecl,
-		func(tNodePtr *astw.TraversableNode) bool {
+	traverse.TraverseTwice(funcDecl,
+		func(tNodePtr *traverse.TraversableNode) bool {
 
 			if isCompleted || tNodePtr.PointsToNilSpot {
 				return false
@@ -129,13 +131,13 @@ func FillContextForFunctionDeclaration(ctx *Context, funcDecl, insertionPoint *a
 			// examineEnteringNode(&ctx, tNodePtr)
 			return true
 		},
-		func(tNodePtr *astw.TraversableNode) {
+		func(tNodePtr *traverse.TraversableNode) {
 			if tNodePtr.PointsToNilSpot {
 				return
 			}
 
 			switch tNodePtr.ExpectedType {
-			case astw.BlockStmt:
+			case types.BlockStmt:
 				ctx.ScopeOut()
 			}
 			// examineLeavingNode(&ctx, node)

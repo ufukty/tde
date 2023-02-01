@@ -1,33 +1,34 @@
 package cfg
 
 import (
-	"tde/internal/astw"
+	"tde/internal/astw/traverse"
+	ast_utl "tde/internal/astw/utilities"
 
 	"testing"
 )
 
 func Test_Develop(t *testing.T) {
-	_, astPkgs, _ := astw.LoadDir("../astw")
+	_, astPkgs, _ := ast_utl.LoadDir("../astw")
 	astPkg := astPkgs["astw"]
 	astFile := astPkg.Files["walk"]
-	funcDecl, _ := astw.FindFuncDecl(astPkg, "WalkWithNils")
+	funcDecl, _ := ast_utl.FindFuncDecl(astPkg, "WalkWithNils")
 
-	startCount := astw.CountNonNilNodes(astFile)
+	startCount := traverse.CountNonNilNodes(astFile)
 	Develop(astPkg, astFile, funcDecl)
-	if endCount := astw.CountNonNilNodes(astFile); endCount == startCount {
+	if endCount := traverse.CountNonNilNodes(astFile); endCount == startCount {
 		t.Error("\nFailed to add 1 node: startCount=", startCount, " endCount=", endCount)
 	}
 }
 
 // func Test_SequentialDevelop(t *testing.T) {
-// 	_, astFile, _ := astw.LoadFile("../astw/walk.go")
-// 	funcDecl, _ := astw.FindFuncDecl(astFile, "WalkWithNils")
+// 	_, astFile, _ := utilities.LoadFile("../astw/walk.go")
+// 	funcDecl, _ := utilities.FindFuncDecl(astFile, "WalkWithNils")
 
 // 	var startCount int
 // 	for i := 0; i < 2000; i++ {
-// 		startCount = astw.CountNonNilNodes(astFile)
+// 		startCount = traverse.CountNonNilNodes(astFile)
 // 		Develop(astFile, funcDecl)
-// 		if endCount := astw.CountNonNilNodes(astFile); endCount == startCount {
+// 		if endCount := traverse.CountNonNilNodes(astFile); endCount == startCount {
 // 			t.Error("\nFailed to add 1 node. i=", i, " startCount=", startCount, " endCount=", endCount)
 // 		}
 // 		if i > 10 {

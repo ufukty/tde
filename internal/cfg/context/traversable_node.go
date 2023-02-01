@@ -2,10 +2,10 @@ package context
 
 import (
 	"go/ast"
-	"tde/internal/astw"
+	trav "tde/internal/astw/traverse"
 )
 
-func GetContextForSpot(pkg *ast.Package, tFuncDecl, tSpot *astw.TraversableNode) (*Context, error) {
+func GetContextForSpot(pkg *ast.Package, tFuncDecl, tSpot *trav.TraversableNode) (*Context, error) {
 	ctx := NewContext()
 
 	Package(ctx, pkg)
