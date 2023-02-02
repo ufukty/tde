@@ -13,11 +13,7 @@ var CreatedVariables []*ast.Ident
 var DeclaredFunctionNames []*ast.Ident
 var GeneratedBranchLabels []*ast.Ident
 
-func init() {
-
-}
-
-func generateVariableName() *ast.Ident {
+func generateNewIdent() *ast.Ident {
 	ident := ast.NewIdent(fmt.Sprintf("var%d", len(CreatedVariables)+1))
 	CreatedVariables = append(CreatedVariables, ident)
 	return ident
