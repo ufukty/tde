@@ -13,6 +13,12 @@ var CreatedVariables []*ast.Ident
 var DeclaredFunctionNames []*ast.Ident
 var GeneratedBranchLabels []*ast.Ident
 
+func init() {
+	CreatedVariables = []*ast.Ident{}
+	DeclaredFunctionNames = []*ast.Ident{}
+	GeneratedBranchLabels = []*ast.Ident{}
+}
+
 func generateNewIdent() *ast.Ident {
 	ident := ast.NewIdent(fmt.Sprintf("var%d", len(CreatedVariables)+1))
 	CreatedVariables = append(CreatedVariables, ident)
@@ -44,5 +50,5 @@ func basicStringLiteral() *ast.BasicLit {
 }
 
 func basicCharacterLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.CHAR, Value: *utl.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; ", "")), ValuePos: token.NoPos}
+	return &ast.BasicLit{Kind: token.CHAR, Value: *utl.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; \\", "")), ValuePos: token.NoPos}
 }

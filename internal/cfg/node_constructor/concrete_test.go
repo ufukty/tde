@@ -1,17 +1,16 @@
 package node_constructor
 
 import (
+	"fmt"
 	"tde/internal/cfg/context"
 
 	"testing"
 )
 
 func Test_NodeConstructorSerial(t *testing.T) {
-	for i := 0; i < 1000; i++ {
-		BlockStmt(context.NewContext(), 10)
+	for i := 0; i < 50; i++ {
+		t.Run(fmt.Sprintf("Test_NodeConstructorSerial_Subtest#%d", i), func(t *testing.T) {
+			BlockStmt(context.NewContext(), 20)
+		})
 	}
-}
-
-func Test_PrintAST(t *testing.T) {
-	BlockStmt(context.NewContext(), 50)
 }

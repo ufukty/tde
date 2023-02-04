@@ -36,6 +36,9 @@ func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 	if limit == 0 {
 		return nil
 	}
+	if (len(GeneratedBranchLabels)) == 0 {
+		return nil
+	}
 	return &ast.BranchStmt{
 		TokPos: token.NoPos,
 		Tok:    *utl.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
