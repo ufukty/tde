@@ -177,7 +177,7 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context) {
 // Picks an appandable spot randomly (either a nil field or end of a slice type field)
 // Creates just one node and appends to choosen spot
 func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl) error {
-	availableSpots := listAppendableSpots(astFuncDecl)
+	availableSpots := listAppendableSpots(astFuncDecl.Body)
 	if len(availableSpots) == 0 {
 		return errors.New("No available spots found in AST to place new node")
 	}
