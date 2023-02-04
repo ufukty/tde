@@ -1,10 +1,11 @@
 package node_constructor
 
 import (
+	"tde/internal/cfg/context_resolution/context"
+	utl "tde/internal/utilities"
+
 	"go/ast"
 	"go/token"
-	"tde/internal/cfg/context"
-	utl "tde/internal/utilities"
 )
 
 func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {

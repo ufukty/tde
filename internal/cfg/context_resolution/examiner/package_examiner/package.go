@@ -1,11 +1,13 @@
-package context
+package package_examiner
 
 import (
+	"tde/internal/cfg/context_resolution/context"
+
 	"go/ast"
 	"go/token"
 )
 
-func examineImportDeclaration(ctx *Context, decl *ast.GenDecl) {
+func examineImportDeclaration(ctx *context.Context, decl *ast.GenDecl) {
 	for _, spec := range decl.Specs {
 		if spec, ok := spec.(*ast.ImportSpec); ok {
 			ctx.AddImport(spec)
@@ -13,7 +15,7 @@ func examineImportDeclaration(ctx *Context, decl *ast.GenDecl) {
 	}
 }
 
-func examineVariableDeclaration(ctx *Context, decl *ast.GenDecl) {
+func examineVariableDeclaration(ctx *context.Context, decl *ast.GenDecl) {
 	for _, spec := range decl.Specs {
 		if spec, ok := spec.(*ast.ValueSpec); ok {
 			for _, name := range spec.Names {
@@ -23,7 +25,7 @@ func examineVariableDeclaration(ctx *Context, decl *ast.GenDecl) {
 	}
 }
 
-func examineTypeDeclaration(ctx *Context, decl *ast.GenDecl) {
+func examineTypeDeclaration(ctx *context.Context, decl *ast.GenDecl) {
 	for _, spec := range decl.Specs {
 		if spec, ok := spec.(*ast.TypeSpec); ok {
 			ctx.AddType(spec)
@@ -31,7 +33,7 @@ func examineTypeDeclaration(ctx *Context, decl *ast.GenDecl) {
 	}
 }
 
-func examineGenDecl(ctx *Context, decl *ast.GenDecl) {
+func examineGenDecl(ctx *context.Context, decl *ast.GenDecl) {
 	switch decl.Tok {
 	case token.IMPORT:
 		examineImportDeclaration(ctx, decl)
@@ -42,7 +44,7 @@ func examineGenDecl(ctx *Context, decl *ast.GenDecl) {
 	}
 }
 
-func examineFuncDecl(ctx *Context, decl *ast.FuncDecl) {
+func examineFuncDecl(ctx *context.Context, decl *ast.FuncDecl) {
 	if decl.Recv == nil {
 		ctx.AddFuncDeclaration(decl)
 	} else {
@@ -51,7 +53,7 @@ func examineFuncDecl(ctx *Context, decl *ast.FuncDecl) {
 }
 
 // Only adds declarations for functions, imports, types, variables and constants. Won't examine function bodies.
-func examineFile(ctx *Context, file *ast.File) {
+func examineFile(ctx *context.Context, file *ast.File) {
 	for _, decl := range file.Decls {
 		switch decl := decl.(type) {
 		case *ast.GenDecl:
@@ -62,7 +64,7 @@ func examineFile(ctx *Context, file *ast.File) {
 	}
 }
 
-func Package(ctx *Context, pkg *ast.Package) {
+func Examine(ctx *context.Context, pkg *ast.Package) {
 	for _, file := range pkg.Files {
 		examineFile(ctx, file)
 	}

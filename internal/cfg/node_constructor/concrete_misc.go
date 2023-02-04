@@ -3,7 +3,7 @@ package node_constructor
 import (
 	"go/ast"
 	"go/token"
-	"tde/internal/cfg/context"
+	"tde/internal/cfg/context_resolution/context"
 )
 
 func Field(ctx *context.Context, limit int) *ast.Field {

@@ -1,4 +1,4 @@
-package context
+package context_resolution
 
 import (
 	trav "tde/internal/astw/traverse"

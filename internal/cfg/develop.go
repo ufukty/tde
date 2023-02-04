@@ -3,7 +3,8 @@ package cfg
 import (
 	trav "tde/internal/astw/traverse"
 	ast_types "tde/internal/astw/types"
-	"tde/internal/cfg/context"
+	"tde/internal/cfg/context_resolution"
+	"tde/internal/cfg/context_resolution/context"
 	nc "tde/internal/cfg/node_constructor"
 	utl "tde/internal/utilities"
 
@@ -182,7 +183,7 @@ func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl) 
 		return errors.New("No available spots found in AST to place new node")
 	}
 	choosenSpot := *utl.Pick(availableSpots)
-	ctx, err := context.GetContextForSpot(
+	ctx, err := context_resolution.GetContextForSpot(
 		astPkg,
 		trav.GetTraversableNodeForASTNode(astFuncDecl),
 		choosenSpot,

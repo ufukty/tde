@@ -1,4 +1,4 @@
-package context
+package context_resolution
 
 import (
 	"golang.org/x/exp/slices"
