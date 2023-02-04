@@ -1,6 +1,10 @@
 package context
 
-import "golang.org/x/exp/slices"
+import (
+	"golang.org/x/exp/slices"
+)
+
+//go:generate stringer -type=NodeRelationToInsertionPoint
 
 type NodeRelationToInsertionPoint int
 
@@ -10,20 +14,6 @@ const (
 	ON_PATH
 	WONT_ACCESS
 )
-
-func (rel NodeRelationToInsertionPoint) String() string {
-	switch rel {
-	case ITSELF:
-		return "ITSELF"
-	case ANCESTOR:
-		return "ANCESTOR"
-	case ON_PATH:
-		return "ON_PATH"
-	case WONT_ACCESS:
-		return "WONT_ACCESS"
-	}
-	return "ERR_UNEXPECTED_VALUE_FOR NodeRelationToInsertionPoint.String()"
-}
 
 func CompareIndicesTraces(current, insertionPoint []int) NodeRelationToInsertionPoint {
 	if len(current) > len(insertionPoint) {
