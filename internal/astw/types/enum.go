@@ -188,8 +188,7 @@ func (nt NodeType) IsExpr() bool {
 		FuncType,
 		InterfaceType,
 		MapType,
-		ChanType,
-		TypeExpr:
+		ChanType:
 		return true
 	default:
 		return false
@@ -228,6 +227,15 @@ func (nt NodeType) IsStmt() bool {
 func (nt NodeType) IsDecl() bool {
 	switch nt {
 	case BadDecl, GenDecl, FuncDecl:
+		return true
+	default:
+		return false
+	}
+}
+
+func (nt NodeType) IsSpec() bool {
+	switch nt {
+	case ImportSpec, TypeSpec, ValueSpec:
 		return true
 	default:
 		return false
