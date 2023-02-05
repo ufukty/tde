@@ -1,4 +1,4 @@
-package context_resolution
+package node_relations
 
 import (
 	"testing"
