@@ -1,10 +1,11 @@
 package pattern_constructor
 
 import (
+	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/node_constructor"
+	
 	"go/ast"
 	"go/token"
-	"tde/internal/cfg/context"
-	"tde/internal/cfg/node_constructor"
 )
 
 func LoopOverSlice(ctx *context.Context, limit int, slice *ast.Ident) *ast.RangeStmt {
@@ -29,9 +30,7 @@ func LoopOverSlices(ctx *context.Context, limit int, sliceA, sliceB *ast.Ident) 
 	}
 	return &ast.ForStmt{
 		Init: nil,
-		Cond: &ast.BinaryExpr{
-			
-		},
+		Cond: &ast.BinaryExpr{},
 		Post: nil,
 		Body: &ast.BlockStmt{
 			List: []ast.Stmt{

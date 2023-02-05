@@ -1,7 +1,7 @@
 package pattern_constructor
 
 import (
-	"tde/internal/cfg/context"
+	"tde/internal/cfg/context_resolution/context"
 	"tde/internal/utilities"
 
 	"go/ast"
