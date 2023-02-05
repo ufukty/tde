@@ -44,33 +44,35 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context) {
 		}
 
 	} else if tNode.ExpectedType.IsInterfaceType() {
-		switch tNode.Value.(type) {
-		case ast.Expr:
+		switch tNode.ExpectedType {
+		case ast_types.Expr:
 			tNode.Ref.Set(nc.Expr(ctx, 1))
-		case ast.Stmt:
+		case ast_types.Stmt:
 			tNode.Ref.Set(nc.Stmt(ctx, 1))
-		case ast.Decl:
+		case ast_types.Decl:
 			tNode.Ref.Set(nc.Decl(ctx, 1))
-		case ast.Spec:
+		case ast_types.Spec:
 			tNode.Ref.Set(nc.Spec(ctx, 1))
+		case ast_types.TypeExpr:
+			tNode.Ref.Set(nc.Type(ctx, 1))
 		}
 
 	} else if tNode.ExpectedType.IsConcreteType() {
 
 		switch tNode.ExpectedType {
-		// case types.BadDecl:
+		// case ast_types.BadDecl:
 		// 	tNode.Ref.Set(nc.BadDecl(ctx, 1))
-		// case types.BadExpr:
+		// case ast_types.BadExpr:
 		// 	tNode.Ref.Set(nc.BadExpr(ctx, 1))
-		// case types.BadStmt:
+		// case ast_types.BadStmt:
 		// 	tNode.Ref.Set(nc.BadStmt(ctx, 1))
-		// case types.Comment:
+		// case ast_types.Comment:
 		// 	tNode.Ref.Set(nc.Comment(ctx, 1))
-		// case types.CommentGroup:
+		// case ast_types.CommentGroup:
 		// 	tNode.Ref.Set(nc.CommentGroup(ctx, 1))
-		// case types.File:
+		// case ast_types.File:
 		// 	tNode.Ref.Set(nc.File(ctx, 1))
-		// case types.Package:
+		// case ast_types.Package:
 		// 	tNode.Ref.Set(nc.Package(ctx, 1))
 		case ast_types.ArrayType:
 			tNode.Ref.Set(nc.ArrayType(ctx, 1))
