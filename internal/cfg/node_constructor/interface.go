@@ -27,6 +27,9 @@ func init() {
 			func(ctx *context.Context, limit int) ast.Expr { return MapType(ctx, limit) },
 			func(ctx *context.Context, limit int) ast.Expr { return StructType(ctx, limit) },
 			func(ctx *context.Context, limit int) ast.Expr { return IdentType(ctx, limit) },
+			func(ctx *context.Context, limit int) ast.Expr { return ParenExprForType(ctx, limit) },
+			func(ctx *context.Context, limit int) ast.Expr { return SelectorExprForType(ctx, limit) },
+			func(ctx *context.Context, limit int) ast.Expr { return StarExprForType(ctx, limit) },
 		},
 		Expr: []func(*context.Context, int) ast.Expr{
 			func(ctx *context.Context, limit int) ast.Expr { return BasicLit(ctx, limit) },

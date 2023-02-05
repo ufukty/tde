@@ -24,10 +24,10 @@ func GenDecl(ctx *context.Context, limit int) *ast.GenDecl {
 		return nil
 	}
 	return &ast.GenDecl{
-		TokPos: token.NoPos,
-		Tok:    token.VAR,
-		Lparen: token.NoPos,
-		Rparen: token.NoPos,
+		// TokPos: token.NoPos,
+		// Lparen: token.NoPos,
+		// Rparen: token.NoPos,
+		Tok: token.VAR,
 		Specs: []ast.Spec{
 			ValueSpec(ctx, limit-1),
 		},

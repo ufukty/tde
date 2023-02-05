@@ -14,13 +14,13 @@ func ImportSpec(ctx *context.Context, limit int) *ast.ImportSpec {
 		return nil
 	}
 	return &ast.ImportSpec{
+		// EndPos: token.NoPos,
 		Name: nil,
 		Path: &ast.BasicLit{
-			ValuePos: token.NoPos,
-			Kind:     token.STRING,
-			Value:    *utl.Pick(AllowedPackagesToImport),
+			// ValuePos: token.NoPos,
+			Kind:  token.STRING,
+			Value: *utl.Pick(AllowedPackagesToImport),
 		},
-		EndPos: token.NoPos,
 	}
 }
 
@@ -30,10 +30,10 @@ func TypeSpec(ctx *context.Context, limit int) *ast.TypeSpec {
 		return nil
 	}
 	return &ast.TypeSpec{
+		// Assign:     token.NoPos,
 		Doc:        nil,
 		Name:       Ident(ctx, limit-1),
 		TypeParams: FieldList(ctx, limit-1),
-		Assign:     token.NoPos,
 		Type:       nil,
 		Comment:    nil,
 	}

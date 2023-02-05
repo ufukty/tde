@@ -68,20 +68,21 @@ func _() {
 	_ = x[Stmt-57]
 	_ = x[Decl-58]
 	_ = x[Spec-59]
-	_ = x[CommentGroupSlice-60]
-	_ = x[CommentSlice-61]
-	_ = x[DeclSlice-62]
-	_ = x[ExprSlice-63]
-	_ = x[FieldSlice-64]
-	_ = x[IdentSlice-65]
-	_ = x[ImportSpecSlice-66]
-	_ = x[SpecSlice-67]
-	_ = x[StmtSlice-68]
+	_ = x[TypeExpr-60]
+	_ = x[CommentGroupSlice-61]
+	_ = x[CommentSlice-62]
+	_ = x[DeclSlice-63]
+	_ = x[ExprSlice-64]
+	_ = x[FieldSlice-65]
+	_ = x[IdentSlice-66]
+	_ = x[ImportSpecSlice-67]
+	_ = x[SpecSlice-68]
+	_ = x[StmtSlice-69]
 }
 
-const _NodeType_name = "ArrayTypeAssignStmtBadDeclBadExprBadStmtBasicLitBinaryExprBlockStmtBranchStmtCallExprCaseClauseChanTypeCommClauseCommentCommentGroupCompositeLitDeclStmtDeferStmtEllipsisEmptyStmtExprStmtFieldFieldListFileForStmtFuncDeclFuncLitFuncTypeGenDeclGoStmtIdentIfStmtImportSpecIncDecStmtIndexExprIndexListExprInterfaceTypeKeyValueExprLabeledStmtMapTypePackageParenExprRangeStmtReturnStmtSelectorExprSelectStmtSendStmtSliceExprStarExprStructTypeSwitchStmtTypeAssertExprTypeSpecTypeSwitchStmtUnaryExprValueSpecExprStmtDeclSpecCommentGroupSliceCommentSliceDeclSliceExprSliceFieldSliceIdentSliceImportSpecSliceSpecSliceStmtSlice"
+const _NodeType_name = "ArrayTypeAssignStmtBadDeclBadExprBadStmtBasicLitBinaryExprBlockStmtBranchStmtCallExprCaseClauseChanTypeCommClauseCommentCommentGroupCompositeLitDeclStmtDeferStmtEllipsisEmptyStmtExprStmtFieldFieldListFileForStmtFuncDeclFuncLitFuncTypeGenDeclGoStmtIdentIfStmtImportSpecIncDecStmtIndexExprIndexListExprInterfaceTypeKeyValueExprLabeledStmtMapTypePackageParenExprRangeStmtReturnStmtSelectorExprSelectStmtSendStmtSliceExprStarExprStructTypeSwitchStmtTypeAssertExprTypeSpecTypeSwitchStmtUnaryExprValueSpecExprStmtDeclSpecTypeExprCommentGroupSliceCommentSliceDeclSliceExprSliceFieldSliceIdentSliceImportSpecSliceSpecSliceStmtSlice"
 
-var _NodeType_index = [...]uint16{0, 9, 19, 26, 33, 40, 48, 58, 67, 77, 85, 95, 103, 113, 120, 132, 144, 152, 161, 169, 178, 186, 191, 200, 204, 211, 219, 226, 234, 241, 247, 252, 258, 268, 278, 287, 300, 313, 325, 336, 343, 350, 359, 368, 378, 390, 400, 408, 417, 425, 435, 445, 459, 467, 481, 490, 499, 503, 507, 511, 515, 532, 544, 553, 562, 572, 582, 597, 606, 615}
+var _NodeType_index = [...]uint16{0, 9, 19, 26, 33, 40, 48, 58, 67, 77, 85, 95, 103, 113, 120, 132, 144, 152, 161, 169, 178, 186, 191, 200, 204, 211, 219, 226, 234, 241, 247, 252, 258, 268, 278, 287, 300, 313, 325, 336, 343, 350, 359, 368, 378, 390, 400, 408, 417, 425, 435, 445, 459, 467, 481, 490, 499, 503, 507, 511, 515, 523, 540, 552, 561, 570, 580, 590, 605, 614, 623}
 
 func (i NodeType) String() string {
 	if i < 0 || i >= NodeType(len(_NodeType_index)-1) {

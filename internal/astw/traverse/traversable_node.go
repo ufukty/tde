@@ -119,7 +119,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewSliceRef(&n.Names)},
-			{n.Type, ast_types.Expr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Tag, ast_types.BasicLit, n.Tag == nil, tNode, NewStructRef(&n.Tag)},
 		}
 
@@ -162,7 +162,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Type, ast_types.FuncType, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Body, ast_types.BlockStmt, n.Body == nil, tNode, NewStructRef(&n.Body)},
 		}
 
@@ -171,7 +171,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Type, ast_types.Expr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Elts, ast_types.ExprSlice, n.Elts == nil, tNode, NewSliceRef(&n.Elts)},
 		}
 
@@ -227,7 +227,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.X, ast_types.Expr, n.X == nil, tNode, NewStructRef(&n.X)},
-			{n.Type, ast_types.Expr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 		}
 
 	case *ast.CallExpr:
@@ -522,7 +522,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewSliceRef(&n.Names)},
-			{n.Type, ast_types.Expr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Values, ast_types.ExprSlice, n.Values == nil, tNode, NewSliceRef(&n.Values)},
 		}
 
@@ -533,7 +533,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		return []*TraversableNode{
 			{n.Name, ast_types.Ident, n.Name == nil, tNode, NewStructRef(&n.Name)},
 			{n.TypeParams, ast_types.FieldList, n.TypeParams == nil, tNode, NewStructRef(&n.TypeParams)},
-			{n.Type, ast_types.Expr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 		}
 
 	case *ast.BadDecl:
@@ -557,7 +557,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		return []*TraversableNode{
 			{n.Recv, ast_types.FieldList, n.Recv == nil, tNode, NewStructRef(&n.Recv)},
 			{n.Name, ast_types.Ident, n.Name == nil, tNode, NewStructRef(&n.Name)},
-			{n.Type, ast_types.FuncType, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Body, ast_types.BlockStmt, n.Body == nil, tNode, NewStructRef(&n.Body)},
 		}
 

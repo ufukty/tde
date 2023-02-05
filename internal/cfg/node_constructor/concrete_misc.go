@@ -2,7 +2,6 @@ package node_constructor
 
 import (
 	"go/ast"
-	"go/token"
 	"tde/internal/cfg/context_resolution/context"
 )
 
@@ -24,10 +23,10 @@ func FieldList(ctx *context.Context, limit int) *ast.FieldList {
 		return nil
 	}
 	return &ast.FieldList{
-		Opening: token.NoPos,
+		// Opening: token.NoPos,
+		// Closing: token.NoPos,
 		List: []*ast.Field{
 			Field(ctx, limit-1),
 		},
-		Closing: token.NoPos,
 	}
 }

@@ -5,19 +5,20 @@ import (
 	utl "tde/internal/utilities"
 
 	"go/ast"
-	"go/token"
 )
+
+var basicLitGenerators = []func() *ast.BasicLit{
+	basicIntegerLiteral,
+	basicStringLiteral,
+	basicFloatLiteral,
+	basicCharacterLiteral,
+}
 
 func BasicLit(ctx *context.Context, limit int) *ast.BasicLit {
 	if limit == 0 {
 		return nil
 	}
-	return (*utl.Pick([]func() *ast.BasicLit{
-		basicIntegerLiteral,
-		basicStringLiteral,
-		basicFloatLiteral,
-		basicCharacterLiteral,
-	}))()
+	return (*utl.Pick(basicLitGenerators))()
 }
 
 func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
@@ -25,10 +26,10 @@ func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
 		return nil
 	}
 	return &ast.BinaryExpr{
-		X:     Expr(ctx, limit-1),
-		OpPos: token.NoPos,
-		Op:    *utl.Pick(tokenConstructor.AcceptedByBinaryExpr),
-		Y:     Expr(ctx, limit-1),
+		// OpPos: token.NoPos,
+		X:  Expr(ctx, limit-1),
+		Y:  Expr(ctx, limit-1),
+		Op: *utl.Pick(tokenConstructor.AcceptedByBinaryExpr),
 	}
 }
 
@@ -38,11 +39,11 @@ func CallExpr(ctx *context.Context, limit int) *ast.CallExpr {
 		return nil
 	}
 	return &ast.CallExpr{
-		Fun:      Expr(ctx, limit-1),
-		Lparen:   token.NoPos,
-		Args:     []ast.Expr{Expr(ctx, limit-1)},
-		Ellipsis: token.NoPos,
-		Rparen:   token.NoPos,
+		// Lparen:   token.NoPos,
+		// Rparen:   token.NoPos,
+		// Ellipsis: token.NoPos,
+		Fun:  Expr(ctx, limit-1),
+		Args: []ast.Expr{Expr(ctx, limit-1)},
 	}
 }
 
@@ -52,10 +53,10 @@ func CompositeLit(ctx *context.Context, limit int) *ast.CompositeLit {
 		return nil
 	}
 	return &ast.CompositeLit{
+		// Lbrace:     token.NoPos,
+		// Rbrace:     token.NoPos,
 		Type:       Type(ctx, limit-1),
-		Lbrace:     token.NoPos,
 		Elts:       []ast.Expr{Expr(ctx, limit-1)},
-		Rbrace:     token.NoPos,
 		Incomplete: false,
 	}
 }
@@ -65,8 +66,8 @@ func Ellipsis(ctx *context.Context, limit int) *ast.Ellipsis {
 		return nil
 	}
 	return &ast.Ellipsis{
-		Ellipsis: token.NoPos,
-		Elt:      Expr(ctx, limit-1),
+		// Ellipsis: token.NoPos,
+		Elt: Expr(ctx, limit-1),
 	}
 }
 
@@ -93,10 +94,10 @@ func IndexExpr(ctx *context.Context, limit int) *ast.IndexExpr {
 		return nil
 	}
 	return &ast.IndexExpr{
-		X:      Expr(ctx, limit-1),
-		Lbrack: token.NoPos,
-		Index:  Expr(ctx, limit-1),
-		Rbrack: token.NoPos,
+		// Lbrack: token.NoPos,
+		// Rbrack: token.NoPos,
+		X:     Expr(ctx, limit-1),
+		Index: Expr(ctx, limit-1),
 	}
 }
 
@@ -106,10 +107,10 @@ func IndexListExpr(ctx *context.Context, limit int) *ast.IndexListExpr {
 		return nil
 	}
 	return &ast.IndexListExpr{
+		// Lbrack:  token.NoPos,
+		// Rbrack:  token.NoPos,
 		X:       Expr(ctx, limit-1),
-		Lbrack:  token.NoPos,
 		Indices: []ast.Expr{Expr(ctx, limit-1)},
-		Rbrack:  token.NoPos,
 	}
 }
 
@@ -118,8 +119,8 @@ func KeyValueExpr(ctx *context.Context, limit int) *ast.KeyValueExpr {
 		return nil
 	}
 	return &ast.KeyValueExpr{
+		// Colon: token.NoPos,
 		Key:   Expr(ctx, limit-1),
-		Colon: token.NoPos,
 		Value: Expr(ctx, limit-1),
 	}
 }
@@ -129,9 +130,9 @@ func ParenExpr(ctx *context.Context, limit int) *ast.ParenExpr {
 		return nil
 	}
 	return &ast.ParenExpr{
-		Lparen: token.NoPos,
-		X:      Expr(ctx, limit-1),
-		Rparen: token.NoPos,
+		// Lparen: token.NoPos,
+		// Rparen: token.NoPos,
+		X: Expr(ctx, limit-1),
 	}
 }
 
@@ -151,13 +152,13 @@ func SliceExpr(ctx *context.Context, limit int) *ast.SliceExpr {
 		return nil
 	}
 	return &ast.SliceExpr{
+		// Lbrack: token.NoPos,
+		// Rbrack: token.NoPos,
 		X:      Expr(ctx, limit-1),
-		Lbrack: token.NoPos,
 		Low:    Expr(ctx, limit-1),
 		High:   Expr(ctx, limit-1),
 		Max:    nil,
 		Slice3: false,
-		Rbrack: token.NoPos,
 	}
 }
 
@@ -166,8 +167,8 @@ func StarExpr(ctx *context.Context, limit int) *ast.StarExpr {
 		return nil
 	}
 	return &ast.StarExpr{
-		Star: token.NoPos,
-		X:    Expr(ctx, limit-1),
+		// Star: token.NoPos,
+		X: Expr(ctx, limit-1),
 	}
 }
 
@@ -176,10 +177,10 @@ func TypeAssertExpr(ctx *context.Context, limit int) *ast.TypeAssertExpr {
 		return nil
 	}
 	return &ast.TypeAssertExpr{
-		X:      Expr(ctx, limit-1),
-		Lparen: token.NoPos,
-		Type:   InterfaceType(ctx, limit-1),
-		Rparen: token.NoPos,
+		// Lparen: token.NoPos,
+		// Rparen: token.NoPos,
+		X:    Expr(ctx, limit-1),
+		Type: InterfaceType(ctx, limit-1),
 	}
 }
 
@@ -188,8 +189,8 @@ func UnaryExpr(ctx *context.Context, limit int) *ast.UnaryExpr {
 		return nil
 	}
 	return &ast.UnaryExpr{
-		OpPos: token.NoPos,
-		Op:    *utl.Pick(tokenConstructor.AcceptedByUnaryExpr),
-		X:     Expr(ctx, limit-1),
+		// OpPos: token.NoPos,
+		X:  Expr(ctx, limit-1),
+		Op: *utl.Pick(tokenConstructor.AcceptedByUnaryExpr),
 	}
 }

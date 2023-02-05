@@ -67,6 +67,7 @@ const (
 	Stmt
 	Decl
 	Spec
+	TypeExpr
 
 	// Slices
 	CommentGroupSlice
@@ -92,7 +93,7 @@ func (nt NodeType) IsSliceType() bool {
 
 func (nt NodeType) IsInterfaceType() bool {
 	switch nt {
-	case Expr, Stmt, Decl, Spec:
+	case Expr, Stmt, Decl, Spec, TypeExpr:
 		return true
 	default:
 		return false
@@ -187,7 +188,8 @@ func (nt NodeType) IsExpr() bool {
 		FuncType,
 		InterfaceType,
 		MapType,
-		ChanType:
+		ChanType,
+		TypeExpr:
 		return true
 	default:
 		return false

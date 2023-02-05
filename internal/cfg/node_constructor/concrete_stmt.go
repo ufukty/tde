@@ -5,7 +5,6 @@ import (
 	utl "tde/internal/utilities"
 
 	"go/ast"
-	"go/token"
 )
 
 func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
@@ -13,10 +12,10 @@ func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 		return nil
 	}
 	return &ast.AssignStmt{
-		Lhs:    []ast.Expr{Expr(ctx, limit-1)},
-		TokPos: token.NoPos,
-		Tok:    *utl.Pick(tokenConstructor.AccepetedByAssignStmt),
-		Rhs:    []ast.Expr{Expr(ctx, limit-1)},
+		// TokPos: token.NoPos,
+		Lhs: []ast.Expr{Expr(ctx, limit-1)},
+		Rhs: []ast.Expr{Expr(ctx, limit-1)},
+		Tok: *utl.Pick(tokenConstructor.AccepetedByAssignStmt),
 	}
 }
 
@@ -25,11 +24,9 @@ func BlockStmt(ctx *context.Context, limit int) *ast.BlockStmt {
 		return nil
 	}
 	return &ast.BlockStmt{
-		List: []ast.Stmt{
-			Stmt(ctx, limit-1),
-		},
-		Lbrace: token.NoPos,
-		Rbrace: token.NoPos,
+		// Lbrace: token.NoPos,
+		// Rbrace: token.NoPos,
+		List: []ast.Stmt{Stmt(ctx, limit-1)},
 	}
 }
 
@@ -41,9 +38,9 @@ func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 		return nil
 	}
 	return &ast.BranchStmt{
-		TokPos: token.NoPos,
-		Tok:    *utl.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
-		Label:  *utl.Pick(GeneratedBranchLabels),                 // FIXME:
+		// TokPos: token.NoPos,
+		Label: *utl.Pick(GeneratedBranchLabels),                 // FIXME:
+		Tok:   *utl.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
 	}
 }
 
@@ -52,11 +49,17 @@ func CaseClause(ctx *context.Context, limit int) *ast.CaseClause {
 		return nil
 	}
 	return &ast.CaseClause{
-		Case:  token.NoPos,
-		List:  []ast.Expr{Expr(ctx, limit-1)},
-		Colon: token.NoPos,
-		Body:  []ast.Stmt{Stmt(ctx, limit-1)},
+		// Case:  token.NoPos,
+		// Colon: token.NoPos,
+		List: []ast.Expr{Expr(ctx, limit-1)},
+		Body: []ast.Stmt{Stmt(ctx, limit-1)},
 	}
+}
+
+var commClauseCommGenerators = []func(*context.Context, int) ast.Stmt{
+	func(ctx *context.Context, limit int) ast.Stmt { return nil },
+	func(ctx *context.Context, limit int) ast.Stmt { return SendStmt(ctx, limit) },
+	func(ctx *context.Context, limit int) ast.Stmt { return ReturnStmt(ctx, limit) },
 }
 
 func CommClause(ctx *context.Context, limit int) *ast.CommClause {
@@ -64,11 +67,10 @@ func CommClause(ctx *context.Context, limit int) *ast.CommClause {
 		return nil
 	}
 	return &ast.CommClause{
-		Case:  token.NoPos,
-		Colon: token.NoPos,
-		Body: []ast.Stmt{
-			Stmt(ctx, limit-1),
-		},
+		// Case:  token.NoPos,
+		// Colon: token.NoPos,
+		Body: []ast.Stmt{Stmt(ctx, limit-1)},
+		Comm: (*utl.Pick(commClauseCommGenerators))(ctx, limit-1),
 	}
 }
 
@@ -87,8 +89,8 @@ func DeferStmt(ctx *context.Context, limit int) *ast.DeferStmt {
 		return nil
 	}
 	return &ast.DeferStmt{
-		Defer: token.NoPos,
-		Call:  CallExpr(ctx, limit-1),
+		// Defer: token.NoPos,
+		Call: CallExpr(ctx, limit-1),
 	}
 }
 
@@ -97,8 +99,8 @@ func EmptyStmt(ctx *context.Context, limit int) *ast.EmptyStmt {
 		return nil
 	}
 	return &ast.EmptyStmt{
-		Semicolon: token.NoPos,
-		Implicit:  false,
+		// Semicolon: token.NoPos,
+		Implicit: false,
 	}
 }
 
@@ -116,7 +118,7 @@ func ForStmt(ctx *context.Context, limit int) *ast.ForStmt {
 		return nil
 	}
 	return &ast.ForStmt{
-		For:  token.NoPos,
+		// For:  token.NoPos,
 		Init: Stmt(ctx, limit-1),
 		Cond: Expr(ctx, limit-1),
 		Post: Stmt(ctx, limit-1),
@@ -129,7 +131,7 @@ func GoStmt(ctx *context.Context, limit int) *ast.GoStmt {
 		return nil
 	}
 	return &ast.GoStmt{
-		Go:   token.NoPos,
+		// Go:   token.NoPos,
 		Call: CallExpr(ctx, limit-1),
 	}
 }
@@ -139,15 +141,11 @@ func IfStmt(ctx *context.Context, limit int) *ast.IfStmt {
 		return nil
 	}
 	return &ast.IfStmt{
-		If:   token.NoPos,
+		// If:   token.NoPos,
 		Init: nil,
-		Cond: Expr(ctx, limit-1),
-		Body: &ast.BlockStmt{
-			Lbrace: token.NoPos,
-			List:   []ast.Stmt{Stmt(ctx, limit-1)},
-			Rbrace: token.NoPos,
-		},
 		Else: nil,
+		Cond: Expr(ctx, limit-1),
+		Body: BlockStmt(ctx, limit-1),
 	}
 }
 
@@ -156,9 +154,9 @@ func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 		return nil
 	}
 	return &ast.IncDecStmt{
-		X:      Expr(ctx, limit-1),
-		TokPos: token.NoPos,
-		Tok:    *utl.Pick(tokenConstructor.AccepetedByIncDecStmt),
+		// TokPos: token.NoPos,
+		X:   Expr(ctx, limit-1),
+		Tok: *utl.Pick(tokenConstructor.AccepetedByIncDecStmt),
 	}
 }
 
@@ -167,9 +165,9 @@ func LabeledStmt(ctx *context.Context, limit int) *ast.LabeledStmt {
 		return nil
 	}
 	return &ast.LabeledStmt{
-		Label: generateBranchLabel(),
-		Colon: token.NoPos,
+		// Colon: token.NoPos,
 		Stmt:  Stmt(ctx, limit-1),
+		Label: generateBranchLabel(),
 	}
 }
 
@@ -178,13 +176,13 @@ func RangeStmt(ctx *context.Context, limit int) *ast.RangeStmt {
 		return nil
 	}
 	return &ast.RangeStmt{
-		For:    token.NoPos,
-		Key:    Expr(ctx, limit-1),
-		Value:  Expr(ctx, limit-1),
-		TokPos: token.NoPos,
-		Tok:    *utl.Pick(tokenConstructor.AcceptedByRangeStmt),
-		X:      Expr(ctx, limit-1),
-		Body:   BlockStmt(ctx, limit-1),
+		// For:    token.NoPos,
+		// TokPos: token.NoPos,
+		X:     Expr(ctx, limit-1),
+		Key:   Expr(ctx, limit-1),
+		Value: Expr(ctx, limit-1),
+		Body:  BlockStmt(ctx, limit-1),
+		Tok:   *utl.Pick(tokenConstructor.AcceptedByRangeStmt),
 	}
 }
 
@@ -194,7 +192,7 @@ func ReturnStmt(ctx *context.Context, limit int) *ast.ReturnStmt {
 		return nil
 	}
 	return &ast.ReturnStmt{
-		Return:  token.NoPos,
+		// Return:  token.NoPos,
 		Results: []ast.Expr{Expr(ctx, limit-1)},
 	}
 }
@@ -204,8 +202,8 @@ func SelectStmt(ctx *context.Context, limit int) *ast.SelectStmt {
 		return nil
 	}
 	return &ast.SelectStmt{
-		Select: token.NoPos,
-		Body:   &ast.BlockStmt{}, // NOTE: CommClause() ?
+		// Select: token.NoPos,
+		Body: BlockStmt(ctx, limit-1),
 	}
 }
 
@@ -214,8 +212,8 @@ func SendStmt(ctx *context.Context, limit int) *ast.SendStmt {
 		return nil
 	}
 	return &ast.SendStmt{
+		// Arrow: token.NoPos,
 		Chan:  Expr(ctx, limit-1),
-		Arrow: token.NoPos,
 		Value: Expr(ctx, limit-1),
 	}
 }
@@ -225,10 +223,10 @@ func SwitchStmt(ctx *context.Context, limit int) *ast.SwitchStmt {
 		return nil
 	}
 	return &ast.SwitchStmt{
-		Switch: token.NoPos,
-		Init:   Stmt(ctx, limit-1),
-		Tag:    nil,
-		Body:   BlockStmt(ctx, limit-1),
+		// Switch: token.NoPos,
+		Tag:  nil,
+		Init: Stmt(ctx, limit-1),
+		Body: BlockStmt(ctx, limit-1),
 	}
 }
 
@@ -237,7 +235,7 @@ func TypeSwitchStmt(ctx *context.Context, limit int) *ast.TypeSwitchStmt {
 		return nil
 	}
 	return &ast.TypeSwitchStmt{
-		Switch: token.NoPos,
+		// Switch: token.NoPos,
 		Init:   Stmt(ctx, limit-1),
 		Assign: Stmt(ctx, limit-1),
 		Body:   BlockStmt(ctx, limit-1),
