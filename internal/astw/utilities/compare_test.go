@@ -7,19 +7,18 @@ import (
 	"testing"
 )
 
-func TestCompare(t *testing.T) {
-
-	if Compare(TEST_TREE, TEST_TREE) != true {
+func TestComparRecursively(t *testing.T) {
+	if CompareRecursively(TEST_TREE, TEST_TREE) != true {
 		t.Error("Failed for same inputs")
 	}
 
 	TEST_TREE_NEW := copy.File(TEST_TREE)
-	if Compare(TEST_TREE, TEST_TREE) != true {
+	if CompareRecursively(TEST_TREE, TEST_TREE_NEW) != true {
 		t.Error("Failed for same inputs")
 	}
 
 	TEST_TREE_NEW.Decls = append(TEST_TREE_NEW.Decls, &ast.GenDecl{})
-	if Compare(TEST_TREE, TEST_TREE_NEW) != false {
-		t.Error("Failed for same inputs")
+	if CompareRecursively(TEST_TREE, TEST_TREE_NEW) != false {
+		t.Error("Failed for changed inputs")
 	}
 }
