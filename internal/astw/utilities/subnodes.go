@@ -30,6 +30,9 @@ func FilterSubNodes(root ast.Node, filter func(n ast.Node) bool) (filteredNodes 
 func ChildNodes(root ast.Node) (children []ast.Node) {
 	list := []ast.Node{}
 	astutil.Apply(root, func(c *astutil.Cursor) bool {
+		if c.Node() == nil {
+			return false
+		}
 		if c.Parent() == root {
 			list = append(list, c.Node())
 		}
