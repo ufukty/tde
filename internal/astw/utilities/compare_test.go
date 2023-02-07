@@ -2,7 +2,7 @@ package utilities
 
 import (
 	"go/ast"
-	"tde/internal/astw/copy"
+	"tde/internal/astw/clone"
 
 	"testing"
 )
@@ -12,7 +12,7 @@ func TestComparRecursively(t *testing.T) {
 		t.Error("Failed for same inputs")
 	}
 
-	TEST_TREE_NEW := copy.File(TEST_TREE)
+	TEST_TREE_NEW := clone.File(TEST_TREE)
 	if CompareRecursively(TEST_TREE, TEST_TREE_NEW) != true {
 		t.Error("Failed for same inputs")
 	}
