@@ -41,7 +41,7 @@ func CallExpr(ctx *context.Context, limit int) *ast.CallExpr {
 	return &ast.CallExpr{
 		// Lparen:   token.NoPos,
 		// Rparen:   token.NoPos,
-		// Ellipsis: token.NoPos,
+		// Ellipsis: token.NoPos, // FIXME: variadic parameter support
 		Fun:  Expr(ctx, limit-1),
 		Args: []ast.Expr{Expr(ctx, limit-1)},
 	}
