@@ -74,6 +74,7 @@ Temporary Items
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
+!.vscode/markdown.css
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
