@@ -7,8 +7,6 @@ body {
     background: #333;
     color: #999;
 
-    margin: 0 calc(50vw - 250px);
-
     padding: 50px 30px;
 }
 
@@ -60,13 +58,13 @@ h4 {
 h5 {
     --heading-order: 5;
     font-size: 1.0rem;
-    color: #bbb;
+    color: #b7a359;
 }
 
 h6 {
     --heading-order: 6;
     font-size: 1.0rem;
-    color: #aaa;
+    color: #8a59b7;
 }
 
 h1:after {
@@ -130,6 +128,10 @@ h4:not(h3+h4),
 h5:not(h4+h5),
 h6:not(h5+h6) {
     margin-top: calc((7 - var(--heading-order)) * 10px);
+}
+
+p {
+    max-width: 400px;
 }
 
 p+p {
