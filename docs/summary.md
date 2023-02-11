@@ -1,10 +1,12 @@
 # **Test Driven Evolution**: Combining Genetic Programming with Test Driven Development to put evolution to average programmer's toolboxg
 
-## Liability and responsibility in Software Development
+## Value proposition for target group
+
+### Liability and responsibility in Software Development
 
 Software is frequently developed as a commercial product that solves a social (or derived) problem and creates responsibility and liability on the seller company. Responsibility comes from the need to maintain company reputation in target consumer demographic and the liability comes from promises that company explicitly gave to customers as compliences to certain standards or the requirement of complying with the law.
 
-## Meaning of production-ready
+## Meaning of "production-ready"
 
 Just like workers of companies' other product departments, software developers should be able to inspect the prior work as the team makes progress in development to spot unfitting progress to everchanging requirements.
 
@@ -18,11 +20,11 @@ Familiarity: Most of the devs are experienced in building CRUD applications and 
 
 For the sake of our will to make Genetic Programming widely used method for generating computer programs it is necessary to make sure a regular dev team of a standard organization that is hired for developing CRUD programs with popular programming languages of domain (eg. Java, C#, Go) should be able to
 
-## Changing requirements of projects
+### Changing requirements of projects
 
 Software projects (service/product) mature with time and the increasing diffusion area on target group. Early adopters of innovations are the people who are expected to be the most educated/experienced ones amongst the whole target group. Through diffusion process, it is expected to feedbacks and requests raised by customers differantiate with the diffusion phase. Thus it is unavoidable that requirements for a particular product or a service will change with time; and software development process should
 
-## Work force circulation
+### Work force circulation
 
 Companies can not rely their employees on staying in the company until a software project completes its lifecycle. Employees come and go, but products should keep get fixed for newly discovered requirements, and get updated for new features customers request without effecting by if employees who worked on first phases of project still in the company. Latest workforce should be able to work on the existing codebase to add new features without the fear of breaking previously working features that implemented by previous workers. Following by test driven approach, key requirements that the software expected to satisfy are added into the codebase as tests at the moment those requirements raised and their reasoning known by employees of that time. Codebase is supposed to get tested for all tests at any time a possibly breaking-change occurred, or before and after every deployment by the CI/CD pipeline.
 
@@ -36,11 +38,14 @@ Developer doesn't need to know form of solution prior to development, being able
 
 ## Improvement Opportunites
 
-Speed of execution: - Using `ast` and `print` package, to create always-syntactically correct Go programs to spend less time with eliminating invalid-syntax candidates. - Instead fresh-compilation at each generation, only compile the changed file and link it to previous ones.
+### Speed of execution: 
+Using `ast` and `print` package, to create always-syntactically correct Go programs to spend less time with eliminating invalid-syntax candidates. - Instead fresh-compilation at each generation, only compile the changed file and link it to previous ones.
 
-Evolution speed - NEAT-like mechanisms such as tagged traits, breeds... Propagating the genes creates improvement to rest that has same genetic history.
+### Evolution speed
+NEAT-like mechanisms such as tagged traits, breeds... Propagating the genes creates improvement to rest that has same genetic history.
 
-Improvement on applicability - Compilation of a computer program takes some time. To save time on compilation all candidates of one generation are embedded into file at once and tested out at only one compilation. When compared to per-candidate compilation, current version of per-generation compilation lacks the ability to use all tests in module/package for testing candidates through target function's evolution.
+### Improvement on applicability
+Compilation of a computer program takes some time. To save time on compilation all candidates of one generation are embedded into file at once and tested out at only one compilation. When compared to per-candidate compilation, current version of per-generation compilation lacks the ability to use all tests in module/package for testing candidates through target function's evolution.
 
 ## Requirement that comes from commercialization
 
@@ -72,13 +77,13 @@ AST (Abstract-Syntax-Tree) is used to represent computer programs in a tree of n
 
 Ordering 3 methods from left to right, it can be seen that while the complexity of program that creates valid codes is increasing, rate of codes with invalid syntax created by that program decreases. With that; since the both token and AST node generation methods need details about the structure (both lexical tokens and syntax) of programming language; it can be forseeable that keeping search-space as all valid Go programs are reachable with initialization process at start and after performing genetic operations is tied with the success on implementing the token/node generating program in a way that is has no missing information on its due.
 
-An example to the complexity of generating AST-nodes could be the amount of node types that has to be considered. In the time of that counting; (Version of Go compiler and libraries used is 1.19.3); there are more than 50 node types for representing some-nested structures that varies in the size and functionality of the area they represents. Examples can be given as "Package" and "File" for relatively bigger structures; and "Field", "IfStmt" ("If Statement"), "SliceExpr" ("Slice Expression") and "MapType" for smaller ones. Most of node types consists by more than one type and number subnodes. Thus, implementing an AST node based code generator is challanging and detailed task. More importantly, that kind of code generator is language-specific. That means a code generator for Go won't be able to used for generating codes in different languages.
+An example to the complexity of generating AST-nodes could be the amount of node types that has to be considered. In the time of that counting; (Version of Go compiler and libraries used is 1.19.3); there are more than 50 node types for representing some-nested structures that varies in the size and functionality of the area they represents. Examples can be given as `Package` and `File` for relatively bigger structures; and `Field`, `IfStmt` (If Statement), `SliceExpr` (Slice Expression) and `MapType` for smaller ones. Most of node types consists by more than one type and number subnodes. Thus, implementing an AST node based code generator is challanging and detailed task. More importantly, that kind of code generator is language-specific. That means a code generator for Go won't be able to used for generating codes in different languages.
 
 ## Using dataset of web-scrapped code as initialization
 
 Another method could be using set of example codes that are written for different problems, collected from web and presents each type of code block and design patterns for initial population. If the used genetic operations (when applied over and over) are capable to reach every point of search-space even in unlimited time (like eliminating blind spots theorically); it might mean that the program is able to turn any form of solution to any other; put it differently, is able to navigate from any point in search-space to another. Thus; it can be predicable that creating initial population with such dataset would not hurt the ability of program to create a solution to user-provided tests.
 
-One issue is assuring the ability of program to "reduce" the complexity of codes carried by candidates in any given generation. This is challanging, especially because of the progress on getting success is usually made on the offspring that inherits parents' bigger parts (while the other offspring gets the smaller parts from each); and this is known to lead a phenomena called "bloating". One attempt to solve bloating problem is impacting the size of candidate into fitness evalution. Such change leads one candidate to get better score then another candidate that has same number of performance on tests but have bigger file size. FIXME: Another attempt to solve this problem is tracking genes and traits; so in a cut point decision phase of cross-over operation, one offspring getting will be avoided. That method was tried on NEAT (Neuro-Evolution of Augmented Topologies) and it seems successfully solves the problem.
+One issue is assuring the ability of program to `reduce` the complexity of codes carried by candidates in any given generation. This is challanging, especially because of the progress on getting success is usually made on the offspring that inherits parents' bigger parts (while the other offspring gets the smaller parts from each); and this is known to lead a phenomena called "bloating". One attempt to solve bloating problem is impacting the size of candidate into fitness evalution. Such change leads one candidate to get better score then another candidate that has same number of performance on tests but have bigger file size. FIXME: Another attempt to solve this problem is tracking genes and traits; so in a cut point decision phase of cross-over operation, one offspring getting will be avoided. That method was tried on NEAT (Neuro-Evolution of Augmented Topologies) and it seems successfully solves the problem.
 
 ## AST-node based code fragment generator
 
@@ -179,3 +184,33 @@ Bloated solutions are the ones that not only satisfy all requirements but also p
 It might be harder to filter those bloated solutions after they emerged rather than designing the evolution process in a way to reduce the possibility of producing them at first place.
 
 (and possible more complicated than the ideal and has additional features that are not required or even wanted) from getting marked as approved. So, producing code with tests can only be viable if the tool presents to the coder the simplest one as solution from the set of passing solutions.
+
+## Mutations that work
+
+Cross-over is there to move around in search space with bigger steps. They are good for quickly reaching to far regions of search space, and revealing what sits in there. Moving from the location of initial solution to a compilable candidate's, it takes a series of bigger and smaller steps in search space. Because it should not be expected that the first candidate solution in the landing point of one cross-over will just compile without errors. Put semantically incorrect candidates aside; finding a candidate that at least compiles without a "lexical error" (that is an error can be occured in tokenization step) or "syntax error" (belongs to compilation step) needs a combination of bigger and smaller steps performed in specific order.
+
+As seen in literature, "explorative" and "exploitative" terms are used to describe (respectively) quickly scanning bigger areas and focusing to smaller area.
+
+### Mutation's importance
+
+In this work; many concerns involved in the design of mutation operations. Need is raised by that any haphazard edit on a compilable code's abstract syntax tree can easily cause syntax errors; which will make the candidate fall behind its anchestry in fitness order, which will also increase its chance to get discrarded by roulette in the next selection phase. Long before complimentary mutations get a change to take place in next generations and introduce an improvement in working code.
+
+It should be expected from the final set of mutation operations to be able to iron out syntax and lexical errors of a candidate that is semantically close to transformed into the accepted solution. An example in context of string reverse problem, a candidate that creates the expected loop with expected statements inside it, but defines the temporary storage array's type as `[]int` instead of `string` or `[]byte`. Of course a solution that utilize a temporary array for such problem might not be the best alternative. Since just swapping elements from start and end until reach the center is better method. But, in the scope of this work, any solution that passes user-provided tests is perfect. Although:
+
+```go
+func StringReverse(in []rune) []rune {
+    var1 := []int{} // wrong type
+    for i := len(in) -1 ; i >= 0; i-- {
+        var1 = append(var1, in[i])
+    }
+    return var1
+}
+```
+
+### More examples on need for small-fixes
+
+Many situations can be thought where inconsistencies are type-related and lead to syntax-errors on compilation.
+
+### Variable name replacement after Cross-Over
+
+> dsdsdsdsd
