@@ -16,7 +16,7 @@ Most of the companies develop CRUD programs. That is a software runs on a comput
 
 CI/CD is trending topic for nearly 20 years. That is automating the cycle of integration and deployment which is expected to be a loop because of everchanging set of requirements and priorities that are faced by organizations produce software, in addition to a work force that consists by employees don't stay forever on same company and have different degrees of experiences on the field. Steps of CI/CD are mainly considered as code, build, test, release, deploy, operate, monitor and plan (for next round).
 
-Familiarity: Most of the devs are experienced in building CRUD applications and their skill set don't cover the Genetic Programming or another EA variation. In order to enable those developers leveraging from fruits of GP, the method should be delivered to them in a tool that presents a
+Familiarity: Most of the devs are experienced in building CRUD applications and their skill set don't cover the Genetic Programming or another EA variation. In order to enable those developers leveraging from advantages of GP, the method should be delivered as a tool that abstracts the internal mechanisms of evolution and only presents controls and output that they need. 
 
 For the sake of our will to make Genetic Programming widely used method for generating computer programs it is necessary to make sure a regular dev team of a standard organization that is hired for developing CRUD programs with popular programming languages of domain (eg. Java, C#, Go) should be able to
 
