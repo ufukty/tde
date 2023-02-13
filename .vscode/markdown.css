@@ -145,7 +145,8 @@ a {
 
 /* MARK: */
 
-p>code {
+p>code,
+li>code {
     margin: 0 2px;
     padding: 1px 5px;
     color: #aaa;
