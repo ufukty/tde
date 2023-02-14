@@ -1,75 +1,14 @@
 # **Test Driven Evolution**: Combining Genetic Programming with Test Driven Development to put evolution to average programmer's toolboxg
 
-## Value proposition for target group
+## Background
 
-### Liability and responsibility in Software Development
-
-Software is frequently developed as a commercial product that solves a social (or derived) problem and creates responsibility and liability on the seller company. Responsibility comes from the need to maintain company reputation in target consumer demographic and the liability comes from promises that company explicitly gave to customers as compliences to certain standards or the requirement of complying with the law.
-
-## Meaning of "production-ready"
-
-Just like workers of companies' other product departments, software developers should be able to inspect the prior work as the team makes progress in development to spot unfitting progress to everchanging requirements.
-
-The aim is to present the Genetic Programming within a tool to software developers for helping them to build their commercial purposed software. The tool eventually should have features like familiarity, easy-to-learn
-
-Most of the companies develop CRUD programs. That is a software runs on a computer accessible to clients. Exposes an stable interface consists by serial of endpoints each creates/reads/updates/deletes a resource. Resources are abstract objects, meaningful for the domain: like users, posts, photos for a social media platform; or employees, customers, e-mails, calls for a customer relation management software. Developer teams from variety of companies operates on different sector, or industries; it is safe to say that most of the teams specialized on developing CRUD programs and their skill-sets are shaped around the requirements of developing CRUD programs.
-
-CI/CD is trending topic for nearly 20 years. That is automating the cycle of integration and deployment which is expected to be a loop because of everchanging set of requirements and priorities that are faced by organizations produce software, in addition to a work force that consists by employees don't stay forever on same company and have different degrees of experiences on the field. Steps of CI/CD are mainly considered as code, build, test, release, deploy, operate, monitor and plan (for next round).
-
-Familiarity: Most of the devs are experienced in building CRUD applications and their skill set don't cover the Genetic Programming or another EA variation. In order to enable those developers leveraging from advantages of GP, the method should be delivered as a tool that abstracts the internal mechanisms of evolution and only presents controls and output that they need. 
-
-For the sake of our will to make Genetic Programming widely used method for generating computer programs it is necessary to make sure a regular dev team of a standard organization that is hired for developing CRUD programs with popular programming languages of domain (eg. Java, C#, Go) should be able to
-
-### Changing requirements of projects
-
-Software projects (service/product) mature with time and the increasing diffusion area on target group. Early adopters of innovations are the people who are expected to be the most educated/experienced ones amongst the whole target group. Through diffusion process, it is expected to feedbacks and requests raised by customers differantiate with the diffusion phase. Thus it is unavoidable that requirements for a particular product or a service will change with time; and software development process should
-
-### Work force circulation
-
-Companies can not rely their employees on staying in the company until a software project completes its lifecycle. Employees come and go, but products should keep get fixed for newly discovered requirements, and get updated for new features customers request without effecting by if employees who worked on first phases of project still in the company. Latest workforce should be able to work on the existing codebase to add new features without the fear of breaking previously working features that implemented by previous workers. Following by test driven approach, key requirements that the software expected to satisfy are added into the codebase as tests at the moment those requirements raised and their reasoning known by employees of that time. Codebase is supposed to get tested for all tests at any time a possibly breaking-change occurred, or before and after every deployment by the CI/CD pipeline.
-
-## Test driven development
-
-Test driven development are implemented by developers with writing so-called tests before actually implementing the program. Those tests can be divided into a couple of classes. Most popularly adopted and well known examples are unit tests and integration tests. Unit test is when a component tested by itself in isolation from the components it supposed to interact in active deployment. So, when a unit test failed, smallest component can be addressed immediately by tracking lately-turned-to-fail tests. Other class is when systems that consists by more than one components deployed into real or mock (a.k.a test, development) environment and tested for higher-level requirements than unit tests. To understand relation between test types, thinking about that system definition may help: A system consists by components and its behavior emerges by the interactions of components, also each component can be seen as sub-systems that consists by sub-components smaller than itself. Thus, unit test are for smallest components, and at each organizational-level from that to the higher, different type of test tools and techniques are considered.
-
-## Evolutionary Algorithms and Genetic Programming
-
-Developer doesn't need to know form of solution prior to development, being able to define the problem and test cases the solution should pass and fail is enough to start evolution.
-
-## Improvement Opportunites
-
-### Speed of execution: 
-Using `ast` and `print` package, to create always-syntactically correct Go programs to spend less time with eliminating invalid-syntax candidates. - Instead fresh-compilation at each generation, only compile the changed file and link it to previous ones.
-
-### Evolution speed
-NEAT-like mechanisms such as tagged traits, breeds... Propagating the genes creates improvement to rest that has same genetic history.
-
-### Improvement on applicability
-Compilation of a computer program takes some time. To save time on compilation all candidates of one generation are embedded into file at once and tested out at only one compilation. When compared to per-candidate compilation, current version of per-generation compilation lacks the ability to use all tests in module/package for testing candidates through target function's evolution.
-
-## Requirement that comes from commercialization
-
-Genetic programming means one program is executing arbitrary computer programs in a computer in hope to run across "the one" before time runs. It can be considered amongst those arbitrarily (or carefully random) structured computer code, some of the candidates could potentially harm the operating system or hardware in execution. In practice, Genetic Programming known as a popular choise for generating computer malwares (viruses etc.). In scope of this research, environment is the computer of user; and avoiding harm the computer of user is one of the critical requirements of this project for making it come alive.
-
-## Comparing fitness and test functions
-
-Fitness functions "tests" each candidate and gives a fitness value represents how much a candidate comply with targeted solution, so the result can be any value in a range usually in [0, 1].
-
-Test functions of TDD are used to test the only candidate function usually developed by a human and the result of testing process is either PASS or FAIL. Opposed to fitness functions, test functions return "poorly continous" results.
-
-As the usage of TDD doesn't require knowing how close a candidate to perfect solution but only if the candidate passes all tests or not, we can't force user to write tests with more detail; cause such verbosity (meaning added lines to test code) can decrease the effectiveness of TDD on being the first source of knowledge what behaviours the function requires to have in order to comply with business requirements of software project it belongs to. TDD tests should stay "clean" and immediately "hint" the new developers to key points of the tested function, as the each members of a software development team in a company are mixed, not all of (current and future) team members are guaranteed to have equal and high experience in software development field.
-
-## Limitations
-
-Since panics are used to distinguish bad programs (or anomalies, as in the context of evolution), there should not be any expectation to produce a solution that uses panic/recover features for error handling (as some programmers may). There is no limitation for producing solutions that uses error-wrapping method. This should not be a problem since error-wrapping is more frequently suggested over panic/recover feature for most usual cases by programmers and [https://go.dev/blog/error-handling-and-go](official documentation of Go programming language).
-
-The number of generations before the serial selections discards a candidate's breed from the population and blocks it from further development is limited with the case that number of candidates with at least better fitnesses are covering the contingent
-
-Thus, local minumums may be expected to become pit-falls, impossible to get out from. One way to deal with that problem; is switching to exploratory behaviour rather than staying exploatitave. That means increasing the rate of crossovers by decreasing mutations or increasing genetic operations all together. Although, that appoach naively expects that selections won't discard all members of the breed (starts from the member, ends on the grandparent that has the progress in its genotype but not exposed in the fenotype because of a syntax-error raised from the statement/expression is not finizalized [or supported by prior declarations/assignments]) from the population before it gets chance to find supplementary modification.
+## Suggestion
 
 ## Random code-fragment generation
 
-Generation of Go codes that have valid syntaxes and compatible with compiler can be challenging. Three methods used in research: Generating sequence of random characters, tokens and AST nodes.
+### Alternative methods
+
+Generation of Go codes that have valid syntaxes and compatible with compiler can be challenging. Three methods considered to be used in the research: Generating sequence of random characters, tokens and AST nodes.
 
 Tokens consist by keywords and symbols (operators) that are allowed to be placed in a valid Go program by specification.
 
@@ -78,6 +17,20 @@ AST (Abstract-Syntax-Tree) is used to represent computer programs in a tree of n
 Ordering 3 methods from left to right, it can be seen that while the complexity of program that creates valid codes is increasing, rate of codes with invalid syntax created by that program decreases. With that; since the both token and AST node generation methods need details about the structure (both lexical tokens and syntax) of programming language; it can be forseeable that keeping search-space as all valid Go programs are reachable with initialization process at start and after performing genetic operations is tied with the success on implementing the token/node generating program in a way that is has no missing information on its due.
 
 An example to the complexity of generating AST-nodes could be the amount of node types that has to be considered. In the time of that counting; (Version of Go compiler and libraries used is 1.19.3); there are more than 50 node types for representing some-nested structures that varies in the size and functionality of the area they represents. Examples can be given as `Package` and `File` for relatively bigger structures; and `Field`, `IfStmt` (If Statement), `SliceExpr` (Slice Expression) and `MapType` for smaller ones. Most of node types consists by more than one type and number subnodes. Thus, implementing an AST node based code generator is challanging and detailed task. More importantly, that kind of code generator is language-specific. That means a code generator for Go won't be able to used for generating codes in different languages.
+
+### Reducing errors on genetic operations and streamlining the evolution process (search-space traversal)
+
+Research has aimed to reduce mistakes on code fragment generation by making the process aware of context and types. Since any mistake leads to many of undetected lexical and syntax errors in code file creation and program generation (compile) phases, this reduction enabled evolution to waste less time trying to reach neighbour of a compilable but lacking candidate, combined with cruelness of selection algorithms against candidates who needs `n` generations before completing and surfacing underlying improvements in the phenotype (test performance) and fails on those phases throughout all of those `1st, 2nd, 3rd, ..., (n - 1)th` generations.
+
+Reduction on failures made possible with making CFG **context and type aware**. That is restricting the CFG with only the symbols accessible from the insertion point. Meaning of symbols: variables, function and type declarations of both current package and imported packages. Then, CFG creates expressions which its resolving type comply with the insertion point. So, the resolving type of the expression given to `ReturnStmt` can only be the function's output parameter's type that is stated in by user:
+
+```go
+func FuncName() int {
+    return ... // an expression that resolves to `int`
+}
+```
+
+Any node placed before ReturnStmt will have a guide for
 
 ## Using dataset of web-scrapped code as initialization
 
@@ -91,15 +44,11 @@ There are two approaches can be consiedered for implementing AST-node based code
 
 One issue with context-aware (that is creating new lines that can only access previously declarated variables, constants and imported libraries) node generation is that the amount of computation needed to resolve
 
-## Turing completeness
+## Validity of the solution
+
+### Turing completeness
 
 A computational environment is Turing-complete only if it can reproduce itself. One thing to prove that the TDE can find solution when it is theorically possible can be trying to produce TDE with TDE.
-
-## Comparing with alternative methods
-
-Generating code from configuration files: Such, recently developed tools promise generating domain-specific computer programs in return of user-provided configuration files. Examples can be given as Swagger,
-
-AI models trained on publicly accessible internet dataset: Github Copilot, ChatGPT. Those solutions work in a way that accept a text promt that explains the problem the user wants service to solve.
 
 ## Measure against the potential harm that might caused by running arbitrary code in a computer
 
@@ -122,14 +71,8 @@ One thing about second chances is that they are limited with the quota remains f
 Dividing the fitness measurement into multiple objectives is a promising idea to reduce rate of losing progresses under surface into roulette’s careless business manner.
 
 ```go
-// Faulty original
 func addition(a, b int) {
-    return a
-}
-
-// Fixed version
-func addition(a, b int) {
-    return a + b // changed line
+    return a // fault
 }
 ```
 
@@ -144,28 +87,32 @@ AST representations (simplified):
         }
     }
 }
+```
 
+The `Expr` that is given to `ReturnStmt` needs a rework. Existing `Ident{a}` should be wrapped with a `BinaryExpr{+}` along newly created `Ident(b)`.
+
+```yaml
 # Fixed version
 *ast.ReturnStmt {
     Results: []ast.Expr{
-        0: *ast.BinaryExpr {   # 1 Newly created, choosen randomly amongst 10+ possible Expression variation
-            X: *ast.Ident {    # 2 Previously existing structure; moved to inner level
+        0: *ast.BinaryExpr {
+            X: *ast.Ident {
                 Name: "a"
             }
-            Op: +              # 3 Choosen randomly amongst nearly 10 possible tokens
-            Y: *ast.Ident {    # 4 Similar to 1st line
-                Name: "b"      # 5 Chosen randomly amongst previously declarated variables and functions.
+            Op: +
+            Y: *ast.Ident {
+                Name: "b"
             }
         }
     }
 }
 ```
 
-One way to solve this changing the expression that is given to Return node
+Important to note: The variable name that is choosen for `Ident(b)` is not arbitrary. In fact, it is one of the input parameters of the user provided `FuncDecl` along with the `Ident(a)`. If the "Code Fragment Generator" would've generated random variable names at each node creation, coming across to correct pair of variables withing correct expression would take much more try-error, and would increase its chance to get eliminated by selection algorithm.
 
 ## Dealing with inconsistencies: Evolving homologous structures at once
 
-```cpp
+```go
 Fenotype = GenotypeToFenotypeGenerator(AST-based-data-structure)
 ```
 
@@ -214,3 +161,74 @@ Many situations can be thought where inconsistencies are type-related and lead t
 ### Variable name replacement after Cross-Over
 
 > dsdsdsdsd
+
+### Looping with condition
+
+```go
+for condition {
+    list of statements
+}
+```
+
+### Looping over a collection of items: map, slice.
+
+```go
+for i, v := range collection {
+    list of statements
+}
+```
+
+### Conditionalizing a list of statements with an expression
+
+```go
+if condition {
+    list of statements
+}
+```
+
+### Data structure transform
+
+```go
+keys := []string{...}
+values := []int{...}
+```
+
+Above to below:
+
+```go
+type Item struct {
+    key string
+    value int
+}
+items := []Item{...}
+```
+
+Prerequisites of improving-mutation are determining of correct
+
+-   set of statements to conditionalize
+-   expression to use as condition (which resolves to a boolean)
+
+### Performing trials of different mutations on same candidate simultaneously, for many candidates in a generation
+
+For a set of _n_ candidates of the generation _i_, after selection with survival ratio of _s_ starts, the population size becomes `n * s` For the average number of candidates _c_, there should _m_ different mutation be carried over to next evalution & selection and the population size remain constant.
+
+$$ n = n _ s _ c _ m$$
+$$ 1 = s _ c \* m $$
+
+## Attributes of TDE's search space
+
+What does it look like? How many dimensions? What makes 2 candidates neighbours? Is it continuous or discrete? Why it is helpful to imagine candidates in a organized search space?
+
+### Sorting all Go codes possible
+
+Attributes that any Go code have:
+
+-   Not helpful:
+    -   Length
+    -   Number of code blocks in some kind e.g. `GenDecl`, `FuncDecl`
+-   Helpful:
+    -   Least number of mutations required to transform candidate A into candidate B.
+
+```go
+f := f()
+```
