@@ -4,7 +4,7 @@
 
 Genetic programming means one program is executing arbitrary computer programs in a computer in hope to run across "the one" before time runs. It can be considered amongst those arbitrarily (or carefully random) structured computer code, some of the candidates could potentially harm the operating system or hardware in execution. In practice, Genetic Programming known as a popular choise for generating computer malwares (viruses etc.). In scope of this research, environment is the computer of user; and avoiding harm the computer of user is one of the critical requirements of this project for making it come alive.
 
-## Designing the interface for `tde/testing`
+## `tde/testing` an interface designed for TDD users
 
 Aim of the tool is reducing the work of developers and save labor for writing better tests rather allocating it to implement the actual code.
 
