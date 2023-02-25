@@ -10,6 +10,8 @@ Used in symbolic regression like
 
 ## Program synyhesis with user-provided TDD
 
+Test-Driven Synthesis (2014, Parelman)
+
 ### Benchmarks
 
 -   String transformations
@@ -17,24 +19,45 @@ Used in symbolic regression like
 -   XML transformations
 -   Pex4Fun
 
-## Liability and responsibility in Software Development
+## Neuroevolution of Augmented Topologies (NEAT)
 
-Products creates responsibility and liability on producer and seller. Liability usually comes from law and contracts; and customer expectations raised by market players.
+-   2002, Stanley
 
-Software is frequently developed as a commercial product that solves a social (or derived) problem and creates responsibility and liability on the seller company. Responsibility comes from the need to maintain company reputation in target consumer demographic and the liability comes from promises that company explicitly gave to customers as compliences to certain standards or the requirement of complying with the law.
+-   Main idea is evolving ANNs along with their network topologies instead of only the weights.
 
-## Meaning of "production-ready"
+-   Primary sub-problems improved
 
-Just like workers of companies' other product departments, software developers should be able to inspect the prior work as the team makes progress in development to spot unfitting progress to everchanging requirements.
+    -   Cross-overs on completely different structured candidates, size and shape
+    -   Premature elimination: speciation
+    -   Repressing bloating tendency of evolution
 
-The aim is to present the Genetic Programming within a tool to software developers for helping them to build their commercial purposed software. The tool eventually should have features like familiarity, easy-to-learn
+-   Secondary sub-problems improved
 
-Most of the companies develop CRUD programs. That is a software runs on a computer accessible to clients. Exposes an stable interface consists by serial of endpoints each creates/reads/updates/deletes a resource. Resources are abstract objects, meaningful for the domain: like users, posts, photos for a social media platform; or employees, customers, e-mails, calls for a customer relation management software. Developer teams from variety of companies operates on different sector, or industries; it is safe to say that most of the teams specialized on developing CRUD programs and their skill-sets are shaped around the requirements of developing CRUD programs.
+    -   Competing conventions
 
-CI/CD is trending topic for nearly 20 years. That is automating the cycle of integration and deployment which is expected to be a loop because of everchanging set of requirements and priorities that are faced by organizations produce software, in addition to a work force that consists by employees don't stay forever on same company and have different degrees of experiences on the field. Steps of CI/CD are mainly considered as code, build, test, release, deploy, operate, monitor and plan (for next round).
+-   Proved the advantage of main idea on pole balancing problem by outperforming predecessors
 
-Familiarity: Most of the devs are experienced in building CRUD applications and their skill set don't cover the Genetic Programming or another EA variation. In order to enable those developers leveraging from advantages of GP, the method should be delivered as a tool that abstracts the internal mechanisms of evolution and only presents controls and output that they need.
+-   Influenced by:
 
-For the sake of our will to make Genetic Programming widely used method for generating computer programs it is necessary to make sure a regular dev team of a standard organization that is hired for developing CRUD programs with popular programming languages of domain (eg. Java, C#, Go) should be able to
+    -   Fixed topology neuroevolution
 
-## Neuroevolution of Augmented Topologies (Stanley, 2002)
+        -   sGP (Dasgupta 1992)
+
+            -   Binary encoding: bits represent connections
+            -   Scalability issues
+
+    -   Topology evolving:
+        -   Chen, 1993 (supervised training)
+        -   GNARL (Angeline, 1993)
+        -   Branke, 1995
+        -   Gruau, 1996
+            -   "also evolving structure saves time otherwise spent by humans deciding parameters at start"
+        -   Yao, 1999
+
+-   Predecessor of HyperNEAT, same author
+
+Regardless the product type is being different; NEAT and tree-based genetic programming have some parts in common.
+
+NEAT has introduced some solutions to couple of the problems faced in implementation of TDE. Such as premature elimination found as one of the 3 important issues addressed in paper [Stanley, 2002, page 100] along with designing a cross-over operation that works on completely different topologies and repressing tendency of GP on increasing structural complexity at each generation. That one is called as "bloating" in GP context.
+
+Although the technique can not be direclty entitled as Genetic Programming; the difference between ANN's and AST's are not breaking opportunity to apply same principles on GP too.
