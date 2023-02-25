@@ -1,12 +1,18 @@
 package main
 
-type Config struct {
-	File             string
-	TestFile         string
+type ProduceCommandFlags struct {
+	IncludeModule bool
+	RunnerAddress string
+
+	// File             string
+	// TestFile         string
 	TestFunctionName string
-	Population       int
-	Generation       int
-	SizeLimit        int
+
+	// Population       int
+	// Generation       int
+	// SizeLimit        int
+
+	Timeout int
 }
 
-var config = Config{}
+var produceCommandFlags = ProduceCommandFlags{}

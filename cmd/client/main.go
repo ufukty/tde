@@ -31,7 +31,7 @@ var Version any
 
 func main() {
 	fmt.Println(Version)
-	fmt.Println(config)
+	fmt.Println(produceCommandFlags)
 
 	// var e = evolution.Evolution{}
 	// e.InitPopulation(n)
