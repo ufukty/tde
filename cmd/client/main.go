@@ -15,6 +15,14 @@ Main progress:
 	Evolve : Iterates the evolution by 1 generation.
 */
 
+/*
+Functions:
+	- zips a module (or package specified by user) and uploads to server with access token
+	- orders from evolver server to *start* evolution
+	- orders from evolver server to *continue* evolution
+	- tracks versions for working directory, when user changes
+*/
+
 import (
 	"fmt"
 )
