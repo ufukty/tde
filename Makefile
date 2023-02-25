@@ -1,4 +1,4 @@
-all: ast-inspect client server
+all: ast-inspect client evolver-server runner-server
 
 ast-inspect:
 	go build -o build/ast-inspect ./cmd/ast-inspect
@@ -6,8 +6,11 @@ ast-inspect:
 client:
 	go build -o build/agent ./cmd/client
 
-server:
-	go build -o build/server ./cmd/server
+evolver-server:
+	go build -o build/evolver-server ./cmd/evolver-server
+
+runner-server:
+	go build -o build/runner-server ./cmd/runner-server
 
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
