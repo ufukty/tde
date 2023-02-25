@@ -18,8 +18,9 @@ type Server struct {
 	Address string
 }
 
-func NewServer() *Server {
-	s := &Server{"127.0.0.1:6000"}
+func NewServer(port int) *Server {
+	address := fmt.Sprintf("127.0.0.1:%d", port)
+	s := &Server{address}
 	s.Start()
 	return s
 }
