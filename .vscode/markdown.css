@@ -15,6 +15,12 @@ body * {
     /* font-size: 1rem; */
 }
 
+.btn-outline:hover {
+    background-color: red;
+    ;
+    display: none !important;
+}
+
 /* MARK: */
 
 h1 {
@@ -32,39 +38,39 @@ h6 {
 
 
 h1 {
+    --header-color: #b75962;
     --heading-order: 1;
     font-size: 1.3rem;
-    color: #b75962;
 }
 
 h2 {
+    --header-color: #5085ba;
     --heading-order: 2;
     font-size: 1.2rem;
-    color: #5085ba;
 }
 
 h3 {
+    --header-color: #4ab190;
     --heading-order: 3;
     font-size: 1.0rem;
-    color: #4ab190;
 }
 
 h4 {
+    --header-color: #88a756;
     --heading-order: 4;
     font-size: 1.0rem;
-    color: #88a756;
 }
 
 h5 {
+    --header-color: #b7a359;
     --heading-order: 5;
     font-size: 1.0rem;
-    color: #b7a359;
 }
 
 h6 {
+    --header-color: #8a59b7;
     --heading-order: 6;
     font-size: 1.0rem;
-    color: #8a59b7;
 }
 
 h1:after {
@@ -97,6 +103,7 @@ h3,
 h4,
 h5,
 h6 {
+    color: var(--header-color);
     position: relative;
 }
 
@@ -122,16 +129,46 @@ h6:hover:after {
     display: block;
 }
 
-h2:not(h1+h2),
-h3:not(h2+h3),
-h4:not(h3+h4),
-h5:not(h4+h5),
-h6:not(h5+h6) {
+h1:not(body>*>:nth-child(2)):not(h1+h1):not(h2+h1):not(h3+h1):not(h4+h1):not(h5+h1):not(h6+h1),
+h2:not(body>*>:nth-child(2)):not(h1+h2):not(h2+h2):not(h3+h2):not(h4+h2):not(h5+h2):not(h6+h2),
+h3:not(body>*>:nth-child(2)):not(h1+h3):not(h2+h3):not(h3+h3):not(h4+h3):not(h5+h3):not(h6+h3),
+h4:not(body>*>:nth-child(2)):not(h1+h4):not(h2+h4):not(h3+h4):not(h4+h4):not(h5+h4):not(h6+h4),
+h5:not(body>*>:nth-child(2)):not(h1+h5):not(h2+h5):not(h3+h5):not(h4+h5):not(h5+h5):not(h6+h5),
+h6:not(body>*>:nth-child(2)):not(h1+h6):not(h2+h6):not(h3+h6):not(h4+h6):not(h5+h6):not(h6+h6) {
     margin-top: calc((7 - var(--heading-order)) * 10px);
 }
 
+/* h1:not(body>*>:nth-child(2)),
+h2:not(body>*>:nth-child(2)):not(h1+h2),
+h3:not(body>*>:nth-child(2)):not(h2+h3),
+h4:not(body>*>:nth-child(2)):not(h3+h4),
+h5:not(body>*>:nth-child(2)):not(h4+h5),
+h6:not(body>*>:nth-child(2)):not(h5+h6) {
+    margin-top: calc((7 - var(--heading-order)) * 10px);
+} */
+
+h1>code,
+h2>code,
+h3>code,
+h4>code,
+h5>code,
+h6>code {
+    color: var(--header-color);
+    margin: 0 2px;
+    padding: 1px 5px;
+    border: 1px solid var(--header-color);
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+
 p {
     max-width: 400px;
+}
+
+em {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.3em;
 }
 
 p+p {
@@ -152,6 +189,7 @@ li>code {
     color: #aaa;
     border: 2px solid #444;
     border-radius: 4px;
+    white-space: nowrap;
 }
 
 /* MARK: */
