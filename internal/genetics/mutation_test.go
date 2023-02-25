@@ -1,15 +1,17 @@
 package genetics
 
 import (
-	"bytes"
+	"fmt"
 	"tde/internal/astw/clone"
 	ast_utl "tde/internal/astw/utilities"
 	"tde/internal/cfg"
 	"tde/internal/evaluation"
 
-	"fmt"
+	"bytes"
 	"go/ast"
+	"go/printer"
 	"go/token"
+	"os"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -45,83 +47,30 @@ func Test_DevelopWithoutSyntaxError(t *testing.T) {
 
 	if !evaluation.SyntaxCheckUnsafe(funcDecl) {
 		t.Error("fails on SyntaxCheck")
+	} else {
+		printer.Fprint(os.Stdout, token.NewFileSet(), funcDecl)
 	}
 }
 
-func Benchmark_DevelopFindUnbreakingChange(b *testing.B) {
+func Test_DevelopFindUnbreakingChange(t *testing.T) {
 	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		b.Error(errors.Wrapf(err, "failed on prep"))
+		t.Error(errors.Wrapf(err, "failed on prep"))
 	}
 
-	// nonBreakingCandidates := []*ast.FuncDecl{}
-	// candidates := []*ast.FuncDecl{}
-	var best *ast.FuncDecl = originalFuncDecl
+	nonBreakingChangeFound := false
+	for i := 0; i < 20; i++ {
+		candidate := clone.FuncDecl(originalFuncDecl)
+		cfg.Develop(astPkg, astFile, candidate, 2)
 
-	pool := []*ast.FuncDecl{}
-
-	for i := 0; i < 10000; i++ {
-		pool = append(pool, clone.FuncDecl(originalFuncDecl))
-	}
-
-	for gen := 0; gen < 20; gen++ {
-
-		for _, candidate := range pool {
-			cfg.Develop(astPkg, astFile, candidate, 1)
-		}
-
-		// sort
-		for idx, candidate := range pool {
-			if ok, _ := evaluation.SyntaxCheck(candidate); ok {
-				best = candidate
-				fmt.Println("non-breaking change on gen-idx", gen, idx)
-
-				bufferNew := bytes.NewBuffer([]byte{})
-				ast.Fprint(bufferNew, token.NewFileSet(), candidate, nil)
-				pool = append(append([]*ast.FuncDecl{pool[idx]}, pool[:idx]...), pool[idx+1:]...)
-			}
-		}
-
-		fmt.Println("gen:", gen)
-
-		for i := 0; i < 1000000; i++ {
-			candidate := clone.FuncDecl(best)
-			cfg.Develop(astPkg, astFile, candidate, 1)
-
-			if ok, _ := evaluation.SyntaxCheck(candidate); ok {
-				best = candidate
-				fmt.Println("non-breaking change on #", i)
-
-				bufferNew := bytes.NewBuffer([]byte{})
-				ast.Fprint(bufferNew, token.NewFileSet(), candidate, nil)
-			} else {
-				// fmt.Println("Panic:", msg)
-				// break
-			}
+		if ok, _ := evaluation.SyntaxCheckSafe(candidate); ok {
+			printer.Fprint(os.Stdout, token.NewFileSet(), candidate)
+			fmt.Println("\n---")
+			nonBreakingChangeFound = true
 		}
 	}
 
-	// for i := 0; i < 100; i++ {
-	// 	candidates = append(candidates, clone.FuncDecl(originalFuncDecl))
-	// }
-
-	// for gen := 0; gen < 200000; gen++ {
-	// 	if gen%100 == 0 {
-	// 		fmt.Println("gen:", gen)
-	// 	}
-	// 	for candidateId, candidate := range candidates {
-	// 		err = cfg.Develop(astPkg, astFile, candidate, 1)
-	// 		if err != nil {
-	// 			b.Error(errors.Wrapf(err, "failed on Develop"))
-	// 		}
-	// 		if evaluation.SyntaxCheck(candidate) {
-	// 			fmt.Println("non-breaking change on #", candidateId)
-	// 			nonBreakingCandidates = append(nonBreakingCandidates, candidate)
-	// 		}
-	// 	}
-	// }
-
-	// if len(nonBreakingCandidates) == 0 {
-	// 	b.Error("No non-breaking candidates found.")
-	// }
+	if !nonBreakingChangeFound {
+		t.Error("No non-breaking candidates found.")
+	}
 }
