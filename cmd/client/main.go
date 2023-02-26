@@ -24,14 +24,15 @@ Functions:
 */
 
 import (
+	_ "tde/cmd/client/commands"
+
 	"fmt"
 )
 
 var Version any
 
 func main() {
-	fmt.Println(Version)
-	fmt.Println(produceCommandFlags)
+	fmt.Println("Hello world")
 
 	// var e = evolution.Evolution{}
 	// e.InitPopulation(n)
