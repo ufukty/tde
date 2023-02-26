@@ -4,7 +4,7 @@ ast-inspect:
 	go build -o build/ast-inspect ./cmd/ast-inspect
 
 client:
-	go build -o build/agent ./cmd/client
+	go build -o build/client ./cmd/client
 
 evolver-server:
 	go build -o build/evolver-server ./cmd/evolver-server
