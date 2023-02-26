@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"tde/internal/evolution"
 	"tde/internal/server"
 )
@@ -18,9 +17,6 @@ func StartEvolution(input string, test string, populationSize int) { // FIXME: a
 func main() {
 
 	server.NewServer(6000)
-
-	http.HandleFunc("/upload", uploadFile)
-	http.ListenAndServe(":8080", nil)
 
 	// t := Testing{}
 
