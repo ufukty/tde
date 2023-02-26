@@ -25,19 +25,6 @@ Functions:
 
 import (
 	_ "tde/cmd/client/commands"
-
-	"fmt"
 )
 
-var Version any
-
-func main() {
-	fmt.Println("Hello world")
-
-	// var e = evolution.Evolution{}
-	// e.InitPopulation(n)
-
-	// for i := 0; i < g; i++ {
-	// 	e.ExecuteOneGeneration()
-	// }
-}
+func main() {}
