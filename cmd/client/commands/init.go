@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"tde/cmd/client/produce"
+	"tde/cmd/client/upload"
+
 	"fmt"
 	"os"
 )
@@ -9,17 +12,17 @@ type Command interface {
 	Setup() // Sets flags, "Usage" function
 	PrintGenericHelp()
 	Parse() int
-	Run() int // Called when user runs the program with this command
+	Run() // Called when user runs the program with this command
 }
 
 // Doesn't include "help" command
 var Commands = map[string]Command{
 	"help":    NewHelp(),
-	"produce": NewProduce(),
+	"produce": produce.NewProduce(),
+	"upload":  upload.NewUpload(),
 	// "login": ,
 	// "logout": ,
 	// "credits": ,
-	// "reupload": ,
 	// "recheck": ,
 }
 
@@ -43,7 +46,7 @@ func init() {
 	cmdToRun := os.Args[1]
 	if cmd, ok := Commands[cmdToRun]; ok {
 		exitIfFailed(cmd.Parse())
-		exitIfFailed(cmd.Run())
+		cmd.Run()
 		os.Exit(0)
 	} else {
 		fmt.Println("Unrecognized command. Run \"tde help\"")

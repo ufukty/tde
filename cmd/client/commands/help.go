@@ -47,24 +47,24 @@ func (h *Help) Parse() int {
 	return 0
 }
 
-func (h *Help) Run() int {
+func (h *Help) Run() {
 	if len(os.Args) < 3 { // means running as "tde help"
 		h.PrintGenericHelp()
-		return 0
+		return
 	}
 
 	cmdToRun := os.Args[2] // command part in "tde help <command>"
 
 	if cmdToRun == "help" {
 		fmt.Println("Help command helps you. Run \"tde help\" to learn more, instead \"tde help help\"")
-		return 1 // avoid infinite recursion
+		os.Exit(1) // avoid infinite recursion
 	}
 
 	if cmd, ok := Commands[cmdToRun]; ok {
 		cmd.PrintGenericHelp()
-		return 0
+		return
 	} else {
 		fmt.Println("Unrecognized command for help. Run \"tde help\"")
-		return 1
+		os.Exit(1)
 	}
 }
