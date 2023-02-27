@@ -8,7 +8,7 @@ import (
 )
 
 func Test_ArchiveDirectory(t *testing.T) {
-	path, err := ArchiveDirectory("../../../")
+	path, err := ArchiveDirectory("../../../", true, []string{".git", "build", "docs", ".vscode"})
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed to archive directory"))
 	}

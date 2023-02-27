@@ -2,15 +2,16 @@ package upload
 
 import (
 	"archive/zip"
-	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slices"
 )
 
-func ArchiveDirectory(relativePath string) (string, error) {
+func ArchiveDirectory(relativePath string, includeSubfolders bool, skipDirs []string) (string, error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to create temporary zip file")
@@ -30,15 +31,15 @@ func ArchiveDirectory(relativePath string) (string, error) {
 			return errors.Wrap(err, "failed to clean path for a file")
 		}
 
-		fmt.Println("archiving:", inZipSubPath)
-
 		if fileInfo.IsDir() {
-			if subPath == relativePath {
-				return nil
-			} else {
+			if !includeSubfolders || slices.Index(skipDirs, inZipSubPath) != -1 {
+				log.Println("skip dir:", inZipSubPath)
 				return filepath.SkipDir
 			}
+			return nil // keep walk
 		}
+
+		log.Println("archiving:", inZipSubPath)
 
 		subFile, err := os.Open(subPath)
 		if err != nil {
