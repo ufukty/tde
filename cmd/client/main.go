@@ -24,7 +24,16 @@ Functions:
 */
 
 import (
-	_ "tde/cmd/client/commands"
+	"tde/cmd/client/help"
+	"tde/cmd/client/produce"
+	"tde/cmd/client/upload"
+	"tde/internal/command"
 )
 
-func main() {}
+func main() {
+	command.RegisterCommand("help", &help.Command{})
+	command.RegisterCommand("upload", &upload.Command{})
+	command.RegisterCommand("produce", &produce.Command{})
+
+	command.Route()
+}

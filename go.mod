@@ -11,4 +11,5 @@ require (
 require (
 	github.com/kylelemons/godebug v1.1.0
 	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
+	gopkg.in/yaml.v3 v3.0.1
 )

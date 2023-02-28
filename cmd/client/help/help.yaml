@@ -1,0 +1,93 @@
+---
+help: |
+  Use tde to produce implementation in Go that complies a test.
+
+  Usage:
+
+      tde <command> [arguments]
+
+  Commands:
+
+      login         Required on first run. Asks username and pass.
+      logout        Deletes session on this device.
+      info          Session info and credits remaining.
+    
+      upload        Upload go module as an archive to tde servers.
+      produce       Starts evolution process and downloads results to local.
+      
+      list-test     Lists all tests found in the module and files have them.
+      list-upload   Lists IDs of previous uploads.
+      list-produce  Lists IDs of previous runs of produce.
+
+  Use "tde help <command>" for more information about a command and its 
+  arguments.
+
+upload: |
+  Uploads whole go module as an archive to tde servers on first run. Subsequent 
+  runs will only re-upload changed files.
+
+  Usage:
+
+      tde upload [ arguments ]
+
+  Arguments:
+
+      -e, -exclude-dir (Optional)
+          Defaults to exclude ".git" directory. To reduce network usage it is
+          best to exclude every directory that its absence won't lead to any
+          compile error of target package. Multiple directories can be specified
+          individually.
+
+produce: |
+  Starts the evolution process, iterates specified generations, downloads 
+  results, overwrites into working directory.
+
+  Needs the current go module already uploaded. See: "tde help upload"
+
+  Usage:
+
+      tde produce [ arguments ] <TDE_TestName>
+
+  Arguments:
+
+    Process-related:
+            
+      -t, -timeout (Required) (Default=10)
+          Minutes to wait before terminate request.
+
+      -runner (Optional)
+          Specify a IP:Port to use custom runners. See 
+          "https://tde.io/docs/runner"
+
+      -c, -continue (Optional)
+          When absent, evolution will start from the latest saved state of files
+          in local.
+          When a UUID of previous evolution process has given, temporarily saved 
+          information such as breeds, historical bests will be used. 
+          Negative values can be given to automatically continue to last or 
+          older evolutions: such as -1 for last, -10 for 10 previous start.
+
+    Evolution-related:
+
+      -model (Required) (Default=0.1)
+          Model's version number. Currently, only option is 0.1
+
+      -ratios (Required) (Default=10/1)
+          Ratios of genetic operations: mutation, cross-over. Will be used to 
+          calculate probabilities of those operations.
+
+      -population (Required) (Default=10000)
+          Number of candidates generated at start and tested at each generation.
+          Higher values will consume more credits and will help to test more 
+          variation of each possibility.
+
+      -iterate (Required) (Default=10)
+          Number of generations to iterate in single run.
+      
+      -size (Required) (Default=1000)
+          Size limit for any candidate in bytes.
+
+      -package (Optional)
+          Allows evolver server to include import statements and type/func usage
+          from specified package. Multiple entries can be given individually. 
+          Runners may have limitation on which packages can be used.
