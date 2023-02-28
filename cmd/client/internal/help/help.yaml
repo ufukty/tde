@@ -52,14 +52,14 @@ produce: |
 
     Process-related:
             
-      -t, -timeout (Required) (Default=10)
+      -timeout (Required) (Default=10)
           Minutes to wait before terminate request.
 
       -runner (Optional)
           Specify a IP:Port to use custom runners. See 
           "https://tde.io/docs/runner"
 
-      -c, -continue (Optional)
+      -continue (Optional)
           When absent, evolution will start from the latest saved state of files
           in local.
           When a UUID of previous evolution process has given, temporarily saved 
