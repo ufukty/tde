@@ -5,11 +5,34 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
 )
+
+func findModuleRoot() (string, error) {
+	cmd := exec.Command("go", "env")
+	bytes, err := cmd.Output()
+	if err != nil {
+		return "", errors.Wrap(err, "failed on running \"go env\" command")
+	}
+
+	lines := strings.Split(string(bytes), "\n")
+	for _, line := range lines {
+		seperatorIndex := strings.Index(line, "=")
+		if line[:seperatorIndex] == "GOMOD" {
+			valuePart := line[seperatorIndex+1:]
+			strippedQuotes := valuePart[1 : len(valuePart)-1]
+			dir := filepath.Dir(strippedQuotes)
+			return dir, nil
+		}
+	}
+
+	return "", errors.New("could not find GOMOD in output of \"go env\" command")
+}
 
 func ArchiveDirectory(relativePath string, includeSubfolders bool, skipDirs []string) (string, error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
