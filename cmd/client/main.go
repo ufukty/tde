@@ -24,9 +24,9 @@ Functions:
 */
 
 import (
-	"tde/cmd/client/help"
-	"tde/cmd/client/produce"
-	"tde/cmd/client/upload"
+	"tde/cmd/client/internal/help"
+	"tde/cmd/client/internal/produce"
+	"tde/cmd/client/internal/upload"
 	"tde/internal/command"
 )
 

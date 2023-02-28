@@ -9,6 +9,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	DefaultExcludeDirs = []string{".git", "build"}
+)
+
 type Command struct {
 	ExcludeDirs command.MultiString
 }
@@ -28,6 +32,8 @@ func (c *Command) ManualParser(f *flag.FlagSet) error {
 }
 
 func (c *Command) Run() {
+	c.ExcludeDirs = append(c.ExcludeDirs, DefaultExcludeDirs...)
+
 	for i, dir := range c.ExcludeDirs {
 		fmt.Println("i:", i, "dir:", dir)
 	}
