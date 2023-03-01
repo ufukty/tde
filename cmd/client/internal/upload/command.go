@@ -1,34 +1,14 @@
 package upload
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"tde/internal/command"
-
-	"github.com/pkg/errors"
 )
 
-var (
-	DefaultExcludeDirs = []string{".git", "build"}
-)
+var DefaultExcludeDirs = []string{".git", "build"}
 
 type Command struct {
-	ExcludeDirs command.MultiString
-}
-
-func (c *Command) BindFlagsToArgs(f *flag.FlagSet) {}
-
-func (c *Command) ManualParser(f *flag.FlagSet) error {
-	f.Var(&c.ExcludeDirs, "exclude-dir", "")
-	f.Var(&c.ExcludeDirs, "e", "")
-
-	err := f.Parse(os.Args[2:])
-	if err != nil {
-		return errors.Wrap(err, "Could not parse arguments. Run \"tde help\"")
-	}
-
-	return nil
+	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
 }
 
 func (c *Command) Run() {

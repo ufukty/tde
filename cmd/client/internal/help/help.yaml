@@ -59,7 +59,7 @@ produce: |
           Specify a IP:Port to use custom runners. See 
           "https://tde.io/docs/runner"
 
-      -continue (Optional)
+      -c, -continue (Optional)
           When absent, evolution will start from the latest saved state of files
           in local.
           When a UUID of previous evolution process has given, temporarily saved 
@@ -87,7 +87,7 @@ produce: |
       -size (Required) (Default=1000)
           Size limit for any candidate in bytes.
 
-      -package (Optional)
+      -p, -package (Optional)
           Allows evolver server to include import statements and type/func usage
           from specified package. Multiple entries can be given individually. 
           Runners may have limitation on which packages can be used.

@@ -2,7 +2,6 @@ package help
 
 import (
 	_ "embed"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -30,12 +29,8 @@ func terminate(msg any) {
 	os.Exit(1)
 }
 
-type Command struct{}
-
-func (c *Command) BindFlagsToArgs(f *flag.FlagSet) {}
-
-func (c *Command) ManualParser(f *flag.FlagSet) error {
-	return nil
+type Command struct {
+	Topic string `precedence:"0"`
 }
 
 func (c *Command) Run() {
