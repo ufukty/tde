@@ -317,10 +317,16 @@ func Route() {
 		f := flagSets[cmdToRun]
 
 		if err := f.Parse(os.Args[2:]); err != nil {
+			if cmdToRun == "help" {
+				cmdToRun = ""
+			}
 			terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 
 		if err := parsePositionalArguments(f, cmd); err != nil {
+			if cmdToRun == "help" {
+				cmdToRun = ""
+			}
 			terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 

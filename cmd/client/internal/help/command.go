@@ -34,18 +34,12 @@ type Command struct {
 }
 
 func (c *Command) Run() {
-	var cmdToRun string
-
-	if len(os.Args) < 3 { // means running as "tde help"
-		cmdToRun = "help"
-	} else if cmdToRun == "help" { // avoid infinite recursion
-		terminate("Help command helps you. Run \"tde help\" to learn more, instead \"tde help help\"")
-	} else {
-		cmdToRun = os.Args[2] // command part in "tde help <command>"
+	if c.Topic == "" {
+		c.Topic = "help"
 	}
 
 	parseHelpFileContent()
-	if msg, ok := helpFileContent[cmdToRun]; ok {
+	if msg, ok := helpFileContent[c.Topic]; ok {
 		fmt.Println(msg)
 	} else {
 		terminate("Unrecognized command for help. Run \"tde help\"")
