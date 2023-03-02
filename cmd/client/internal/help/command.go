@@ -4,8 +4,8 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
-	"os"
 	"strings"
+	"tde/internal/utilities"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -24,11 +24,6 @@ func parseHelpFileContent() {
 	// fmt.Printf("%#v\n", helpFileContent)
 }
 
-func terminate(msg any) {
-	fmt.Println(msg)
-	os.Exit(1)
-}
-
 type Command struct {
 	Topic string `precedence:"0"`
 }
@@ -42,6 +37,6 @@ func (c *Command) Run() {
 	if msg, ok := helpFileContent[c.Topic]; ok {
 		fmt.Println(msg)
 	} else {
-		terminate("Unrecognized command for help. Run \"tde help\"")
+		utilities.Terminate("Unrecognized command for help. Run \"tde help\"")
 	}
 }

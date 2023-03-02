@@ -1,13 +1,14 @@
 package command
 
 import (
+	"tde/internal/utilities"
+
 	"flag"
 	"fmt"
 	"math"
 	"os"
 	"reflect"
 	"strconv"
-	"tde/internal/utilities"
 
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
@@ -298,14 +299,9 @@ func parsePositionalArguments(f *flag.FlagSet, cmd Command) error {
 	return nil
 }
 
-func terminate(msg any) {
-	fmt.Println(msg)
-	os.Exit(1)
-}
-
 func Route() {
 	if len(os.Args) < 2 {
-		terminate("Expected command. Run \"tde help\"")
+		utilities.Terminate("Expected command. Run \"tde help\"")
 	}
 
 	for name, cmd := range commands {
@@ -320,20 +316,20 @@ func Route() {
 			if cmdToRun == "help" {
 				cmdToRun = ""
 			}
-			terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
+			utilities.Terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 
 		if err := parsePositionalArguments(f, cmd); err != nil {
 			if cmdToRun == "help" {
 				cmdToRun = ""
 			}
-			terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
+			utilities.Terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 
 		cmd.Run()
 		os.Exit(0)
 	} else {
-		terminate("Unrecognized command. Run \"tde help\"")
+		utilities.Terminate("Unrecognized command. Run \"tde help\"")
 	}
 
 }
