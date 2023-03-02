@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func Terminate(msg any) {
-	fmt.Println(msg)
+func Terminate(msg ...any) {
+	fmt.Println(msg...)
 	os.Exit(1)
 }
