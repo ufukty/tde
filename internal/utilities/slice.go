@@ -51,3 +51,11 @@ func SliceZip[K comparable, V any](a []K, b []V) map[K]V {
 	}
 	return pairs
 }
+
+func Map[T any](slice []T, callback func(i int, value T) T) []T {
+	list := []T{}
+	for i, v := range slice {
+		list = append(list, callback(i, v))
+	}
+	return list
+}
