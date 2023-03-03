@@ -1,7 +1,11 @@
-//go:build evolve
-// +build evolve
+//go:build tde
+// +build tde
 
-package knappsack
+package knapsack
+
+import "tde/pkg/tde"
+
+func TDE_Knapsack(e *tde.E) {}
 
 // func EvolveKnappsack(t *testing.Testing) {
 

@@ -1,4 +1,4 @@
-package knappsack
+package knapsack
 
 import (
 	"testing"
@@ -18,7 +18,7 @@ func AssertArrays[T int | float64](left, right []T) error {
 	return nil
 }
 
-func Test_Knappsack(t *testing.T) {
+func Test_Knapsack(t *testing.T) {
 
 	cases := map[*struct {
 		prices  []float64
@@ -53,7 +53,7 @@ func Test_Knappsack(t *testing.T) {
 	}
 
 	for input, output := range cases {
-		err := AssertArrays(output.placement, Knappsack(input.weights, input.prices))
+		err := AssertArrays(output.placement, Knapsack(input.weights, input.prices))
 		if err != nil {
 			t.Error(errors.Wrap(err, "Miscalculation"))
 		}
