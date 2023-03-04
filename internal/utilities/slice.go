@@ -52,10 +52,20 @@ func SliceZip[K comparable, V any](a []K, b []V) map[K]V {
 	return pairs
 }
 
-func Map[T any](slice []T, callback func(i int, value T) T) []T {
-	list := []T{}
+func Map[T any, V any](slice []T, callback func(i int, value T) V) []V {
+	list := []V{}
 	for i, v := range slice {
 		list = append(list, callback(i, v))
+	}
+	return list
+}
+
+func FilteredMap[T any, V any](slice []T, callback func(i int, value T) (V, bool)) []V {
+	list := []V{}
+	for i, v := range slice {
+		if item, ok := callback(i, v); ok {
+			list = append(list, item)
+		}
 	}
 	return list
 }
