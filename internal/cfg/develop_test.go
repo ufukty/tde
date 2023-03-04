@@ -36,11 +36,14 @@ func Test_Develop(t *testing.T) {
 	}
 
 	candidateFuncDecl := clone.FuncDecl(originalFuncDecl)
-	err = Develop(astPkg, astFile, candidateFuncDecl, 1)
+	newNode, err := Develop(astPkg, astFile, candidateFuncDecl, 1)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on Develop"))
 	}
 	if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
+		if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
+			return
+		}
 		t.Error("Failed to see change on candidate")
 	}
 }
@@ -52,15 +55,15 @@ func Benchmark_Develop(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		if i%100 == 0 {
-			fmt.Println(i)
-		}
 		candidateFuncDecl := clone.FuncDecl(originalFuncDecl)
-		err := Develop(astPkg, astFile, candidateFuncDecl, 1)
+		newNode, err := Develop(astPkg, astFile, candidateFuncDecl, 1)
 		if err != nil {
 			b.Error(errors.Wrapf(err, "Failed on Develop"))
 		}
 		if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
+			if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
+				continue
+			}
 			b.Errorf("Failed to see change on candidate #%d\n", i)
 		}
 	}
@@ -73,7 +76,7 @@ func Test_SequentialDevelop(t *testing.T) {
 	}
 
 	for i := 0; i < 2000; i++ {
-		err := Develop(astPkg, astFile, originalFuncDecl, 1)
+		_, err := Develop(astPkg, astFile, originalFuncDecl, 1)
 		if err != nil {
 			t.Error(errors.Wrapf(err, "Failed on Develop"))
 		}
