@@ -47,7 +47,7 @@ func Test_FindImportPath(t *testing.T) {
 }
 
 func Test_DetectTestFunctions(t *testing.T) {
-	fns, err := DetectTestFunctions("../../examples/word-reverse/word_reverse/word_reverse_tde.go")
+	fns, err := DiscoverFile("../../examples/word-reverse/word_reverse/word_reverse_tde.go")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed to detect positions and names of test functions that is in the user-provided test file"))
 	} else if len(fns) != 1 {
