@@ -44,7 +44,7 @@ func extractTargetFunction(callExp *ast.CallExpr) (funcName string, receiverName
 func PrintModule(name, path string) {
 	headerPrefix := "\033[1;33m"
 	headerSuffix := "\033[1;0m"
-	fmt.Printf(". %s%-20s%s %s\n",
+	fmt.Printf(". %s%-19s%s %s\n",
 		headerPrefix, name, headerSuffix,
 		path,
 	)
