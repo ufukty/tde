@@ -1,16 +1,15 @@
 package cfg
 
 import (
+	"tde/internal/astw/clone"
+	ast_utl "tde/internal/astw/utilities"
+	"tde/internal/evaluation"
+
 	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"os"
-	"tde/internal/astw/clone"
-	ast_utl "tde/internal/astw/utilities"
-
-	"tde/internal/evaluation"
-
 	"testing"
 
 	"github.com/pkg/errors"
