@@ -2,15 +2,16 @@ package upload
 
 import (
 	"fmt"
-	"os/exec"
 	"path/filepath"
+	"tde/internal/discovery"
+	"tde/internal/utilities"
 	"testing"
 
 	"github.com/pkg/errors"
 )
 
 func Test_ArchiveDirectory(t *testing.T) {
-	path, err := ArchiveDirectory("../../../", true, []string{".git", "build", "docs", ".vscode"})
+	path, err := ArchiveDirectory("../../../../", true, []string{".git", "build", "docs", ".vscode"})
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed to archive directory"))
 	}
@@ -18,17 +19,16 @@ func Test_ArchiveDirectory(t *testing.T) {
 }
 
 func Test_findModuleRoot(t *testing.T) {
-	root, err := findModuleRoot()
+	root, err := discovery.FindModulePath()
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed"))
 	}
 
-	cmdWorkingDir := exec.Command("pwd", "-P")
-	bytes, err := cmdWorkingDir.Output()
+	workingDir, err := utilities.WorkingDir()
 	if err != nil {
 		t.Error(errors.Wrap(err, "failed on running \"pwd -P\" command"))
 	}
-	expected := filepath.Clean(string(bytes) + "/../../..")
+	expected := filepath.Clean(workingDir + "/../../../..")
 
 	if root != expected {
 		t.Error("failed: got wrong output:", root, "expected:", expected)
