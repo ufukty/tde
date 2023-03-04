@@ -25,8 +25,10 @@ Functions:
 
 import (
 	"tde/cmd/client/internal/help"
+	"tde/cmd/client/internal/list_test"
 	"tde/cmd/client/internal/produce"
 	"tde/cmd/client/internal/upload"
+
 	"tde/internal/command"
 )
 
@@ -34,6 +36,7 @@ func main() {
 	command.RegisterCommand("help", &help.Command{})
 	command.RegisterCommand("upload", &upload.Command{})
 	command.RegisterCommand("produce", &produce.Command{})
+	command.RegisterCommand("list-test", &list_test.Command{})
 
 	command.Route()
 }

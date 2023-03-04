@@ -1,0 +1,155 @@
+package list_test
+
+import (
+	astw_util "tde/internal/astw/utilities"
+	"tde/internal/discovery"
+	"tde/internal/utilities"
+
+	"errors"
+	"fmt"
+	"go/ast"
+	"path/filepath"
+	"reflect"
+)
+
+type Command struct {
+	Root string `precedence:"0"`
+}
+
+func (c *Command) validateArgs() {
+	if c.Root == "" {
+		var err error
+		c.Root, err = discovery.FindModulePath()
+		if err != nil {
+			utilities.Terminate("Could not detect module root:", err)
+		}
+	}
+}
+
+func extractTargetFunction(callExp *ast.CallExpr) (funcName string, receiverName string, err error) {
+	switch fun := callExp.Fun.(type) {
+	case *ast.Ident:
+		funcName = fun.Name
+	case *ast.SelectorExpr:
+		if ident, ok := fun.X.(*ast.Ident); ok {
+			receiverName = ident.Name
+		}
+		funcName = fun.Sel.Name
+	default:
+		return "", "", errors.New("unexpected type of call expression: " + reflect.TypeOf(fun).String())
+	}
+	return
+}
+
+func PrintModule(name, path string) {
+	headerPrefix := "\033[1;33m"
+	headerSuffix := "\033[1;0m"
+	fmt.Printf(". %s%-20s%s %s\n",
+		headerPrefix, name, headerSuffix,
+		path,
+	)
+}
+
+func PrintTDEFunction(path string, line int, function string, last bool) {
+	headerPrefix := "\033[1;34m"
+	headerSuffix := "\033[1;0m"
+	// symbolPrefix := "\033[1;1m"
+	// symbolSuffix := "\033[1;0m"
+	treeInd := ""
+	if last {
+		treeInd += "└─"
+	} else {
+		treeInd += "├─"
+	}
+	fmt.Printf("%s %s%-18s%s %s:%d\n",
+		treeInd,
+		headerPrefix, function, headerSuffix,
+		path, line,
+	)
+}
+
+func PrintTargetFunction(path string, line int, function string, lastInLevel bool, contFirstLevel bool) {
+	headerPrefix := "\033[1;35m"
+	headerSuffix := "\033[1;0m"
+	treeInd := ""
+	if contFirstLevel {
+		treeInd += "│  "
+	} else {
+		treeInd += "   "
+	}
+	if lastInLevel {
+		treeInd += "└─"
+	} else {
+		treeInd += "├─"
+	}
+	fmt.Printf("%s %s%-15s%s %s:%d\n",
+		treeInd,
+		headerPrefix, function, headerSuffix,
+		path, line,
+	)
+}
+
+func (c *Command) Run() {
+	c.validateArgs()
+
+	tests, err := discovery.DiscoverSubdirs(c.Root)
+	if err != nil {
+		utilities.Terminate("Failed to detect test functions:", err)
+	}
+
+	root, err := discovery.FindModulePath()
+	if err != nil {
+		utilities.Terminate("Failed to detect module root path.")
+	}
+	PrintModule(filepath.Base(root), filepath.Dir(root))
+
+	for i, test := range tests {
+		rel, err := filepath.Rel(root, test.Path)
+		if err != nil {
+			rel = test.Path
+		}
+
+		PrintTDEFunction(rel, test.Line, test.Name, i == len(tests)-1)
+
+		type Call struct {
+			RelativePath  string
+			LineNumber    int
+			FunctionPrint string
+		}
+		calls := utilities.FilteredMap(test.Calls, func(i int, value *ast.CallExpr) (*Call, bool) {
+			functionPrint, err := astw_util.String(value.Fun)
+			if err != nil {
+				return nil, false
+			}
+
+			funcName, _, err := extractTargetFunction(value)
+			if err != nil {
+				// fmt.Printf("\tFailed to detect target function name and its receiver\n")
+				return nil, false
+			}
+
+			targetFuncFile, targetFuncName := discovery.GetTargetFuncForTDEFunc(test.Path, funcName)
+
+			targetFunc, err := discovery.FindTargetFunction(targetFuncFile, targetFuncName)
+			if err != nil {
+				// fmt.Printf("\t%s(...) File not found in \"%s\": %e\n", funcName, targetFuncFile, err)
+				return nil, false
+			}
+
+			rel, err := filepath.Rel(root, targetFunc.Path)
+			if err != nil {
+				rel = targetFunc.Path
+			}
+
+			return &Call{
+				RelativePath:  rel,
+				LineNumber:    targetFunc.Line,
+				FunctionPrint: functionPrint,
+			}, true
+		})
+
+		for j, call := range calls {
+			PrintTargetFunction(call.RelativePath, call.LineNumber, call.FunctionPrint, j == len(calls)-1, i < len(tests)-1)
+		}
+	}
+}
