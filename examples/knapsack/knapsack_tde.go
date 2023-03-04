@@ -3,56 +3,50 @@
 
 package knapsack
 
-import "tde/pkg/tde"
+import (
+	"tde/pkg/tde"
+)
 
-func TDE_Knapsack(e *tde.E) {}
+func TDE_Knapsack(e *tde.E) {
 
-// func EvolveKnappsack(t *testing.Testing) {
+	testParameters := map[*struct {
+		prices  []float64
+		weights []float64
+	}]*struct {
+		placement []int
+	}{
+		{
+			prices:  []float64{0, 0, 0, 0, 0},
+			weights: []float64{0, 0, 0, 0, 0},
+		}: {
+			placement: []int{0, 0, 0, 0, 1},
+		},
+		{
+			prices:  []float64{0, 0, 0, 0, 0},
+			weights: []float64{0, 0, 0, 0, 0},
+		}: {
+			placement: []int{0, 0, 0, 0, 1},
+		},
+		{
+			prices:  []float64{0, 0, 0, 0, 0},
+			weights: []float64{0, 0, 0, 0, 0},
+		}: {
+			placement: []int{0, 0, 0, 0, 1},
+		},
+		{
+			prices:  []float64{0, 0, 0, 0, 0},
+			weights: []float64{0, 0, 0, 0, 0},
+		}: {
+			placement: []int{0, 0, 0, 0, 1},
+		},
+	}
 
-// 	testParameters := map[*struct {
-// 		prices  []float64
-// 		weights []float64
-// 	}]*struct {
-// 		placement []int
-// 	}{
-// 		{
-// 			prices:  []float64{0, 0, 0, 0, 0},
-// 			weights: []float64{0, 0, 0, 0, 0},
-// 		}: {
-// 			placement: []int{0, 0, 0, 0, 1},
-// 		},
-// 		{
-// 			prices:  []float64{0, 0, 0, 0, 0},
-// 			weights: []float64{0, 0, 0, 0, 0},
-// 		}: {
-// 			placement: []int{0, 0, 0, 0, 1},
-// 		},
-// 		{
-// 			prices:  []float64{0, 0, 0, 0, 0},
-// 			weights: []float64{0, 0, 0, 0, 0},
-// 		}: {
-// 			placement: []int{0, 0, 0, 0, 1},
-// 		},
-// 		{
-// 			prices:  []float64{0, 0, 0, 0, 0},
-// 			weights: []float64{0, 0, 0, 0, 0},
-// 		}: {
-// 			placement: []int{0, 0, 0, 0, 1},
-// 		},
-// 	}
+	for input, want := range testParameters {
+		output := Knapsack(input.weights, input.prices)
+		e.AssertEqual(output, want)
+	}
 
-// 	t.Candidate(func(c *testing.Candidate) {
+	// t.NewObjective("basic", func(o *testing.Objective) {
 
-// 	})
-
-// 	// for input, want := range testParameters {
-// 	// 	err := assert.Equal(t, want.placement, Knappsack(input.weights, input.prices))
-// 	// 	if err != nil {
-// 	// 		t.Error(errors.Wrap(err, "Miscalculation"))
-// 	// 	}
-// 	// }
-
-// 	// t.NewObjective("basic", func(o *testing.Objective) {
-
-// 	// })
-// }
+	// })
+}
