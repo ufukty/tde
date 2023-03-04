@@ -1,6 +1,8 @@
 package utilities
 
 import (
+	utl "tde/internal/utilities"
+
 	"go/ast"
 )
 
@@ -384,23 +386,25 @@ func CompareNonNodeFields(a, b ast.Node) bool {
 
 // returns true if they are same, uses BFS and value comparison instead of ponter comparison
 func CompareRecursively(a, b ast.Node) bool {
-	childrenA := ChildNodes(a)
-	childrenB := ChildNodes(b)
+	pairs := []*[2]ast.Node{}
+	pairs = append(pairs, &[2]ast.Node{a, b})
 
-	if len(childrenA) != len(childrenB) {
-		return false
-	}
+	for len(pairs) > 0 {
+		a, b := pairs[0][0], pairs[0][1]
+		pairs = pairs[1:]
 
-	for i := 0; i < len(childrenA); i++ {
-		if !CompareNonNodeFields(childrenA[i], childrenB[i]) {
+		if !CompareNonNodeFields(a, b) {
 			return false
 		}
-	}
 
-	for i := 0; i < len(childrenA); i++ {
-		if !CompareRecursively(childrenA[i], childrenB[i]) {
+		childrenA := ChildNodes(a)
+		childrenB := ChildNodes(b)
+
+		if len(childrenA) != len(childrenB) {
 			return false
 		}
+
+		pairs = append(pairs, utl.SliceZipToSlice(childrenA, childrenB)...)
 	}
 
 	return true
