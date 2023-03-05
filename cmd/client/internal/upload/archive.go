@@ -34,7 +34,7 @@ func findModuleRoot() (string, error) {
 	return "", errors.New("could not find GOMOD in output of \"go env\" command")
 }
 
-func ArchiveDirectory(relativePath string, includeSubfolders bool, skipDirs []string) (string, error) {
+func ArchiveDirectory(relativePath string, includeSubfolders bool, skipDirs []string) (path string, err error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to create temporary zip file")

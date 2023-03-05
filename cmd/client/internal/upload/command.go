@@ -2,19 +2,38 @@ package upload
 
 import (
 	"fmt"
+	"os"
 	"tde/internal/command"
+	"tde/internal/discovery"
+	utl "tde/internal/utilities"
+
+	"github.com/pkg/errors"
 )
 
-var DefaultExcludeDirs = []string{".git", "build"}
+var DefaultExcludeDirs = []string{".git", "build", "docs", ".vscode"}
 
 type Command struct {
+	OnlyArchive bool                `long:"only-archive"`
 	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
 }
 
 func (c *Command) Run() {
 	c.ExcludeDirs = append(c.ExcludeDirs, DefaultExcludeDirs...)
 
-	for i, dir := range c.ExcludeDirs {
-		fmt.Println("i:", i, "dir:", dir)
+	modulePath, err := discovery.FindModulePath()
+	if err != nil {
+		utl.Terminate(errors.Wrap(err, "Could not find the path of Go module root"))
+	}
+
+	zipPath, err := ArchiveDirectory(modulePath, true, c.ExcludeDirs)
+	if err != nil {
+		utl.Terminate(errors.Wrap(err, "Could not create archive for module"))
+	}
+
+	if c.OnlyArchive {
+		fmt.Println("Archive path:", zipPath)
+		os.Exit(0)
+	} else {
+		fmt.Println("cont")
 	}
 }
