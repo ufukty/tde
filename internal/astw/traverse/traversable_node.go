@@ -162,7 +162,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewStructRef(&n.Type)},
+			{n.Type, ast_types.FuncType, n.Type == nil, tNode, NewStructRef(&n.Type)},
 			{n.Body, ast_types.BlockStmt, n.Body == nil, tNode, NewStructRef(&n.Body)},
 		}
 

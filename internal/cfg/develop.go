@@ -187,7 +187,7 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 		return nil, errors.New("Could not create an instance of ast.Node")
 	}
 	if ok := tNode.Ref.Set(newNode); !ok {
-		return nil, errors.New("Could not append created ast.Node instance to its place")
+		return newNode, errors.New("Could not append created ast.Node instance to its place")
 	}
 	return newNode, nil
 }

@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"reflect"
 	"tde/internal/astw/clone"
 	ast_utl "tde/internal/astw/utilities"
 	"tde/internal/evaluation"
@@ -76,9 +77,9 @@ func Test_SequentialDevelop(t *testing.T) {
 	}
 
 	for i := 0; i < 2000; i++ {
-		_, err := Develop(astPkg, astFile, originalFuncDecl, 1)
+		newNode, err := Develop(astPkg, astFile, originalFuncDecl, 1)
 		if err != nil {
-			t.Error(errors.Wrapf(err, "Failed on Develop"))
+			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
 		}
 	}
 }
