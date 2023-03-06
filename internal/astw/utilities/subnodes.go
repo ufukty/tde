@@ -6,7 +6,7 @@ import (
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-func ListSubnodes(root ast.Node) (subnodes []ast.Node) {
+func ListSubtree(root ast.Node) (subnodes []ast.Node) {
 	ast.Inspect(root, func(n ast.Node) bool {
 		if n != nil {
 			subnodes = append(subnodes, n)
@@ -16,7 +16,7 @@ func ListSubnodes(root ast.Node) (subnodes []ast.Node) {
 	return
 }
 
-func FilterSubNodes(root ast.Node, filter func(n ast.Node) bool) (filteredNodes []ast.Node) {
+func ListSubtreeWithFilter(root ast.Node, filter func(n ast.Node) bool) (filteredNodes []ast.Node) {
 	list := []ast.Node{}
 	ast.Inspect(root, func(n ast.Node) bool {
 		if filter(n) {

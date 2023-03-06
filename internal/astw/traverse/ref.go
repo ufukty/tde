@@ -1,32 +1,54 @@
 package traverse
 
+import "golang.org/x/exp/slices"
+
 type Ref interface {
 	Set(value any) bool
 }
 
-type SliceRef[T any] struct {
-	addr *[]T
+type SliceItemInsertBeforeRef[T any] struct {
+	sliceAddr         *[]T
+	insertBeforeIndex int
 }
 
-func (ref *SliceRef[T]) Set(value any) bool {
+func (r *SliceItemInsertBeforeRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
-		*(ref.addr) = append(*(ref.addr), value)
+		(*r.sliceAddr) = slices.Insert((*r.sliceAddr), r.insertBeforeIndex, value)
 		return true
 	}
 	return false
 }
 
-func NewSliceRef[T any](slicePtr *[]T) *SliceRef[T] {
-	return &SliceRef[T]{
-		addr: slicePtr,
+func NewSliceItemInsertBeforeRef[T any](slicePtr *[]T, insertBeforeIndex int) *SliceItemInsertBeforeRef[T] {
+	return &SliceItemInsertBeforeRef[T]{
+		sliceAddr:         slicePtr,
+		insertBeforeIndex: insertBeforeIndex,
 	}
 }
 
-type StructRef[T any] struct {
+type SliceEndingRef[T any] struct {
+	sliceAddr *[]T
+}
+
+func (r *SliceEndingRef[T]) Set(value any) bool {
+	if value, ok := value.(T); ok {
+		*(r.sliceAddr) = append(*(r.sliceAddr), value)
+		return true
+	}
+	return false
+}
+
+func NewSliceEndingRef[T any](slicePtr *[]T) *SliceEndingRef[T] {
+	return &SliceEndingRef[T]{
+		sliceAddr: slicePtr,
+	}
+}
+
+type DirectRef[T any] struct {
 	addr *T
 }
 
-func (ref *StructRef[T]) Set(value any) bool {
+func (ref *DirectRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
 		*ref.addr = value
 		return true
@@ -34,8 +56,8 @@ func (ref *StructRef[T]) Set(value any) bool {
 	return false
 }
 
-func NewStructRef[T any](structOrFieldPtr *T) *StructRef[T] {
-	return &StructRef[T]{
-		addr: structOrFieldPtr,
+func NewDirectRef[T any](addr *T) *DirectRef[T] {
+	return &DirectRef[T]{
+		addr: addr,
 	}
 }

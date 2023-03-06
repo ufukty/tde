@@ -15,7 +15,7 @@ import (
 
 func listAppendableSpots(node ast.Node) (appandableNodes []*trav.TraversableNode) {
 	trav.Traverse(trav.GetTraversableNodeForASTNode(node), func(tNode *trav.TraversableNode) bool {
-		if tNode.PointsToNilSpot || tNode.ExpectedType.IsSliceType() {
+		if tNode.PointsToNilSpot {
 			appandableNodes = append(appandableNodes, tNode)
 		}
 		return true
@@ -23,25 +23,24 @@ func listAppendableSpots(node ast.Node) (appandableNodes []*trav.TraversableNode
 	return
 }
 
-func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimit int) (ast.Node, error) {
-	var newNode ast.Node
+func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimit int) (appended any, err error) {
 
 	if tNode.ExpectedType.IsSliceType() {
 		switch tNode.Value.(type) {
 		case []*ast.ImportSpec:
-			newNode = nc.ImportSpec(ctx, depthLimit)
+			appended = []*ast.ImportSpec{}
 		case []*ast.Ident:
-			newNode = nc.Ident(ctx, depthLimit)
+			appended = []*ast.Ident{}
 		case []*ast.Field:
-			newNode = nc.Field(ctx, depthLimit)
+			appended = []*ast.Field{}
 		case []ast.Stmt:
-			newNode = nc.Stmt(ctx, depthLimit)
+			appended = []ast.Stmt{}
 		case []ast.Decl:
-			newNode = nc.Decl(ctx, depthLimit)
+			appended = []ast.Decl{}
 		case []ast.Spec:
-			newNode = nc.Spec(ctx, depthLimit)
+			appended = []ast.Spec{}
 		case []ast.Expr:
-			newNode = nc.Expr(ctx, depthLimit)
+			appended = []ast.Expr{}
 		default:
 			return nil, errors.New("Unhandled case for slice type node creation")
 		}
@@ -49,15 +48,15 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 	} else if tNode.ExpectedType.IsInterfaceType() {
 		switch tNode.ExpectedType {
 		case ast_types.Expr:
-			newNode = nc.Expr(ctx, depthLimit)
+			appended = nc.Expr(ctx, depthLimit)
 		case ast_types.Stmt:
-			newNode = nc.Stmt(ctx, depthLimit)
+			appended = nc.Stmt(ctx, depthLimit)
 		case ast_types.Decl:
-			newNode = nc.Decl(ctx, depthLimit)
+			appended = nc.Decl(ctx, depthLimit)
 		case ast_types.Spec:
-			newNode = nc.Spec(ctx, depthLimit)
+			appended = nc.Spec(ctx, depthLimit)
 		case ast_types.TypeExpr:
-			newNode = nc.Type(ctx, depthLimit)
+			appended = nc.Type(ctx, depthLimit)
 		default:
 			return nil, errors.New("Unhandled case for interface type node creation")
 		}
@@ -81,120 +80,120 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 		// 	newNode = nc.Package(ctx, depthLimit)
 
 		case ast_types.ArrayType:
-			newNode = nc.ArrayType(ctx, depthLimit)
+			appended = nc.ArrayType(ctx, depthLimit)
 		case ast_types.AssignStmt:
-			newNode = nc.AssignStmt(ctx, depthLimit)
+			appended = nc.AssignStmt(ctx, depthLimit)
 		case ast_types.BasicLit:
-			newNode = nc.BasicLit(ctx, depthLimit)
+			appended = nc.BasicLit(ctx, depthLimit)
 		case ast_types.BinaryExpr:
-			newNode = nc.BinaryExpr(ctx, depthLimit)
+			appended = nc.BinaryExpr(ctx, depthLimit)
 		case ast_types.BlockStmt:
-			newNode = nc.BlockStmt(ctx, depthLimit)
+			appended = nc.BlockStmt(ctx, depthLimit)
 		case ast_types.BranchStmt:
-			newNode = nc.BranchStmt(ctx, depthLimit)
+			appended = nc.BranchStmt(ctx, depthLimit)
 		case ast_types.CallExpr:
-			newNode = nc.CallExpr(ctx, depthLimit)
+			appended = nc.CallExpr(ctx, depthLimit)
 		case ast_types.CaseClause:
-			newNode = nc.CaseClause(ctx, depthLimit)
+			appended = nc.CaseClause(ctx, depthLimit)
 		case ast_types.ChanType:
-			newNode = nc.ChanType(ctx, depthLimit)
+			appended = nc.ChanType(ctx, depthLimit)
 		case ast_types.CommClause:
-			newNode = nc.CommClause(ctx, depthLimit)
+			appended = nc.CommClause(ctx, depthLimit)
 		case ast_types.CompositeLit:
-			newNode = nc.CompositeLit(ctx, depthLimit)
+			appended = nc.CompositeLit(ctx, depthLimit)
 		case ast_types.DeclStmt:
-			newNode = nc.DeclStmt(ctx, depthLimit)
+			appended = nc.DeclStmt(ctx, depthLimit)
 		case ast_types.DeferStmt:
-			newNode = nc.DeferStmt(ctx, depthLimit)
+			appended = nc.DeferStmt(ctx, depthLimit)
 		case ast_types.Ellipsis:
-			newNode = nc.Ellipsis(ctx, depthLimit)
+			appended = nc.Ellipsis(ctx, depthLimit)
 		case ast_types.EmptyStmt:
-			newNode = nc.EmptyStmt(ctx, depthLimit)
+			appended = nc.EmptyStmt(ctx, depthLimit)
 		case ast_types.ExprStmt:
-			newNode = nc.ExprStmt(ctx, depthLimit)
+			appended = nc.ExprStmt(ctx, depthLimit)
 		case ast_types.Field:
-			newNode = nc.Field(ctx, depthLimit)
+			appended = nc.Field(ctx, depthLimit)
 		case ast_types.FieldList:
-			newNode = nc.FieldList(ctx, depthLimit)
+			appended = nc.FieldList(ctx, depthLimit)
 		case ast_types.ForStmt:
-			newNode = nc.ForStmt(ctx, depthLimit)
+			appended = nc.ForStmt(ctx, depthLimit)
 		case ast_types.FuncDecl:
-			newNode = nc.FuncDecl(ctx, depthLimit)
+			appended = nc.FuncDecl(ctx, depthLimit)
 		case ast_types.FuncLit:
-			newNode = nc.FuncLit(ctx, depthLimit)
+			appended = nc.FuncLit(ctx, depthLimit)
 		case ast_types.FuncType:
-			newNode = nc.FuncType(ctx, depthLimit)
+			appended = nc.FuncType(ctx, depthLimit)
 		case ast_types.GenDecl:
-			newNode = nc.GenDecl(ctx, depthLimit)
+			appended = nc.GenDecl(ctx, depthLimit)
 		case ast_types.GoStmt:
-			newNode = nc.GoStmt(ctx, depthLimit)
+			appended = nc.GoStmt(ctx, depthLimit)
 		case ast_types.Ident:
-			newNode = nc.Ident(ctx, depthLimit)
+			appended = nc.Ident(ctx, depthLimit)
 		case ast_types.IfStmt:
-			newNode = nc.IfStmt(ctx, depthLimit)
+			appended = nc.IfStmt(ctx, depthLimit)
 		case ast_types.ImportSpec:
-			newNode = nc.ImportSpec(ctx, depthLimit)
+			appended = nc.ImportSpec(ctx, depthLimit)
 		case ast_types.IncDecStmt:
-			newNode = nc.IncDecStmt(ctx, depthLimit)
+			appended = nc.IncDecStmt(ctx, depthLimit)
 		case ast_types.IndexExpr:
-			newNode = nc.IndexExpr(ctx, depthLimit)
+			appended = nc.IndexExpr(ctx, depthLimit)
 		case ast_types.IndexListExpr:
-			newNode = nc.IndexListExpr(ctx, depthLimit)
+			appended = nc.IndexListExpr(ctx, depthLimit)
 		case ast_types.InterfaceType:
-			newNode = nc.InterfaceType(ctx, depthLimit)
+			appended = nc.InterfaceType(ctx, depthLimit)
 		case ast_types.KeyValueExpr:
-			newNode = nc.KeyValueExpr(ctx, depthLimit)
+			appended = nc.KeyValueExpr(ctx, depthLimit)
 		case ast_types.LabeledStmt:
-			newNode = nc.LabeledStmt(ctx, depthLimit)
+			appended = nc.LabeledStmt(ctx, depthLimit)
 		case ast_types.MapType:
-			newNode = nc.MapType(ctx, depthLimit)
+			appended = nc.MapType(ctx, depthLimit)
 		case ast_types.ParenExpr:
-			newNode = nc.ParenExpr(ctx, depthLimit)
+			appended = nc.ParenExpr(ctx, depthLimit)
 		case ast_types.RangeStmt:
-			newNode = nc.RangeStmt(ctx, depthLimit)
+			appended = nc.RangeStmt(ctx, depthLimit)
 		case ast_types.ReturnStmt:
-			newNode = nc.ReturnStmt(ctx, depthLimit)
+			appended = nc.ReturnStmt(ctx, depthLimit)
 		case ast_types.SelectorExpr:
-			newNode = nc.SelectorExpr(ctx, depthLimit)
+			appended = nc.SelectorExpr(ctx, depthLimit)
 		case ast_types.SelectStmt:
-			newNode = nc.SelectStmt(ctx, depthLimit)
+			appended = nc.SelectStmt(ctx, depthLimit)
 		case ast_types.SendStmt:
-			newNode = nc.SendStmt(ctx, depthLimit)
+			appended = nc.SendStmt(ctx, depthLimit)
 		case ast_types.SliceExpr:
-			newNode = nc.SliceExpr(ctx, depthLimit)
+			appended = nc.SliceExpr(ctx, depthLimit)
 		case ast_types.StarExpr:
-			newNode = nc.StarExpr(ctx, depthLimit)
+			appended = nc.StarExpr(ctx, depthLimit)
 		case ast_types.StructType:
-			newNode = nc.StructType(ctx, depthLimit)
+			appended = nc.StructType(ctx, depthLimit)
 		case ast_types.SwitchStmt:
-			newNode = nc.SwitchStmt(ctx, depthLimit)
+			appended = nc.SwitchStmt(ctx, depthLimit)
 		case ast_types.TypeAssertExpr:
-			newNode = nc.TypeAssertExpr(ctx, depthLimit)
+			appended = nc.TypeAssertExpr(ctx, depthLimit)
 		case ast_types.TypeSpec:
-			newNode = nc.TypeSpec(ctx, depthLimit)
+			appended = nc.TypeSpec(ctx, depthLimit)
 		case ast_types.TypeSwitchStmt:
-			newNode = nc.TypeSwitchStmt(ctx, depthLimit)
+			appended = nc.TypeSwitchStmt(ctx, depthLimit)
 		case ast_types.UnaryExpr:
-			newNode = nc.UnaryExpr(ctx, depthLimit)
+			appended = nc.UnaryExpr(ctx, depthLimit)
 		case ast_types.ValueSpec:
-			newNode = nc.ValueSpec(ctx, depthLimit)
+			appended = nc.ValueSpec(ctx, depthLimit)
 		default:
 			return nil, errors.New("Unhandled case for concrete type node creation")
 		}
 
 	}
-	if newNode == nil {
+	if appended == nil {
 		return nil, errors.New("Could not create an instance of ast.Node")
 	}
-	if ok := tNode.Ref.Set(newNode); !ok {
-		return newNode, errors.New("Could not append created ast.Node instance to its place")
+	if ok := tNode.Ref.Set(appended); !ok {
+		return appended, errors.New("Could not append created ast.Node instance to its place")
 	}
-	return newNode, nil
+	return appended, nil
 }
 
 // Picks an appandable spot randomly (either a nil field or end of a slice type field)
 // Creates just one node and appends to choosen spot
-func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, depthLimit int) (ast.Node, error) {
+func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, depthLimit int) (appended any, err error) {
 	availableSpots := listAppendableSpots(astFuncDecl.Body)
 	if len(availableSpots) == 0 {
 		return nil, errors.New("No available spots found in AST to place new node")
