@@ -1,8 +1,6 @@
 package traverse
 
 import (
-	"fmt"
-
 	"golang.org/x/exp/slices"
 )
 
@@ -16,7 +14,6 @@ type SliceItemInsertBeforeRef[T any] struct {
 }
 
 func (ref *SliceItemInsertBeforeRef[T]) Set(value any) bool {
-	fmt.Println("SliceItemInsertBeforeRef", ref.insertBeforeIndex)
 	if value, ok := value.(T); ok {
 		*ref.sliceAddr = slices.Insert((*ref.sliceAddr), ref.insertBeforeIndex, value)
 		return true
@@ -36,7 +33,6 @@ type SliceEndingRef[T any] struct {
 }
 
 func (ref *SliceEndingRef[T]) Set(value any) bool {
-	// fmt.Println("SliceEndingRef")
 	if value, ok := value.(T); ok {
 		*ref.sliceAddr = append(*ref.sliceAddr, value)
 		return true
@@ -75,7 +71,6 @@ type DirectRef[T any] struct {
 }
 
 func (ref *DirectRef[T]) Set(value any) bool {
-	fmt.Println("DirectRef")
 	if value, ok := value.(T); ok {
 		*ref.addr = value
 		return true
