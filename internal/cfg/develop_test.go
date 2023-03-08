@@ -13,6 +13,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 )
 
@@ -42,10 +43,17 @@ func Test_Develop(t *testing.T) {
 		t.Error(errors.Wrapf(err, "Failed on Develop"))
 	}
 	if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
-		if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
-			return
-		}
+		// if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
+		// 	return
+		// }
+		pretty.Println(newNode)
+		fmt.Println("typeOf: ", reflect.TypeOf(newNode))
+		pretty.Println(candidateFuncDecl.Body)
 		t.Error("Failed to see change on candidate")
+	}
+	if ok, _ := evaluation.SyntaxCheckSafe(candidateFuncDecl); ok {
+		printer.Fprint(os.Stdout, token.NewFileSet(), candidateFuncDecl)
+		fmt.Println("\n:::")
 	}
 }
 
@@ -75,11 +83,17 @@ func Test_SequentialDevelop(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed on prep"))
 	}
-
+	var best = originalFuncDecl
 	for i := 0; i < 2000; i++ {
-		newNode, err := Develop(astPkg, astFile, originalFuncDecl, 1)
+		candidate := clone.FuncDecl(best)
+		newNode, err := Develop(astPkg, astFile, candidate, 1)
 		if err != nil {
 			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
+		}
+		if ok, _ := evaluation.SyntaxCheckSafe(best); ok {
+			printer.Fprint(os.Stdout, token.NewFileSet(), best)
+			fmt.Println("\n^", i, "---")
+			best = candidate
 		}
 	}
 }

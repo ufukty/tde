@@ -9,40 +9,46 @@ type Ref interface {
 }
 
 type SliceItemInsertBeforeRef[T any] struct {
-	sliceAddr         *[]T
+	sliceRef          SliceRef[T]
 	insertBeforeIndex int
 }
 
 func (ref *SliceItemInsertBeforeRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
-		*ref.sliceAddr = slices.Insert((*ref.sliceAddr), ref.insertBeforeIndex, value)
-		return true
+		// fmt.Println("SliceItemInsertBeforeRef>", *ref.sliceRef.Get(), value)
+		newSlice := slices.Insert(*ref.sliceRef.Get(), ref.insertBeforeIndex, value)
+		ok := ref.sliceRef.Set(&newSlice)
+		// fmt.Println("SliceItemInsertBeforeRef>>", *ref.sliceRef.Get())
+		return ok
 	}
 	return false
 }
 
-func NewSliceItemInsertBeforeRef[T any](slicePtr *[]T, insertBeforeIndex int) *SliceItemInsertBeforeRef[T] {
+func NewSliceItemInsertBeforeRef[T any](sliceRef SliceRef[T], insertBeforeIndex int) *SliceItemInsertBeforeRef[T] {
 	return &SliceItemInsertBeforeRef[T]{
-		sliceAddr:         slicePtr,
+		sliceRef:          sliceRef,
 		insertBeforeIndex: insertBeforeIndex,
 	}
 }
 
 type SliceEndingRef[T any] struct {
-	sliceAddr *[]T
+	sliceRef SliceRef[T]
 }
 
 func (ref *SliceEndingRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
-		*ref.sliceAddr = append(*ref.sliceAddr, value)
-		return true
+		// fmt.Println("SliceEndingRef>", ref.sliceRef, value)
+		newSlice := append(*ref.sliceRef.Get(), value)
+		ok := ref.sliceRef.Set(&newSlice)
+		// fmt.Println("SliceEndingRef>>", ref.sliceRef)
+		return ok
 	}
 	return false
 }
 
-func NewSliceEndingRef[T any](slicePtr *[]T) *SliceEndingRef[T] {
+func NewSliceEndingRef[T any](sliceRef SliceRef[T]) *SliceEndingRef[T] {
 	return &SliceEndingRef[T]{
-		sliceAddr: slicePtr,
+		sliceRef: sliceRef,
 	}
 }
 
@@ -53,7 +59,9 @@ type SliceItemRef[T any] struct {
 
 func (ref *SliceItemRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
+		// fmt.Println("SliceItemRef>", *ref.sliceAddr, value)
 		(*ref.sliceAddr)[ref.index] = value
+		// fmt.Println("SliceItemRef>", *ref.sliceAddr)
 		return true
 	}
 	return false
@@ -66,13 +74,39 @@ func NewSliceItemRef[T any](slicePtr *[]T, index int) *SliceItemRef[T] {
 	}
 }
 
+type SliceRef[T any] struct {
+	addr *[]T
+}
+
+func (ref *SliceRef[T]) Set(value any) bool {
+	if value, ok := value.(*[]T); ok {
+		// fmt.Println("SliceRef>", *ref.addr, value)
+		*ref.addr = *value
+		// fmt.Println("SliceRef>>", *ref.addr)
+		return true
+	}
+	return false
+}
+
+func (ref *SliceRef[T]) Get() *[]T {
+	return ref.addr
+}
+
+func NewSliceRef[T any](addr *[]T) *SliceRef[T] {
+	return &SliceRef[T]{
+		addr: addr,
+	}
+}
+
 type DirectRef[T any] struct {
 	addr *T
 }
 
 func (ref *DirectRef[T]) Set(value any) bool {
 	if value, ok := value.(T); ok {
+		// fmt.Println("DirectRef>", *ref.addr, value)
 		*ref.addr = value
+		// fmt.Println("DirectRef>>", *ref.addr)
 		return true
 	}
 	return false

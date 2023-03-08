@@ -130,7 +130,7 @@ func examineDeclStmt(ctx *context.Context, declStmt *ast.DeclStmt) {
 	case *ast.GenDecl:
 		examineGenDecl(ctx, decl)
 	case *ast.FuncDecl:
-		fmt.Println("examineDeclStmt:FuncDecl")
+		fmt.Println("examineDeclStmt:FuncDecl") // FIXME:
 	}
 }
 

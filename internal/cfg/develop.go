@@ -23,10 +23,10 @@ func listAppendableSpots(node ast.Node) (appandableNodes []*trav.TraversableNode
 	return
 }
 
-func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimit int) (appended any, err error) {
+func appendRandomly(dst *trav.TraversableNode, ctx *context.Context, depthLimit int) (appended any, err error) {
 
-	if tNode.ExpectedType.IsSliceType() {
-		switch tNode.Value.(type) {
+	if dst.ExpectedType.IsSliceType() {
+		switch dst.Value.(type) {
 		case []*ast.ImportSpec:
 			appended = []*ast.ImportSpec{}
 		case []*ast.Ident:
@@ -45,8 +45,8 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 			return nil, errors.New("Unhandled case for slice type node creation")
 		}
 
-	} else if tNode.ExpectedType.IsInterfaceType() {
-		switch tNode.ExpectedType {
+	} else if dst.ExpectedType.IsInterfaceType() {
+		switch dst.ExpectedType {
 		case ast_types.Expr:
 			appended = nc.Expr(ctx, depthLimit)
 		case ast_types.Stmt:
@@ -61,9 +61,9 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 			return nil, errors.New("Unhandled case for interface type node creation")
 		}
 
-	} else if tNode.ExpectedType.IsConcreteType() {
+	} else if dst.ExpectedType.IsConcreteType() {
 
-		switch tNode.ExpectedType {
+		switch dst.ExpectedType {
 		// case ast_types.BadDecl:
 		// 	newNode = nc.BadDecl(ctx, depthLimit)
 		// case ast_types.BadExpr:
@@ -185,7 +185,7 @@ func appendRandomly(tNode *trav.TraversableNode, ctx *context.Context, depthLimi
 	if appended == nil {
 		return nil, errors.New("Could not create an instance of ast.Node")
 	}
-	if ok := tNode.Ref.Set(appended); !ok {
+	if ok := dst.Ref.Set(appended); !ok {
 		return appended, errors.New("Could not append created ast.Node instance to its place")
 	}
 	return appended, nil

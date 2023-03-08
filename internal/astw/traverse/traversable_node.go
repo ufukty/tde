@@ -33,95 +33,104 @@ func TraversableNodesFromSliceTypeNode(tNode *TraversableNode) (tSubnodes []*Tra
 
 	switch slice := tNode.Value.(type) {
 	case []*ast.Comment:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Comment, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.Comment, item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[ast.Comment]); ok {
+
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Comment, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.Comment, item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Comment, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Comment, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []*ast.CommentGroup:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.CommentGroup, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.CommentGroup, item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[*ast.CommentGroup]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.CommentGroup, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.CommentGroup, item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.CommentGroup, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.CommentGroup, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []*ast.ImportSpec:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.ImportSpec, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.ImportSpec, item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[*ast.ImportSpec]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.ImportSpec, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.ImportSpec, item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.ImportSpec, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.ImportSpec, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []*ast.Ident:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Ident, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.Ident, item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[*ast.Ident]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Ident, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.Ident, item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Ident, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Ident, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []*ast.Field:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Field, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.Field, item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[*ast.Field]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Field, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.Field, item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Field, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Field, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []ast.Stmt:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Stmt, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[ast.Stmt]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Stmt, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Stmt, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Stmt, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []ast.Decl:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Decl, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[ast.Decl]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Decl, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Decl, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Decl, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []ast.Spec:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Spec, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[ast.Spec]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Spec, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Spec, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Spec, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
 
 	case []ast.Expr:
-		for i, item := range slice {
-			tSubnodes = append(tSubnodes,
-				&TraversableNode{nil, ast_types.Expr, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-				&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
-			)
+		if sliceRef, ok := tNode.Ref.(*SliceRef[ast.Expr]); ok {
+			for i, item := range slice {
+				tSubnodes = append(tSubnodes,
+					&TraversableNode{nil, ast_types.Expr, true, tNode, NewSliceItemInsertBeforeRef(*sliceRef, i)}, // placeholder for appendable spots
+					&TraversableNode{item, ast_types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
+				)
+			}
+			tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Expr, true, tNode, NewSliceEndingRef(*sliceRef)}) // placeholder for appendable spots
 		}
-		tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Expr, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
-
-		// case []ast.Node:
-		// 	for i, item := range slice {
-		// 		tSubnodes = append(tSubnodes,
-		// 			&TraversableNode{nil, ast_types.Node, true, tNode, NewSliceItemInsertBeforeRef(&slice, i)}, // placeholder for appendable spots
-		// 			&TraversableNode{item, types.GetNodeTypeForASTNode(item), item == nil, tNode, NewSliceItemRef(&slice, i)},
-		// 		)
-		// 	}
-		// 	tSubnodes = append(tSubnodes, &TraversableNode{nil, ast_types.Node, true, tNode, NewSliceEndingRef(&slice)}) // placeholder for appendable spots
-
 	}
 	return
 }
@@ -168,7 +177,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewDirectRef(&n.Names)},
+			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewSliceRef(&n.Names)},
 			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewDirectRef(&n.Type)},
 			{n.Tag, ast_types.BasicLit, n.Tag == nil, tNode, NewDirectRef(&n.Tag)},
 		}
@@ -178,7 +187,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.List, ast_types.FieldSlice, n.List == nil, tNode, NewDirectRef(&n.List)},
+			{n.List, ast_types.FieldSlice, n.List == nil, tNode, NewSliceRef(&n.List)},
 		}
 
 	case *ast.BadExpr:
@@ -222,7 +231,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewDirectRef(&n.Type)},
-			{n.Elts, ast_types.ExprSlice, n.Elts == nil, tNode, NewDirectRef(&n.Elts)},
+			{n.Elts, ast_types.ExprSlice, n.Elts == nil, tNode, NewSliceRef(&n.Elts)},
 		}
 
 	case *ast.ParenExpr:
@@ -257,7 +266,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.X, ast_types.Expr, n.X == nil, tNode, NewDirectRef(&n.X)},
-			{n.Indices, ast_types.ExprSlice, n.Indices == nil, tNode, NewDirectRef(&n.Indices)},
+			{n.Indices, ast_types.ExprSlice, n.Indices == nil, tNode, NewSliceRef(&n.Indices)},
 		}
 
 	case *ast.SliceExpr:
@@ -286,7 +295,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Fun, ast_types.Expr, n.Fun == nil, tNode, NewDirectRef(&n.Fun)},
-			{n.Args, ast_types.ExprSlice, n.Args == nil, tNode, NewDirectRef(&n.Args)},
+			{n.Args, ast_types.ExprSlice, n.Args == nil, tNode, NewSliceRef(&n.Args)},
 		}
 
 	case *ast.StarExpr:
@@ -434,8 +443,8 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Lhs, ast_types.ExprSlice, n.Lhs == nil, tNode, NewDirectRef(&n.Lhs)},
-			{n.Rhs, ast_types.ExprSlice, n.Rhs == nil, tNode, NewDirectRef(&n.Rhs)},
+			{n.Lhs, ast_types.ExprSlice, n.Lhs == nil, tNode, NewSliceRef(&n.Lhs)},
+			{n.Rhs, ast_types.ExprSlice, n.Rhs == nil, tNode, NewSliceRef(&n.Rhs)},
 		}
 
 	case *ast.GoStmt:
@@ -459,7 +468,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Results, ast_types.ExprSlice, n.Results == nil, tNode, NewDirectRef(&n.Results)},
+			{n.Results, ast_types.ExprSlice, n.Results == nil, tNode, NewSliceRef(&n.Results)},
 		}
 
 	case *ast.BranchStmt:
@@ -475,7 +484,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.List, ast_types.StmtSlice, n.List == nil, tNode, NewDirectRef(&n.List)},
+			{n.List, ast_types.StmtSlice, n.List == nil, tNode, NewSliceRef(&n.List)},
 		}
 
 	case *ast.IfStmt:
@@ -494,8 +503,8 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.List, ast_types.ExprSlice, n.List == nil, tNode, NewDirectRef(&n.List)},
-			{n.Body, ast_types.StmtSlice, n.Body == nil, tNode, NewDirectRef(&n.Body)},
+			{n.List, ast_types.ExprSlice, n.List == nil, tNode, NewSliceRef(&n.List)},
+			{n.Body, ast_types.StmtSlice, n.Body == nil, tNode, NewSliceRef(&n.Body)},
 		}
 
 	case *ast.SwitchStmt:
@@ -524,7 +533,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Comm, ast_types.Stmt, n.Comm == nil, tNode, NewDirectRef(&n.Comm)},
-			{n.Body, ast_types.StmtSlice, n.Body == nil, tNode, NewDirectRef(&n.Body)},
+			{n.Body, ast_types.StmtSlice, n.Body == nil, tNode, NewSliceRef(&n.Body)},
 		}
 
 	case *ast.SelectStmt:
@@ -571,9 +580,9 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewDirectRef(&n.Names)},
+			{n.Names, ast_types.IdentSlice, n.Names == nil, tNode, NewSliceRef(&n.Names)},
 			{n.Type, ast_types.TypeExpr, n.Type == nil, tNode, NewDirectRef(&n.Type)},
-			{n.Values, ast_types.ExprSlice, n.Values == nil, tNode, NewDirectRef(&n.Values)},
+			{n.Values, ast_types.ExprSlice, n.Values == nil, tNode, NewSliceRef(&n.Values)},
 		}
 
 	case *ast.TypeSpec:
@@ -597,7 +606,7 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 			return []*TraversableNode{}
 		}
 		return []*TraversableNode{
-			{n.Specs, ast_types.SpecSlice, n.Specs == nil, tNode, NewDirectRef(&n.Specs)},
+			{n.Specs, ast_types.SpecSlice, n.Specs == nil, tNode, NewSliceRef(&n.Specs)},
 		}
 
 	case *ast.FuncDecl:
@@ -617,9 +626,9 @@ func TraversableNodesFromConcreteTypeNode(tNode *TraversableNode) []*Traversable
 		}
 		return []*TraversableNode{
 			{n.Name, ast_types.Ident, n.Name == nil, tNode, NewDirectRef(&n.Name)},
-			{n.Decls, ast_types.DeclSlice, n.Decls == nil, tNode, NewDirectRef(&n.Decls)},
-			{n.Imports, ast_types.ImportSpecSlice, n.Imports == nil, tNode, NewDirectRef(&n.Imports)},
-			{n.Unresolved, ast_types.IdentSlice, n.Unresolved == nil, tNode, NewDirectRef(&n.Unresolved)},
+			{n.Decls, ast_types.DeclSlice, n.Decls == nil, tNode, NewSliceRef(&n.Decls)},
+			{n.Imports, ast_types.ImportSpecSlice, n.Imports == nil, tNode, NewSliceRef(&n.Imports)},
+			{n.Unresolved, ast_types.IdentSlice, n.Unresolved == nil, tNode, NewSliceRef(&n.Unresolved)},
 		}
 
 		// case ast*.*ast.Package:
