@@ -3,13 +3,11 @@
 
 package knapsack
 
-import (
-	"tde/pkg/tde"
-)
+import "tde/pkg/tde"
 
 func TDE_Knapsack(e *tde.E) {
 
-	testParameters := map[*struct {
+	examples := map[*struct {
 		prices  []float64
 		weights []float64
 	}]*struct {
@@ -39,14 +37,11 @@ func TDE_Knapsack(e *tde.E) {
 		}: {
 			placement: []int{0, 0, 0, 0, 1},
 		},
+		// add more example
 	}
 
-	for input, want := range testParameters {
+	for input, want := range examples {
 		output := Knapsack(input.weights, input.prices)
 		e.AssertEqual(output, want)
 	}
-
-	// t.NewObjective("basic", func(o *testing.Objective) {
-
-	// })
 }
