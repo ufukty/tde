@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"fmt"
 	trav "tde/internal/astw/traverse"
 	ast_types "tde/internal/astw/types"
 	"tde/internal/cfg/context_resolution"
@@ -28,19 +29,19 @@ func appendRandomly(dst *trav.TraversableNode, ctx *context.Context, depthLimit 
 	if dst.ExpectedType.IsSliceType() {
 		switch dst.Value.(type) {
 		case []*ast.ImportSpec:
-			appended = []*ast.ImportSpec{}
+			appended = &[]*ast.ImportSpec{}
 		case []*ast.Ident:
-			appended = []*ast.Ident{}
+			appended = &[]*ast.Ident{}
 		case []*ast.Field:
-			appended = []*ast.Field{}
+			appended = &[]*ast.Field{}
 		case []ast.Stmt:
-			appended = []ast.Stmt{}
+			appended = &[]ast.Stmt{}
 		case []ast.Decl:
-			appended = []ast.Decl{}
+			appended = &[]ast.Decl{}
 		case []ast.Spec:
-			appended = []ast.Spec{}
+			appended = &[]ast.Spec{}
 		case []ast.Expr:
-			appended = []ast.Expr{}
+			appended = &[]ast.Expr{}
 		default:
 			return nil, errors.New("Unhandled case for slice type node creation")
 		}
@@ -186,6 +187,8 @@ func appendRandomly(dst *trav.TraversableNode, ctx *context.Context, depthLimit 
 		return nil, errors.New("Could not create an instance of ast.Node")
 	}
 	if ok := dst.Ref.Set(appended); !ok {
+
+		fmt.Println("dst:", dst.ExpectedType, "appended:", appended)
 		return appended, errors.New("Could not append created ast.Node instance to its place")
 	}
 	return appended, nil

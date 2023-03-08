@@ -13,8 +13,8 @@ type SliceItemInsertBeforeRef[T any] struct {
 	insertBeforeIndex int
 }
 
-func (ref *SliceItemInsertBeforeRef[T]) Set(value any) bool {
-	if value, ok := value.(T); ok {
+func (ref *SliceItemInsertBeforeRef[T]) Set(valuePtr any) bool {
+	if value, ok := valuePtr.(T); ok {
 		// fmt.Println("SliceItemInsertBeforeRef>", *ref.sliceRef.Get(), value)
 		newSlice := slices.Insert(*ref.sliceRef.Get(), ref.insertBeforeIndex, value)
 		ok := ref.sliceRef.Set(&newSlice)
@@ -35,8 +35,8 @@ type SliceEndingRef[T any] struct {
 	sliceRef SliceRef[T]
 }
 
-func (ref *SliceEndingRef[T]) Set(value any) bool {
-	if value, ok := value.(T); ok {
+func (ref *SliceEndingRef[T]) Set(valuePtr any) bool {
+	if value, ok := valuePtr.(T); ok {
 		// fmt.Println("SliceEndingRef>", ref.sliceRef, value)
 		newSlice := append(*ref.sliceRef.Get(), value)
 		ok := ref.sliceRef.Set(&newSlice)
@@ -57,8 +57,8 @@ type SliceItemRef[T any] struct {
 	index     int
 }
 
-func (ref *SliceItemRef[T]) Set(value any) bool {
-	if value, ok := value.(T); ok {
+func (ref *SliceItemRef[T]) Set(valuePtr any) bool {
+	if value, ok := valuePtr.(T); ok {
 		// fmt.Println("SliceItemRef>", *ref.sliceAddr, value)
 		(*ref.sliceAddr)[ref.index] = value
 		// fmt.Println("SliceItemRef>", *ref.sliceAddr)
@@ -78,11 +78,13 @@ type SliceRef[T any] struct {
 	addr *[]T
 }
 
-func (ref *SliceRef[T]) Set(value any) bool {
-	if value, ok := value.(*[]T); ok {
-		// fmt.Println("SliceRef>", *ref.addr, value)
-		*ref.addr = *value
-		// fmt.Println("SliceRef>>", *ref.addr)
+func (ref *SliceRef[T]) Set(valuePtr any) bool {
+	if valuePtr, ok := valuePtr.(*[]T); ok {
+		// fmt.Printf("SliceRef+ %p, %p\n", *ref.addr, ref.addr)
+		// fmt.Println("SliceRef>", *ref.addr, ref.addr, reflect.TypeOf(*ref.addr), reflect.ValueOf(*ref.addr), reflect.ValueOf(ref.addr), valuePtr)
+		*ref.addr = *valuePtr
+		// fmt.Printf("SliceRef++ %p, %p\n", *ref.addr, ref.addr)
+		// fmt.Println("SliceRef>>", *ref.addr, ref.addr, reflect.TypeOf(*ref.addr), reflect.ValueOf(*ref.addr), reflect.ValueOf(ref.addr))
 		return true
 	}
 	return false
@@ -102,8 +104,8 @@ type DirectRef[T any] struct {
 	addr *T
 }
 
-func (ref *DirectRef[T]) Set(value any) bool {
-	if value, ok := value.(T); ok {
+func (ref *DirectRef[T]) Set(valuePtr any) bool {
+	if value, ok := valuePtr.(T); ok {
 		// fmt.Println("DirectRef>", *ref.addr, value)
 		*ref.addr = value
 		// fmt.Println("DirectRef>>", *ref.addr)

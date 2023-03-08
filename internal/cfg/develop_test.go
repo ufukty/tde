@@ -42,18 +42,15 @@ func Test_Develop(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on Develop"))
 	}
+	fmt.Println("typeOf: ", reflect.TypeOf(newNode))
 	if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
-		// if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
-		// 	return
-		// }
 		pretty.Println(newNode)
-		fmt.Println("typeOf: ", reflect.TypeOf(newNode))
 		pretty.Println(candidateFuncDecl.Body)
 		t.Error("Failed to see change on candidate")
 	}
 	if ok, _ := evaluation.SyntaxCheckSafe(candidateFuncDecl); ok {
 		printer.Fprint(os.Stdout, token.NewFileSet(), candidateFuncDecl)
-		fmt.Println("\n:::")
+		fmt.Println("")
 	}
 }
 
@@ -78,7 +75,7 @@ func Benchmark_Develop(b *testing.B) {
 	}
 }
 
-func Test_SequentialDevelop(t *testing.T) {
+func Test_DevelopProgressively(t *testing.T) {
 	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed on prep"))
@@ -86,13 +83,14 @@ func Test_SequentialDevelop(t *testing.T) {
 	var best = originalFuncDecl
 	for i := 0; i < 2000; i++ {
 		candidate := clone.FuncDecl(best)
-		newNode, err := Develop(astPkg, astFile, candidate, 1)
+		newNode, err := Develop(astPkg, astFile, candidate, 20)
 		if err != nil {
 			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
 		}
 		if ok, _ := evaluation.SyntaxCheckSafe(best); ok {
 			printer.Fprint(os.Stdout, token.NewFileSet(), best)
-			fmt.Println("\n^", i, "---")
+			fmt.Println("")
+			fmt.Println("^", i, "---")
 			best = candidate
 		}
 	}
@@ -105,9 +103,9 @@ func Test_DevelopFindUnbreakingChange(t *testing.T) {
 	}
 
 	nonBreakingChangeFound := false
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 200; i++ {
 		candidate := clone.FuncDecl(originalFuncDecl)
-		Develop(astPkg, astFile, candidate, 2)
+		Develop(astPkg, astFile, candidate, 20)
 
 		if ok, _ := evaluation.SyntaxCheckSafe(candidate); ok {
 			printer.Fprint(os.Stdout, token.NewFileSet(), candidate)
