@@ -1,30 +1,42 @@
 package utilities
 
 import (
-	"crypto/rand"
+	crand "crypto/rand"
 	"log"
 	"math"
 	"math/big"
+	mrand "math/rand"
 
 	"github.com/pkg/errors"
 )
 
+const DEBUG_MODE = true
+
+// func init() {
+// 	mrand.Seed(time.Now().UnixNano())
+// }
+
 func URandFloatForCrypto() float64 {
-	maxInt := big.NewInt(math.MaxInt64)
+	if DEBUG_MODE {
+		return mrand.Float64()
+	} else {
 
-	randomBigInt, err := rand.Int(rand.Reader, maxInt)
-	if err != nil {
-		log.Panicln(errors.Wrap(err, "Could not call RNG for URandFloatForCrypto"))
+		maxInt := big.NewInt(math.MaxInt64)
+
+		randomBigInt, err := crand.Int(crand.Reader, maxInt)
+		if err != nil {
+			log.Panicln(errors.Wrap(err, "Could not call RNG for URandFloatForCrypto"))
+		}
+		randomBigFloat := big.NewFloat(0).Quo(big.NewFloat(0).SetInt(randomBigInt), big.NewFloat(0).SetInt(maxInt))
+
+		floated, _ := randomBigFloat.Float64()
+		return floated
 	}
-	randomBigFloat := big.NewFloat(0).Quo(big.NewFloat(0).SetInt(randomBigInt), big.NewFloat(0).SetInt(maxInt))
-
-	floated, _ := randomBigFloat.Float64()
-	return floated
 }
 
 func URandIntN(n int) int {
 	maxInt := big.NewInt(int64(n))
-	randomBigInt, err := rand.Int(rand.Reader, maxInt)
+	randomBigInt, err := crand.Int(crand.Reader, maxInt)
 	if err != nil {
 		log.Panicln(errors.Wrap(err, "Could not call RNG for URandIntN"))
 	}
