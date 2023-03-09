@@ -43,7 +43,7 @@ func Test_Develop(t *testing.T) {
 		t.Error(errors.Wrapf(err, "Failed on Develop"))
 	}
 	fmt.Println("typeOf: ", reflect.TypeOf(newNode))
-	if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
+	if ast_utl.CompareRecursivelyWithAddresses(candidateFuncDecl, originalFuncDecl) == true {
 		pretty.Println(newNode)
 		pretty.Println(candidateFuncDecl.Body)
 		t.Error("Failed to see change on candidate")
@@ -66,7 +66,7 @@ func Benchmark_Develop(b *testing.B) {
 		if err != nil {
 			b.Error(errors.Wrapf(err, "Failed on Develop"))
 		}
-		if ast_utl.CompareRecursively(candidateFuncDecl, originalFuncDecl) == true {
+		if ast_utl.CompareRecursivelyWithAddresses(candidateFuncDecl, originalFuncDecl) == true {
 			if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
 				continue
 			}
