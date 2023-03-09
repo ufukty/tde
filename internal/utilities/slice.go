@@ -1,5 +1,7 @@
 package utilities
 
+import "golang.org/x/exp/slices"
+
 func CompareSlices[T comparable](l, r []T) bool {
 	if len(l) != len(r) {
 		return false
@@ -75,4 +77,18 @@ func FilteredMap[T any, V any](slice []T, callback func(i int, value T) (V, bool
 		}
 	}
 	return list
+}
+
+func SliceRemoveItem[T comparable](s []T, v T) []T {
+	if i := slices.Index(s, v); i != -1 {
+		return append(s[:i], s[i+1:]...)
+	}
+	return s
+}
+
+func SliceRemoveItems[T comparable](s []T, e []T) []T {
+	for _, it := range e {
+		s = SliceRemoveItem(s, it)
+	}
+	return s
 }
