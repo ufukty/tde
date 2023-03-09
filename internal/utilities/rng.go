@@ -35,18 +35,20 @@ func URandFloatForCrypto() float64 {
 }
 
 func URandIntN(n int) int {
-	maxInt := big.NewInt(int64(n))
-	randomBigInt, err := crand.Int(crand.Reader, maxInt)
-	if err != nil {
-		log.Panicln(errors.Wrap(err, "Could not call RNG for URandIntN"))
+	if DEBUG_MODE {
+		return mrand.Intn(n)
+	} else {
+		maxInt := big.NewInt(int64(n))
+		randomBigInt, err := crand.Int(crand.Reader, maxInt)
+		if err != nil {
+			log.Panicln(errors.Wrap(err, "Could not call RNG for URandIntN"))
+		}
+		return int(randomBigInt.Int64())
 	}
-	return int(randomBigInt.Int64())
 }
 
 func Pick[T any](values []T) *T {
-	length := len(values)
-	rnd := int(URandFloatForCrypto() * float64(length))
-	return &values[rnd]
+	return &values[URandIntN(len(values))]
 }
 
 func Coin() bool {
