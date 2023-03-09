@@ -51,6 +51,10 @@ func Pick[T any](values []T) *T {
 	return &values[URandIntN(len(values))]
 }
 
+func PickExcept[T comparable](s []T, e []T) *T {
+	return Pick(SliceRemoveItems(s, e))
+}
+
 func Coin() bool {
 	return *Pick([]bool{true, false})
 }
