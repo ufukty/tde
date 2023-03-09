@@ -16,7 +16,7 @@ func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 		// TokPos: token.NoPos,
 		Lhs: []ast.Expr{Expr(ctx, limit-1)},
 		Rhs: []ast.Expr{Expr(ctx, limit-1)},
-		Tok: *utl.Pick(tokenw.AccepetedByAssignStmt),
+		Tok: *utl.Pick(tokenw.AcceptedByAssignStmt),
 	}
 }
 
@@ -157,7 +157,7 @@ func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 	return &ast.IncDecStmt{
 		// TokPos: token.NoPos,
 		X:   Expr(ctx, limit-1),
-		Tok: *utl.Pick(tokenw.AccepetedByIncDecStmt),
+		Tok: *utl.Pick(tokenw.AcceptedByIncDecStmt),
 	}
 }
 

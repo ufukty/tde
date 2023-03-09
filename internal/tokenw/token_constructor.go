@@ -130,7 +130,7 @@ var (
 		token.LEQ,  // <=
 		token.GEQ,  // >=
 	}
-	AccepetedByAssignStmt = []token.Token{
+	AcceptedByAssignStmt = []token.Token{
 		token.ASSIGN, // =
 		token.DEFINE, //  ==
 	}
@@ -140,7 +140,7 @@ var (
 		token.GOTO,
 		token.FALLTHROUGH,
 	}
-	AccepetedByIncDecStmt = []token.Token{
+	AcceptedByIncDecStmt = []token.Token{
 		token.INC,
 		token.DEC,
 	}
@@ -150,5 +150,11 @@ var (
 	}
 	AcceptedByUnaryExpr = []token.Token{
 		token.AND,
+	}
+	AcceptedByGenDecl = []token.Token{
+		token.IMPORT,
+		token.CONST,
+		token.TYPE,
+		token.VAR,
 	}
 )
