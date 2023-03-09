@@ -2,6 +2,7 @@ package node_constructor
 
 import (
 	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/tokenw"
 	utl "tde/internal/utilities"
 
 	"go/ast"
@@ -15,7 +16,7 @@ func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 		// TokPos: token.NoPos,
 		Lhs: []ast.Expr{Expr(ctx, limit-1)},
 		Rhs: []ast.Expr{Expr(ctx, limit-1)},
-		Tok: *utl.Pick(tokenConstructor.AccepetedByAssignStmt),
+		Tok: *utl.Pick(tokenw.AccepetedByAssignStmt),
 	}
 }
 
@@ -39,8 +40,8 @@ func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 	}
 	return &ast.BranchStmt{
 		// TokPos: token.NoPos,
-		Label: *utl.Pick(GeneratedBranchLabels),                 // FIXME:
-		Tok:   *utl.Pick(tokenConstructor.AcceptedByBranchStmt), // FIXME:
+		Label: *utl.Pick(GeneratedBranchLabels),       // FIXME:
+		Tok:   *utl.Pick(tokenw.AcceptedByBranchStmt), // FIXME:
 	}
 }
 
@@ -156,7 +157,7 @@ func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 	return &ast.IncDecStmt{
 		// TokPos: token.NoPos,
 		X:   Expr(ctx, limit-1),
-		Tok: *utl.Pick(tokenConstructor.AccepetedByIncDecStmt),
+		Tok: *utl.Pick(tokenw.AccepetedByIncDecStmt),
 	}
 }
 
@@ -182,7 +183,7 @@ func RangeStmt(ctx *context.Context, limit int) *ast.RangeStmt {
 		Key:   Expr(ctx, limit-1),
 		Value: Expr(ctx, limit-1),
 		Body:  BlockStmt(ctx, limit-1),
-		Tok:   *utl.Pick(tokenConstructor.AcceptedByRangeStmt),
+		Tok:   *utl.Pick(tokenw.AcceptedByRangeStmt),
 	}
 }
 

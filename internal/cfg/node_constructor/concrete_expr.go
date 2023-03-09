@@ -2,6 +2,7 @@ package node_constructor
 
 import (
 	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/tokenw"
 	utl "tde/internal/utilities"
 
 	"go/ast"
@@ -29,7 +30,7 @@ func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
 		// OpPos: token.NoPos,
 		X:  Expr(ctx, limit-1),
 		Y:  Expr(ctx, limit-1),
-		Op: *utl.Pick(tokenConstructor.AcceptedByBinaryExpr),
+		Op: *utl.Pick(tokenw.AcceptedByBinaryExpr),
 	}
 }
 
@@ -191,6 +192,6 @@ func UnaryExpr(ctx *context.Context, limit int) *ast.UnaryExpr {
 	return &ast.UnaryExpr{
 		// OpPos: token.NoPos,
 		X:  Expr(ctx, limit-1),
-		Op: *utl.Pick(tokenConstructor.AcceptedByUnaryExpr),
+		Op: *utl.Pick(tokenw.AcceptedByUnaryExpr),
 	}
 }
