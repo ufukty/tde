@@ -79,16 +79,17 @@ func FilteredMap[T any, V any](slice []T, callback func(i int, value T) (V, bool
 	return list
 }
 
-func SliceRemoveItem[T comparable](s []T, v T) []T {
-	if i := slices.Index(s, v); i != -1 {
-		return append(s[:i], s[i+1:]...)
+func SliceExceptItem[T comparable](s []T, v T) []T {
+	n := slices.Clone(s)
+	if i := slices.Index(n, v); i != -1 {
+		return append(n[:i], n[i+1:]...)
 	}
-	return s
+	return n
 }
 
-func SliceRemoveItems[T comparable](s []T, e []T) []T {
+func SliceExceptItems[T comparable](s []T, e []T) []T {
 	for _, it := range e {
-		s = SliceRemoveItem(s, it)
+		s = SliceExceptItem(s, it)
 	}
 	return s
 }

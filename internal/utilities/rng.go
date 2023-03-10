@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const DEBUG_MODE = true
+const DEBUG_MODE = false
 
 // func init() {
 // 	mrand.Seed(time.Now().UnixNano())
@@ -47,12 +47,22 @@ func URandIntN(n int) int {
 	}
 }
 
-func Pick[T any](values []T) *T {
-	return &values[URandIntN(len(values))]
+func Pick[T any](s []T) *T {
+	if len(s) == 0 {
+		panic("Cannot Pick from empty slice")
+	}
+	return &s[URandIntN(len(s))]
 }
 
 func PickExcept[T comparable](s []T, e []T) *T {
-	return Pick(SliceRemoveItems(s, e))
+	if len(s) == 0 {
+		panic("Cannot Pick from empty slice")
+	}
+	cleaned := SliceExceptItems(s, e)
+	if len(cleaned) == 0 {
+		panic("Exceptions remove every item in Pick slice")
+	}
+	return Pick(cleaned)
 }
 
 func Coin() bool {

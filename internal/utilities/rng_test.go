@@ -5,6 +5,8 @@ import (
 	"log"
 	"math"
 	"testing"
+
+	"golang.org/x/exp/slices"
 )
 
 func IndexOfMax(values []int) int {
@@ -49,4 +51,27 @@ func Test_Pick(t *testing.T) {
 		}
 	}
 	fmt.Println(freq)
+}
+
+func Test_PickExcept(t *testing.T) {
+	examples := []struct {
+		Slice  []int
+		Except []int
+	}{
+		{[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, []int{1}},
+		{[]int{0, 1, 2, 3, 4, 5, 6, 7, 8}, []int{0, 2, 3, 4, 8}},
+		{[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, []int{0, 2, 3, 4, 9}},
+		{[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, []int{0, 2, 3, 4, 5, 9}},
+		{[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, []int{0, 1, 2, 3, 4, 5, 6, 7, 8}},
+	}
+
+	for i, example := range examples {
+		for j := 0; j < 200; j++ {
+			pick := *PickExcept(example.Slice, example.Except)
+			if slices.Contains(example.Except, pick) {
+				t.Errorf("validation i='%d', exception='%d'", i, pick)
+			}
+
+		}
+	}
 }
