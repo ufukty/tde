@@ -115,8 +115,8 @@ var (
 	AcceptedByBasicLit = []token.Token{
 		token.INT,
 		token.FLOAT,
-		// token.IMAG,
-		// token.CHAR,
+		token.IMAG,
+		token.CHAR,
 		token.STRING,
 	}
 	AcceptedByBinaryExpr = []token.Token{
@@ -132,7 +132,7 @@ var (
 	}
 	AcceptedByAssignStmt = []token.Token{
 		token.ASSIGN, // =
-		token.DEFINE, //  ==
+		token.DEFINE, // :=
 	}
 	AcceptedByBranchStmt = []token.Token{
 		token.BREAK,
