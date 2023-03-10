@@ -17,7 +17,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
 	}
 	astPkg := astPkgs["test_package"]
-	astFile := astPkg.Files["../test_package/walk.go"]
+	astFile := astPkg.Files["../../../test_package/walk.go"]
 	funcDecl, err := ast_utl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "could not find test function")
@@ -61,12 +61,12 @@ func Test_RemoveLineMany(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-		
+
 		ok := RemoveLine(modifiedFuncDecl.Body)
 		if !ok {
 			t.Error("return value")
 		}
-		
+
 		if ast_utl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Error("validation", i)
 		}
