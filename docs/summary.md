@@ -138,6 +138,8 @@ Cross-over is there to move around in search space with bigger steps. They are g
 
 As seen in literature, "explorative" and "exploitative" terms are used to describe (respectively) quickly scanning bigger areas and focusing to smaller area.
 
+It could be said that good set of mutation operations must be enough to reveal each spot in search space alone, without having help of cross-overs; since cross-overs can only re-combine over-and-over again what the process initially starts with.
+
 ### Mutation's importance
 
 In this work; many concerns involved in the design of mutation operations. Need is raised by that any haphazard edit on a compilable code's abstract syntax tree can easily cause syntax errors; which will make the candidate fall behind its anchestry in fitness order, which will also increase its chance to get discrarded by roulette in the next selection phase. Long before complimentary mutations get a change to take place in next generations and introduce an improvement in working code.
@@ -178,13 +180,40 @@ for i, v := range collection {
 }
 ```
 
-### Conditionalizing a list of statements with an expression
+### Conditionalize random part of a code and protecting progress against premature elimination
+
+Most of the code have branching in execution flow in various places, depends on either the value of parameters, the result of a previous calculation or current state of the environment. It is inevitable to think evolution process will be free from intermediate forms that performs a calculation perfectly that is necessary for part of the times but lacks of necessary improvements that will toggle that part of function only when it is necessary.
+
+Branchs consist by at least 2 parts: the condition and statement list. In research, a statement list can be qualified as candidate of conditionalization mutation if it consists by successive stataments (that each connected to same node). In case the conditionalized part have a variable declaration statement that the declared variable also accessed from outside of conditionalized block, another declaration statement should be created and put into original place to not break rest of the code.
+
+Branchs run part of a code block only when their condition met. Inventing the right condition in just one generation should not be expected. Thus, smarter move is to initialize the condition with a preconfigured expression that will examine the necessity of conditionalization of a section, with just one generation. The expression utilized is a call to random number generator and a comparison which will evaluate to "true" half of the time. Technique is useful because it examines the necessity of conditionalization before evolving right condition, which will either require many generations, or might never happen in the case conditionalization or particular section is unnecessary.
+
+Another mechanism is designed to eliminate one compilation error which will be caused by moving a variable declaration into conditions's scope then try to access from rest of the code. Conditionalization mutation includes separation of declaration statements into define and assignment stataments. Define statement stays at original location, and assignment statment is moved with rest of the selected section into condition's statement list.
 
 ```go
-if condition {
-    list of statements
-}
+// before
+a := 6
+<statement 2>
+<statement 3>
+return a
 ```
+
+```go
+// after
+var a int
+if math.rand() >= 0.5 {
+    a = 6
+    <statement 2>
+}
+<statement 3>
+return a
+```
+
+To be able to observe positive impact of conditionalization, each candidate should test twice. One will pass the condition and other will execute. This will reveal the impact by comparing changed test results.
+
+Another method to examine necessity of conditionalization would prepare different candidates that one execute the section and other not. That method would decrease the available spots in generation for other candidates/tests and would increase the evolution time since will require more compilation which is the performance bottleneck amongst all steps.
+
+For `n` section in code that uses rng to examine necessity of conditionalization, the user suplied tests ran `2^n` times.
 
 ### Data structure transform
 
@@ -208,12 +237,39 @@ Prerequisites of improving-mutation are determining of correct
 -   set of statements to conditionalize
 -   expression to use as condition (which resolves to a boolean)
 
-### Performing trials of different mutations on same candidate simultaneously, for many candidates in a generation
+### Trying varying number of mutations on selected candidates and keeping population size constant
 
-For a set of _n_ candidates of the generation _i_, after selection with survival ratio of _s_ starts, the population size becomes `n * s` For the average number of candidates _c_, there should _m_ different mutation be carried over to next evalution & selection and the population size remain constant.
+For a given evolution process;
 
-$$ n = n _ s _ c _ m$$
-$$ 1 = s _ c \* m $$
+-   Population size of the generation $i$ is $n_i$, size of generation $i+1$ is $n_{i+1}$.
+-   Average survival probability is $P_S$. Thus post-selection population size is $n \times P_S$
+-   Probability for a candidate to get qualified for mutation is $P_M$
+-   Each mutation performed on one candidate produce different candidates. Number of different mutations performed on one candidate is $m$ in average. Thus post-regeneration population size is (1)
+-   Population size amongst generation should stay same (2)
+
+$$
+\begin{align}
+n_{i+1} &= n_i \times P_S \times P_M \times m \\
+n_i &= n_{i+1} \\
+\end{align}
+$$
+
+This gives an equation between survival rate and mutations times mutation rate (3). Thus survival rate should decrease as mutation per mutated candidate increase (4).
+
+$$
+\begin{align}
+1 &= P_S \times P_M \times m \\
+\frac{1}{P_S} &= P_M \times m
+\end{align}
+$$
+
+Value for $m$ is not decided. Rather it depends on the selected mutation operations since different mutations require trying different number of alternatives. Thus, value for next generation's survival rate is evaluated by extra individuals created (5).
+
+$$
+\begin{align}
+\frac{1}{P_{S_{i+1}}} = P_{M_i} \times m_i
+\end{align}
+$$
 
 ## Attributes of TDE's search space
 
