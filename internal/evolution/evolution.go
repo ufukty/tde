@@ -1,6 +1,7 @@
 package evolution
 
 import (
+	"context"
 	"fmt"
 	"tde/internal/embedding"
 	models "tde/models/in_program_models"
@@ -59,6 +60,10 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 
 }
 
-func (e *Evolution) IterateOneGeneration() {
+func (e *Evolution) IterateLoop(ctx context.Context) {
+
+	// selection
+
+	// reproduction
 
 }
