@@ -1,35 +1,43 @@
 package utilities
 
-import "math"
+func midIndex(lo, hi int) int {
+	return Floor(float64(lo+hi) / 2)
+}
 
-func BinaryRangeSearch(values []float64, key float64) int {
-	midIndex := func(lo, hi int) int {
-		return int(math.Floor(float64(lo+hi) / 2))
-	}
-
-	values = append(values, math.MaxFloat64) // solve out of range access
-
+// Returns the index of leftmost (smallest) element greater than (or equal to) the key. range: [0, len]
+func BisectLeft[N Number](values []N, key N) int {
 	var (
-		lo  = 0
-		hi  = len(values) - 1
-		mid int
+		low  = 0
+		high = len(values)
+		mid  int
 	)
-
-	for lo < hi {
-		mid = midIndex(lo, hi)
-
-		if values[mid] <= key && key < values[mid+1] {
-			return mid
-		}
-
-		if values[mid] <= key {
-			lo = mid
+	for low < high {
+		mid = midIndex(low, high)
+		if values[mid] < key {
+			low = mid + 1
 		} else {
-			hi = mid
+			high = mid
 		}
 	}
+	return low
+}
 
-	return -1
+// Returns the index of leftmost (smallest) element greater than the key. range: [0, len]
+func BisectRight[N Number](values []N, key N) int {
+	var (
+		low  = 0
+		high = len(values)
+		mid  int
+	)
+	for low < high {
+		mid = midIndex(low, high)
+		if key < values[mid] {
+			high = mid
+		} else {
+			low = mid + 1
+		}
+	}
+	return low
 }
 
 func IsInSlice[T comparable](key T, slice []T) bool {

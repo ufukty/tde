@@ -15,11 +15,11 @@ func CompareSlices[T comparable](l, r []T) bool {
 	return true
 }
 
-type Number64 interface {
-	~float64 | ~int64
+type Number interface {
+	~int | ~int32 | ~int64 | ~float32 | ~float64
 }
 
-func GetCumulative[N Number64](input []N) []N {
+func GetCumulative[N Number](input []N) []N {
 	var output = []N{}
 	var total = N(0)
 	for _, v := range input {
