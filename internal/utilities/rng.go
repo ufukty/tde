@@ -68,3 +68,17 @@ func PickExcept[T comparable](s []T, e []T) *T {
 func Coin() bool {
 	return *Pick([]bool{true, false})
 }
+
+func PickWeightedIndex[N Number](weights []N) int {
+	weightsCumulative := GetCumulative(weights)
+	rnd := N(URandFloatForCrypto() * float64(weightsCumulative[len(weightsCumulative)-1]))
+	index := BisectRight(weightsCumulative, rnd)
+	return index
+}
+
+func PickWeighted[T any, N Number](slice []T, weight []N) *T {
+	if len(slice) == 0 {
+		panic("Cannot Pick from empty slice")
+	}
+	return &slice[PickWeightedIndex(weight)]
+}
