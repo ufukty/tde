@@ -1,7 +1,6 @@
 package mutation
 
 import (
-	"go/ast"
 	"tde/internal/genetics/mutation/common"
 	"tde/internal/genetics/mutation/import_path"
 	"tde/internal/genetics/mutation/literals"
@@ -10,15 +9,6 @@ import (
 	"tde/internal/genetics/mutation/token_shuffle"
 	"tde/internal/utilities"
 )
-
-type GeneticOperationContext struct {
-	Package         *ast.Package
-	File            *ast.File
-	FuncDecl        *ast.FuncDecl
-	AllowedPackages []string
-}
-
-type GeneticOperation func(*GeneticOperationContext) bool
 
 // TODO: RegenerateSubtree (cfg/node_constructor)
 // TODO: Merge declared variables
