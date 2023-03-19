@@ -201,7 +201,7 @@ return a
 ```go
 // after
 var a int
-if math.rand() >= 0.5 {
+if rand.Float64() >= 0.5 {
     a = 6
     <statement 2>
 }
