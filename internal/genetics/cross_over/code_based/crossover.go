@@ -1,9 +1,9 @@
-package genetics
+package code_based
 
 import (
 	ast_utl "tde/internal/astw/utilities"
 	"tde/internal/utilities"
-	
+
 	"go/ast"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -12,8 +12,8 @@ import (
 func CrossOver(parentA, parentB *ast.FuncDecl) bool {
 
 	var (
-		nodesA   = ast_utl.ListSubnodes(parentA)[1:]
-		nodesB   = ast_utl.ListSubnodes(parentB)[1:]
+		nodesA   = ast_utl.ListSubtree(parentA)[1:]
+		nodesB   = ast_utl.ListSubtree(parentB)[1:]
 		selected = false
 		subA     ast.Node
 		subB     ast.Node
