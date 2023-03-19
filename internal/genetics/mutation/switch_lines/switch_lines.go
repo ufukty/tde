@@ -2,7 +2,7 @@ package switch_lines
 
 import (
 	"go/ast"
-	"tde/internal/genetics/common"
+	"tde/internal/genetics/mutation/common"
 	"tde/internal/utilities"
 )
 
