@@ -3,6 +3,7 @@ package token_shuffle
 import (
 	"go/ast"
 	"go/token"
+	"tde/internal/genetics/common"
 	"tde/internal/tokenw"
 	utl "tde/internal/utilities"
 )
@@ -65,4 +66,9 @@ func Perform(n ast.Node) (changedNode ast.Node, newToken token.Token, ok bool) {
 	changedNode = *utl.Pick(tokenContainingNodes)
 	newToken = chooseNewTokenAndAssign(changedNode)
 	return changedNode, newToken, true
+}
+
+func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+	_, _, ok := Perform(ctx.FuncDecl.Body)
+	return ok
 }

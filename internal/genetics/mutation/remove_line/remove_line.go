@@ -2,6 +2,7 @@ package remove_line
 
 import (
 	"go/ast"
+	"tde/internal/genetics/common"
 	"tde/internal/utilities"
 )
 
@@ -49,4 +50,8 @@ func RemoveLine(n ast.Node) (ok bool) {
 	choosenNode := *utilities.Pick(stmtSliceContainingSubnodes)
 	removeOneLine(choosenNode)
 	return true
+}
+
+func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+	return RemoveLine(ctx.FuncDecl.Body)
 }

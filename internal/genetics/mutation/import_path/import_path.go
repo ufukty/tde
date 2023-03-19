@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"tde/internal/genetics/common"
+	"tde/internal/utilities"
 )
 
 func listImportDecls(f *ast.File) (importDecls []*ast.GenDecl) {
@@ -63,4 +65,8 @@ func ImportPackage(f *ast.File, importPath string) (modified bool) {
 	}
 
 	return true
+}
+
+func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+	return ImportPackage(ctx.File, *utilities.Pick(ctx.AllowedPackages))
 }

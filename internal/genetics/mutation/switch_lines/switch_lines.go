@@ -2,6 +2,7 @@ package switch_lines
 
 import (
 	"go/ast"
+	"tde/internal/genetics/common"
 	"tde/internal/utilities"
 )
 
@@ -49,4 +50,8 @@ func SiblingSwap(n ast.Node) (ok bool) {
 	choosenNode := *utilities.Pick(stmtSliceContainingSubnodes)
 	swap(choosenNode)
 	return true
+}
+
+func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+	return SiblingSwap(ctx.FuncDecl.Body)
 }
