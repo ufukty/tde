@@ -27,7 +27,7 @@ func Diff(current, new ast.Node) string {
 	ast.Fprint(bufferCurrent, token.NewFileSet(), current, nil)
 
 	bufferNew := bytes.NewBuffer([]byte{})
-	ast.Fprint(bufferNew, token.NewFileSet(), current, nil)
+	ast.Fprint(bufferNew, token.NewFileSet(), new, nil)
 
 	diffStr := diff.Diff(bufferCurrent.String(), bufferNew.String())
 	changedLines := ""
