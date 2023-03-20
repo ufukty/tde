@@ -22,19 +22,22 @@ func String(node ast.Node) (string, error) {
 	return sw.String(), nil
 }
 
-func Diff(current, new ast.Node) string {
-	bufferCurrent := bytes.NewBuffer([]byte{})
-	ast.Fprint(bufferCurrent, token.NewFileSet(), current, nil)
+func Diff(current, new ast.Node) (string, error) {
+	printCurrent, err := String(current)
+	if err != nil {
+		return "", errors.Wrap(err, "printing the current version")
+	}
+	printNew, err := String(new)
+	if err != nil {
+		return "", errors.Wrap(err, "printing the new version")
+	}
 
-	bufferNew := bytes.NewBuffer([]byte{})
-	ast.Fprint(bufferNew, token.NewFileSet(), new, nil)
-
-	diffStr := diff.Diff(bufferCurrent.String(), bufferNew.String())
+	diffStr := diff.Diff(printCurrent, printNew)
 	changedLines := ""
 	for _, str := range strings.Split(diffStr, "\n") {
 		if strings.Index(str, " ") != 0 {
-			changedLines = changedLines + str
+			changedLines = changedLines + str + "\n"
 		}
 	}
-	return changedLines
+	return changedLines, nil
 }
