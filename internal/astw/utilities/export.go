@@ -1,7 +1,6 @@
 package utilities
 
 import (
-	"bytes"
 	"go/ast"
 	"go/printer"
 	"go/token"
