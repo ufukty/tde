@@ -1,40 +1,76 @@
 package subtree_switch
 
 import (
+	"fmt"
 	"go/ast"
 	"tde/internal/astw/traced"
-	"tde/internal/astw/traverse"
-	"tde/internal/genetics/mutation/common"
 	"tde/internal/utilities"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-type ReverseTreeNode struct {
+type reverseTreeNode struct {
 	Node   ast.Node
 	Parent ast.Node
 	Index  int
 }
 
-func listSubtreeWithParents(root ast.Node) (list []ReverseTreeNode) {
+func listSubtreeWithParents(root ast.Node) (stmts []reverseTreeNode, exprs []reverseTreeNode) {
 	traced.InspectWithTrace(root, func(node ast.Node, parents []ast.Node, indices []int) bool {
-		list = append(list, ReverseTreeNode{
-			Node:   node,
-			Parent: parents[len(parents)-1],
-		})
+		if node == root || node == nil {
+			return true
+		}
+		switch node := node.(type) {
+		case ast.Stmt:
+			stmts = append(stmts, reverseTreeNode{
+				Node:   node,
+				Parent: parents[len(parents)-1],
+			})
+		case ast.Expr:
+			stmts = append(stmts, reverseTreeNode{
+				Node:   node,
+				Parent: parents[len(parents)-1],
+			})
+		}
 		return true
 	})
 	return
 }
 
-func listNonNilTraversableNodes(root ast.Node) {
-	_ = traverse.GetTraversableNodeForASTNode(root)
+type cutPointType int
+
+const (
+	ctpStmt = cutPointType(iota)
+	ctpExpr
+)
+
+func pickCutPoints(offspring1, offspring2 *ast.FuncDecl) (cutPoint1, cutPoint2 reverseTreeNode) {
+	subtree1stmts, subtree1exprs := listSubtreeWithParents(offspring1.Body)
+	subtree2stmts, subtree2exprs := listSubtreeWithParents(offspring2.Body)
+
+	availableCutPointTypes := []cutPointType{}
+	if len(subtree1stmts) > 0 && len(subtree2stmts) > 0 {
+		availableCutPointTypes = append(availableCutPointTypes, ctpStmt)
+	}
+	if len(subtree1exprs) > 0 && len(subtree2exprs) > 0 {
+		availableCutPointTypes = append(availableCutPointTypes, ctpExpr)
+	}
+
+	choosenCutPointType := *utilities.Pick(availableCutPointTypes)
+
+	switch choosenCutPointType {
+	case ctpStmt:
+		cutPoint1, cutPoint2 = *utilities.Pick(subtree1stmts), *utilities.Pick(subtree2stmts)
+
+	case ctpExpr:
+		cutPoint1, cutPoint2 = *utilities.Pick(subtree1exprs), *utilities.Pick(subtree2exprs)
+	}
+
+	return
 }
 
-func ModernizedCrossOver(offspring1, offspring2 *ast.FuncDecl) (ok bool) {
-	// child1, child2 = clone.FuncDecl(parent1), clone.FuncDecl(parent2)
-	subtree1, subtree2 := listSubtreeWithParents(offspring1.Body), listSubtreeWithParents(offspring2.Body)
-	cutPoint1, cutPoint2 := *utilities.Pick(subtree1), *utilities.Pick(subtree2)
+func attempt(offspring1, offspring2 *ast.FuncDecl) {
+	cutPoint1, cutPoint2 := pickCutPoints(offspring1, offspring2)
 
 	ok1 := false
 	cutPoint1.Parent = astutil.Apply(cutPoint1.Parent, func(c *astutil.Cursor) bool {
@@ -54,10 +90,26 @@ func ModernizedCrossOver(offspring1, offspring2 *ast.FuncDecl) (ok bool) {
 		}
 		return !ok2
 	}, nil)
-
-	return ok1 && ok2
 }
 
-func GeneticOperation(ctx *common.GeneticOperationContext) bool {
-
+func SubtreeSwitch(offspring1, offspring2 *ast.FuncDecl) (ok bool) {
+	for counter := 0; counter < 50; counter++ {
+		// fmt.Println("run:", counter)
+		status := func() (status bool) {
+			defer func() {
+				if r := recover(); r != nil {
+					fmt.Println(r)
+					status = false
+				} else {
+					status = true
+				}
+			}()
+			attempt(offspring1, offspring2)
+			return
+		}()
+		if status {
+			return true
+		}
+	}
+	return false
 }
