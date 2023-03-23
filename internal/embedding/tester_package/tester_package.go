@@ -1,7 +1,7 @@
 package tester_package
 
 import (
-	"tde/internal/embedding/models"
+	"path/filepath"
 	"tde/internal/utilities"
 
 	_ "embed"
@@ -15,61 +15,61 @@ import (
 //go:embed _assets/main_tde.go
 var mainFileContent string
 
-func createTDEPackage(ec *models.EmbeddingConfig) error {
-	err := os.MkdirAll(ec.TesterHeadDirPath, 0_755)
+type TestInfo struct {
+	TargetPackageImportPath string
+	TestFunctionName        string
+}
+
+func createTesterDir(testerPkgPath string) error {
+	err := os.MkdirAll(testerPkgPath, 0_755)
 	if err != nil {
-		return errors.Wrap(err, "could not create 'tde' package folder")
+		return errors.Wrap(err, "mkdir")
 	}
 	return nil
 }
 
-func prepareTemplateForMainFile(targetPackageImportPath, testFunctionName, candidateID string) (string, error) {
+func prepareTemplateForTesterFile(testInfo *TestInfo) (string, error) {
 	sw := utilities.NewStringWriter()
 	templ := template.Must(template.New("").Parse(mainFileContent))
-	err := templ.Execute(sw, struct {
-		TargetPackageImportPath string
-		TestFunctionName        string
-		CandidateID             string
-	}{targetPackageImportPath, testFunctionName, candidateID})
+	err := templ.Execute(sw, testInfo)
 	if err != nil {
-		return "", errors.Wrap(err, "could not execute the template 'main_tde.go' with given details")
+		return "", errors.Wrap(err, "execute template")
 	}
 	return sw.String(), nil
 }
 
-func writeMainFile(config *models.EmbeddingConfig) error {
-	var (
-		f   *os.File
-		err error
-	)
+func writeTesterFileContent(testerPkgDir string, content string) error {
+	f, err := os.Create(testerPkgDir)
+	if err != nil {
+		return errors.Wrap(err, "create file")
+	}
 	defer f.Close()
 
-	f, err = os.Create(config.TesterHeadFilePath)
+	_, err = fmt.Fprint(f, content)
 	if err != nil {
-		return errors.Wrap(err, "could not place file 'main_tde.go'")
-	}
-	str, err := prepareTemplateForMainFile(config.PackageImportPath, config.TestFunctionName, "00000000-0000-0000-0000-000000000002")
-	if err != nil {
-		return errors.Wrap(err, "PrepareTemplateForMainFile() is failed for 'main_tde.go'")
-	}
-	_, err = fmt.Fprint(f, str)
-	if err != nil {
-		return errors.Wrap(err, "could not write into file 'main_tde.go'")
+		return errors.Wrap(err, "fprintf")
 	}
 	return nil
 }
 
-// if the testedPkgDir
-func Inject(config *models.EmbeddingConfig) error {
+// will create the testedPkgDir/tde/main_tde.go
+func Create(testedPkgDir string, testInfo *TestInfo) error {
+	testerPkgPath := filepath.Join(testedPkgDir, "tde")
+	testerFilePath := filepath.Join(testedPkgDir, "tde/main_tde.go")
 
-	err := createTDEPackage(config)
+	err := createTesterDir(testerPkgPath)
 	if err != nil {
-		return errors.Wrap(err, "could not create tde package")
+		return errors.Wrap(err, "tester package dir")
 	}
 
-	err = writeMainFile(config)
+	content, err := prepareTemplateForTesterFile(testInfo)
 	if err != nil {
-		return errors.Wrap(err, "Could not create tester file")
+		return errors.Wrap(err, "templating for tester file")
+	}
+
+	err = writeTesterFileContent(testerFilePath, content)
+	if err != nil {
+		return errors.Wrap(err, "writing tester file content")
 	}
 
 	return nil
