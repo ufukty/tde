@@ -4,14 +4,12 @@ import (
 	"go/format"
 	"tde/internal/utilities"
 	models "tde/models/in_program_models"
-
-	"math/rand"
 )
 
 func GetFitnessArray(individuals []models.Candidate) []float64 {
 	fitnesses := []float64{}
 	for _, individual := range individuals {
-		fitnesses = append(fitnesses, individual.Fitness)
+		fitnesses = append(fitnesses, individual.Fitness.Flat())
 	}
 	return fitnesses
 }
@@ -36,14 +34,14 @@ func SelectionRouletteWheel(individuals []models.Candidate, selectionSize int) {
 	)
 
 	for i := 0; i < selectionSize; i++ {
-		rouletteBullet = rand.Float64() * upperBoundLastFitness
-		choosen = utilities.BinaryRangeSearch(cumulativeFitnesses, rouletteBullet)
+		rouletteBullet = utilities.URandFloatForCrypto() * upperBoundLastFitness
+		choosen = utilities.BisectRight(cumulativeFitnesses, rouletteBullet)
 		choosenIndividuals = append(choosenIndividuals, choosen)
 	}
 
 }
 
 func CheckSyntax(c *models.Candidate) bool {
-	_, err := format.Source(c.Body)
+	_, err := format.Source(c.File)
 	return err == nil
 }

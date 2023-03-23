@@ -10,7 +10,7 @@ import (
 )
 
 func Candidate_ProgramToNetwork(c *in_program_models.Candidate) *network_models.Candidate {
-	bodyBase64Encoded := base64.StdEncoding.EncodeToString(c.Body)
+	bodyBase64Encoded := base64.StdEncoding.EncodeToString(c.File)
 
 	return &network_models.Candidate{
 		UUID:              string(c.UUID),
@@ -27,7 +27,7 @@ func Candidate_NetworkToProgram(c *network_models.Candidate) (*in_program_models
 
 	return &in_program_models.Candidate{
 		UUID:         in_program_models.CandidateID(c.UUID),
-		Body:         bodyDecodedBytes,
+		File:         bodyDecodedBytes,
 		Fitness:      0,
 		ExecTimeInMs: 0,
 	}, nil

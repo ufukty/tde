@@ -36,3 +36,24 @@ func SyntaxCheckUnsafe(candidate ast.Node) bool {
 	}
 	return isValid
 }
+
+func ProduceCodeFromASTSafe(candidate ast.Node) ([]byte, bool, any) {
+	var (
+		isValid      = true
+		panicMessage any
+		byteSlice    = []byte{}
+	)
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicMessage = r
+				isValid = false
+			}
+		}()
+
+		if printer.Fprint(bytes.NewBuffer(byteSlice), token.NewFileSet(), candidate) == nil {
+			isValid = true
+		}
+	}()
+	return byteSlice, isValid, panicMessage
+}

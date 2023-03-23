@@ -1,5 +1,11 @@
 package runner
 
+import (
+	"archive/zip"
+	"tde/internal/embedding"
+	"tde/models/in_program_models"
+)
+
 // TODO: copy the target module into /tmp/created_dir
 
 // TODO: duplicate the package as many as the number of candidates
@@ -16,3 +22,16 @@ package runner
 
 // TODO: read main_tde output from os_stdout and parse.
 
+type Request struct {
+	GoModule           zip.File
+	EvolutionSessionID string
+	Candidates         []in_program_models.Candidate
+}
+
+func Handle(candidates []*in_program_models.Candidate) {
+
+	// copy whole original module
+	// copy the file contains target function
+
+	embedding.InitialEmbed()
+}

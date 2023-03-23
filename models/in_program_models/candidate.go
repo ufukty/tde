@@ -8,13 +8,39 @@ import (
 	"github.com/pkg/errors"
 )
 
+type Fitness struct {
+	AST      float64 // rel. printing errors (from ast)
+	Code     float64 // rel. syntax errors (compile)
+	Program  float64 // rel. runtime errors
+	Solution float64 // rel. passed tests (user-provided)
+}
+
+func (f Fitness) Flat() float64 {
+	if f.AST != 0.0 {
+		return 3.0 + f.AST
+	} else if f.Code != 0.0 {
+		return 2.0 + f.Code
+	} else if f.Program != 0.0 {
+		return 1.0 + f.Program
+	} else {
+		return f.Program
+	}
+}
+
+type CandidateASTRepresentation struct {
+	Package  *ast.Package
+	File     *ast.File
+	FuncDecl *ast.FuncDecl
+	// AllowedPackages []string
+}
+
 type CandidateID string
 
 type Candidate struct {
 	UUID         CandidateID
-	Body         []byte
-	AST          *ast.Node
-	Fitness      float64
+	File         []byte // product of AST
+	AST          CandidateASTRepresentation
+	Fitness      Fitness
 	ExecTimeInMs int
 }
 

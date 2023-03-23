@@ -33,7 +33,7 @@ func (e *Evolution) Measure(embed embedding.EmbeddingConfig) {
 
 	fmt.Println(validCandidates)
 
-	// embed.WriteCandidatesIntoFile(validCandidates)
+	// embed.WriteCandidatesIntoFile(validCandidates
 
 	// test
 
@@ -54,7 +54,7 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 		ordered = append(ordered, ind)
 	}
 	sort.Slice(ordered, func(i, j int) bool {
-		return ordered[i].Fitness < ordered[j].Fitness
+		return ordered[i].Fitness.Flat() < ordered[j].Fitness.Flat()
 	})
 	return ordered
 
@@ -62,8 +62,11 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 
 func (e *Evolution) IterateLoop(ctx context.Context) {
 
-	// selection
 
-	// reproduction
+	// TODO: evaluation
+
+	// TODO: selection
+
+	// TODO: reproduction
 
 }
