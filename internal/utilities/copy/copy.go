@@ -5,7 +5,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"syscall"
+
+	"github.com/pkg/errors"
 )
 
 func Directory(scrDir, dest string) error {
@@ -20,11 +21,6 @@ func Directory(scrDir, dest string) error {
 		fileInfo, err := os.Stat(sourcePath)
 		if err != nil {
 			return err
-		}
-
-		stat, ok := fileInfo.Sys().(*syscall.Stat_t)
-		if !ok {
-			return fmt.Errorf("failed to get raw syscall.Stat_t data for '%s'", sourcePath)
 		}
 
 		switch fileInfo.Mode() & os.ModeType {
@@ -45,9 +41,9 @@ func Directory(scrDir, dest string) error {
 			}
 		}
 
-		if err := os.Lchown(destPath, int(stat.Uid), int(stat.Gid)); err != nil {
-			return err
-		}
+		// if err := os.Lchown(destPath, int(stat.Uid), int(stat.Gid)); err != nil {
+		// 	return err
+		// }
 
 		fInfo, err := entry.Info()
 		if err != nil {
@@ -65,22 +61,21 @@ func Directory(scrDir, dest string) error {
 }
 
 func File(srcFile, dstFile string) error {
-	out, err := os.Create(dstFile)
+	dst, err := os.Create(dstFile)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "os.Create(dstFile)")
 	}
+	defer dst.Close()
 
-	defer out.Close()
-
-	in, err := os.Open(srcFile)
+	src, err := os.Open(srcFile)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "os.Open(srcFile)")
 	}
-	defer in.Close()
+	defer src.Close()
 
-	_, err = io.Copy(out, in)
+	_, err = io.Copy(dst, src)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "io.Copy(dst, src)")
 	}
 
 	return nil
