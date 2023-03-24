@@ -11,6 +11,8 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
+
 func Directory(relativePath string, includeSubfolders bool, skipDirs []string) (path string, err error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
 	if err != nil {

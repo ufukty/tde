@@ -11,21 +11,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-var DefaultExcludeDirs = []string{".git", "build", "docs", ".vscode"}
-
 type Command struct {
 	OnlyArchive bool                `long:"only-archive"`
 	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
 }
 
 func (c *Command) Run() {
-	c.ExcludeDirs = append(c.ExcludeDirs, DefaultExcludeDirs...)
-
 	modulePath, err := discovery.FindModulePath()
 	if err != nil {
 		utl.Terminate(errors.Wrap(err, "Could not find the path of Go module root"))
 	}
 
+	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
 	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs)
 	if err != nil {
 		utl.Terminate(errors.Wrap(err, "Could not create archive for module"))
