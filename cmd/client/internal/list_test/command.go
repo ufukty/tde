@@ -2,7 +2,7 @@ package list_test
 
 import (
 	astw_util "tde/internal/astw/utilities"
-	"tde/internal/discovery"
+	"tde/internal/folders/discovery"
 	"tde/internal/utilities"
 
 	"errors"

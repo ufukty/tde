@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"tde/internal/command"
-	"tde/internal/discovery"
+	"tde/internal/folders/archive"
+	"tde/internal/folders/discovery"
 	utl "tde/internal/utilities"
 
 	"github.com/pkg/errors"
@@ -25,13 +26,13 @@ func (c *Command) Run() {
 		utl.Terminate(errors.Wrap(err, "Could not find the path of Go module root"))
 	}
 
-	zipPath, err := ArchiveDirectory(modulePath, true, c.ExcludeDirs)
+	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs)
 	if err != nil {
 		utl.Terminate(errors.Wrap(err, "Could not create archive for module"))
 	}
 
+	fmt.Println("Archive path:", zipPath)
 	if c.OnlyArchive {
-		fmt.Println("Archive path:", zipPath)
 		os.Exit(0)
 	} else {
 		fmt.Println("cont")
