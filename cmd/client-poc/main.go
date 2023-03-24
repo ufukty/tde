@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tde/cmd/poc/internal/produce"
+	"tde/cmd/client-poc/internal/produce"
 	"tde/internal/command"
 )
 
