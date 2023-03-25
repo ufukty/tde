@@ -18,6 +18,10 @@ func (ap AbsolutePath) Join(imp InModulePath) AbsolutePath {
 	return AbsolutePath(filepath.Join(string(ap), string(imp)))
 }
 
+func (tmp TempPath) Join(slot SlotPath) AbsolutePath {
+	return AbsolutePath(filepath.Join(string(tmp), string(slot)))
+}
+
 func (tmp TempPath) FindInModulePath(slot SlotPath, inModule InModulePath) string {
 	return filepath.Join(
 		filepath.Join(string(tmp), string(slot)),

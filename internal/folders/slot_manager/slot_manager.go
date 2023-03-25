@@ -7,11 +7,11 @@ import (
 	"tde/models/in_program_models"
 
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"golang.org/x/exp/maps"
 )
 
 type Config struct {
@@ -43,8 +43,7 @@ func (s *Session) genNewSlotPath() (types.SlotPath, error) {
 		return "", errors.New("can't create a uuid")
 	}
 	basename := strings.Join(utilities.StringFold(strings.ReplaceAll(uuid.String(), "-", ""), 2), "/")
-	path := filepath.Join(string(s.tmp), basename)
-	return types.SlotPath(path), nil
+	return types.SlotPath(basename), nil
 }
 
 func (s *Session) createMainFolder() error {
@@ -63,7 +62,7 @@ func (s *Session) createModuleDuplicate() error {
 	}
 
 	// fmt.Println("Original module duplicated:", path)
-	err = copy_module.Module(string(s.config.OriginalModule), string(newSlotPath), true, copy_module.DefaultSkipDirs)
+	err = copy_module.Module(string(s.config.OriginalModule), string(s.tmp.Join(newSlotPath)), true, copy_module.DefaultSkipDirs)
 	if err != nil {
 		return errors.Wrap(err, "copy_module.Module")
 	}
@@ -79,9 +78,19 @@ func (s *Session) assignCandidateToASlot(candidateID in_program_models.Candidate
 	return
 }
 
-func (s *Session) printToFile(candidate *in_program_models.Candidate) {
+func (s *Session) printToFile(candidate *in_program_models.Candidate) error {
 	slot := s.slots.assigned[candidate.UUID]
-	s.tmp.FindInModulePath(slot, s.config.ImplementationFile)
+	implementationFile := s.tmp.FindInModulePath(slot, s.config.ImplementationFile)
+	f, err := os.Create(implementationFile)
+	if err != nil {
+		return errors.Wrap(err, "open implementation file to overwrite")
+	}
+	defer f.Close()
+	_, err = f.Write(candidate.File)
+	if err != nil {
+		return errors.Wrap(err, "Write")
+	}
+	return nil
 }
 
 func (s *Session) placeCandidate(candidate *in_program_models.Candidate) {
@@ -107,4 +116,8 @@ func (s *Session) PlaceCandidatesIntoSlots(candidates []*in_program_models.Candi
 	for _, candidate := range candidates {
 		s.placeCandidate(candidate)
 	}
+}
+
+func (s *Session) FreeAllSlots() {
+	s.slots.free = append(s.slots.free, maps.Values(s.slots.assigned)...)
 }
