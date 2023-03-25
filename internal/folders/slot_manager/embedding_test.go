@@ -1,6 +1,7 @@
 package slot_manager
 
 import (
+	"fmt"
 	"path/filepath"
 	"tde/internal/folders/preparation"
 	"tde/internal/folders/types"
@@ -11,7 +12,7 @@ import (
 )
 
 func Test_SlotManager(t *testing.T) {
-	absPath, err := filepath.Abs("../../")
+	absPath, err := filepath.Abs("../../../")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
@@ -27,7 +28,7 @@ func Test_SlotManager(t *testing.T) {
 	}
 
 	candidates := []*in_program_models.Candidate{}
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10; i++ {
 		candidates = append(candidates, in_program_models.NewCandidate())
 	}
 
@@ -41,4 +42,6 @@ func Test_SlotManager(t *testing.T) {
 	}
 	session := NewSession(config)
 	session.PlaceCandidatesIntoSlots(candidates)
+
+	fmt.Println(session.tmp)
 }

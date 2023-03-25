@@ -93,7 +93,12 @@ func (s *Session) placeCandidate(candidate *in_program_models.Candidate) {
 }
 
 func NewSession(config *Config) *Session {
-	s := Session{config: config}
+	s := Session{
+		config: config,
+		slots: slots{
+			free:     []types.SlotPath{},
+			assigned: map[in_program_models.CandidateID]types.SlotPath{}},
+	}
 	s.createMainFolder()
 	return &s
 }
