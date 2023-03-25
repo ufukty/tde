@@ -73,7 +73,7 @@ func (s *Session) createModuleDuplicate() error {
 }
 
 func (s *Session) assignCandidateToASlot(candidateID in_program_models.CandidateID) (slot types.SlotPath) {
-	s.slots.free, slot = slicePop(s.slots.free)
+	s.slots.free, slot = utilities.SlicePop(s.slots.free)
 	s.slots.assigned[candidateID] = slot
 	// fmt.Println("assigning", candidateID, "to folder", choosen)
 	return

@@ -107,3 +107,9 @@ func ProportionItemsToTotal[N Number](slice []N) (proportions []float64) {
 	}
 	return
 }
+
+func SlicePop[T any](slice []T) ([]T, T) {
+	lastItem := slice[len(slice)-1]
+	slice = slice[:len(slice)-1]
+	return slice, lastItem
+}
