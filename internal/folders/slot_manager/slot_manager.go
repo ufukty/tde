@@ -14,26 +14,16 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-type Config struct {
-	OriginalModule types.AbsolutePath // copy of original module that is filtered from unnecessary dirs and tester_package mounted into tested package
-
-	Package       types.InModulePath // eg. .../examples/word_reverse
-	PackageImport string             // eg. examples/word_reverse/word_reverse
-
-	ImplementationFile types.InModulePath // eg. .../examples/word_reverse/word_reverse.go
-	TestFile           types.InModulePath // eg. .../examples/word_reverse/word_reverse_tde.go
-	TestName           string             // eg. TDE_WordReverse
-}
-
 type slots struct {
 	free     []types.SlotPath
 	assigned map[in_program_models.CandidateID]types.SlotPath
 }
 
 type Session struct {
-	config *Config
-	tmp    types.TempPath // reserved in instantiation. all
-	slots  slots
+	modulePath  types.AbsolutePath
+	testDetails *types.TestDetails
+	tmp         types.TempPath // reserved in instantiation. all
+	slots       slots
 }
 
 // returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63
@@ -62,7 +52,7 @@ func (s *Session) createModuleDuplicate() error {
 	}
 
 	// fmt.Println("Original module duplicated:", path)
-	err = copy_module.Module(string(s.config.OriginalModule), string(s.tmp.Join(newSlotPath)), true, copy_module.DefaultSkipDirs)
+	err = copy_module.Module(string(s.modulePath), string(s.tmp.Join(newSlotPath)), true, copy_module.DefaultSkipDirs)
 	if err != nil {
 		return errors.Wrap(err, "copy_module.Module")
 	}
@@ -80,7 +70,7 @@ func (s *Session) assignCandidateToASlot(candidateID in_program_models.Candidate
 
 func (s *Session) printToFile(candidate *in_program_models.Candidate) error {
 	slot := s.slots.assigned[candidate.UUID]
-	implementationFile := s.tmp.FindInModulePath(slot, s.config.ImplementationFile)
+	implementationFile := s.tmp.FindInModulePath(slot, s.testDetails.ImplFuncFile)
 	f, err := os.Create(implementationFile)
 	if err != nil {
 		return errors.Wrap(err, "open implementation file to overwrite")
@@ -101,9 +91,10 @@ func (s *Session) placeCandidate(candidate *in_program_models.Candidate) {
 	s.printToFile(candidate)
 }
 
-func NewSession(config *Config) *Session {
+func NewSession(modulePath types.AbsolutePath, testDetails *types.TestDetails) *Session {
 	s := Session{
-		config: config,
+		modulePath:  modulePath,
+		testDetails: testDetails,
 		slots: slots{
 			free:     []types.SlotPath{},
 			assigned: map[in_program_models.CandidateID]types.SlotPath{}},

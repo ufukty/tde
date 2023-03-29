@@ -1,6 +1,9 @@
 package types
 
-import "path/filepath"
+import (
+	"go/ast"
+	"path/filepath"
+)
 
 type (
 	TempPath     string // absolute path. result of the MkdirTemp
@@ -27,4 +30,35 @@ func (tmp TempPath) FindInModulePath(slot SlotPath, inModule InModulePath) strin
 		filepath.Join(string(tmp), string(slot)),
 		string(inModule),
 	)
+}
+
+type ImplFuncDetails struct {
+	Name string
+	Path string
+	Line int
+}
+
+type TestFuncDetails struct {
+	Name  string
+	Path  string
+	Line  int
+	Calls []*ast.CallExpr
+}
+
+type DiscoveryResponse struct {
+	ModuleAbsolutePath      string
+	TargetPackageImportPath string
+}
+
+type TestDetails struct {
+	PackagePath   InModulePath // eg. .../examples/word_reverse
+	PackageImport string       // eg. examples/word_reverse/word_reverse
+
+	ImplFuncFile InModulePath // eg. .../examples/word_reverse/word_reverse.go
+	ImplFuncName string       // eg. WordReverse
+	ImplFuncLine int
+
+	TestFuncFile InModulePath // eg. .../examples/word_reverse/word_reverse_tde.go
+	TestFuncName string       // eg. TDE_WordReverse
+	TestFuncLine int
 }

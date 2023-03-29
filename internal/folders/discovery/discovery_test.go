@@ -15,17 +15,17 @@ func Test_FindImportPath(t *testing.T) {
 		err  error
 	)
 
-	path, err = FindImportPathOfThePackage()
+	path, err = GetImportPathOfPackage()
 	if err != nil {
 		t.Error(errors.Wrap(err, "failed on finding import path"))
-	} else if path != "tde/internal/discovery" {
+	} else if path != "tde/internal/folders/discovery" {
 		t.Error(errors.Wrapf(err, "got the wrong import path '%s'", path))
 	}
 
 	fmt.Println("Import path for package:", path)
 
 	initialDir, _ := utilities.CurrentDir()
-	err = os.Chdir("../../examples/word-reverse/word_reverse")
+	err = os.Chdir("../../../examples/word_reverse")
 	if err != nil {
 		t.Error(errors.Wrap(err, "chdir is failed"))
 	}
@@ -36,10 +36,10 @@ func Test_FindImportPath(t *testing.T) {
 		}
 	}()
 
-	path, err = FindImportPathOfThePackage()
+	path, err = GetImportPathOfPackage()
 	if err != nil {
 		t.Error(errors.Wrap(err, "failed on finding import path"))
-	} else if path != "tde/examples/word-reverse/word_reverse" {
+	} else if path != "tde/examples/word_reverse" {
 		t.Error(errors.Wrapf(err, "got the wrong import path '%s'", path))
 	}
 
@@ -47,7 +47,7 @@ func Test_FindImportPath(t *testing.T) {
 }
 
 func Test_DetectTestFunctions(t *testing.T) {
-	fns, err := DiscoverFile("../../examples/word-reverse/word_reverse/word_reverse_tde.go")
+	fns, err := DiscoverTestFileForTestFuncDetails("../../../", "../../../examples/word_reverse/word_reverse_tde.go")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed to detect positions and names of test functions that is in the user-provided test file"))
 	} else if len(fns) != 1 {
@@ -56,4 +56,18 @@ func Test_DetectTestFunctions(t *testing.T) {
 		t.Errorf("Want 'TDE_Word_Reverse' got '%s'", fns[0].Name)
 	}
 	fmt.Println(fns)
+}
+
+func Test_GetPackagePathInModule(t *testing.T) {
+	mod, err := GetModulePath()
+	if err != nil {
+		t.Error(errors.Wrapf(err, "prep"))
+	}
+
+	pkgRelMod, err := GetPackagePathInModule(mod)
+	if err != nil {
+		t.Error(errors.Wrapf(err, "return"))
+	}
+
+	fmt.Println(pkgRelMod)
 }

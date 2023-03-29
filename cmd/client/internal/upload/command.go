@@ -17,7 +17,7 @@ type Command struct {
 }
 
 func (c *Command) Run() {
-	modulePath, err := discovery.FindModulePath()
+	modulePath, err := discovery.GetModulePath()
 	if err != nil {
 		utl.Terminate(errors.Wrap(err, "Could not find the path of Go module root"))
 	}

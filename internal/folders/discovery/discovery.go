@@ -1,9 +1,9 @@
 package discovery
 
 import (
+	"os"
 	"path/filepath"
 	"tde/internal/utilities"
-	"tde/models/in_program_models"
 
 	"github.com/pkg/errors"
 )
@@ -13,7 +13,7 @@ var (
 )
 
 // Returns the import path for the package inside working directory
-func FindImportPathOfThePackage() (string, error) {
+func GetImportPathOfPackage() (string, error) {
 	out, _, err := utilities.RunCommandForOutput("go", "list")
 	if err != nil {
 		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
@@ -21,8 +21,20 @@ func FindImportPathOfThePackage() (string, error) {
 	return utilities.StripOnlyLineFromCommandOuput(out)
 }
 
+func GetPackagePathInModule(modulePath string) (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", errors.Wrap(err, "get working directory")
+	}
+	wdRelToMod, err := filepath.Rel(modulePath, wd)
+	if err != nil {
+		return "", errors.Wrap(err, "get relative path of working dir to module root")
+	}
+	return wdRelToMod, nil
+}
+
 // Returns the absolute path of the module that working directory is in it
-func FindModulePath() (string, error) {
+func GetModulePath() (string, error) {
 	path, _, err := utilities.RunCommandForOutput("go", "env", "GOMOD")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
@@ -37,17 +49,12 @@ func FindModulePath() (string, error) {
 	return filepath.Dir(path), nil
 }
 
-func Discover() (*in_program_models.DiscoveryResponse, error) {
-	modulePath, err := FindModulePath()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on finding module absoute path")
-	}
-	packageImportPath, err := FindImportPathOfThePackage()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on target package's import path")
-	}
-	return &in_program_models.DiscoveryResponse{
-		ModuleAbsolutePath:      modulePath,
-		TargetPackageImportPath: packageImportPath,
-	}, nil
-}
+// func GetModulePathOfLocation(location string) (string, error) {
+// 	cmd := exec.Command("go", "env", "GOMOD")
+// 	cmd.Dir = location
+// 	modPath, err := cmd.Output()
+// 	if err != nil {
+// 		return "", errors.Wrap(err, "go env GOMOD")
+// 	}
+// 	return string(modPath), nil
+// }

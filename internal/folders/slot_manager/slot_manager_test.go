@@ -34,15 +34,17 @@ func Test_SlotManager(t *testing.T) {
 		candidates = append(candidates, cand)
 	}
 
-	config := &Config{
-		OriginalModule:     types.AbsolutePath(clone),
-		Package:            types.InModulePath("examples/word_reverse"),
-		PackageImport:      "tde/examples/word_reverse",
-		ImplementationFile: types.InModulePath("examples/word_reverse/word_reverse.go"),
-		TestFile:           types.InModulePath("examples/word_reverse/word_reverse_tde.go"),
-		TestName:           "TDE_WordReverse",
-	}
-	session := NewSession(config)
+	var (
+		modulePath = types.AbsolutePath(clone)
+		config     = &types.TestDetails{
+			PackagePath:   types.InModulePath("examples/word_reverse"),
+			PackageImport: "tde/examples/word_reverse",
+			ImplFuncFile:  types.InModulePath("examples/word_reverse/word_reverse.go"),
+			TestFuncFile:  types.InModulePath("examples/word_reverse/word_reverse_tde.go"),
+			TestFuncName:  "TDE_WordReverse",
+		}
+	)
+	session := NewSession(modulePath, config)
 	session.PlaceCandidatesIntoSlots(candidates)
 
 	fmt.Println(session.tmp)

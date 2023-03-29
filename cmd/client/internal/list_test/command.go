@@ -19,7 +19,7 @@ type Command struct {
 func (c *Command) validateArgs() {
 	if c.Root == "" {
 		var err error
-		c.Root, err = discovery.FindModulePath()
+		c.Root, err = discovery.GetModulePath()
 		if err != nil {
 			utilities.Terminate("Could not detect module root:", err)
 		}
@@ -68,7 +68,7 @@ func PrintTDEFunction(path string, line int, function string, last bool) {
 	)
 }
 
-func PrintTargetFunction(path string, line int, function string, lastInLevel bool, contFirstLevel bool) {
+func printTestFunc(path string, line int, function string, lastInLevel bool, contFirstLevel bool) {
 	headerPrefix := "\033[1;35m"
 	headerSuffix := "\033[1;0m"
 	treeInd := ""
@@ -92,16 +92,16 @@ func PrintTargetFunction(path string, line int, function string, lastInLevel boo
 func (c *Command) Run() {
 	c.validateArgs()
 
-	tests, err := discovery.DiscoverSubdirs(c.Root)
-	if err != nil {
-		utilities.Terminate("Failed to detect test functions:", err)
-	}
-
-	root, err := discovery.FindModulePath()
+	root, err := discovery.GetModulePath()
 	if err != nil {
 		utilities.Terminate("Failed to detect module root path.")
 	}
 	PrintModule(filepath.Base(root), filepath.Dir(root))
+
+	tests, err := discovery.DiscoverSubdirsForTestFuncDetails(root, root)
+	if err != nil {
+		utilities.Terminate("Failed to detect test functions:", err)
+	}
 
 	for i, test := range tests {
 		rel, err := filepath.Rel(root, test.Path)
@@ -128,28 +128,28 @@ func (c *Command) Run() {
 				return nil, false
 			}
 
-			targetFuncFile, targetFuncName := discovery.GetTargetFuncForTDEFunc(test.Path, funcName)
+			implFuncFile, implFuncName := discovery.GetExpectedImplFileAndImplFuncName(test.Path, funcName)
 
-			targetFunc, err := discovery.FindTargetFunction(targetFuncFile, targetFuncName)
+			implFuncDetails, err := discovery.DiscoverImplFileForImplFuncDetails(root, implFuncFile, implFuncName)
 			if err != nil {
 				// fmt.Printf("\t%s(...) File not found in \"%s\": %e\n", funcName, targetFuncFile, err)
 				return nil, false
 			}
 
-			rel, err := filepath.Rel(root, targetFunc.Path)
+			rel, err := filepath.Rel(root, implFuncDetails.Path)
 			if err != nil {
-				rel = targetFunc.Path
+				rel = implFuncDetails.Path
 			}
 
 			return &Call{
 				RelativePath:  rel,
-				LineNumber:    targetFunc.Line,
+				LineNumber:    implFuncDetails.Line,
 				FunctionPrint: functionPrint,
 			}, true
 		})
 
 		for j, call := range calls {
-			PrintTargetFunction(call.RelativePath, call.LineNumber, call.FunctionPrint, j == len(calls)-1, i < len(tests)-1)
+			printTestFunc(call.RelativePath, call.LineNumber, call.FunctionPrint, j == len(calls)-1, i < len(tests)-1)
 		}
 	}
 }
