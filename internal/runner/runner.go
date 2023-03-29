@@ -1,9 +1,9 @@
 package runner
 
 import (
-	"archive/zip"
-	"tde/internal/embedding"
 	"tde/models/in_program_models"
+
+	"archive/zip"
 )
 
 // TODO: copy the target module into /tmp/created_dir
@@ -33,5 +33,4 @@ func Handle(candidates []*in_program_models.Candidate) {
 	// copy whole original module
 	// copy the file contains target function
 
-	embedding.InitialEmbed()
 }
