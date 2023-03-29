@@ -1,7 +1,9 @@
 package produce
 
 import (
+	"fmt"
 	"tde/internal/command"
+	"tde/internal/folders/discovery"
 
 	"github.com/kr/pretty"
 )
@@ -20,5 +22,11 @@ type Command struct {
 }
 
 func (c *Command) Run() {
+
+	discovery.FindModulePath()
+
+
+	
+	fmt.Println("hello world")
 	pretty.Println(c)
 }

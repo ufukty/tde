@@ -6,6 +6,9 @@ ast-inspect:
 client:
 	go build -o build/client ./cmd/client
 
+poc:
+	go build -o build/poc ./cmd/poc
+
 evolver-server:
 	go build -o build/evolver-server ./cmd/evolver-server
 
