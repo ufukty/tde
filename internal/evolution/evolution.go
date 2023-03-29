@@ -2,8 +2,6 @@ package evolution
 
 import (
 	"context"
-	"fmt"
-	"tde/internal/embedding"
 	models "tde/models/in_program_models"
 
 	"sort"
@@ -20,26 +18,6 @@ func (e *Evolution) InitPopulation(n int) {
 		// init candidate body randomly
 		e.Candidates[models.CandidateID(candidate.UUID)] = candidate
 	}
-}
-
-func (e *Evolution) Measure(embed embedding.EmbeddingConfig) {
-	validCandidates := []*models.Candidate{}
-
-	for _, candidate := range e.Candidates {
-		if CheckSyntax(candidate) {
-			validCandidates = append(validCandidates, candidate)
-		}
-	}
-
-	fmt.Println(validCandidates)
-
-	// embed.WriteCandidatesIntoFile(validCandidates
-
-	// test
-
-	// count failed assert rate
-
-	// penalty for bloat
 }
 
 func (e *Evolution) Select() {
@@ -61,7 +39,6 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 }
 
 func (e *Evolution) IterateLoop(ctx context.Context) {
-
 
 	// TODO: evaluation
 
