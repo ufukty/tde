@@ -28,7 +28,7 @@ func Candidate_NetworkToProgram(c *network_models.Candidate) (*in_program_models
 	return &in_program_models.Candidate{
 		UUID:         in_program_models.CandidateID(c.UUID),
 		File:         bodyDecodedBytes,
-		Fitness:      0,
+		Fitness:      in_program_models.Fitness{},
 		ExecTimeInMs: 0,
 	}, nil
 }
