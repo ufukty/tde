@@ -2,8 +2,19 @@ package evaluation
 
 import (
 	"go/ast"
+	"tde/internal/folders/slot_manager"
 	"tde/models/in_program_models"
 )
+
+type Evaluator struct {
+	SlotManagerSession *slot_manager.Session
+}
+
+func NewEvaluator(slotManagerSession *slot_manager.Session) *Evaluator {
+	return &Evaluator{
+		SlotManagerSession: slotManagerSession,
+	}
+}
 
 // FIXME: count errors on code creation
 func syntaxCheckAndProduceCode(candidates []*in_program_models.Candidate) {
