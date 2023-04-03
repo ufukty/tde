@@ -32,7 +32,7 @@ func (c *Command) Run() {
 		utilities.Terminate("Test name is not specified. Run tde help")
 	}
 
-	testDetails, err := discovery.ResolveTestDetails(c.TestName)
+	testDetails, err := discovery.ResolveTestDetailsInCurrentDir(c.TestName)
 	if err != nil {
 		utilities.Terminate("Could not find the test named", c.TestName, err)
 	}

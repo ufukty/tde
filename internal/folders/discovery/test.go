@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func ResolveTestDetails(testName string) (*types.TestDetails, error) {
+func ResolveTestDetailsInCurrentDir(testName string) (*types.TestDetails, error) {
 	modPath, pkgPathInMod, importPath, err := WhereAmI()
 	if err != nil {
 		return nil, errors.Wrap(err, "WhereAmI")
