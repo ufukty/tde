@@ -1,7 +1,6 @@
 package evaluation
 
 import (
-	"go/ast"
 	"tde/internal/folders/slot_manager"
 	"tde/models/in_program_models"
 )
@@ -42,11 +41,10 @@ func syntaxCheckAndProduceCode(candidates []*in_program_models.Candidate) {
 // TODO: Send whole generation into sandboxed environment
 // TODO: Get test results
 // TODO: Return test results
-func Pipeline(originalPkg *ast.Package, candidates []*in_program_models.Candidate) {
+func (e *Evaluator) Pipeline(candidates []*in_program_models.Candidate) {
 	syntaxCheckAndProduceCode(candidates)
+	e.SlotManagerSession.PlaceCandidatesIntoSlots(candidates)
 
-	// for _, candidate := range candidates {
-	// 	embedding.NewEmbeddingConfig()
-	// }
-
+	// compile each slot
+	// 
 }

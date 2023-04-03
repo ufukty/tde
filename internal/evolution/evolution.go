@@ -2,14 +2,27 @@ package evolution
 
 import (
 	"context"
+	"tde/internal/evaluation"
+	"tde/internal/folders/slot_manager"
 	models "tde/models/in_program_models"
 
 	"sort"
+
+	"golang.org/x/exp/maps"
 )
 
 type Evolution struct {
+	Evaluation *evaluation.Evaluator
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
+}
+
+func NewEvolution(slotManagerSession *slot_manager.Session) *Evolution {
+	return &Evolution{
+		Evaluation: evaluation.NewEvaluator(slotManagerSession),
+		HallOfFame: map[int]*models.Candidate{},
+		Candidates: map[models.CandidateID]*models.Candidate{},
+	}
 }
 
 func (e *Evolution) InitPopulation(n int) {
@@ -39,8 +52,7 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 }
 
 func (e *Evolution) IterateLoop(ctx context.Context) {
-
-	// TODO: evaluation
+	e.Evaluation.Pipeline(maps.Values(e.Candidates))
 
 	// TODO: selection
 
