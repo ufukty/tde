@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	command.RegisterCommand("prepare", &produce.Command{})
+	command.RegisterCommand("produce", &produce.Command{})
 
 	command.Route()
 }
