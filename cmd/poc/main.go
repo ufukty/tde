@@ -1,12 +1,12 @@
 package main
 
 import (
-	"tde/cmd/poc/internal/prepare"
+	"tde/cmd/poc/internal/produce"
 	"tde/internal/command"
 )
 
 func main() {
-	command.RegisterCommand("prepare", &prepare.Command{})
+	command.RegisterCommand("prepare", &produce.Command{})
 
 	command.Route()
 }
