@@ -37,11 +37,12 @@ func SyntaxCheckUnsafe(candidate ast.Node) bool {
 	return isValid
 }
 
-func ProduceCodeFromASTSafe(candidate ast.Node) ([]byte, bool, any) {
+// TODO: Write right into the target file instead use memory as intermediate
+func ProduceCodeFromASTSafe(candidate ast.Node) (*bytes.Buffer, bool, any) {
 	var (
 		isValid      = true
 		panicMessage any
-		byteSlice    = []byte{}
+		buffer       = bytes.NewBuffer([]byte{})
 	)
 	func() {
 		defer func() {
@@ -51,9 +52,9 @@ func ProduceCodeFromASTSafe(candidate ast.Node) ([]byte, bool, any) {
 			}
 		}()
 
-		if printer.Fprint(bytes.NewBuffer(byteSlice), token.NewFileSet(), candidate) == nil {
+		if printer.Fprint(buffer, token.NewFileSet(), candidate) == nil {
 			isValid = true
 		}
 	}()
-	return byteSlice, isValid, panicMessage
+	return buffer, isValid, panicMessage
 }

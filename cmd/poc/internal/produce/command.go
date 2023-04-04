@@ -1,32 +1,34 @@
 package produce
 
 import (
-	"context"
 	"tde/internal/command"
+	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
 	"tde/internal/folders/preparation"
 	"tde/internal/folders/slot_manager"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
+	"tde/models/in_program_models"
 
-	"github.com/kr/pretty"
+	"context"
+	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 type Command struct {
-	N        int                 `short:"n" default:"10"`
-	Exclude  command.MultiString `long:"exclude" short:"e"` // TODO:
-	TestName string              `precedence:"0"`
-
-	Timeout    int                 `long:"timeout" default:"10"`
-	Runner     string              `long:"runner"`
-	Continue   string              `long:"continue" short:"c" default:"10"`
-	Model      string              `long:"model" default:"0.1"`
-	Ratios     string              `long:"ratios" default:"10/1"`
-	Population int                 `long:"population" default:"1000"`
-	Iterate    int                 `long:"iterate" default:"10"`
-	Size       int                 `long:"size" default:"1000"`
-	Package    command.MultiString `long:"package" short:"p"` // packages allowed to import
+	Timeout    int                 `long:"timeout" default:"10"`            // in seconds
+	Runner     string              `long:"runner"`                          // ip address
+	Continue   string              `long:"continue" short:"c" default:"10"` // session
+	Model      string              `long:"model" default:"0.1"`             //
+	Ratios     string              `long:"ratios" default:"10/1"`           //
+	Population int                 `long:"population" default:"1000"`       //
+	Iterate    int                 `long:"iterate" default:"10"`            //
+	Size       int                 `long:"size" default:"1000"`             //
+	Package    command.MultiString `long:"package" short:"p"`               // packages allowed to import
+	Exclude    command.MultiString `long:"exclude" short:"e"`               // TODO:
+	TestName   string              `precedence:"0"`
 }
 
 func (c *Command) Run() {
@@ -40,26 +42,26 @@ func (c *Command) Run() {
 		utilities.Terminate("Could not prepare the module", err)
 	}
 
-	pretty.Println(c)
-	pretty.Println(prepPath)
-
 	testDetails, err := discovery.ResolveTestDetailsInCurrentDir(c.TestName)
 	if err != nil {
 		utilities.Terminate("Could not find test details")
 	}
 
-	var config = &types.TestDetails{
-		PackagePath:   types.InModulePath(pkgInMod),
-		PackageImport: importPath,
-		ImplFuncFile:  testDetails.ImplFuncFile,
-		TestFuncFile:  testDetails.TestFuncFile,
-		TestFuncName:  c.TestName,
+	evolutionTarget, err := in_program_models.NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
+	if err != nil {
+		utilities.Terminate("Failed in slot_manager.NewSession()", err)
 	}
-	var session = slot_manager.NewSession(prepPath, config)
-	var evolution = evolution.NewEvolution(session)
-	evolution.InitPopulation(c.N)
 
-	evolution.IterateLoop(context.Background())
+	var session = slot_manager.NewSession(prepPath, testDetails)
+	var evaluator = evaluation.NewEvaluator(session)
+	var evolution = evolution.NewEvolution(evaluator, evolutionTarget)
 
-	pretty.Print(evolution.Evaluation.SlotManagerSession)
+	evolution.InitPopulation(c.Population)
+
+	for i := 0; i < c.Iterate; i++ {
+		fmt.Printf("Iteration: %d\n", i)
+		evolution.IterateLoop(context.Background())
+	}
+
+	spew.Dump(evolution.Evaluation.SlotManagerSession)
 }

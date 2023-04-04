@@ -29,7 +29,7 @@ func Test_SlotManager(t *testing.T) {
 
 	candidates := []*in_program_models.Candidate{}
 	for i := 0; i < 10; i++ {
-		cand := in_program_models.NewCandidate()
+		cand := &in_program_models.Candidate{}
 		cand.File = []byte(`hello world`)
 		candidates = append(candidates, cand)
 	}

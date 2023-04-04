@@ -1,6 +1,9 @@
 package in_program_models
 
 import (
+	"tde/internal/astw/clone"
+	astw_utl "tde/internal/astw/utilities"
+
 	"go/ast"
 	"log"
 
@@ -28,42 +31,43 @@ func (f Fitness) Flat() float64 {
 }
 
 type CandidateASTRepresentation struct {
-	Package  *ast.Package
-	File     *ast.File
-	FuncDecl *ast.FuncDecl
+	Package  *ast.Package  // NOT cloned from original, read access only
+	File     *ast.File     // cloned from original, safe to manipulate
+	FuncDecl *ast.FuncDecl // cloned from original, safe to manipulate
 	// AllowedPackages []string
 }
 
 type CandidateID string
 
+type BreedID string
+
 type Candidate struct {
 	UUID         CandidateID
+	BreedID      BreedID
 	File         []byte // product of AST
 	AST          CandidateASTRepresentation
 	Fitness      Fitness
 	ExecTimeInMs int
 }
 
-func NewCandidate() *Candidate {
+func NewCandidate(pkg *ast.Package, file *ast.File, funcDecl *ast.FuncDecl) (*Candidate, error) {
 	newUUID, err := uuid.NewUUID()
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create an UUID for new Individual"))
 	}
+
+	cloneFile := clone.File(file)
+	clondeFuncDecl, err := astw_utl.FindFuncDecl(cloneFile, funcDecl.Name.Name)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to find 'funcDecl.Name.Name' in the 'file' after cloned it")
+	}
+
 	return &Candidate{
 		UUID: CandidateID(newUUID.String()),
-	}
+		AST: CandidateASTRepresentation{
+			Package:  pkg,
+			File:     cloneFile,
+			FuncDecl: clondeFuncDecl,
+		},
+	}, nil
 }
-
-// func (c *Candidate) Measure() {
-// 	if !c.CheckSyntax() {
-// 		c.Fitness = 1.1 // fitness for invalid-syntax programs exceeds the "1.0" treshold
-// 		return
-// 	}
-
-// 	// t := &Testing{}
-// 	// var timeStart = time.Now()
-// 	// (*(i.TestFunction))(t)
-
-// 	// i.Fitness = float64(t.TotalErrors) / float64(t.TotalCalls)
-// 	// i.ExecTimeInMs = int(time.Since(timeStart))
-// }
