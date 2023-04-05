@@ -1,4 +1,4 @@
-package in_program_models
+package models
 
 type AccountParameters struct {
 	RemainingCredits int

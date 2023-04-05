@@ -1,4 +1,4 @@
-package in_program_models
+package models
 
 import (
 	"tde/internal/astw/clone"

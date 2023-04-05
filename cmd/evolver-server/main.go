@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"tde/internal/evolution"
-	"tde/internal/server"
 )
 
 // TODO: Listen endpoints for:
@@ -20,7 +19,7 @@ func StartEvolution(input string, test string, populationSize int) { // FIXME: a
 
 func main() {
 
-	server.NewServer(6000)
+	// server.NewServer(6000)
 
 	// t := Testing{}
 
