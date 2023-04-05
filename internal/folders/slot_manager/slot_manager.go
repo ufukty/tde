@@ -1,6 +1,7 @@
 package slot_manager
 
 import (
+	"path/filepath"
 	"tde/internal/folders/copy_module"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
@@ -111,4 +112,8 @@ func (s *Session) PlaceCandidatesIntoSlots(candidates []*models.Candidate) {
 
 func (s *Session) FreeAllSlots() {
 	s.slots.free = append(s.slots.free, maps.Values(s.slots.assigned)...)
+}
+
+func (s *Session) GetPackagePathForCandidate(candidateID models.CandidateID) string {
+	return filepath.Join(string(s.tmp), string(s.slots.assigned[candidateID]), string(s.testDetails.PackagePath))
 }
