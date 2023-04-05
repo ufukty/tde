@@ -5,7 +5,7 @@ package main
 
 import (
 	targetPackage "{{ .TargetPackageImportPath }}"
-	"tde/models/in_program_models"
+	"tde/models"
 	"tde/pkg/tde"
 
 	"flag"
@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 	var (
 		testFunction  = targetPackage.{{ .TestFunctionName }}
-		candidateUUID = in_program_models.CandidateID(candidateUUID)
+		candidateUUID = models.CandidateID(candidateUUID)
 		e			  = tde.NewE(candidateUUID)
 	)
 	testFunction(e)
