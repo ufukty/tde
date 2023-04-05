@@ -4,7 +4,7 @@ import (
 	"tde/internal/folders/copy_module"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
-	"tde/models/in_program_models"
+	"tde/models"
 
 	"os"
 	"strings"
@@ -16,7 +16,7 @@ import (
 
 type slots struct {
 	free     []types.SlotPath
-	assigned map[in_program_models.CandidateID]types.SlotPath
+	assigned map[models.CandidateID]types.SlotPath
 }
 
 type Session struct {
@@ -61,14 +61,14 @@ func (s *Session) createModuleDuplicate() error {
 	return nil
 }
 
-func (s *Session) assignCandidateToASlot(candidateID in_program_models.CandidateID) (slot types.SlotPath) {
+func (s *Session) assignCandidateToASlot(candidateID models.CandidateID) (slot types.SlotPath) {
 	s.slots.free, slot = utilities.SlicePop(s.slots.free)
 	s.slots.assigned[candidateID] = slot
 	// fmt.Println("assigning", candidateID, "to folder", choosen)
 	return
 }
 
-func (s *Session) printToFile(candidate *in_program_models.Candidate) error {
+func (s *Session) printToFile(candidate *models.Candidate) error {
 	slot := s.slots.assigned[candidate.UUID]
 	implementationFile := s.tmp.FindInModulePath(slot, s.testDetails.ImplFuncFile)
 	f, err := os.Create(implementationFile)
@@ -83,7 +83,7 @@ func (s *Session) printToFile(candidate *in_program_models.Candidate) error {
 	return nil
 }
 
-func (s *Session) placeCandidate(candidate *in_program_models.Candidate) {
+func (s *Session) placeCandidate(candidate *models.Candidate) {
 	if len(s.slots.free) == 0 {
 		s.createModuleDuplicate()
 	}
@@ -97,13 +97,13 @@ func NewSession(modulePath types.AbsolutePath, testDetails *types.TestDetails) *
 		testDetails: testDetails,
 		slots: slots{
 			free:     []types.SlotPath{},
-			assigned: map[in_program_models.CandidateID]types.SlotPath{}},
+			assigned: map[models.CandidateID]types.SlotPath{}},
 	}
 	s.createMainFolder()
 	return &s
 }
 
-func (s *Session) PlaceCandidatesIntoSlots(candidates []*in_program_models.Candidate) {
+func (s *Session) PlaceCandidatesIntoSlots(candidates []*models.Candidate) {
 	for _, candidate := range candidates {
 		s.placeCandidate(candidate)
 	}
