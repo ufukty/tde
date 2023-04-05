@@ -3,7 +3,7 @@ package evolution
 import (
 	"go/format"
 	"tde/internal/utilities"
-	models "tde/models/in_program_models"
+	"tde/models"
 )
 
 func GetFitnessArray(individuals []models.Candidate) []float64 {

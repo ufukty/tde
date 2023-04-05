@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"tde/internal/folders/preparation"
 	"tde/internal/folders/types"
-	"tde/models/in_program_models"
+	"tde/models"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -27,9 +27,9 @@ func Test_SlotManager(t *testing.T) {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
 
-	candidates := []*in_program_models.Candidate{}
+	candidates := []*models.Candidate{}
 	for i := 0; i < 10; i++ {
-		cand := &in_program_models.Candidate{}
+		cand := &models.Candidate{}
 		cand.File = []byte(`hello world`)
 		candidates = append(candidates, cand)
 	}

@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"tde/models/in_program_models"
+	"tde/models"
 
 	"archive/zip"
 )
@@ -25,10 +25,10 @@ import (
 type Request struct {
 	GoModule           zip.File
 	EvolutionSessionID string
-	Candidates         []in_program_models.Candidate
+	Candidates         []models.Candidate
 }
 
-func Handle(candidates []*in_program_models.Candidate) {
+func Handle(candidates []*models.Candidate) {
 
 	// copy whole original module
 	// copy the file contains target function

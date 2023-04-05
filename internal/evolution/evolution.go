@@ -4,7 +4,7 @@ import (
 	"context"
 	"go/ast"
 	"tde/internal/evaluation"
-	models "tde/models/in_program_models"
+	"tde/models"
 
 	"sort"
 
@@ -60,7 +60,6 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 		return ordered[i].Fitness.Flat() < ordered[j].Fitness.Flat()
 	})
 	return ordered
-
 }
 
 func (e *Evolution) IterateLoop(ctx context.Context) {

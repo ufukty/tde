@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"os"
 	"tde/internal/folders/slot_manager"
-	"tde/models/in_program_models"
+	"tde/models"
 )
 
 type Evaluator struct {
@@ -20,7 +20,7 @@ func NewEvaluator(slotManagerSession *slot_manager.Session) *Evaluator {
 }
 
 // FIXME: count errors on code creation
-func syntaxCheckAndProduceCode(candidates []*in_program_models.Candidate) {
+func syntaxCheckAndProduceCode(candidates []*models.Candidate) {
 	for _, candidate := range candidates {
 		fmt.Println(printer.Fprint(os.Stdout, token.NewFileSet(), candidate.AST.File))
 		buffer, ok, err := ProduceCodeFromASTSafe(candidate.AST.File) // produce code from ast.File to capture changes in import list too
@@ -37,7 +37,7 @@ func syntaxCheckAndProduceCode(candidates []*in_program_models.Candidate) {
 // TODO: Send whole generation into sandboxed environment
 // TODO: Get test results
 // TODO: Return test results
-func (e *Evaluator) Pipeline(candidates []*in_program_models.Candidate) {
+func (e *Evaluator) Pipeline(candidates []*models.Candidate) {
 	syntaxCheckAndProduceCode(candidates)
 	e.SlotManagerSession.PlaceCandidatesIntoSlots(candidates)
 

@@ -1,7 +1,7 @@
 package tde
 
 import (
-	models "tde/models/in_program_models"
+	"tde/models"
 
 	"encoding/json"
 	"os"
