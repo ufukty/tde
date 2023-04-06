@@ -34,4 +34,8 @@ func Test_Compile(t *testing.T) {
 	}
 
 	fmt.Println(output)
+
+	if err := os.RemoveAll("../../examples/word_reverse/tde"); err != nil {
+		t.Error(errors.Wrap(err, "cleanup"))
+	}
 }

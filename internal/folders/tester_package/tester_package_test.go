@@ -20,4 +20,8 @@ func Test_Inject(t *testing.T) {
 	if _, err := os.OpenFile("../../../examples/word_reverse/tde/main_tde.go", os.O_RDONLY, os.ModeAppend); err != nil {
 		t.Error(errors.Wrap(err, "validation"))
 	}
+
+	if err := os.RemoveAll("../../../examples/word_reverse/tde"); err != nil {
+		t.Error(errors.Wrap(err, "cleanup"))
+	}
 }
