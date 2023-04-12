@@ -1,0 +1,9 @@
+post_tasks:
+  - export DIR_NAME="$( basename "$( pwd )" )"
+  - |
+    export DR_ENV_VAR_PACKER_IMAGE_DO="$(
+      doctl compute image list | \
+      grep picarus-base-focal-64 | \
+      tail -n 1 | cut -d $' ' -f 1
+    )"
+  - packer build -force -on-error=abort packer.pkr.hcl
