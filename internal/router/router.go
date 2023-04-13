@@ -45,7 +45,7 @@ func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		log.Println("Calling ListenAndServeTLS")
-		if err := srv.ListenAndServeTLS("certificates/localhost.crt", "certificates/localhost.key"); err != nil {
+		if err := srv.ListenAndServeTLS(publicCertPath, privateCertPath); err != nil {
 			log.Println(err)
 		}
 	}()
