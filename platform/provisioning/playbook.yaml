@@ -1,6 +1,11 @@
 ---
-- hosts: all
-  tasks: 
-    - name: dsd
-      yaml: 
-  
+- hosts: evolution
+  tasks:
+      - name: copy runner IPs
+        ansible.builtin.copy:
+            dest: "~/runner_ip_addresses.txt"
+            mode: "0600"
+            content: |
+                {% for host in groups['app_servers'] %}
+                  {{ hostvars["runners"]['ansible_facts']['eth0']['ipv4']['address'] }}
+                {% endfor %}
