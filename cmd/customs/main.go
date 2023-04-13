@@ -1,6 +1,10 @@
 package main
 
-import "net/http"
+import (
+	"tde/internal/router"
+
+	"github.com/gorilla/mux"
+)
 
 // TODO: accepts uploaded files
 // TODO: , puts in sandboxed directory
@@ -9,6 +13,7 @@ import "net/http"
 // TODO: uploads AST to evolver server when requested
 
 func main() {
-	http.HandleFunc("/upload", uploadFile)
-	http.ListenAndServe(":8080", nil)
+	router.StartRouter(":8080", func(r *mux.Router) {
+		r.HandleFunc("/upload", uploadFile)
+	})
 }
