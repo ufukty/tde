@@ -1,0 +1,39 @@
+2023-04-13 20:05:33,362 p=21559 u=ufuktan n=ansible | ERROR! the role 'geerlingguy.security' was not found in /Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/ansible/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64
+
+The error appears to be in '/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/ansible_playbook.yml': line 56, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  roles:
+    - geerlingguy.security
+      ^ here
+
+2023-04-13 20:08:09,260 p=21748 u=ufuktan n=ansible | ERROR! the role 'geerlingguy.security' was not found in /Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/ansible/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64
+
+The error appears to be in '/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/ansible_playbook.yml': line 56, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  roles:
+    - geerlingguy.security
+      ^ here
+
+2023-04-13 20:08:15,099 p=21760 u=ufuktan n=ansible | ERROR! URL for repository not specified, use -h for help
+2023-04-13 20:09:03,074 p=21785 u=ufuktan n=ansible | Starting galaxy role install process
+2023-04-13 20:09:03,651 p=21785 u=ufuktan n=ansible | - downloading role 'security', owned by geerlingguy
+2023-04-13 20:09:04,444 p=21785 u=ufuktan n=ansible | - downloading role from https://github.com/geerlingguy/ansible-role-security/archive/2.2.0.tar.gz
+2023-04-13 20:09:05,196 p=21785 u=ufuktan n=ansible | - extracting geerlingguy.security to /Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/ansible/roles/geerlingguy.security
+2023-04-13 20:09:05,205 p=21785 u=ufuktan n=ansible | - geerlingguy.security (2.2.0) was installed successfully
+2023-04-13 20:10:37,319 p=21945 u=ufuktan n=ansible | ERROR! the role 'user_management' was not found in /Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/ansible/roles:/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64
+
+The error appears to be in '/Users/ufuktan/belgelerim/9.universite/2.yuksek.lisans/implementations/5.2022.guz.tez.3/tde/platform/images/thesis-base-focal-64/ansible_playbook.yml': line 57, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+    - geerlingguy.security
+    - user_management
+      ^ here
+

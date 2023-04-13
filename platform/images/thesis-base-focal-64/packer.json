@@ -1,0 +1,40 @@
+{
+    "variables": {
+        "dir_name": "{{ env `DIR_NAME` }}",
+        "token_digitalocean": "{{ env `DO_API_KEY` }}",
+        "register_name": "packer-{{ user `dir_name` }}-{{ timestamp }}"
+    },
+    "builders": [
+        {
+            "type": "digitalocean",
+            "api_token": "{{ user `token_digitalocean` }}",
+
+            "ssh_username": "root",
+
+            "name": "{{ user `dir_name` }}",
+            "image": "ubuntu-20-04-x64",
+            "region": "fra1",
+            "size": "s-1vcpu-1gb",
+            "tags": ["{{ user `dir_name` }}"],
+
+            "snapshot_regions": ["fra1"],
+            "snapshot_name": "{{ user `register_name` | replace_all `_` `-` }}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "ansible/playbook.yml"
+        },
+        {
+            "type": "file",
+            "source": "../../../certificates/localhost.crt",
+            "destination": "/etc/ssl/certs/localhost.crt"
+        },
+        {
+            "type": "file",
+            "source": "../../../certificates/localhost.key",
+            "destination": "/etc/ssl/private/localhost.key"
+        }
+    ]
+}

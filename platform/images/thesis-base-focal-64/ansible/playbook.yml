@@ -1,0 +1,71 @@
+---
+- hosts: all
+  become: true
+
+  vars_files:
+      - vars.yml
+
+  pre_tasks:
+      - name: wait for cloud-init to complete its jobs (timeout=180sec)
+        shell: timeout 180 /bin/bash -c "until stat /var/lib/cloud/instance/boot-finished 2>/dev/null; do sleep 2; done"
+
+      - name: apt update
+        apt:
+            update_cache: true
+            name: "*"
+            state: latest
+
+      # "install acl package to solve the issue with ansible can't write in /tmp directory
+      - name: apt install acl tree
+        apt:
+            pkg:
+                - "{{ 'acl' if ansible_user == 'vagrant' else 'bash' }}"
+                - tree
+        retries: 10
+        delay: 1
+        register: apt_get_result
+        until: apt_get_result is succeeded
+
+      - name: reboot
+        reboot:
+            reboot_timeout: 120
+            test_command: timedatectl
+
+      - name: edit bash profile for root to enable colored output
+        blockinfile:
+            path: /root/.bash_profile
+            backup: true
+            create: true
+            marker: "# {mark} ANSIBLE MANAGED BLOCK"
+            block: |
+                export CLICOLOR=1
+                export PS1="\[\e[1m\e[91m\]\u@\h:\[\e[39m\]\W \[\e[90m\]\t \[\e[39m\]\$\[\e[0m\] "
+                export LSCOLORS=ExFxBxDxCxegedabagacad
+
+      - name: edit global bash profile to enable colored output
+        blockinfile:
+            path: /etc/bash.bashrc
+            backup: true
+            marker: "# {mark} ANSIBLE MANAGED BLOCK"
+            block: |
+                export CLICOLOR=1
+                export PS1="\[\e[1m\e[96m\]\u@\h:\[\e[39m\]\W \[\e[90m\]\t \[\e[39m\]\$\[\e[0m\] "
+                export LSCOLORS=ExFxBxDxCxegedabagacad
+
+  roles:
+      - geerlingguy.security
+      - user_management
+
+  post_tasks:
+      - name: allow fail2ban to requests coming from VPCs
+        lineinfile:
+            path: /etc/fail2ban/jail.local
+            line: |
+                [DEFAULT]
+                ignoreip = 127.0.0.1/8 ::1 10.0.0.0/8
+            create: true
+
+      - name: restart fail2ban
+        service:
+            name: fail2ban
+            state: restarted

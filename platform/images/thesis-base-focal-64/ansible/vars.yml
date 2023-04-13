@@ -1,0 +1,34 @@
+---
+root_password: &password "$6$rounds=656000$MmorzYA37voUNOZa$gxr94k2mUfOV7sj/.u7D8HW2n4tN.F2OsTLYonIsLoyaERmvMpsfyn.2QPgGxy/JuNyuuJw.jfbaApxc1bMnE1"
+user_name: &user_name ufukty
+user_password: *password
+ssh_pub_keys: |
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGzgeYYzQSKbbjU3fFkijh4B9Tx7Rz6VHfB2DJv9kKcg mbp-ed
+
+# ------------------------------------------------------------- #
+# geerlingguy.security
+# ------------------------------------------------------------- #
+
+security_ssh_port: 22
+security_ssh_password_authentication: "no"
+security_ssh_permit_root_login: "no"
+security_ssh_usedns: "no"
+security_ssh_permit_empty_password: "no"
+security_ssh_challenge_response_auth: "no"
+security_ssh_gss_api_authentication: "no"
+security_ssh_x11_forwarding: "no"
+security_ssh_restart_handler_state: restarted
+
+security_sudoers_passwordless:
+  - *user_name
+
+security_autoupdate_enabled: true
+security_autoupdate_blacklist: []
+
+# Autoupdate mail settings used on Debian/Ubuntu only.
+security_autoupdate_reboot: "false"
+security_autoupdate_reboot_time: "03:00"
+security_autoupdate_mail_to: ""
+security_autoupdate_mail_on_error: true
+
+security_fail2ban_enabled: true

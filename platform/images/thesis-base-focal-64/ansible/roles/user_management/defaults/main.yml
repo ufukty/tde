@@ -1,0 +1,9 @@
+# # NOTE: created with:
+# import passlib;
+# import passlib.hash;
+# passlib.hash.sha512_crypt.hash('xxxxxxxxxxxxxxx')
+root_password: default_password
+user_name: default_user_name
+user_password: default_password
+ssh_pub_keys: |
+  ssh-ed25519 000000000000000000000000000000000000000000000000000000000000000000000000 mbp-ed

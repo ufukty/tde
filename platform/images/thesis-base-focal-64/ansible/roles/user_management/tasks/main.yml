@@ -1,0 +1,54 @@
+---
+- name: remove root/.ssh/authorized_keys
+  remote_user: root
+  file:
+    path: /root/.ssh
+    state: absent
+
+- name: change root user's password via chpasswd
+  shell: echo 'root:{{ root_password }}' | sudo chpasswd -e
+
+- name: creating the two sudo users
+  remote_user: root
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    shell: /bin/bash
+    groups: ["sudo"]
+    append: yes
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_comment: "{{ ansible_hostname }}"
+    state: present
+  loop:
+    - name: "{{ user_name }}"
+      password: "{{ user_password }}"
+
+- name: Inserting ssh keys -> authorized_keys (for sudo user)
+  become: true
+  become_user: "{{ user_name }}"
+  copy:
+    dest: ~/.ssh/authorized_keys
+    content: "{{ ssh_pub_keys }}"
+    mode: "600"
+
+- name: resticting ssh login to 2 users created
+  remote_user: root
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - regexp: "^AllowUsers"
+      line: "AllowUsers {{ user_name }} {{ ' vagrant' if ansible_user == 'vagrant'}}"
+
+- name: restart ssh
+  service:
+    name: ssh
+    state: restarted
+
+- name: check if created user accessible through ssh
+  remote_user: "{{ user_name }}"
+  ping:
+    data: pong
