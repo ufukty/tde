@@ -7,6 +7,8 @@ terraform {
   }
 }
 
+variable "DSDS" {}
+
 variable "DIGITALOCEAN_THESIS_TOKEN" {} // env var
 
 provider "digitalocean" {
@@ -15,9 +17,9 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "runners" {
-  count = 3
+  count = 1
 
-  image  = "ubuntu-22-04-x64"
+  image  = "ubuntu-uptodate-focal-64-1681391363"
   name   = "thesis-runner-${count.index}"
   region = "fra1" // ams3
   size   = "s-1vcpu-1gb"
@@ -25,15 +27,9 @@ resource "digitalocean_droplet" "runners" {
 }
 
 resource "digitalocean_droplet" "evolution" {
-  image  = "ubuntu-22-04-x64"
+  image  = "ubuntu-uptodate-focal-64-1681391363"
   name   = "thesis-evolution"
   region = "fra1" // ams3
   size   = "s-1vcpu-1gb"
   tags   = ["thesis"]
-
-  provisioner "remote-exec" {
-    script = <<HERE
-    echo 
-HERE
-  }
 }
