@@ -1,0 +1,12 @@
+---
+- hosts: evolution
+  name: Configure evolution server
+  tasks:
+    - name: Copy runner IPs
+      ansible.builtin.copy:
+        dest: "~/runner_ip_addresses.txt"
+        mode: "0600"
+        content: |
+          {% for host in groups['runners'] %}
+          {{ hostvars[host]['ansible_host'] }}
+          {% endfor %}
