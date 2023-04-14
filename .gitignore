@@ -139,4 +139,4 @@ examples/**/tde
 
 ### Ansible ###
 *.retry
-*ansible/inventory.cfg
+inventory.cfg
