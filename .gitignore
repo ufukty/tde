@@ -136,3 +136,7 @@ artifacts
 examples/**/tde
 
 *.log
+
+### Ansible ###
+*.retry
+*ansible/inventory.cfg
