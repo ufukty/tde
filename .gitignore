@@ -134,3 +134,5 @@ artifacts
 
 # to ignore tde package created by tde
 examples/**/tde
+
+*.log
