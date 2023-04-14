@@ -20,11 +20,13 @@ variable "DIGITALOCEAN_THESIS_TOKEN" {
 # ------------------------------------------------------------- #
 
 locals {
-  region = "fra1"
-  slug   = "s-1vcpu-1gb"
-  #   user_name        = "a4v95e281o7hvmc"
-  base_image_name  = "thesis-base-focal-64"
-  date_time_string = formatdate("YY-MM-DD-hh-mm-ss", timestamp())
+  region          = "fra1"
+  slug            = "s-1vcpu-1gb"
+  base_image_name = "thesis-base-focal-64"
+  instances = {
+    runner    = 1,
+    evolution = 1,
+  }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
 }
 
@@ -49,7 +51,7 @@ resource "digitalocean_vpc" "vpc" {
 }
 
 resource "digitalocean_droplet" "runners" {
-  count = 1
+  count = local.instances.runner
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
   name   = "thesis-runner-${count.index}"
@@ -66,10 +68,10 @@ resource "digitalocean_droplet" "runners" {
 }
 
 resource "digitalocean_droplet" "evolution" {
-  count = 1
+  count = local.instances.evolution
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name   = "thesis-evolution"
+  name   = "thesis-evolution-${count.index}"
   region = local.region
   size   = local.slug
   tags   = ["thesis", "thesis-evolution"]
