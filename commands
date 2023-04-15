@@ -1,0 +1,45 @@
+#!/usr/bin/env bash -i
+
+run() {
+    echo -e "r: \033[35m$@\033[0m" && $@
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        echo -e "r: \e[31mrun has failed\e[0m" && exit $ret
+    fi
+}
+
+programs="evolver-server poc runner-server client customs" # $(ls cmd)
+
+version() {
+    echo "$(date -u +%y%m%d-%H%M%S)-$(git rev-parse HEAD | cut -b 1-8)"
+}
+
+last-build-any() {
+    find build -type d -maxdepth 2 -mindepth 1 | sort | tail -n 1 | cut -f 2 -d '/'
+}
+
+last-build() {
+    find build -name "*$@*" | sort | tail -n 1 | cut -f 2 -d '/'
+}
+
+compile() {
+    ver="$(version)"
+    mkdir -p "build/$ver"
+    run env GOOS=darwin GOARCH=amd64 go build -o "build/$ver/$@-darwin-amd64" ./cmd/$@
+    run env GOOS=linux GOARCH=amd64 go build -o "build/$ver/$@-linux-amd64" ./cmd/$@
+}
+
+compile-all() {
+    for program in $programs; do
+        compile $program
+    done
+}
+
+deploy-dev-program() {
+    IPs="$(cat platform/provisioning/ansible/inventory.cfg | grep thesis-evolution | cut -f 2 -d ' ' | cut -f 2 -d '=')"
+    echo "$IPs" | while read IP; do
+        run echo rsync "build/evolver-server-linux-amd64" "ufukty@$IP:/home/ufukty/evolver-server"
+    done
+}
+
+$@

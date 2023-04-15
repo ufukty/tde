@@ -1,4 +1,12 @@
 ---
+- hosts: localhost
+  name: preparation
+  tasks:
+    - name: Compile
+      ansible.builtin.shell:
+        chdir: ../../../
+        cmd: make evolver-server
+
 - hosts: evolution
   name: Configure evolution server
   tasks:
@@ -10,3 +18,9 @@
           {% for host in groups['runners'] %}
           {{ hostvars[host]['ansible_host'] }}
           {% endfor %}
+
+    - name: Copy binaries
+      ansible.builtin.copy:
+        src: "../../../build/evolver-server"
+        dest: "~/evolver-server"
+        mode: "0700"

@@ -1,22 +1,12 @@
-all: ast-inspect client evolver-server runner-server customs
+PROGRAMS := ast-inspect client evolver-server runner-server customs
 
-ast-inspect:
-	go build -o build/ast-inspect ./cmd/ast-inspect
+all: $(PROGRAMS)
 
-client:
-	go build -o build/client ./cmd/client
+$(PROGRAMS):
+	bash commands compile $@
 
-poc:
-	go build -o build/poc ./cmd/poc
-
-evolver-server:
-	go build -o build/evolver-server ./cmd/evolver-server
-
-customs:
-	go build -o build/customs ./cmd/customs
-
-runner-server:
-	go build -o build/runner-server ./cmd/runner-server
+deploy-dev:
+	cd platform/provisioning/ansible && ansible-playbook playbook.yml
 
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
