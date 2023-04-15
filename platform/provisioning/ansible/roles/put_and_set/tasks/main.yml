@@ -1,0 +1,27 @@
+---
+- name: Copy binaries
+  become: false
+  ansible.builtin.copy:
+    src: "{{ src_binary_location }}"
+    dest: "{{ dest_binary_location }}"
+    mode: "0700"
+    owner: ufukty
+    group: ufukty
+
+- name: sudo block
+  become: true
+  block:
+    - name: copy systemd file
+      ansible.builtin.copy:
+        src: files/etc/systemd/system/{{ program_name }}.service
+        mode: "0700"
+        dest: /etc/systemd/system/{{ program_name }}.service
+
+    - name: reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: enable runner service
+      ansible.builtin.systemd:
+        name: "{{ program_name }}"
+        state: started

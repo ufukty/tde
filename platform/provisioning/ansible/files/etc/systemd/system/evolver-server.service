@@ -1,0 +1,11 @@
+[Unit]
+Description=evolver-server
+
+[Service]
+User=ufukty
+WorkingDirectory=/home/ufukty
+ExecStart=/home/ufukty/evolver-server
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

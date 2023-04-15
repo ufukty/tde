@@ -1,0 +1,11 @@
+[Unit]
+Description=runner-server
+
+[Service]
+User=ufukty
+WorkingDirectory=/home/ufukty
+ExecStart=/home/ufukty/runner-server
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

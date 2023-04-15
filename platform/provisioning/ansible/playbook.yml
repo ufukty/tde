@@ -5,22 +5,56 @@
     - name: Compile
       ansible.builtin.shell:
         chdir: ../../../
-        cmd: make evolver-server
+        cmd: make evolver-server runner-server
 
-- hosts: evolution
-  name: Configure evolution server
+    - name: get path to latest binary
+      ansible.builtin.shell:
+        chdir: ../../../
+        cmd: bash commands last-build runner-server
+      register: register_latest_binary_path_for_runner_server
+
+    - name: get path to latest binary
+      ansible.builtin.shell:
+        chdir: ../../../
+        cmd: bash commands last-build evolver-server
+      register: register_latest_binary_path_for_evolver_server
+
+- hosts: all
+  name: Restart journald
+  become: true
+  tasks:
+    - name: Restart journald
+      systemd:
+        name: systemd-journald
+        state: restarted
+
+- hosts: runner
+  name: Configure runner server
+  tasks:
+    - name: Put the binary and set systemd item
+      import_role:
+        name: put_and_set
+      vars:
+        program_name: runner-server
+        src_binary_location: "../../../build/{{ hostvars['localhost']['register_latest_binary_path_for_runner_server'].stdout }}/runner-server-linux-amd64"
+        dest_binary_location: /home/ufukty/runner-server
+
+- hosts: evolver
+  name: Configure evolver server
   tasks:
     - name: Copy runner IPs
       ansible.builtin.copy:
         dest: "~/runner_ip_addresses.txt"
         mode: "0600"
         content: |
-          {% for host in groups['runners'] %}
+          {% for host in groups['runner'] %}
           {{ hostvars[host]['ansible_host'] }}
           {% endfor %}
 
-    - name: Copy binaries
-      ansible.builtin.copy:
-        src: "../../../build/evolver-server"
-        dest: "~/evolver-server"
-        mode: "0700"
+    - name: Put the binary and set systemd item
+      import_role:
+        name: put_and_set
+      vars:
+        program_name: evolver-server
+        src_binary_location: "../../../build/{{ hostvars['localhost']['register_latest_binary_path_for_evolver_server'].stdout }}/evolver-server-linux-amd64"
+        dest_binary_location: /home/ufukty/evolver-server

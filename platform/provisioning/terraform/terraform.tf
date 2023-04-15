@@ -24,8 +24,8 @@ locals {
   slug            = "s-1vcpu-1gb"
   base_image_name = "thesis-base-focal-64"
   instances = {
-    runner    = 1,
-    evolution = 1,
+    runner  = 1,
+    evolver = 1,
   }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
 }
@@ -50,7 +50,7 @@ resource "digitalocean_vpc" "vpc" {
   region = local.region
 }
 
-resource "digitalocean_droplet" "runners" {
+resource "digitalocean_droplet" "runner" {
   count = local.instances.runner
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
@@ -67,14 +67,14 @@ resource "digitalocean_droplet" "runners" {
   vpc_uuid    = digitalocean_vpc.vpc.id
 }
 
-resource "digitalocean_droplet" "evolution" {
-  count = local.instances.evolution
+resource "digitalocean_droplet" "evolver" {
+  count = local.instances.evolver
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name   = "thesis-evolution-${count.index}"
+  name   = "thesis-evolver-${count.index}"
   region = local.region
   size   = local.slug
-  tags   = ["thesis", "thesis-evolution"]
+  tags   = ["thesis", "thesis-evolver"]
 
   ipv6        = true
   backups     = false
@@ -88,8 +88,8 @@ resource "local_file" "inventory" {
   content = templatefile(
     "${path.module}/inventory.template.cfg",
     {
-      runner_hosts    = digitalocean_droplet.runners
-      evolution_hosts = digitalocean_droplet.evolution
+      runner  = digitalocean_droplet.runner
+      evolver = digitalocean_droplet.evolver
     }
   )
   filename = abspath("${path.module}/../ansible/inventory.cfg")
