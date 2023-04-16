@@ -92,5 +92,5 @@ resource "local_file" "inventory" {
       evolver = digitalocean_droplet.evolver
     }
   )
-  filename = abspath("${path.module}/../ansible/inventory.cfg")
+  filename = abspath("${path.module}/../2-deployment/inventory.cfg")
 }
