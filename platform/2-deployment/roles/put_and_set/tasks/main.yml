@@ -24,4 +24,4 @@
     - name: enable runner service
       ansible.builtin.systemd:
         name: "{{ program_name }}"
-        state: started
+        state: restarted
