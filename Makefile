@@ -5,8 +5,8 @@ all: $(PROGRAMS)
 $(PROGRAMS):
 	bash commands compile $@
 
-deploy-dev:
-	cd platform/provisioning/ansible && ansible-playbook playbook.yml
+dev-deploy: runner-server evolver-server
+	cd platform && make dev-deploy
 
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
