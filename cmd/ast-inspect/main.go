@@ -8,6 +8,7 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"tde/internal/astw/clone/clean_clone"
 
 	"github.com/pkg/errors"
 )
@@ -17,7 +18,8 @@ func astPrinter(fileset *token.FileSet, astFile *ast.File) error {
 }
 
 func jsonPrinter(astFile *ast.File) error {
-	return json.NewEncoder(os.Stdout).Encode(astFile)
+	cleanFile := clean_clone.File(astFile)
+	return json.NewEncoder(os.Stdout).Encode(cleanFile)
 }
 
 func prettyPrint(fileset *token.FileSet, astFile *ast.File) error {

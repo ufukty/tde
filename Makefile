@@ -13,3 +13,8 @@ test-word-reverse:
 
 initial-environment-setup:
 	go install golang.org/x/tools/cmd/stringer
+
+# example: make run-client arg1 arg2
+.PHONY: $(addprefix run-,$(PROGRAMS))
+$(addprefix run-,$(PROGRAMS)): 
+	build/$$(bash commands last-build $(subst run-,,$@))/$(subst run-,,$@)-darwin-amd64 $(filter-out $@,$(MAKECMDGOALS))
