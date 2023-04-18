@@ -21,3 +21,7 @@ func Max[N Number](a, b N) N {
 func Floor(i float64) int {
 	return int(math.Floor(i))
 }
+
+func Ceil(i float64) int {
+	return int(math.Ceil(i))
+}

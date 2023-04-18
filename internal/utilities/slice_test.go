@@ -61,3 +61,46 @@ func Test_SliceRemoveItems(t *testing.T) {
 	}
 
 }
+
+func TestRange(t *testing.T) {
+	type TestCase struct {
+		InputStart int
+		InputStop  int
+		InputStep  int
+		Want       []int
+	}
+	var testCases = []TestCase{
+		// 1 argument
+		{-1, 0, -1, []int{}},
+		{-1, 2, -1, []int{0, 1}},
+		{-1, 4, -1, []int{0, 1, 2, 3}},
+		// 2 argument
+		{0, 0, -1, []int{}},
+		{2, 2, -1, []int{}},
+		{0, 2, -1, []int{0, 1}},
+		{0, 20, -1, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}},
+		// 3 argument
+		{0, 0, 1, []int{}},
+		{0, 0, 2, []int{}},
+		{0, 0, 3, []int{}},
+		{2, 2, 3, []int{}},
+		{0, 20, 1, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}},
+		{0, 20, 2, []int{0, 2, 4, 6, 8, 10, 12, 14, 16, 18}},
+		{1, 20, 3, []int{1, 4, 7, 10, 13, 16, 19}},
+	}
+
+	var got []int
+	for i, testCase := range testCases {
+		if i < 3 {
+			got = Range(testCase.InputStop)
+		} else if i < 7 {
+			got = Range(testCase.InputStart, testCase.InputStop)
+		} else {
+			got = Range(testCase.InputStart, testCase.InputStop, testCase.InputStep)
+		}
+
+		if slices.Compare(testCase.Want, got) != 0 {
+			t.Error("validation. test index:", i, "case:", testCase, "got:", got)
+		}
+	}
+}
