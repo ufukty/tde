@@ -50,7 +50,7 @@
         mode: "0600"
         content: |
           {% for host in groups['runner'] %}
-          {{ hostvars[host]['ansible_host'] }}
+          {{ hostvars[host]['ipv4_address_private'] }}
           {% endfor %}
 
     - name: Put the binary and set systemd item
