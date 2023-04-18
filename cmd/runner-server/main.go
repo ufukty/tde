@@ -8,7 +8,7 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Ready and loaded"))
+	w.Write([]byte("Runner is ready and loaded"))
 }
 
 func main() {
