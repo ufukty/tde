@@ -153,14 +153,19 @@ func Range(args ...int) []int {
 }
 
 func DivideIntoBuckets[N any](items []N, numberOfBuckets int) (buckets [][]N) {
-	var bucketSize = Floor(float64(len(items)) / float64(numberOfBuckets))
-	for i := 0; i < numberOfBuckets; i++ {
-		var start, end = i * bucketSize, ((i + 1) * bucketSize)
+	var (
+		normalBucketSize = len(items) / numberOfBuckets
+		bigBucketSize    = normalBucketSize + 1
+		overflow         = len(items) - normalBucketSize*numberOfBuckets
+	)
+	for bucketIndex := 0; bucketIndex < numberOfBuckets; bucketIndex++ {
+		var (
+			previousBigBuckets    = Min(bucketIndex, overflow)
+			previousNormalBuckets = bucketIndex - previousBigBuckets
+			start                 = previousBigBuckets*bigBucketSize + previousNormalBuckets*normalBucketSize
+			end                   = If(bucketIndex < overflow, start+bigBucketSize, start+normalBucketSize)
+		)
 		buckets = append(buckets, items[start:end])
-	}
-	// distribute rest of the items that are not enough to distribute into every bucket equally
-	for i := bucketSize * numberOfBuckets; i < len(items); i++ {
-		buckets[i%numberOfBuckets] = append(buckets[i%numberOfBuckets], items[i])
 	}
 	return
 }
