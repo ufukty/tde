@@ -13,6 +13,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
 	golang.org/x/tools v0.7.0
+	google.golang.org/grpc v1.54.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/yaml.v3 v3.0.1
