@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "/buf";
+
+message EvolverServiceNewSessionRequest {
+    string archive_id  = 1;
+    int64  population  = 2;
+    int32  generations = 3;
+}
+
+message EvolverServiceNewSessionResponse {
+    message Candidate {
+        
+    }
+    Candidate       best    = 1;
+    int64           fitness = 2;
+}
+
+service EvolverService {
+    rpc NewSession(EvolverServiceNewSessionRequest) returns (EvolverServiceNewSessionResponse);
+}

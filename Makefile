@@ -17,6 +17,18 @@ $(addprefix run-,$(PROGRAMS)):
 	build/$$(bash commands last-build $(subst run-,,$@))/$(subst run-,,$@)-darwin-amd64 $(filter-out $@,$(MAKECMDGOALS))
 
 initial-environment-setup:
-	brew update && brew install protobuf
 	go install golang.org/x/tools/cmd/stringer
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-swagger
+	brew update && brew install protobuf bufbuild/buf/buf clang-format
+	go get -d github.com/envoyproxy/protoc-gen-validate; go install github.com/envoyproxy/protoc-gen-validate
+	
+	# Requirements of: https://github.com/grpc-ecosystem/grpc-gateway
+	go install \
+		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+		google.golang.org/protobuf/cmd/protoc-gen-go \
+		google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+	go mod tidy
+
+build-api:
+	cd api && protoc -I . -I vendor --go_out=build *.proto
