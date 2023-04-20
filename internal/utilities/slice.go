@@ -151,3 +151,16 @@ func Range(args ...int) []int {
 	}
 	return seq
 }
+
+func DivideIntoBuckets[N any](items []N, numberOfBuckets int) (buckets [][]N) {
+	var bucketSize = Floor(float64(len(items)) / float64(numberOfBuckets))
+	for i := 0; i < numberOfBuckets; i++ {
+		var start, end = i * bucketSize, ((i + 1) * bucketSize)
+		buckets = append(buckets, items[start:end])
+	}
+	// distribute rest of the items that are not enough to distribute into every bucket equally
+	for i := bucketSize * numberOfBuckets; i < len(items); i++ {
+		buckets[i%numberOfBuckets] = append(buckets[i%numberOfBuckets], items[i])
+	}
+	return
+}
