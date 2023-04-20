@@ -13,7 +13,7 @@ type Batch struct {
 func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
 	for _, bucket := range utilities.DivideIntoBuckets(batch.Candidates, noBatches) {
 		batches = append(batches, &Batch{
-			FileTemplate: "",
+			FileTemplate: batch.FileTemplate,
 			Candidates:   bucket,
 		})
 	}
