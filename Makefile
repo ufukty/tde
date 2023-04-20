@@ -31,4 +31,4 @@ initial-environment-setup:
 	go mod tidy
 
 build-api:
-	cd api && protoc -I . -I vendor --go_out=build *.proto
+	cd buf && buf generate

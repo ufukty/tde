@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package api.v1;
 
-option go_package = "/buf";
+option go_package = "/api";
 
 message EvolverServiceNewSessionRequest {
     string archive_id  = 1;
@@ -12,10 +12,9 @@ message EvolverServiceNewSessionRequest {
 
 message EvolverServiceNewSessionResponse {
     message Candidate {
-        
     }
-    Candidate       best    = 1;
-    int64           fitness = 2;
+    Candidate best    = 1;
+    int64     fitness = 2;
 }
 
 service EvolverService {
