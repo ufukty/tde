@@ -32,3 +32,4 @@ initial-environment-setup:
 
 build-api:
 	cd buf && buf generate
+	go mod tidy
