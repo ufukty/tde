@@ -1,8 +1,9 @@
 package runner_communicator
 
 import (
+	models "tde/models/program"
+
 	"fmt"
-	"tde/models"
 	"testing"
 
 	"github.com/pkg/errors"

@@ -4,7 +4,7 @@
 package main
 
 import (
-	targetPackage "{{ .TargetPackageImportPath }}"
+	targetPackage "tde/internal/folders/tester_package/demo"
 	models "tde/models/program"
 	"tde/pkg/tde"
 
@@ -25,9 +25,9 @@ func init() {
 func main() {
 	flag.Parse()
 	var (
-		testFunction  = targetPackage.{{ .TestFunctionName }}
+		testFunction  = targetPackage.TDE_WordReverse
 		candidateUUID = models.CandidateID(candidateUUID)
-		e			  = tde.NewE(candidateUUID)
+		e             = tde.NewE(candidateUUID)
 	)
 	testFunction(e)
 	e.Export()

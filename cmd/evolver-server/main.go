@@ -5,6 +5,7 @@ import (
 	"tde/internal/router"
 	"tde/internal/utilities"
 
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,6 +24,7 @@ func main() {
 		utilities.Terminate(errors.Wrap(err, "failed on launch"))
 	}
 
+	fmt.Println(rc)
 	// ec, err := evolution.
 
 	router.StartRouter(SERVER_ADDRESS, func(r *mux.Router) {

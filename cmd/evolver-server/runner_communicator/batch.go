@@ -2,7 +2,7 @@ package runner_communicator
 
 import (
 	"tde/internal/utilities"
-	"tde/models"
+	models "tde/models/program"
 )
 
 type Batch struct {

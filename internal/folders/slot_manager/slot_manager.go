@@ -1,13 +1,13 @@
 package slot_manager
 
 import (
-	"path/filepath"
 	"tde/internal/folders/copy_module"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
-	"tde/models"
+	models "tde/models/program"
 
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"

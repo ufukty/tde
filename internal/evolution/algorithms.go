@@ -1,9 +1,10 @@
 package evolution
 
 import (
-	"go/format"
 	"tde/internal/utilities"
-	"tde/models"
+	models "tde/models/program"
+
+	"go/format"
 )
 
 func GetFitnessArray(individuals []models.Candidate) []float64 {

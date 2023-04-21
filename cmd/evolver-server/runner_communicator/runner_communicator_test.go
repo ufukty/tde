@@ -1,7 +1,8 @@
 package runner_communicator
 
 import (
-	"tde/models"
+	models "tde/models/program"
+
 	"testing"
 )
 

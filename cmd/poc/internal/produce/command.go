@@ -9,7 +9,7 @@ import (
 	"tde/internal/folders/slot_manager"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
-	"tde/models"
+	models "tde/models/program"
 
 	"context"
 	"fmt"

@@ -1,8 +1,9 @@
 package cache
 
 import (
+	models "tde/models/program"
+
 	"go/ast"
-	"tde/models"
 )
 
 // type Cache[T any] interface {

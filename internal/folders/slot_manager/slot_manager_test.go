@@ -1,11 +1,12 @@
 package slot_manager
 
 import (
-	"fmt"
-	"path/filepath"
 	"tde/internal/folders/preparation"
 	"tde/internal/folders/types"
-	"tde/models"
+	models "tde/models/program"
+
+	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/pkg/errors"

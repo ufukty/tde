@@ -2,7 +2,6 @@ package runner_communicator
 
 import (
 	"fmt"
-
 	"os"
 	"strings"
 

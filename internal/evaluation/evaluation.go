@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"os"
 	"tde/internal/folders/slot_manager"
-	"tde/models"
+	models "tde/models/program"
 )
 
 type Evaluator struct {

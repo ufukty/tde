@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"tde/internal/folders/slot_manager"
-	"tde/models"
+	models "tde/models/program"
 
 	"github.com/pkg/errors"
 )

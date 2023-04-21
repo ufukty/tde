@@ -4,7 +4,7 @@ import (
 	"context"
 	"go/ast"
 	"tde/internal/evaluation"
-	"tde/models"
+	models "tde/models/program"
 
 	"sort"
 
