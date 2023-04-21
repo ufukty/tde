@@ -58,7 +58,16 @@
       }
     },
     "v1EvolverServiceNewSessionResponseCandidate": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "string"
+        },
+        "funcDeclSerializedJson": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
     }
   }
 }

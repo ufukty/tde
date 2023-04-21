@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package api.v1;
 
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/http.proto";
+import "google/api/httpbody.proto";
+
 option go_package = "/api";
 
 message EvolverServiceNewSessionRequest {
@@ -12,11 +17,18 @@ message EvolverServiceNewSessionRequest {
 
 message EvolverServiceNewSessionResponse {
     message Candidate {
+        string candidate_id              = 1;
+        bytes  func_decl_serialized_json = 2;
+        double test_result_cumulated     = 3;
     }
-    Candidate best    = 1;
-    int64     fitness = 2;
+    Candidate best = 1;
 }
 
 service EvolverService {
-    rpc NewSession(EvolverServiceNewSessionRequest) returns (EvolverServiceNewSessionResponse);
+    rpc NewSession(EvolverServiceNewSessionRequest) returns (EvolverServiceNewSessionResponse) {
+        option (google.api.http) = {
+            post: "/session"
+            body: "*"
+        };
+    }
 }

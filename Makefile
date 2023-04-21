@@ -17,8 +17,11 @@ $(addprefix run-,$(PROGRAMS)):
 	build/$$(bash commands last-build $(subst run-,,$@))/$(subst run-,,$@)-darwin-amd64 $(filter-out $@,$(MAKECMDGOALS))
 
 initial-environment-setup:
+	brew update && brew install \
+		protobuf bufbuild/buf/buf clang-format bazel
+	
 	go install golang.org/x/tools/cmd/stringer
-	brew update && brew install protobuf bufbuild/buf/buf clang-format
+
 	go get -d github.com/envoyproxy/protoc-gen-validate; go install github.com/envoyproxy/protoc-gen-validate
 	
 	# Requirements of: https://github.com/grpc-ecosystem/grpc-gateway
@@ -30,6 +33,14 @@ initial-environment-setup:
 
 	go mod tidy
 
-build-api:
+buf-generate-deps:
+	cd buf && curl
+	@echo "This might need to run twice"
+	cd buf && bazel build //...
+
+buf-generate:
 	cd buf && buf generate
 	go mod tidy
+
+buf-update:
+	cd buf && buf mod update
