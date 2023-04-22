@@ -11,5 +11,10 @@
     "markdown.preview.lineHeight": 2,
     "markdown.preview.markEditorSelection": false,
     "markdown.preview.scrollEditorWithPreview": false,
-    "markdown.preview.scrollPreviewWithEditor": false
+    "markdown.preview.scrollPreviewWithEditor": false,
+    "[go]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true
+        }
+    }
 }
