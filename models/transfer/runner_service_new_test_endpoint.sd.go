@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"net/http"
-
 	"github.com/pkg/errors"
 )
 

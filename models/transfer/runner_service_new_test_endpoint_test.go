@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"go/ast"
 	"net/http/httptest"
 	"testing"
 
@@ -36,5 +37,32 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 }
 
 func Test_RunnerService_NewTest_Request_Serialize(t *testing.T) {
+	content1 := RunnerService_NewTest_Request{
+		Candidates: []Candidate{{
+			CandidateID: "1",
+			FuncDecl: &ast.FuncDecl{
+				Name: &ast.Ident{Name: "blabla"},
+			},
+		}},
+		ArchiveID: "2",
+		FileTemplate: &ast.File{
+			Name: &ast.Ident{Name: "blibli"},
+		},
+	}
 
+	w := httptest.NewRecorder()
+	err := content1.Serialize(w)
+	if err != nil {
+		t.Error(errors.Wrapf(err, "process"))
+	}
+
+	r := httptest.NewRequest("POST", "https://localhost", w.Body)
+	content2 := RunnerService_NewTest_Request{}
+	content2.Deserialize(r)
+
+	areSame := content1.ArchiveID == content2.ArchiveID &&
+		content1.FileTemplate.Name.Name == content2.FileTemplate.Name.Name
+	if !areSame {
+		t.Error("validation")
+	}
 }

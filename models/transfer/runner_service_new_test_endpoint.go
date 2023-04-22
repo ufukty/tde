@@ -6,7 +6,7 @@ import (
 
 type Candidate struct {
 	CandidateID string
-	FuncDecl    *ast.FuncDecl
+	FuncDecl    *ast.FuncDecl `json:"func_decl"`
 }
 
 type TestResult struct {
@@ -19,7 +19,7 @@ type TestResult struct {
 type RunnerService_NewTest_Request struct {
 	Candidates   []Candidate
 	ArchiveID    string
-	FileTemplate *ast.File
+	FileTemplate *ast.File `json:"file"`
 }
 
 type RunnerService_NewTest_Response struct {
