@@ -9,7 +9,9 @@ import (
 	"log"
 	"os"
 	"tde/internal/astw/clone/clean_clone"
+	"tde/internal/astw/cp_printer"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
@@ -24,6 +26,11 @@ func jsonPrinter(astFile *ast.File) error {
 
 func prettyPrint(fileset *token.FileSet, astFile *ast.File) error {
 	return printer.Fprint(os.Stdout, fileset, astFile)
+}
+
+func spewPrint(astFile *ast.File) error {
+	_, err := spew.Println(astFile)
+	return err
 }
 
 func main() {
@@ -55,6 +62,10 @@ func main() {
 	case "file":
 	case "pretty":
 		err = prettyPrint(fset, astFile)
+	case "spew":
+		err = spewPrint(astFile)
+	case "cp":
+		cp_printer.Print(astFile)
 	default:
 		log.Fatalln("Printer not found:", os.Args[1])
 	}
