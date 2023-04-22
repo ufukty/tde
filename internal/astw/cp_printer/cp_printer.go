@@ -98,7 +98,7 @@ var tokenMap = map[string]string{
 
 var skipFields = []string{
 	"Package", "Scope", "Objects", "Imports", "Unresolved",
-	"Doc", "Obj",
+	"Doc", "Obj", "Func",
 	"TokPos", "EndPos", "StartPos", "NamePos", "Star",
 	"Opening", "Closing", "Return", "Ellipsis",
 	"Lbrace", "Rbrace", "Lparen", "Rparen",
