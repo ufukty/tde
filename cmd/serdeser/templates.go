@@ -45,18 +45,18 @@ func templateImports() *ast.GenDecl {
 	}
 }
 
-func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
+func templateNewRequest(modelIdent *ast.Ident) *ast.FuncDecl {
 	return &ast.FuncDecl{
 		Recv: &ast.FieldList{
 			List: []*ast.Field{
 				{
 					Names: []*ast.Ident{
 						{
-							Name: "s",
+							Name: "req",
 						},
 					},
 					Type: &ast.StarExpr{
-						X: structIdent,
+						X: modelIdent,
 					},
 					Tag:     nil,
 					Comment: nil,
@@ -67,7 +67,7 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 			Name: "NewRequest",
 		},
 		Type: &ast.FuncType{
-			Func:       93,
+			Func:       92,
 			TypeParams: nil,
 			Params: &ast.FieldList{
 				List: []*ast.Field{
@@ -174,20 +174,20 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 							},
 							Args: []ast.Expr{
 								&ast.Ident{
-									Name: "s",
+									Name: "req",
 								},
 							},
 						},
 					},
 				},
 				&ast.IfStmt{
-					If:   261,
+					If:   264,
 					Init: nil,
 					Cond: &ast.BinaryExpr{
 						X: &ast.Ident{
 							Name: "err",
 						},
-						OpPos: 268,
+						OpPos: 271,
 						Op:    token.NEQ,
 						Y: &ast.Ident{
 							Name: "nil",
@@ -228,7 +228,7 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 				&ast.AssignStmt{
 					Lhs: []ast.Expr{
 						&ast.Ident{
-							Name: "req",
+							Name: "httpRequest",
 						},
 						&ast.Ident{
 							Name: "err",
@@ -260,13 +260,13 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 					},
 				},
 				&ast.IfStmt{
-					If:   389,
+					If:   400,
 					Init: nil,
 					Cond: &ast.BinaryExpr{
 						X: &ast.Ident{
 							Name: "err",
 						},
-						OpPos: 396,
+						OpPos: 407,
 						Op:    token.NEQ,
 						Y: &ast.Ident{
 							Name: "nil",
@@ -307,7 +307,7 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 				&ast.ReturnStmt{
 					Results: []ast.Expr{
 						&ast.Ident{
-							Name: "req",
+							Name: "httpRequest",
 						},
 						&ast.Ident{
 							Name: "nil",
@@ -319,18 +319,342 @@ func templateNewRequest(structIdent *ast.Ident) *ast.FuncDecl {
 	}
 }
 
-func templateParseRequest(structIdent *ast.Ident) *ast.FuncDecl {
+func templateSend(requestModelIdent, responseModelIdent *ast.Ident) *ast.FuncDecl {
 	return &ast.FuncDecl{
 		Recv: &ast.FieldList{
 			List: []*ast.Field{
 				{
 					Names: []*ast.Ident{
 						{
-							Name: "s",
+							Name: "req",
 						},
 					},
 					Type: &ast.StarExpr{
-						X: structIdent,
+						X: requestModelIdent,
+					},
+					Tag:     nil,
+					Comment: nil,
+				},
+			},
+		},
+		Name: &ast.Ident{
+			Name: "Send",
+		},
+		Type: &ast.FuncType{
+			Func:       516,
+			TypeParams: nil,
+			Params: &ast.FieldList{
+				List: []*ast.Field{
+					{
+						Names: []*ast.Ident{
+							{
+								Name: "method",
+							},
+							{
+								Name: "url",
+							},
+						},
+						Type: &ast.Ident{
+							Name: "string",
+						},
+						Tag:     nil,
+						Comment: nil,
+					},
+				},
+			},
+			Results: &ast.FieldList{
+				List: []*ast.Field{
+					{
+						Names: nil,
+						Type: &ast.StarExpr{
+							X: responseModelIdent,
+						},
+						Tag:     nil,
+						Comment: nil,
+					},
+					{
+						Names: nil,
+						Type: &ast.Ident{
+							Name: "error",
+						},
+						Tag:     nil,
+						Comment: nil,
+					},
+				},
+			},
+		},
+		Body: &ast.BlockStmt{
+			List: []ast.Stmt{
+				&ast.AssignStmt{
+					Lhs: []ast.Expr{
+						&ast.Ident{
+							Name: "httpRequest",
+						},
+						&ast.Ident{
+							Name: "err",
+						},
+					},
+					Tok: token.DEFINE,
+					Rhs: []ast.Expr{
+						&ast.CallExpr{
+							Fun: &ast.SelectorExpr{
+								X: &ast.Ident{
+									Name: "req",
+								},
+								Sel: &ast.Ident{
+									Name: "NewRequest",
+								},
+							},
+							Args: []ast.Expr{
+								&ast.Ident{
+									Name: "method",
+								},
+								&ast.Ident{
+									Name: "url",
+								},
+							},
+						},
+					},
+				},
+				&ast.IfStmt{
+					If:   676,
+					Init: nil,
+					Cond: &ast.BinaryExpr{
+						X: &ast.Ident{
+							Name: "err",
+						},
+						OpPos: 683,
+						Op:    token.NEQ,
+						Y: &ast.Ident{
+							Name: "nil",
+						},
+					},
+					Body: &ast.BlockStmt{
+						List: []ast.Stmt{
+							&ast.ReturnStmt{
+								Results: []ast.Expr{
+									&ast.Ident{
+										Name: "nil",
+									},
+									&ast.CallExpr{
+										Fun: &ast.SelectorExpr{
+											X: &ast.Ident{
+												Name: "errors",
+											},
+											Sel: &ast.Ident{
+												Name: "Wrap",
+											},
+										},
+										Args: []ast.Expr{
+											&ast.Ident{
+												Name: "err",
+											},
+											&ast.BasicLit{
+												Kind:  token.STRING,
+												Value: "\"failed on creating an object for request\"",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Else: nil,
+				},
+				&ast.AssignStmt{
+					Lhs: []ast.Expr{
+						&ast.Ident{
+							Name: "httpResponse",
+						},
+						&ast.Ident{
+							Name: "err",
+						},
+					},
+					Tok: token.DEFINE,
+					Rhs: []ast.Expr{
+						&ast.CallExpr{
+							Fun: &ast.SelectorExpr{
+								X: &ast.SelectorExpr{
+									X: &ast.Ident{
+										Name: "http",
+									},
+									Sel: &ast.Ident{
+										Name: "DefaultClient",
+									},
+								},
+								Sel: &ast.Ident{
+									Name: "Do",
+								},
+							},
+							Args: []ast.Expr{
+								&ast.Ident{
+									Name: "httpRequest",
+								},
+							},
+						},
+					},
+				},
+				&ast.IfStmt{
+					If:   828,
+					Init: nil,
+					Cond: &ast.BinaryExpr{
+						X: &ast.Ident{
+							Name: "err",
+						},
+						OpPos: 835,
+						Op:    token.NEQ,
+						Y: &ast.Ident{
+							Name: "nil",
+						},
+					},
+					Body: &ast.BlockStmt{
+						List: []ast.Stmt{
+							&ast.ReturnStmt{
+								Results: []ast.Expr{
+									&ast.Ident{
+										Name: "nil",
+									},
+									&ast.CallExpr{
+										Fun: &ast.SelectorExpr{
+											X: &ast.Ident{
+												Name: "errors",
+											},
+											Sel: &ast.Ident{
+												Name: "Wrap",
+											},
+										},
+										Args: []ast.Expr{
+											&ast.Ident{
+												Name: "err",
+											},
+											&ast.BasicLit{
+												Kind:  token.STRING,
+												Value: "\"failed on sending the request\"",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Else: nil,
+				},
+				&ast.AssignStmt{
+					Lhs: []ast.Expr{
+						&ast.Ident{
+							Name: "res",
+						},
+					},
+					Tok: token.DEFINE,
+					Rhs: []ast.Expr{
+						&ast.CompositeLit{
+							Type:       responseModelIdent,
+							Elts:       nil,
+							Incomplete: false,
+						},
+					},
+				},
+				&ast.AssignStmt{
+					Lhs: []ast.Expr{
+						&ast.Ident{
+							Name: "err",
+						},
+					},
+					Tok: token.ASSIGN,
+					Rhs: []ast.Expr{
+						&ast.CallExpr{
+							Fun: &ast.SelectorExpr{
+								X: &ast.Ident{
+									Name: "res",
+								},
+								Sel: &ast.Ident{
+									Name: "DeserializeResponse",
+								},
+							},
+							Args: []ast.Expr{
+								&ast.Ident{
+									Name: "httpResponse",
+								},
+							},
+						},
+					},
+				},
+				&ast.IfStmt{
+					If:   998,
+					Init: nil,
+					Cond: &ast.BinaryExpr{
+						X: &ast.Ident{
+							Name: "err",
+						},
+						OpPos: 1005,
+						Op:    token.NEQ,
+						Y: &ast.Ident{
+							Name: "nil",
+						},
+					},
+					Body: &ast.BlockStmt{
+						List: []ast.Stmt{
+							&ast.ReturnStmt{
+								Results: []ast.Expr{
+									&ast.Ident{
+										Name: "nil",
+									},
+									&ast.CallExpr{
+										Fun: &ast.SelectorExpr{
+											X: &ast.Ident{
+												Name: "errors",
+											},
+											Sel: &ast.Ident{
+												Name: "Wrap",
+											},
+										},
+										Args: []ast.Expr{
+											&ast.Ident{
+												Name: "err",
+											},
+											&ast.BasicLit{
+												Kind:  token.STRING,
+												Value: "\"failed on parsing the response body\"",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Else: nil,
+				},
+				&ast.ReturnStmt{
+					Results: []ast.Expr{
+						&ast.UnaryExpr{
+							OpPos: 1095,
+							Op:    token.AND,
+							X: &ast.Ident{
+								Name: "res",
+							},
+						},
+						&ast.Ident{
+							Name: "nil",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func templateParseRequest(modelIdent *ast.Ident) *ast.FuncDecl {
+	return &ast.FuncDecl{
+		Recv: &ast.FieldList{
+			List: []*ast.Field{
+				{
+					Names: []*ast.Ident{
+						{
+							Name: "req",
+						},
+					},
+					Type: &ast.StarExpr{
+						X: modelIdent,
 					},
 					Tag:     nil,
 					Comment: nil,
@@ -341,7 +665,7 @@ func templateParseRequest(structIdent *ast.Ident) *ast.FuncDecl {
 			Name: "ParseRequest",
 		},
 		Type: &ast.FuncType{
-			Func:       290,
+			Func:       1105,
 			TypeParams: nil,
 			Params: &ast.FieldList{
 				List: []*ast.Field{
@@ -417,20 +741,20 @@ func templateParseRequest(structIdent *ast.Ident) *ast.FuncDecl {
 							},
 							Args: []ast.Expr{
 								&ast.Ident{
-									Name: "s",
+									Name: "req",
 								},
 							},
 						},
 					},
 				},
 				&ast.IfStmt{
-					If:   410,
+					If:   1230,
 					Init: nil,
 					Cond: &ast.BinaryExpr{
 						X: &ast.Ident{
 							Name: "err",
 						},
-						OpPos: 417,
+						OpPos: 1237,
 						Op:    token.NEQ,
 						Y: &ast.Ident{
 							Name: "nil",
@@ -455,7 +779,7 @@ func templateParseRequest(structIdent *ast.Ident) *ast.FuncDecl {
 											},
 											&ast.BasicLit{
 												Kind:  token.STRING,
-												Value: "\"failed on serialization\"",
+												Value: "\"failed on parsing the response body\"",
 											},
 										},
 									},
@@ -477,18 +801,18 @@ func templateParseRequest(structIdent *ast.Ident) *ast.FuncDecl {
 	}
 }
 
-func templateSerializeIntoResponseWriter(structIdent *ast.Ident) *ast.FuncDecl {
+func templateSerializeIntoResponseWriter(modelIdent *ast.Ident) *ast.FuncDecl {
 	return &ast.FuncDecl{
 		Recv: &ast.FieldList{
 			List: []*ast.Field{
 				{
 					Names: []*ast.Ident{
 						{
-							Name: "s",
+							Name: "res",
 						},
 					},
 					Type: &ast.StarExpr{
-						X: structIdent,
+						X: modelIdent,
 					},
 					Tag:     nil,
 					Comment: nil,
@@ -499,7 +823,7 @@ func templateSerializeIntoResponseWriter(structIdent *ast.Ident) *ast.FuncDecl {
 			Name: "SerializeIntoResponseWriter",
 		},
 		Type: &ast.FuncType{
-			Func:       704,
+			Func:       1316,
 			TypeParams: nil,
 			Params: &ast.FieldList{
 				List: []*ast.Field{
@@ -568,20 +892,20 @@ func templateSerializeIntoResponseWriter(structIdent *ast.Ident) *ast.FuncDecl {
 							},
 							Args: []ast.Expr{
 								&ast.Ident{
-									Name: "s",
+									Name: "res",
 								},
 							},
 						},
 					},
 				},
 				&ast.IfStmt{
-					If:   842,
+					If:   1458,
 					Init: nil,
 					Cond: &ast.BinaryExpr{
 						X: &ast.Ident{
 							Name: "err",
 						},
-						OpPos: 849,
+						OpPos: 1465,
 						Op:    token.NEQ,
 						Y: &ast.Ident{
 							Name: "nil",
@@ -628,7 +952,7 @@ func templateSerializeIntoResponseWriter(structIdent *ast.Ident) *ast.FuncDecl {
 	}
 }
 
-func templateDeserializeResponse(structIdent *ast.Ident) *ast.FuncDecl {
+func templateDeserializeResponse(modelIdent *ast.Ident) *ast.FuncDecl {
 	return &ast.FuncDecl{
 		Recv: &ast.FieldList{
 			List: []*ast.Field{
@@ -639,7 +963,7 @@ func templateDeserializeResponse(structIdent *ast.Ident) *ast.FuncDecl {
 						},
 					},
 					Type: &ast.StarExpr{
-						X: structIdent,
+						X: modelIdent,
 					},
 					Tag:     nil,
 					Comment: nil,
@@ -650,7 +974,7 @@ func templateDeserializeResponse(structIdent *ast.Ident) *ast.FuncDecl {
 			Name: "DeserializeResponse",
 		},
 		Type: &ast.FuncType{
-			Func:       929,
+			Func:       1544,
 			TypeParams: nil,
 			Params: &ast.FieldList{
 				List: []*ast.Field{
@@ -733,13 +1057,13 @@ func templateDeserializeResponse(structIdent *ast.Ident) *ast.FuncDecl {
 					},
 				},
 				&ast.IfStmt{
-					If:   1063,
+					If:   1678,
 					Init: nil,
 					Cond: &ast.BinaryExpr{
 						X: &ast.Ident{
 							Name: "err",
 						},
-						OpPos: 1070,
+						OpPos: 1685,
 						Op:    token.NEQ,
 						Y: &ast.Ident{
 							Name: "nil",
@@ -764,7 +1088,7 @@ func templateDeserializeResponse(structIdent *ast.Ident) *ast.FuncDecl {
 											},
 											&ast.BasicLit{
 												Kind:  token.STRING,
-												Value: "\"failed on serialization\"",
+												Value: "\"failed on parsing the response body\"",
 											},
 										},
 									},

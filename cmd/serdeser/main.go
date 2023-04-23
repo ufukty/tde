@@ -21,12 +21,12 @@ func main() {
 	}
 
 	var (
-		packageName            = file.Name
-		reqStructs, resStructs = discoverFileForStructDefinitions(file)
-		genDecl                = templateImports()
+		packageName          = file.Name
+		reqModels, resModels = discoverFileForStructDefinitions(file)
+		genDecl              = templateImports()
 	)
 
-	if len(reqStructs) == 0 && len(resStructs) == 0 {
+	if len(reqModels) == 0 && len(resModels) == 0 {
 		fmt.Println("No type definition found in the file which ends with either Request or Response.")
 		return
 	}
@@ -36,17 +36,23 @@ func main() {
 		Decls: []ast.Decl{genDecl},
 	}
 
-	for _, entity := range reqStructs {
+	for _, reqModel := range reqModels {
 		genFile.Decls = append(genFile.Decls,
-			templateNewRequest(entity),
-			templateParseRequest(entity),
+			templateNewRequest(reqModel),
+			templateParseRequest(reqModel),
 		)
 	}
 
-	for _, entity := range resStructs {
+	for _, pair := range FindReqResPairs(reqModels, resModels) {
 		genFile.Decls = append(genFile.Decls,
-			templateSerializeIntoResponseWriter(entity),
-			templateDeserializeResponse(entity),
+			templateSend(pair.Request, pair.Response),
+		)
+	}
+
+	for _, resModel := range resModels {
+		genFile.Decls = append(genFile.Decls,
+			templateSerializeIntoResponseWriter(resModel),
+			templateDeserializeResponse(resModel),
 		)
 	}
 

@@ -20,7 +20,7 @@ func checkSuffix(str, suffix string) bool {
 	return strings.LastIndex(str, suffix) == len(str)-len(suffix)
 }
 
-func discoverFileForStructDefinitions(file *ast.File) (reqStructs, resStructs []*ast.Ident) {
+func discoverFileForStructDefinitions(file *ast.File) (reqModels, resModels []*ast.Ident) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if n == nil || n == file {
 			return true
@@ -31,9 +31,9 @@ func discoverFileForStructDefinitions(file *ast.File) (reqStructs, resStructs []
 		case *ast.TypeSpec:
 			if _, ok := n.Type.(*ast.StructType); ok {
 				if checkSuffix(n.Name.Name, "Request") {
-					reqStructs = append(reqStructs, n.Name)
+					reqModels = append(reqModels, n.Name)
 				} else if checkSuffix(n.Name.Name, "Response") {
-					resStructs = append(resStructs, n.Name)
+					resModels = append(resModels, n.Name)
 				}
 			}
 			return false
@@ -49,4 +49,26 @@ func parseFile(path string) (*ast.File, error) {
 		return nil, errors.Wrap(err, "Outside error")
 	}
 	return file, nil
+}
+
+func stripSuffix(str, suffix string) string {
+	return str[0 : len(str)-len(suffix)]
+}
+
+type ReqResPair struct {
+	Request  *ast.Ident
+	Response *ast.Ident
+}
+
+func FindReqResPairs(reqModels, resModels []*ast.Ident) (pairs []ReqResPair) {
+	for _, reqModel := range reqModels {
+		reqName := stripSuffix(reqModel.Name, "Request")
+		for _, resModel := range resModels {
+			resName := stripSuffix(resModel.Name, "Response")
+			if reqName == resName {
+				pairs = append(pairs, ReqResPair{reqModel, resModel})
+			}
+		}
+	}
+	return
 }
