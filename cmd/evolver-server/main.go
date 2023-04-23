@@ -1,11 +1,11 @@
 package main
 
 import (
-	"tde/cmd/evolver-server/runner_communicator"
+	"tde/cmd/evolver-server/handlers/evolution"
+	"tde/cmd/evolver-server/internal/runner_communicator"
 	"tde/internal/router"
 	"tde/internal/utilities"
 
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,24 +24,11 @@ func main() {
 		utilities.Terminate(errors.Wrap(err, "failed on launch"))
 	}
 
-	fmt.Println(rc)
-	// ec, err := evolution.
-
 	router.StartRouter(SERVER_ADDRESS, func(r *mux.Router) {
 		// r.HandleFunc("/build", router.NotFound) // respond directory listing with 404
 		// r.PathPrefix("/build").Handler(http.StripPrefix("/build", http.FileServer(http.Dir("build"))))
 
-		r.PathPrefix("/").HandlerFunc(handler)
+		r.PathPrefix("/evolution").HandlerFunc(evolution.Handler)
+		r.PathPrefix("/results").HandlerFunc(handler)
 	})
-
-	// server.NewServer(6000)
-
-	// t := Testing{}
-
-	// provisionEnvironmentImage [x]
-	// run tests
-
-	// fitness := t.Calculate()
-	// fmt.Println(fitness)
-
 }

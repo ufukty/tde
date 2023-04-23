@@ -12,19 +12,31 @@ type (
 		FuncDecl    *ast.FuncDecl `json:"func_decl"`
 	}
 
-	TestResult struct {
-		Completed bool
-		Distance  float64
-	}
-
 	RunnerService_NewTest_Request struct {
 		Candidates   []Candidate
 		ArchiveID    string
 		FileTemplate *ast.File `json:"file"`
+		CaseID       string
 	}
 
 	RunnerService_NewTest_Response struct {
-		CandidateId string
+		Registered bool
+	}
+)
+
+type (
+	TestResult struct {
+		CandidateID string
+		Completed   bool // without run time error
+		Distance    float64
+	}
+
+	EvolverService_TestResultsAcceptance_Request struct {
 		TestResults []TestResult
+		CaseID      string
+	}
+
+	EvolverService_TestResultsAcceptance_Response struct {
+		Success bool
 	}
 )
