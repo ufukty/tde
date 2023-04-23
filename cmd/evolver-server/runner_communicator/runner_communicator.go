@@ -2,8 +2,10 @@ package runner_communicator
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+	models "tde/models/transfer"
 
 	"github.com/pkg/errors"
 )
@@ -27,14 +29,27 @@ func NewRunnerCommunicator() (*RunnerCommunicator, error) {
 	return rm, nil
 }
 
-func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) {
+func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) error {
 	fmt.Println(runner, batch)
-	// req := api.RunnerServiceCalculateRequest{
-	// 	Candidates: []*api.Candidate{},
-	// }
-	// response := api.EvolverServiceNewSessionRequest{
-	// 	BestSerialized: "",
-	// }
+
+	reqDTO := batch.GetRequestDTO()
+	req, err := reqDTO.NewRequest("POST", "https://localhost")
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+
+	resDTO := models.RunnerService_NewTest_Response{}
+	err = resDTO.DeserializeResponse(res)
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+
+	return nil
 }
 
 func (rc *RunnerCommunicator) Send(batch *Batch) {

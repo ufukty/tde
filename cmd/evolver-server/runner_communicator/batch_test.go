@@ -1,6 +1,7 @@
 package runner_communicator
 
 import (
+	"go/ast"
 	models "tde/models/program"
 
 	"fmt"
@@ -53,7 +54,9 @@ func Test_BatchDivide(t *testing.T) {
 	}
 
 	batch := &Batch{
-		FileTemplate: "package foo, decls, stmts, exprs",
+		File: &ast.File{
+			Name: &ast.Ident{Name: "blabla"},
+		},
 		Candidates: []*models.Candidate{
 			{UUID: models.CandidateID("0a40f3cd-5d02-594c-bf1a-6c5aca05edb8")},
 			{UUID: models.CandidateID("2901cbd4-72e7-5b97-9fa0-d50f863f2d0b")},
