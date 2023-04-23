@@ -23,7 +23,7 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 	r := httptest.NewRequest("POST", "https://localhost", body)
 
 	req := RunnerService_NewTest_Request{}
-	err := req.Deserialize(r)
+	err := req.ParseRequest(r)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "returned error"))
 	}
@@ -50,15 +50,13 @@ func Test_RunnerService_NewTest_Request_Serialize(t *testing.T) {
 		},
 	}
 
-	w := httptest.NewRecorder()
-	err := content1.Serialize(w)
+	req, err := content1.NewRequest("POST", "https://localhost")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "process"))
 	}
 
-	r := httptest.NewRequest("POST", "https://localhost", w.Body)
 	content2 := RunnerService_NewTest_Request{}
-	content2.Deserialize(r)
+	content2.ParseRequest(req)
 
 	areSame := content1.ArchiveID == content2.ArchiveID &&
 		content1.FileTemplate.Name.Name == content2.FileTemplate.Name.Name
