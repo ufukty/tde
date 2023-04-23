@@ -2,10 +2,8 @@ package runner_communicator
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
-	models "tde/models/transfer"
 
 	"github.com/pkg/errors"
 )
@@ -32,19 +30,8 @@ func NewRunnerCommunicator() (*RunnerCommunicator, error) {
 func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) error {
 	fmt.Println(runner, batch)
 
-	reqDTO := batch.GetRequestDTO()
-	req, err := reqDTO.NewRequest("POST", "https://localhost")
-	if err != nil {
-		return errors.Wrap(err, "")
-	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return errors.Wrap(err, "")
-	}
-
-	resDTO := models.RunnerService_NewTest_Response{}
-	err = resDTO.DeserializeResponse(res)
+	req := batch.GetRequestDTO()
+	_, err := req.Send("POST", "http://"+runner)
 	if err != nil {
 		return errors.Wrap(err, "")
 	}

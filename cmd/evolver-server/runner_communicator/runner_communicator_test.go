@@ -10,7 +10,7 @@ import (
 func Test_Send(t *testing.T) {
 	var (
 		rc = RunnerCommunicator{
-			ip_addresses: []string{"192.168.1.1", "192.168.1.2", "192.168.1.3"},
+			ip_addresses: []string{"127.0.0.1:8081", "127.0.0.1:8081", "127.0.0.1:8081"},
 		}
 		batch = Batch{
 			File: &ast.File{Name: &ast.Ident{Name: "blabla"}},
