@@ -22,8 +22,8 @@ func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
 	return
 }
 
-func (batch *Batch) GetRequestDTO() *transfer_models.RunnerService_NewTest_Request {
-	dto := transfer_models.RunnerService_NewTest_Request{
+func (batch *Batch) GetRequestDTO() *transfer_models.RunnerService_Batch_Request {
+	dto := transfer_models.RunnerService_Batch_Request{
 		Candidates:   []transfer_models.Candidate{},
 		ArchiveID:    "", // FIXME:
 		FileTemplate: batch.File,

@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+
 	"github.com/pkg/errors"
 )
 
-func (req *RunnerService_NewTest_Request) NewRequest(method, url string) (*http.Request, error) {
+func (req *RunnerService_Batch_Request) NewRequest(method, url string) (*http.Request, error) {
 	buffer := new(bytes.Buffer)
 	err := json.NewEncoder(buffer).Encode(req)
 	if err != nil {
@@ -19,14 +20,14 @@ func (req *RunnerService_NewTest_Request) NewRequest(method, url string) (*http.
 	}
 	return httpRequest, nil
 }
-func (req *RunnerService_NewTest_Request) ParseRequest(r *http.Request) error {
+func (req *RunnerService_Batch_Request) ParseRequest(r *http.Request) error {
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")
 	}
 	return nil
 }
-func (req *EvolverService_TestResultsAcceptance_Request) NewRequest(method, url string) (*http.Request, error) {
+func (req *EvolverService_Results_Request) NewRequest(method, url string) (*http.Request, error) {
 	buffer := new(bytes.Buffer)
 	err := json.NewEncoder(buffer).Encode(req)
 	if err != nil {
@@ -38,14 +39,14 @@ func (req *EvolverService_TestResultsAcceptance_Request) NewRequest(method, url 
 	}
 	return httpRequest, nil
 }
-func (req *EvolverService_TestResultsAcceptance_Request) ParseRequest(r *http.Request) error {
+func (req *EvolverService_Results_Request) ParseRequest(r *http.Request) error {
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")
 	}
 	return nil
 }
-func (req *RunnerService_NewTest_Request) Send(method, url string) (*RunnerService_NewTest_Response, error) {
+func (req *RunnerService_Batch_Request) Send(method, url string) (*RunnerService_Batch_Response, error) {
 	httpRequest, err := req.NewRequest(method, url)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on creating an object for request")
@@ -54,14 +55,14 @@ func (req *RunnerService_NewTest_Request) Send(method, url string) (*RunnerServi
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on sending the request")
 	}
-	res := RunnerService_NewTest_Response{}
+	res := RunnerService_Batch_Response{}
 	err = res.DeserializeResponse(httpResponse)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on parsing the response body")
 	}
 	return &res, nil
 }
-func (req *EvolverService_TestResultsAcceptance_Request) Send(method, url string) (*EvolverService_TestResultsAcceptance_Response, error) {
+func (req *EvolverService_Results_Request) Send(method, url string) (*EvolverService_Results_Response, error) {
 	httpRequest, err := req.NewRequest(method, url)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on creating an object for request")
@@ -70,35 +71,35 @@ func (req *EvolverService_TestResultsAcceptance_Request) Send(method, url string
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on sending the request")
 	}
-	res := EvolverService_TestResultsAcceptance_Response{}
+	res := EvolverService_Results_Response{}
 	err = res.DeserializeResponse(httpResponse)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on parsing the response body")
 	}
 	return &res, nil
 }
-func (res *RunnerService_NewTest_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
+func (res *RunnerService_Batch_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(res)
 	if err != nil {
 		return errors.Wrap(err, "failed on serialization")
 	}
 	return nil
 }
-func (s *RunnerService_NewTest_Response) DeserializeResponse(res *http.Response) error {
+func (s *RunnerService_Batch_Response) DeserializeResponse(res *http.Response) error {
 	err := json.NewDecoder(res.Body).Decode(s)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")
 	}
 	return nil
 }
-func (res *EvolverService_TestResultsAcceptance_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
+func (res *EvolverService_Results_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(res)
 	if err != nil {
 		return errors.Wrap(err, "failed on serialization")
 	}
 	return nil
 }
-func (s *EvolverService_TestResultsAcceptance_Response) DeserializeResponse(res *http.Response) error {
+func (s *EvolverService_Results_Response) DeserializeResponse(res *http.Response) error {
 	err := json.NewDecoder(res.Body).Decode(s)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")

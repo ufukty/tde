@@ -15,7 +15,7 @@ import (
 const SERVER_ADDRESS = ":8081"
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Evolver is ready and loaded"))
+	w.Write([]byte("Not found."))
 }
 
 func main() {
@@ -25,10 +25,8 @@ func main() {
 	}
 
 	router.StartRouter(SERVER_ADDRESS, func(r *mux.Router) {
-		// r.HandleFunc("/build", router.NotFound) // respond directory listing with 404
-		// r.PathPrefix("/build").Handler(http.StripPrefix("/build", http.FileServer(http.Dir("build"))))
-
-		r.PathPrefix("/evolution").HandlerFunc(evolution.Handler)
-		r.PathPrefix("/results").HandlerFunc(handler)
+		r.PathPrefix("/evolution").Methods("POST").HandlerFunc(evolution.Handler)
+		r.PathPrefix("/results").Methods("POST").HandlerFunc(handler)
+		r.PathPrefix("/").HandlerFunc(handler)
 	})
 }

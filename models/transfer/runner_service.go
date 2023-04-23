@@ -12,14 +12,14 @@ type (
 		FuncDecl    *ast.FuncDecl `json:"func_decl"`
 	}
 
-	RunnerService_NewTest_Request struct {
+	RunnerService_Batch_Request struct {
 		Candidates   []Candidate
 		ArchiveID    string
 		FileTemplate *ast.File `json:"file"`
 		CaseID       string
 	}
 
-	RunnerService_NewTest_Response struct {
+	RunnerService_Batch_Response struct {
 		Registered bool
 	}
 )
@@ -31,12 +31,12 @@ type (
 		Distance    float64
 	}
 
-	EvolverService_TestResultsAcceptance_Request struct {
+	EvolverService_Results_Request struct {
 		TestResults []TestResult
 		CaseID      string
 	}
 
-	EvolverService_TestResultsAcceptance_Response struct {
+	EvolverService_Results_Response struct {
 		Success bool
 	}
 )

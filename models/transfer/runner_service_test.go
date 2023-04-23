@@ -22,7 +22,7 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 	}`))
 	r := httptest.NewRequest("POST", "https://localhost", body)
 
-	req := RunnerService_NewTest_Request{}
+	req := RunnerService_Batch_Request{}
 	err := req.ParseRequest(r)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "returned error"))
@@ -37,7 +37,7 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 }
 
 func Test_RunnerService_NewTest_Request_Serialize(t *testing.T) {
-	content1 := RunnerService_NewTest_Request{
+	content1 := RunnerService_Batch_Request{
 		Candidates: []Candidate{{
 			CandidateID: "1",
 			FuncDecl: &ast.FuncDecl{
@@ -55,7 +55,7 @@ func Test_RunnerService_NewTest_Request_Serialize(t *testing.T) {
 		t.Error(errors.Wrapf(err, "process"))
 	}
 
-	content2 := RunnerService_NewTest_Request{}
+	content2 := RunnerService_Batch_Request{}
 	content2.ParseRequest(req)
 
 	areSame := content1.ArchiveID == content2.ArchiveID &&
