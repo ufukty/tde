@@ -3,7 +3,7 @@ package results
 import (
 	"fmt"
 	"net/http"
-	models "tde/models/transfer"
+	models "tde/models/dto"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {

@@ -1,7 +1,7 @@
 package batch
 
 import (
-	models "tde/models/transfer"
+	models "tde/models/dto"
 
 	"github.com/davecgh/go-spew/spew"
 )

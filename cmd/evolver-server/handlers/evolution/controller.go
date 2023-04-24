@@ -2,10 +2,10 @@ package evolution
 
 import (
 	"fmt"
-	models "tde/models/transfer/artifacts/services/runner/models"
+	"tde/models/dto"
 )
 
-func Controller(request models.NewTest_Request) (response models.NewTest_Response) {
+func Controller(request dto.EvolverService_Evolve_Request) (response dto.EvolverService_Evolve_Response) {
 	fmt.Println(request.ArchiveID)
 	return
 }

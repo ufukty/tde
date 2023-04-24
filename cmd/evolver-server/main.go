@@ -24,6 +24,8 @@ func main() {
 		utilities.Terminate(errors.Wrap(err, "failed on launch"))
 	}
 
+	evolution.RegisterRunnerCommunicator(rc)
+
 	router.StartRouter(SERVER_ADDRESS, func(r *mux.Router) {
 		r.PathPrefix("/evolution").Methods("POST").HandlerFunc(evolution.Handler)
 		r.PathPrefix("/results").Methods("POST").HandlerFunc(handler)

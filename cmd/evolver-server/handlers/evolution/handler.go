@@ -3,11 +3,11 @@ package evolution
 import (
 	"fmt"
 	"net/http"
-	models "tde/models/transfer/artifacts/services/runner/models"
+	"tde/models/dto"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	reqDTO := models.NewTest_Request{}
+	reqDTO := dto.EvolverService_Evolve_Request{}
 	err := reqDTO.ParseRequest(r)
 	if err != nil {
 		fmt.Fprintln(w, "Error")

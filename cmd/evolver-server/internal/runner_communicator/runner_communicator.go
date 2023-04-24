@@ -12,6 +12,8 @@ const IP_ADDRESSES_FILE_NAME = "runner_ip_addresses.txt"
 
 type RunnerCommunicator struct {
 	ip_addresses []string
+
+	queue_will_send []Request
 }
 
 func NewRunnerCommunicator() (*RunnerCommunicator, error) {
