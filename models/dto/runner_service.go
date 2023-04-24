@@ -1,4 +1,4 @@
-package models
+package dto
 
 import (
 	"go/ast"
@@ -38,5 +38,17 @@ type (
 
 	EvolverService_Results_Response struct {
 		Success bool
+	}
+)
+
+type (
+	EvolverService_Evolve_Request struct {
+		ArchiveID string
+		File      string
+	}
+
+	EvolverService_Evolve_Response struct {
+		Success bool
+		CaseID  string
 	}
 )
