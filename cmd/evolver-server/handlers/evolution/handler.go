@@ -6,6 +6,10 @@ import (
 	"tde/models/dto"
 )
 
+// var (
+// 	ErrTargetInaccessible = errors.New("Target service is unaccassable or can not accept the request at the moment")
+// )
+
 func Handler(w http.ResponseWriter, r *http.Request) {
 	reqDTO := dto.EvolverService_Evolve_Request{}
 	err := reqDTO.ParseRequest(r)
@@ -18,6 +22,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	err = resDTO.SerializeIntoResponseWriter(w)
 	if err != nil {
 		fmt.Fprintln(w, "Error")
+		// if errors.Is(err, ErrTargetInaccessible) {
+		// 	queueRequest(reqDTO)
+		// }
 		return
 	}
 

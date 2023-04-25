@@ -5,61 +5,46 @@ import (
 	"time"
 )
 
-type QueueConsumerResponse bool
-
-const (
-	DONE             = QueueConsumerResponse(true)
-	SEND_AGAIN_LATER = QueueConsumerResponse(false)
-)
-
-type QueueConsumer[T any] func(T) QueueConsumerResponse
+type QueueConsumer[T any] func(T)
 
 type Replay[T any] struct {
 	asyncQueue    []T
 	consumer      QueueConsumer[T]
 	sendAgainLock sync.Mutex
+	interval      time.Duration
 }
 
 func NewReplayQueue[T any](consumer QueueConsumer[T]) *Replay[T] {
 	q := &Replay[T]{
 		consumer: consumer,
+		interval: time.Second,
 	}
-	go q.interval()
+	go q.tick()
 	return q
 }
 
-func (q *Replay[T]) Send(item T) {
-	if q.consumer(item) == SEND_AGAIN_LATER {
-		q.sendAgainLock.Lock()
-		q.asyncQueue = append(q.asyncQueue, item)
-		q.sendAgainLock.Unlock()
-	}
-}
-
-func (q *Replay[T]) sendAgain() {
-	if q.sendAgainLock.TryLock() {
-		return
-	}
-	var (
-		length  = len(q.asyncQueue)
-		passed  = 0
-		removed = 0
-		item    T
-	)
-	for passed+removed < length {
-		item, q.asyncQueue = q.asyncQueue[passed], q.asyncQueue[passed+1:]
-		if q.consumer(item) == DONE {
-			removed++
-		} else {
-			q.asyncQueue = append(q.asyncQueue, item)
-			passed++
-		}
-	}
+func (q *Replay[T]) Queue(item T) {
+	q.sendAgainLock.Lock()
+	q.asyncQueue = append(q.asyncQueue, item)
 	q.sendAgainLock.Unlock()
 }
 
-func (q *Replay[T]) interval() {
-	for range time.Tick(time.Second) {
-		q.sendAgain()
+func (q *Replay[T]) dequeue() {
+	if !q.sendAgainLock.TryLock() {
+		return
+	}
+	var replayingQueue []T
+	copy(replayingQueue, q.asyncQueue)
+	q.asyncQueue = []T{}
+	q.sendAgainLock.Unlock()
+
+	for _, item := range replayingQueue {
+		q.consumer(item)
+	}
+}
+
+func (q *Replay[T]) tick() {
+	for range time.Tick(q.interval) {
+		q.dequeue()
 	}
 }
