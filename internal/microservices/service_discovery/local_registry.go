@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
@@ -60,7 +59,6 @@ const (
 )
 
 func (sd *ServiceDiscovery) LookupKind(kind Kind) (ip_addresses []string) {
-	spew.Println(sd.fileContent.Runner.Digitalocean)
 	switch kind {
 	case Runner:
 		return sd.fileContent.Runner.GetIPs()

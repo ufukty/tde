@@ -2,7 +2,6 @@ package service_discovery
 
 import (
 	"testing"
-	"time"
 )
 
 func Test_ServiceDiscovery(t *testing.T) {
@@ -15,7 +14,8 @@ func Test_ServiceDiscovery(t *testing.T) {
 		t.Error("validation")
 	}
 
-	time.Sleep(10 * time.Second)
-
-	// first := ip_addresses[0]
+	first := ip_addresses[0]
+	if first != "10.150.0.3" {
+		t.Error("validation 2")
+	}
 }
