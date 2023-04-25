@@ -140,3 +140,4 @@ examples/**/tde
 ### Ansible ###
 *.retry
 inventory.cfg
+service_discovery.json
