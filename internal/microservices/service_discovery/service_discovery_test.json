@@ -1,0 +1,74 @@
+{
+    "evolver": {
+        "digitalocean": [
+            {
+                "backups": false,
+                "created_at": "2023-04-25T18:37:17Z",
+                "disk": 25,
+                "droplet_agent": null,
+                "graceful_shutdown": false,
+                "id": "352374631",
+                "image": "130693675",
+                "ipv4_address": "46.101.129.10",
+                "ipv4_address_private": "10.150.0.2",
+                "ipv6": true,
+                "ipv6_address": "2a03:b0c0:3:d0::e29:5001",
+                "locked": false,
+                "memory": 1024,
+                "monitoring": true,
+                "name": "thesis-evolver-0",
+                "price_hourly": 0.00893,
+                "price_monthly": 6,
+                "private_networking": true,
+                "region": "fra1",
+                "resize_disk": false,
+                "size": "s-1vcpu-1gb",
+                "ssh_keys": ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"],
+                "status": "active",
+                "tags": ["thesis", "thesis-evolver"],
+                "timeouts": null,
+                "urn": "do:droplet:352374631",
+                "user_data": null,
+                "vcpus": 1,
+                "volume_ids": [],
+                "vpc_uuid": "c3d39a86-99fa-4e2d-86ab-e71b18215b1e"
+            }
+        ]
+    },
+    "runner": {
+        "digitalocean": [
+            {
+                "backups": false,
+                "created_at": "2023-04-25T18:37:17Z",
+                "disk": 25,
+                "droplet_agent": null,
+                "graceful_shutdown": false,
+                "id": "352374630",
+                "image": "130693675",
+                "ipv4_address": "206.189.49.175",
+                "ipv4_address_private": "10.150.0.3",
+                "ipv6": true,
+                "ipv6_address": "2a03:b0c0:3:d0::e41:7001",
+                "locked": false,
+                "memory": 1024,
+                "monitoring": true,
+                "name": "thesis-runner-0",
+                "price_hourly": 0.00893,
+                "price_monthly": 6,
+                "private_networking": true,
+                "region": "fra1",
+                "resize_disk": false,
+                "size": "s-1vcpu-1gb",
+                "ssh_keys": ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"],
+                "status": "active",
+                "tags": ["thesis", "thesis-runner"],
+                "timeouts": null,
+                "urn": "do:droplet:352374630",
+                "user_data": null,
+                "vcpus": 1,
+                "volume_ids": [],
+                "vpc_uuid": "c3d39a86-99fa-4e2d-86ab-e71b18215b1e"
+            }
+        ]
+    }
+}
