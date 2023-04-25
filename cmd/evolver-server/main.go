@@ -3,6 +3,7 @@ package main
 import (
 	"tde/cmd/evolver-server/handlers/evolution"
 	"tde/cmd/evolver-server/internal/runner_communicator"
+	"tde/internal/microservices/service_discovery"
 	"tde/internal/router"
 	"tde/internal/utilities"
 
@@ -19,6 +20,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	sd := service_discovery.NewServiceDiscovery()
+
 	rc, err := runner_communicator.NewRunnerCommunicator()
 	if err != nil {
 		utilities.Terminate(errors.Wrap(err, "failed on launch"))

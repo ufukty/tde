@@ -2,31 +2,36 @@ package runner_communicator
 
 import (
 	"fmt"
-	"os"
-	"strings"
+	"tde/internal/microservices/service_discovery"
 
 	"github.com/pkg/errors"
 )
 
 const IP_ADDRESSES_FILE_NAME = "runner_ip_addresses.txt"
 
-type RunnerCommunicator struct {
-	ip_addresses []string
+var ErrNoAvailableRunners = errors.New("ErrNoAvailableRunners")
 
-	queue_will_send []Request
+type RunnerCommunicator struct {
+	sd           *service_discovery.ServiceDiscovery
+	ip_addresses []string
 }
 
-func NewRunnerCommunicator() (*RunnerCommunicator, error) {
-	rm := &RunnerCommunicator{}
-	ips, err := os.ReadFile(IP_ADDRESSES_FILE_NAME)
-	if err != nil {
-		return nil, errors.Wrap(err, "could not learn the ip addresses of runners")
+func NewRunnerCommunicator(sd *service_discovery.ServiceDiscovery) (*RunnerCommunicator, error) {
+	rc := &RunnerCommunicator{
+		sd: sd,
 	}
-	rm.ip_addresses = strings.Split(string(ips), "\n")
-	if !(len(rm.ip_addresses) > 0) {
-		return nil, errors.New("no runners")
+	if err := rc.discover(); err != nil {
+		return nil, err
 	}
-	return rm, nil
+	return rc, nil
+}
+
+func (rc *RunnerCommunicator) discover() error {
+	rc.ip_addresses = rc.sd.LookupKind(service_discovery.Runner)
+	if !(len(rc.ip_addresses) > 0) {
+		return ErrNoAvailableRunners
+	}
+	return nil
 }
 
 func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) error {
@@ -41,9 +46,13 @@ func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) error {
 	return nil
 }
 
-func (rc *RunnerCommunicator) Send(batch *Batch) {
+func (rc *RunnerCommunicator) Send(batch *Batch) error {
+	if err := rc.discover(); err != nil {
+		return ErrNoAvailableRunners
+	}
 	batches := batch.Divide(len(rc.ip_addresses))
 	for i, batch := range batches {
 		rc.sendToRunner(rc.ip_addresses[i], batch)
 	}
+	return nil
 }
