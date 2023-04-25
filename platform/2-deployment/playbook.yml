@@ -41,18 +41,18 @@
         src_binary_location: "../../build/{{ hostvars['localhost']['register_latest_binary_path_for_runner_server'].stdout }}/runner-server-linux-amd64"
         dest_binary_location: /home/ufukty/runner-server
 
+- hosts: all
+  name: Service Discovery
+  tasks:
+    - name: service_discovery.json
+      ansible.builtin.copy:
+        src: "service_discovery.json"
+        dest: "~/service_discovery.json"
+        mode: "0600"
+
 - hosts: evolver
   name: Configure evolver server
   tasks:
-    - name: Copy runner IPs
-      ansible.builtin.copy:
-        dest: "~/runner_ip_addresses.txt"
-        mode: "0600"
-        content: |
-          {% for host in groups['runner'] %}
-          {{ hostvars[host]['ipv4_address_private'] }}
-          {% endfor %}
-
     - name: Put the binary and set systemd item
       import_role:
         name: put_and_set

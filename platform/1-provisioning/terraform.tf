@@ -86,11 +86,28 @@ resource "digitalocean_droplet" "evolver" {
 
 resource "local_file" "inventory" {
   content = templatefile(
-    "${path.module}/inventory.template.cfg",
+    "${path.module}/templates/inventory.template.cfg",
     {
       runner  = digitalocean_droplet.runner
       evolver = digitalocean_droplet.evolver
     }
   )
   filename = abspath("${path.module}/../2-deployment/inventory.cfg")
+}
+
+resource "local_file" "service_discovery" {
+  content = templatefile(
+    "${path.module}/templates/service_discovery.json.tftpl",
+    {
+      content = jsonencode({
+        runner = {
+          digitalocean = digitalocean_droplet.runner
+        }
+        evolver = {
+          digitalocean = digitalocean_droplet.evolver
+        }
+      })
+    }
+  )
+  filename = abspath("${path.module}/../2-deployment/service_discovery.json")
 }
