@@ -1,15 +1,33 @@
 package models
 
 import (
-	"fmt"
-	"path/filepath"
 	astw_utl "tde/internal/astw/utilities"
 	"tde/internal/folders/types"
 
+	"fmt"
 	"go/ast"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
+
+type RunnerType int
+
+const (
+	RUNNER_CLOUD = RunnerType(iota)
+	RUNNER_ON_PREM
+)
+
+type EvolverParameters struct {
+	GenerationsToIterate int
+	RunnerType           RunnerType
+}
+
+type OnPremisesRunnerConfig struct {
+	Address string
+	Port    string
+	Token   string
+}
 
 type EvolutionTarget struct {
 	// TODO: Module          map[string]*ast.Package // import path -> package
