@@ -54,7 +54,7 @@ func (c *Command) Run() {
 
 	var session = slot_manager.NewSession(prepPath, testDetails)
 	var evaluator = evaluation.NewEvaluator(session)
-	var evolution = evolution.NewEvolution(evaluator, evolutionTarget)
+	var evolution = evolution.NewEvolutionManager(evaluator, evolutionTarget)
 
 	evolution.InitPopulation(c.Population)
 
@@ -63,5 +63,5 @@ func (c *Command) Run() {
 		evolution.IterateLoop(context.Background())
 	}
 
-	spew.Dump(evolution.Evaluation.SlotManagerSession)
+	spew.Dump(evaluator.SlotManagerSession)
 }

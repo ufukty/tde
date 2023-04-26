@@ -3,7 +3,6 @@ package evolution
 import (
 	"context"
 	"go/ast"
-	"tde/internal/evaluation"
 	models "tde/models/program"
 
 	"sort"
@@ -12,15 +11,19 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-type Evolution struct {
-	Evaluation *evaluation.Evaluator
+type Evaluator interface {
+	Pipeline(candidates []*models.Candidate)
+}
+
+type EvolutionManager struct {
+	Evaluation Evaluator
 	Target     *models.EvolutionTarget
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewEvolution(evaluator *evaluation.Evaluator, target *models.EvolutionTarget) *Evolution {
-	return &Evolution{
+func NewEvolutionManager(evaluator Evaluator, target *models.EvolutionTarget) *EvolutionManager {
+	return &EvolutionManager{
 		Evaluation: evaluator,
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},
@@ -34,7 +37,7 @@ type EvolutionTarget struct {
 	FuncDecl *ast.FuncDecl
 }
 
-func (e *Evolution) InitPopulation(n int) error {
+func (e *EvolutionManager) InitPopulation(n int) error {
 	for i := 0; i < n; i++ {
 		var candidate, err = models.NewCandidate(e.Target.Package, e.Target.File, e.Target.FuncDecl)
 		if err != nil {
@@ -45,13 +48,13 @@ func (e *Evolution) InitPopulation(n int) error {
 	return nil
 }
 
-func (e *Evolution) Select() {
+func (e *EvolutionManager) Select() {
 	// for _, individual := range e.Individuals {
 	// 	individual.Fitness
 	// }
 }
 
-func (e *Evolution) SortedByFitness() []*models.Candidate {
+func (e *EvolutionManager) SortedByFitness() []*models.Candidate {
 	ordered := []*models.Candidate{}
 	for _, ind := range e.Candidates {
 		ordered = append(ordered, ind)
@@ -62,7 +65,7 @@ func (e *Evolution) SortedByFitness() []*models.Candidate {
 	return ordered
 }
 
-func (e *Evolution) IterateLoop(ctx context.Context) {
+func (e *EvolutionManager) IterateLoop(ctx context.Context) {
 	e.Evaluation.Pipeline(maps.Values(e.Candidates))
 
 	// TODO: selection
