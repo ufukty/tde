@@ -1,7 +1,9 @@
 package main
 
 import (
-	"tde/cmd/evolver-server/handlers/evolution"
+	handler_evolution "tde/cmd/evolver-server/handlers/evolution"
+	handler_results "tde/cmd/evolver-server/handlers/results"
+	"tde/cmd/evolver-server/internal/case_manager"
 	"tde/cmd/evolver-server/internal/runner_communicator"
 	"tde/internal/microservices/service_discovery"
 	"tde/internal/router"
@@ -20,18 +22,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	sd := service_discovery.NewServiceDiscovery()
+	var (
+		sd = service_discovery.NewServiceDiscovery()
+		cm = case_manager.NewCaseManager()
+	)
 
-	rc, err := runner_communicator.NewRunnerCommunicator()
+	rc, err := runner_communicator.NewRunnerCommunicator(sd)
 	if err != nil {
 		utilities.Terminate(errors.Wrap(err, "failed on launch"))
 	}
 
-	evolution.RegisterRunnerCommunicator(rc)
+	handler_evolution.RegisterCaseManager(cm)
+	handler_evolution.RegisterRunnerCommunicator(rc)
 
 	router.StartRouter(SERVER_ADDRESS, func(r *mux.Router) {
-		r.PathPrefix("/evolution").Methods("POST").HandlerFunc(evolution.Handler)
-		r.PathPrefix("/results").Methods("POST").HandlerFunc(handler)
+		r.PathPrefix("/evolution").Methods("POST").HandlerFunc(handler_evolution.Handler)
+		r.PathPrefix("/results").Methods("POST").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/").HandlerFunc(handler)
 	})
 }

@@ -1,7 +1,6 @@
 package runner_communicator
 
 import (
-	"fmt"
 	"tde/internal/microservices/service_discovery"
 
 	"github.com/pkg/errors"
@@ -9,7 +8,10 @@ import (
 
 const IP_ADDRESSES_FILE_NAME = "runner_ip_addresses.txt"
 
-var ErrNoAvailableRunners = errors.New("ErrNoAvailableRunners")
+var (
+	ErrNoAvailableRunners  = errors.New("ErrNoAvailableRunners")
+	ErrInternalServerError = errors.New("ErrInternalServerError")
+)
 
 type RunnerCommunicator struct {
 	sd           *service_discovery.ServiceDiscovery
@@ -35,14 +37,11 @@ func (rc *RunnerCommunicator) discover() error {
 }
 
 func (rc *RunnerCommunicator) sendToRunner(runner string, batch *Batch) error {
-	fmt.Println(runner, batch)
-
 	req := batch.GetRequestDTO()
 	_, err := req.Send("POST", "http://"+runner)
 	if err != nil {
 		return errors.Wrap(err, "")
 	}
-
 	return nil
 }
 

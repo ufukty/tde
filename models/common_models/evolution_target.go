@@ -1,4 +1,4 @@
-package models
+package common_models
 
 import (
 	astw_utl "tde/internal/astw/utilities"

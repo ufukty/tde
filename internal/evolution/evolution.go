@@ -1,14 +1,12 @@
 package evolution
 
 import (
-	"context"
-	"go/ast"
+	"tde/models/common_models"
 	models "tde/models/program"
 
 	"sort"
 
 	"github.com/pkg/errors"
-	"golang.org/x/exp/maps"
 )
 
 type Evaluator interface {
@@ -17,24 +15,17 @@ type Evaluator interface {
 
 type EvolutionManager struct {
 	Evaluation Evaluator
-	Target     *models.EvolutionTarget
+	Target     *common_models.EvolutionTarget
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewEvolutionManager(evaluator Evaluator, target *models.EvolutionTarget) *EvolutionManager {
+func NewEvolutionManager(target *common_models.EvolutionTarget) *EvolutionManager {
 	return &EvolutionManager{
-		Evaluation: evaluator,
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},
 		Candidates: map[models.CandidateID]*models.Candidate{},
 	}
-}
-
-type EvolutionTarget struct {
-	Package  *ast.Package
-	File     *ast.File
-	FuncDecl *ast.FuncDecl
 }
 
 func (e *EvolutionManager) InitPopulation(n int) error {
@@ -65,11 +56,8 @@ func (e *EvolutionManager) SortedByFitness() []*models.Candidate {
 	return ordered
 }
 
-func (e *EvolutionManager) IterateLoop(ctx context.Context) {
-	e.Evaluation.Pipeline(maps.Values(e.Candidates))
-
+// This won't perform evaluation and will expect the fitnesses are already set
+func (e *EvolutionManager) IterateLoop() {
 	// TODO: selection
-
 	// TODO: reproduction
-
 }

@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"tde/models/common_models"
+
 	"go/ast"
 )
 
@@ -43,12 +45,14 @@ type (
 
 type (
 	EvolverService_Evolve_Request struct {
-		ArchiveID string
-		File      string
+		ArchiveID       string
+		File            string
+		EvolutionTarget *common_models.EvolutionTarget
+		EvolutionConfig *common_models.EvolutionConfig
 	}
 
 	EvolverService_Evolve_Response struct {
-		Success bool
+		Started bool
 		CaseID  string
 	}
 )

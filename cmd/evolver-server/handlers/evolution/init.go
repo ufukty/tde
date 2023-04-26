@@ -1,23 +1,19 @@
 package evolution
 
 import (
+	"tde/cmd/evolver-server/internal/case_manager"
 	"tde/cmd/evolver-server/internal/runner_communicator"
 )
 
 var (
-	rc *runner_communicator.RunnerCommunicator
-	// replayQueue *queue.Replay[dto.EvolverService_Evolve_Request]
+	runnerCommunicator *runner_communicator.RunnerCommunicator
+	caseManager        *case_manager.CaseManager
 )
 
-func RegisterRunnerCommunicator(runner_communicator *runner_communicator.RunnerCommunicator) {
-	rc = runner_communicator
-	// replayQueue = queue.NewReplayQueue(dequeueRequest)
+func RegisterRunnerCommunicator(rc *runner_communicator.RunnerCommunicator) {
+	runnerCommunicator = rc
 }
 
-// func queueRequest(req dto.EvolverService_Evolve_Request) {
-
-// }
-
-// func dequeueRequest(es dto.EvolverService_Evolve_Request) {
-// 	return queue.DONE
-// }
+func RegisterCaseManager(cm *case_manager.CaseManager) {
+	caseManager = cm
+}

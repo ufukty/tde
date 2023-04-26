@@ -9,9 +9,8 @@ import (
 	"tde/internal/folders/slot_manager"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
-	models "tde/models/program"
+	"tde/models/common_models"
 
-	"context"
 	"fmt"
 
 	"github.com/davecgh/go-spew/spew"
@@ -47,20 +46,20 @@ func (c *Command) Run() {
 		utilities.Terminate("Could not find test details")
 	}
 
-	evolutionTarget, err := models.NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
+	evolutionTarget, err := common_models.NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
 	if err != nil {
 		utilities.Terminate("Failed in slot_manager.NewSession()", err)
 	}
 
 	var session = slot_manager.NewSession(prepPath, testDetails)
 	var evaluator = evaluation.NewEvaluator(session)
-	var evolution = evolution.NewEvolutionManager(evaluator, evolutionTarget)
+	var evolution = evolution.NewEvolutionManager(evolutionTarget)
 
 	evolution.InitPopulation(c.Population)
 
 	for i := 0; i < c.Iterate; i++ {
 		fmt.Printf("Iteration: %d\n", i)
-		evolution.IterateLoop(context.Background())
+		evolution.IterateLoop()
 	}
 
 	spew.Dump(evaluator.SlotManagerSession)

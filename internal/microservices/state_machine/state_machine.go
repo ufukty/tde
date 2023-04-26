@@ -23,6 +23,10 @@ type (
 	}
 )
 
+const (
+	StateInitial = State(iota)
+)
+
 func NewStateMachine(config StateMachineConfig) *StateMachine {
 	return &StateMachine{
 		cases:  map[CaseID]State{},
