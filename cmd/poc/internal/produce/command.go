@@ -1,6 +1,7 @@
 package produce
 
 import (
+	astw_utl "tde/internal/astw/utilities"
 	"tde/internal/command"
 	"tde/internal/evaluation"
 	"tde/internal/evolution"
@@ -12,8 +13,11 @@ import (
 	"tde/models/common_models"
 
 	"fmt"
+	"go/ast"
+	"path/filepath"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/pkg/errors"
 )
 
 type Command struct {
@@ -28,6 +32,32 @@ type Command struct {
 	Package    command.MultiString `long:"package" short:"p"`               // packages allowed to import
 	Exclude    command.MultiString `long:"exclude" short:"e"`               // TODO:
 	TestName   string              `precedence:"0"`
+}
+
+func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*common_models.EvolutionTarget, error) {
+	pkgName := filepath.Base(importPath)
+
+	_, pkgs, err := astw_utl.LoadDir(string(modulePath.Join(packagePath)))
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("failed to create ast representation for the directory: \"%s\"", packagePath))
+	}
+
+	var pkg *ast.Package
+	var ok bool
+	if pkg, ok = pkgs[pkgName]; !ok {
+		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named package: \"%s\"", pkgName))
+	}
+
+	file, funcDecl, err := astw_utl.FindFuncDeclInPkg(pkg, funcName)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named function: \"%s\"", funcName))
+	}
+
+	return &common_models.EvolutionTarget{
+		Package:  pkg,
+		File:     file,
+		FuncDecl: funcDecl,
+	}, nil
 }
 
 func (c *Command) Run() {
@@ -46,7 +76,7 @@ func (c *Command) Run() {
 		utilities.Terminate("Could not find test details")
 	}
 
-	evolutionTarget, err := common_models.NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
+	evolutionTarget, err := NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
 	if err != nil {
 		utilities.Terminate("Failed in slot_manager.NewSession()", err)
 	}
