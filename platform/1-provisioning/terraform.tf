@@ -24,7 +24,7 @@ locals {
   slug            = "s-1vcpu-1gb"
   base_image_name = "thesis-base-focal-64"
   instances = {
-    runner  = 1,
+    runner  = 10,
     evolver = 1,
   }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
