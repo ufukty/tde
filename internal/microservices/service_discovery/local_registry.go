@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	filename     = "~/service_discovery.json"
+	filename     = "service_discovery.json"
 	updatePeriod = time.Second * 5
 )
 
