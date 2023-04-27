@@ -1,4 +1,4 @@
-PROGRAMS := ast-inspect client evolver-server runner-server customs
+PROGRAMS := ast-inspect client evolver-server runner-server customs poc
 
 all: $(PROGRAMS)
 
