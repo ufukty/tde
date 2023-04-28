@@ -1,9 +1,23 @@
 ---
+- name: "get path to latest binary for {{ program_name }}"
+  local_action:
+    module: ansible.builtin.shell
+    chdir: "{{ inventory_dir }}/../../"
+    cmd: "bash commands last-build {{ program_name }}"
+  register: program_name_command
+
+- name: Check if required binary are present
+  local_action:
+    module: ansible.builtin.assert
+    that:
+      - "'No such file or directory' not in program_name_command.stderr"
+    fail_msg: "Deployment has been aborted. 1 or more binaries are absent."
+    quiet: true
+
 - name: Copy binaries
-  become: false
   ansible.builtin.copy:
-    src: "{{ src_binary_location }}"
-    dest: "{{ dest_binary_location }}"
+    src: "{{ inventory_dir }}/../../build/{{ program_name_command.stdout }}/{{ program_name }}-linux-amd64"
+    dest: /home/ufukty/customs
     mode: "0700"
     owner: ufukty
     group: ufukty
@@ -13,15 +27,15 @@
   block:
     - name: copy systemd file
       ansible.builtin.copy:
-        src: files/etc/systemd/system/{{ program_name }}.service
+        src: "files/etc/systemd/system/{{ program_name }}.service"
         mode: "0700"
-        dest: /etc/systemd/system/{{ program_name }}.service
+        dest: "/etc/systemd/system/{{ program_name }}.service"
 
     - name: reload systemd
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: enable runner service
+    - name: enable app-server service
       ansible.builtin.systemd:
         name: "{{ program_name }}"
         state: restarted

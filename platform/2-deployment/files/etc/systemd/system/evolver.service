@@ -1,10 +1,10 @@
 [Unit]
-Description=evolver-server
+Description=App server for evolver
 
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/evolver-server
+ExecStart=/home/ufukty/evolver
 Restart=always
 
 [Install]

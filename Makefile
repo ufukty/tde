@@ -1,11 +1,11 @@
-PROGRAMS := ast-inspect client evolver-server runner-server customs poc
+PROGRAMS := ast-inspect client evolver runner customs poc
 
 all: $(PROGRAMS)
 
 $(PROGRAMS):
 	bash commands compile $@
 
-dev-deploy: runner-server evolver-server
+dev-deploy: runner evolver
 	cd platform && make dev-deploy
 
 test-word-reverse:

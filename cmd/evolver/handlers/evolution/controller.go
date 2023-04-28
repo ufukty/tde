@@ -1,7 +1,7 @@
 package evolution
 
 import (
-	"tde/cmd/evolver-server/internal/case_manager"
+	"tde/cmd/evolver/internal/case_manager"
 	"tde/internal/evolution"
 	"tde/models/dto"
 )

@@ -84,7 +84,7 @@ resource "digitalocean_droplet" "evolver" {
   vpc_uuid    = digitalocean_vpc.vpc.id
 }
 
-data "digitalocean_volume" "customs_server_volume" {
+data "digitalocean_volume" "customs_storage_volume" {
   name   = "volume-fra1-01"
   region = "fra1"
 }
@@ -96,7 +96,7 @@ resource "digitalocean_droplet" "customs" {
   name       = "thesis-customs-${count.index}"
   region     = local.region
   size       = local.slug
-  volume_ids = [data.digitalocean_volume.customs_server_volume.id]
+  volume_ids = [data.digitalocean_volume.customs_storage_volume.id]
   tags       = ["thesis", "thesis-customs"]
 
   ipv6        = true
@@ -124,15 +124,9 @@ resource "local_file" "service_discovery" {
     "${path.module}/templates/service_discovery.json.tftpl",
     {
       content = jsonencode({
-        runner = {
-          digitalocean = digitalocean_droplet.runner
-        }
-        evolver = {
-          digitalocean = digitalocean_droplet.evolver
-        }
-        customs = {
-          digitalocean = digitalocean_droplet.customs
-        }
+        runner  = { digitalocean = digitalocean_droplet.runner }
+        evolver = { digitalocean = digitalocean_droplet.evolver }
+        customs = { digitalocean = digitalocean_droplet.customs }
       })
     }
   )

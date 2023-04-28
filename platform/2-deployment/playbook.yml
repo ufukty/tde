@@ -1,62 +1,23 @@
 ---
-- hosts: localhost
-  name: preparation
-  tasks:
-    - name: get path to latest binary
-      ansible.builtin.shell:
-        chdir: ../../
-        cmd: bash commands last-build runner-server
-      register: register_latest_binary_path_for_runner_server
-
-    - name: get path to latest binary
-      ansible.builtin.shell:
-        chdir: ../../
-        cmd: bash commands last-build evolver-server
-      register: register_latest_binary_path_for_evolver_server
-
-    - name: Check if required binaries are present
-      ansible.builtin.assert:
-        that:
-          - "'No such file or directory' not in register_latest_binary_path_for_runner_server.stderr"
-          - "'No such file or directory' not in register_latest_binary_path_for_evolver_server.stderr"
-        fail_msg: "Deployment has been aborted. 1 or more binaries are absent."
-
 - hosts: all
-  name: Restart journald
-  become: true
+  name: Configure all servers
+  serial: 100%
   tasks:
     - name: Restart journald
       systemd:
         name: systemd-journald
         state: restarted
+      become: true
 
-- hosts: runner
-  name: Configure runner server
-  tasks:
-    - name: Put the binary and set systemd item
-      import_role:
-        name: put_and_set
-      vars:
-        program_name: runner-server
-        src_binary_location: "../../build/{{ hostvars['localhost']['register_latest_binary_path_for_runner_server'].stdout }}/runner-server-linux-amd64"
-        dest_binary_location: /home/ufukty/runner-server
-
-- hosts: all
-  name: Service Discovery
-  tasks:
     - name: service_discovery.json
       ansible.builtin.copy:
         src: "service_discovery.json"
         dest: "~/service_discovery.json"
         mode: "0600"
 
-- hosts: evolver
-  name: Configure evolver server
-  tasks:
     - name: Put the binary and set systemd item
-      import_role:
+      include_role:
         name: put_and_set
       vars:
-        program_name: evolver-server
-        src_binary_location: "../../build/{{ hostvars['localhost']['register_latest_binary_path_for_evolver_server'].stdout }}/evolver-server-linux-amd64"
-        dest_binary_location: /home/ufukty/evolver-server
+        program_name: "{{ hostvars[inventory_hostname].app_slug }}"
+      tags: [redeploy]

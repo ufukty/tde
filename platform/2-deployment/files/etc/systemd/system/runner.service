@@ -1,10 +1,10 @@
 [Unit]
-Description=runner-server
+Description=App server for runner
 
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/runner-server
+ExecStart=/home/ufukty/runner
 Restart=always
 
 [Install]

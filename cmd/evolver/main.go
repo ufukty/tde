@@ -1,10 +1,10 @@
 package main
 
 import (
-	handler_evolution "tde/cmd/evolver-server/handlers/evolution"
-	handler_results "tde/cmd/evolver-server/handlers/results"
-	"tde/cmd/evolver-server/internal/case_manager"
-	"tde/cmd/evolver-server/internal/runner_communicator"
+	handler_evolution "tde/cmd/evolver/handlers/evolution"
+	handler_results "tde/cmd/evolver/handlers/results"
+	"tde/cmd/evolver/internal/case_manager"
+	"tde/cmd/evolver/internal/runner_communicator"
 	"tde/internal/microservices/service_discovery"
 	"tde/internal/router"
 	"tde/internal/utilities"

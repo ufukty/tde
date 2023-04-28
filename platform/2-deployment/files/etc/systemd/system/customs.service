@@ -1,0 +1,11 @@
+[Unit]
+Description=App server for customs
+
+[Service]
+User=ufukty
+WorkingDirectory=/home/ufukty
+ExecStart=/home/ufukty/customs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

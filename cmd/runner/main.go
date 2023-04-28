@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"tde/cmd/runner-server/controllers/batch"
+	"tde/cmd/runner/controllers/batch"
 	"tde/internal/router"
 
 	"github.com/gorilla/mux"
