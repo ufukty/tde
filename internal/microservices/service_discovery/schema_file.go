@@ -14,4 +14,5 @@ func (schPro providers) GetIPs() (ips []string) {
 type serviceDiscoveryFile struct {
 	Runner  providers `json:"runner"`
 	Evolver providers `json:"evolver"`
+	Customs providers `json:"customs"`
 }

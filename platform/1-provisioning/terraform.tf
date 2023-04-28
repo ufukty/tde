@@ -84,12 +84,36 @@ resource "digitalocean_droplet" "evolver" {
   vpc_uuid    = digitalocean_vpc.vpc.id
 }
 
+data "digitalocean_volume" "customs_server_volume" {
+  name   = "volume-fra1-01"
+  region = "fra1"
+}
+
+resource "digitalocean_droplet" "customs" {
+  count = 1
+
+  image      = data.digitalocean_droplet_snapshot.last_snapshot.id
+  name       = "thesis-customs-${count.index}"
+  region     = local.region
+  size       = local.slug
+  volume_ids = [data.digitalocean_volume.customs_server_volume.id]
+  tags       = ["thesis", "thesis-customs"]
+
+  ipv6        = true
+  backups     = false
+  monitoring  = true
+  resize_disk = false
+  ssh_keys    = local.ssh_fingerprints
+  vpc_uuid    = digitalocean_vpc.vpc.id
+}
+
 resource "local_file" "inventory" {
   content = templatefile(
     "${path.module}/templates/inventory.template.cfg",
     {
       runner  = digitalocean_droplet.runner
       evolver = digitalocean_droplet.evolver
+      customs = digitalocean_droplet.customs
     }
   )
   filename = abspath("${path.module}/../2-deployment/inventory.cfg")
@@ -105,6 +129,9 @@ resource "local_file" "service_discovery" {
         }
         evolver = {
           digitalocean = digitalocean_droplet.evolver
+        }
+        customs = {
+          digitalocean = digitalocean_droplet.customs
         }
       })
     }
