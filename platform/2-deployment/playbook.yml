@@ -21,3 +21,9 @@
       vars:
         program_name: "{{ hostvars[inventory_hostname].app_slug }}"
       tags: [redeploy]
+
+- hosts: customs
+  name: mount disk
+  roles:
+    - role: mount_volume
+      become: true

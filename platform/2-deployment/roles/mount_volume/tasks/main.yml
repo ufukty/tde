@@ -1,0 +1,25 @@
+- name: Learn id of attached volume
+  shell:
+    cmd: ls -1 /dev/disk/by-id/scsi*
+  register: volume_id
+
+- name: Assert it exists
+  ansible.builtin.assert:
+    that:
+      - "'No such file or directory' not in volume_id.stderr"
+    fail_msg: "Deployment has been aborted. 1 or more binaries are absent."
+    quiet: true
+
+- name: Mount the volume
+  ansible.posix.mount:
+    path: /mnt/volume_fra1
+    src: ID={{ volume_id.stdout }}
+    fstype: ext4
+    opts: defaults,nofail,discard,noatime
+    state: mounted
+
+- name: pass ownership
+  file:
+    path: /mnt/volume_fra1
+    owner: ufukty
+    state: directory
