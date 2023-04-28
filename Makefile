@@ -8,6 +8,12 @@ $(PROGRAMS):
 dev-deploy: runner evolver
 	cd platform && make dev-deploy
 
+# example: make dev-deploy-client arg1 arg2
+.PHONY: $(addprefix dev-deploy-,$(PROGRAMS))
+$(addprefix dev-deploy-,$(PROGRAMS)): 
+	make $(subst dev-deploy-,,$@)
+	cd platform/2-deployment; ansible-playbook --forks=20 --limit=$(subst dev-deploy-,,$@) --tags=redeploy playbook.yml
+
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
 
