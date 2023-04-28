@@ -5,6 +5,7 @@
     chdir: "{{ inventory_dir }}/../../"
     cmd: "bash commands last-build {{ program_name }}"
   register: program_name_command
+  tags: redeploy
 
 - name: Check if required binary are present
   local_action:
@@ -13,14 +14,16 @@
       - "'No such file or directory' not in program_name_command.stderr"
     fail_msg: "Deployment has been aborted. 1 or more binaries are absent."
     quiet: true
+  tags: redeploy
 
 - name: Copy binaries
   ansible.builtin.copy:
     src: "{{ inventory_dir }}/../../build/{{ program_name_command.stdout }}/{{ program_name }}-linux-amd64"
-    dest: /home/ufukty/customs
+    dest: "/home/ufukty/{{ program_name }}"
     mode: "0700"
     owner: ufukty
     group: ufukty
+  tags: redeploy
 
 - name: sudo block
   become: true
@@ -39,3 +42,4 @@
       ansible.builtin.systemd:
         name: "{{ program_name }}"
         state: restarted
+  tags: redeploy

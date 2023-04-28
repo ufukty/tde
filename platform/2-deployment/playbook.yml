@@ -20,7 +20,7 @@
         name: put_and_set
       vars:
         program_name: "{{ hostvars[inventory_hostname].app_slug }}"
-      tags: [redeploy]
+      tags: redeploy
 
 - hosts: customs
   name: mount disk

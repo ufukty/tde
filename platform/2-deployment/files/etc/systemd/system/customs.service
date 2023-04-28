@@ -4,7 +4,7 @@ Description=App server for customs
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/customs
+ExecStart=/home/ufukty/customs -volume=/mnt/volume_fra1
 Restart=always
 
 [Install]

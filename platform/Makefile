@@ -8,4 +8,4 @@ dev-down:
 	
 dev-deploy:
 	@echo "Activate virtual environnment and ssh-agent before run ansible"
-	cd 2-deployment && ansible-playbook playbook.yml
+	cd 2-deployment && ansible-playbook --forks 20 playbook.yml
