@@ -1,14 +1,15 @@
 package upload
 
 import (
-	"encoding/json"
-	"io"
-	"mime/multipart"
-	"os"
 	"tde/cmd/customs/internal/volume_manager"
 	"tde/models/dto"
 
+	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
@@ -80,14 +81,16 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	var req = &dto.Customs_Upload_Request{}
 
 	archiveID = volumeManager.CreateUniqueFilename()
-	storagePath, err = volumeManager.CreateDestPath(archiveID + ".zip")
+	storagePath, err = volumeManager.CreateDestPath(archiveID)
 	if err != nil {
 		http.Error(w, errors.Wrap(err, "Could not create dir entries to place incoming file into").Error(), http.StatusInternalServerError)
+		return
 	}
 
 	multipartReader, err := r.MultipartReader()
 	if err != nil {
 		http.Error(w, errors.Wrap(err, "").Error(), http.StatusBadRequest)
+		return
 	}
 	for {
 		part, err = multipartReader.NextPart()
@@ -96,6 +99,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			http.Error(w, errors.Wrap(err, "Could not complete parsing multipart request").Error(), http.StatusBadRequest)
+			return
 		}
 		switch part.FormName() {
 		case "json":
@@ -105,7 +109,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		case "file":
-			err = zipPart(part, storagePath)
+			err = zipPart(part, filepath.Join(storagePath, archiveID+".zip"))
 			if err != nil {
 				http.Error(w, errors.Wrap(err, "Could not parse the file part of multipart request").Error(), http.StatusBadRequest)
 				return
