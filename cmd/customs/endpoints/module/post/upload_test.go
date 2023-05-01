@@ -1,4 +1,4 @@
-package upload
+package module
 
 import (
 	"tde/models/dto"

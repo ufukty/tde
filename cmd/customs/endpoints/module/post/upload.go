@@ -1,6 +1,8 @@
-package upload
+package module
 
 import (
+	"log"
+	"strconv"
 	"tde/cmd/customs/internal/volume_manager"
 	"tde/models/dto"
 
@@ -11,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
@@ -42,6 +45,14 @@ import (
 // 	return false
 // }
 
+const (
+	HTTPErrBadRequest = "Bad request"
+)
+
+const (
+	maxAllowedContentLength = 40 * 1024 * 1024
+)
+
 var volumeManager *volume_manager.VolumeManager
 
 func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
@@ -72,13 +83,37 @@ func zipPart(part *multipart.Part, storagePath string) error {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	var (
-		err         error
-		part        *multipart.Part
-		archiveID   string
-		storagePath string
+		archiveID        string
+		contentLength    int
+		contentLengthStr string
+		err              error
+		part             *multipart.Part
+		req              *dto.Customs_Upload_Request
+		requestID        string
+		storagePath      string
 	)
 
-	var req = &dto.Customs_Upload_Request{}
+	requestID = uuid.NewString()
+
+	contentLengthStr = r.Header.Get("Content-Length")
+	if contentLengthStr == "" {
+		log.Println(requestID, `Content-Length is empty`, err)
+		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
+		return
+	}
+	contentLength, err = strconv.Atoi(contentLengthStr)
+	if err != nil {
+		log.Println(requestID, `strconv.Atoi(r.Header.Get("Content-Length"))`, err)
+		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
+		return
+	}
+	if contentLength > maxAllowedContentLength {
+		log.Println(requestID, `contentLength > maxAllowedContentLength`, err)
+		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	req = &dto.Customs_Upload_Request{}
 
 	archiveID = volumeManager.CreateUniqueFilename()
 	storagePath, err = volumeManager.CreateDestPath(archiveID)
