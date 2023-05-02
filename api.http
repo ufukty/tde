@@ -1,0 +1,47 @@
+@hostname = 167.99.135.13
+@port = 8083
+@host = http://{{hostname}}:{{port}}
+@createdAt = {{$datetime iso8601}}
+###
+
+# @name login
+POST {{host}}/session HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "",
+    "password": "",
+}
+
+###
+
+# @name moduleUpload
+POST {{host}}/module HTTP/1.1
+Content-Type: application/zip
+Authorization: Bearer
+
+< ../../.gitignore
+
+### 
+
+# @name moduleDownload
+GET {{host}}/module HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer
+
+{
+    "archive_id": "",
+    "client_time": "{{createdAt}}"
+}
+
+### 
+
+# @name moduleASTRepresentationDownload
+GET {{host}}/module/ast HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer
+
+{
+    "archive_id": "",
+    "client_time": "{{createdAt}}"
+}
