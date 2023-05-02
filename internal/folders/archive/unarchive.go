@@ -47,18 +47,18 @@ func Unarchive(src string, dest string) error {
 
 	zipReader, err = zip.OpenReader(src)
 	if err != nil {
-		return errors.Wrap(err, "Could not create zip reader")
+		return errors.Wrap(err, "could not create zip reader")
 	}
 	defer zipReader.Close()
 
 	for _, containedFileHandler := range zipReader.File {
 
 		if !isPathSafe(containedFileHandler.Name) {
-			return ErrRelativePathFound
+			return errors.Wrap(ErrRelativePathFound, containedFileHandler.Name)
 		}
 
 		if containedFileHandler.UncompressedSize64 > maxAllowedUncompressedSingleFileSize {
-			return ErrZipFileExceedsLimit
+			return errors.Wrap(ErrZipFileExceedsLimit, fmt.Sprintf("%s => %d", containedFileHandler.Name, containedFileHandler.UncompressedSize64))
 		}
 		totalFileSize += containedFileHandler.UncompressedSize64
 		if totalFileSize > maxAllowedUncompressedTotalFileSize {
@@ -67,22 +67,20 @@ func Unarchive(src string, dest string) error {
 
 		rc, err := containedFileHandler.Open()
 		if err != nil {
-			return err
+			return errors.Wrap(err, fmt.Sprintf("could not open the file inside zip '%s'", containedFileHandler.Name))
 		}
 		defer rc.Close()
 
-		// Create the target file on disk
 		path := filepath.Join(dest, containedFileHandler.Name)
 		targetFile, err := os.Create(path)
 		if err != nil {
-			return err
+			return errors.Wrap(err, fmt.Sprintf("could not create file to write zip file '%s'", containedFileHandler.Name))
 		}
 		defer targetFile.Close()
 
-		// Copy the file contents to disk
 		_, err = io.Copy(targetFile, rc)
 		if err != nil {
-			return err
+			return errors.Wrap(err, fmt.Sprintf("could not extract the file '%s'", containedFileHandler.Name))
 		}
 	}
 
