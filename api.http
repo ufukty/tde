@@ -16,14 +16,21 @@ Content-Type: application/json
 
 ###
 
+# @name logout
+DELETE {{api}}/session HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer
+
+###
+
 # @name moduleUpload
 POST {{api}}/module HTTP/1.1
 Content-Type: application/zip
 Authorization: Bearer
 
-< ../../.gitignore
+../../.gitignore
 
-### 
+###
 
 # @name moduleDownload
 GET {{api}}/module HTTP/1.1
@@ -35,7 +42,7 @@ Authorization: Bearer
     "client_time": "{{createdAt}}"
 }
 
-### 
+###
 
 # @name moduleASTRepresentationDownload
 GET {{api}}/module/ast HTTP/1.1
@@ -46,3 +53,7 @@ Authorization: Bearer
     "archive_id": "",
     "client_time": "{{createdAt}}"
 }
+
+###
+
+
