@@ -1,11 +1,12 @@
-@hostname = 167.99.135.13
+@ip = 167.99.135.13
 @port = 8083
-@host = http://{{hostname}}:{{port}}
+@api = http://{{ip}}:{{port}}/api/v0.1
 @createdAt = {{$datetime iso8601}}
+
 ###
 
 # @name login
-POST {{host}}/session HTTP/1.1
+POST {{api}}/session HTTP/1.1
 Content-Type: application/json
 
 {
@@ -16,7 +17,7 @@ Content-Type: application/json
 ###
 
 # @name moduleUpload
-POST {{host}}/module HTTP/1.1
+POST {{api}}/module HTTP/1.1
 Content-Type: application/zip
 Authorization: Bearer
 
@@ -25,7 +26,7 @@ Authorization: Bearer
 ### 
 
 # @name moduleDownload
-GET {{host}}/module HTTP/1.1
+GET {{api}}/module HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer
 
@@ -37,7 +38,7 @@ Authorization: Bearer
 ### 
 
 # @name moduleASTRepresentationDownload
-GET {{host}}/module/ast HTTP/1.1
+GET {{api}}/module/ast HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer
 
