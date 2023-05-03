@@ -43,7 +43,10 @@ deploy-dev-program() {
 }
 
 print-endpoints() {
-    cat api.http | grep HTTP/1.1 | cut -d ' ' -f 1-2 | awk '{ print $2, $1 }' | sort | awk '{ print $2, "\t", $1 }'
+    cat api.http | grep HTTP/1.1 |
+        cut -d ' ' -f 1-2 | awk '{ print $2, $1 }' |
+        sort | awk '{ print $2, "\t", $1 }' |
+        sed -E 's/(.*){{api}}(.*)/\1 \2/'
 }
 
 $@
