@@ -5,7 +5,52 @@
 
 ###
 
-# @name login
+// MARK: pow
+
+GET {{api}}/pow/challenge HTTP/1.1
+Content-Type: application/json
+
+{
+    "intensity": "<int>"
+}
+
+###
+
+GET {{api}}/pow/token HTTP/1.1
+Content-Type: application/json
+
+{
+    "challenge_id": "<uuid>",
+    "answer": "<string>"
+}
+
+###
+
+// MARK: account
+
+POST {{api}}/account HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "<string>",
+    "pow_token": "<uuid>",
+}
+
+###
+
+PATCH {{api}}/account/settings HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer
+X-Anti-CSRF-Token: <uuid>
+
+{
+    "notifications": "<bool>",
+}
+
+###
+
+// MARK: session
+
 POST {{api}}/session HTTP/1.1
 Content-Type: application/json
 
@@ -16,14 +61,14 @@ Content-Type: application/json
 
 ###
 
-# @name logout
 DELETE {{api}}/session HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer
 
 ###
 
-# @name moduleUpload
+// MARK: module
+
 POST {{api}}/module HTTP/1.1
 Content-Type: application/zip
 Authorization: Bearer
@@ -32,7 +77,6 @@ Authorization: Bearer
 
 ###
 
-# @name moduleDownload
 GET {{api}}/module HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer
@@ -44,7 +88,6 @@ Authorization: Bearer
 
 ###
 
-# @name moduleASTRepresentationDownload
 GET {{api}}/module/ast HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer
@@ -56,4 +99,58 @@ Authorization: Bearer
 
 ###
 
+// MARK: evolve
+
+POST {{api}}/evolve/session HTTP/1.1
+Content-Type: application/json
+X-CSRF-Token: <uuid>
+Authorization: Bearer
+
+{
+    "archive_id": "<uuid>"
+}
+
+###
+
+GET {{api}}/evolve/session/generation HTTP/1.1
+Content-Type: application/json
+X-CSRF-Token: <uuid>
+Authorization: Bearer
+
+{
+    "session_id": "<uuid>",
+    "generation": "<id>"
+}
+
+###
+
+GET {{api}}/evolve/session/hall-of-fame HTTP/1.1
+Content-Type: application/json
+X-CSRF-Token: <uuid>
+Authorization: Bearer
+
+{
+    "session_id": "<uuid>"
+}
+
+###
+
+// MARK: runner
+
+POST {{api}}/runner/batch HTTP/1.1
+Content-Type: application/json
+X-CSRF-Token: <uuid>
+Authorization: Bearer
+
+{
+    "file_template": "<uuid>",
+    "candidates": [
+        {
+            "candidate_id": "<uuid>",
+            "": "",
+        }
+    ]
+}
+
+###
 
