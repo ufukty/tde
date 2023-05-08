@@ -16,7 +16,7 @@ var log = logger.NewLogger("ConfigReader")
 
 type flags struct {
 	Config      string
-	GracePeriod time.Duration
+	// GracePeriod time.Duration
 }
 
 func checkZeroValuedFields(subject any) {
@@ -39,7 +39,7 @@ func getFlags() *flags {
 
 	flag.StringVar(&flags.Config, "config", "", "")
 
-	flag.DurationVar(&flags.GracePeriod, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+	// flag.DurationVar(&flags.GracePeriod, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 
 	log.Println("Parsing CLI args")
 	flag.Parse()
