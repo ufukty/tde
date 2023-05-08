@@ -8,7 +8,8 @@ import (
 	"tde/internal/microservices/config_reader"
 	"tde/internal/microservices/service_discovery"
 	"tde/internal/router"
-	"tde/internal/utilities"
+
+	"log"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -29,7 +30,7 @@ func main() {
 
 	rc, err := runner_communicator.NewRunnerCommunicator(sd)
 	if err != nil {
-		utilities.Terminate(errors.Wrap(err, "failed on launch"))
+		log.Fatalln(errors.Wrap(err, "failed on launch"))
 	}
 
 	handler_evolution.RegisterCaseManager(cm)

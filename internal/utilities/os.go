@@ -1,16 +1,8 @@
 package utilities
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/pkg/errors"
 )
-
-func Terminate(msg ...any) {
-	fmt.Println(msg...)
-	os.Exit(1)
-}
 
 func WorkingDir() (string, error) {
 	stdOut, _, err := RunCommandForOutput("pwd", "-P")

@@ -2,11 +2,11 @@ package upload
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"tde/internal/command"
 	"tde/internal/folders/archive"
 	"tde/internal/folders/discovery"
-	utl "tde/internal/utilities"
 
 	"github.com/pkg/errors"
 )
@@ -19,13 +19,13 @@ type Command struct {
 func (c *Command) Run() {
 	modulePath, err := discovery.GetModulePath()
 	if err != nil {
-		utl.Terminate(errors.Wrap(err, "Could not find the path of Go module root"))
+		log.Fatalln(errors.Wrap(err, "Could not find the path of Go module root"))
 	}
 
 	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
 	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs)
 	if err != nil {
-		utl.Terminate(errors.Wrap(err, "Could not create archive for module"))
+		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}
 
 	fmt.Println("Archive path:", zipPath)

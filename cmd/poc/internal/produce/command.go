@@ -1,6 +1,7 @@
 package produce
 
 import (
+	"log"
 	astw_utl "tde/internal/astw/utilities"
 	"tde/internal/command"
 	"tde/internal/evaluation"
@@ -9,7 +10,6 @@ import (
 	"tde/internal/folders/preparation"
 	"tde/internal/folders/slot_manager"
 	"tde/internal/folders/types"
-	"tde/internal/utilities"
 	"tde/models/common_models"
 
 	"fmt"
@@ -63,22 +63,22 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 func (c *Command) Run() {
 	modPath, pkgInMod, importPath, err := discovery.WhereAmI()
 	if err != nil {
-		utilities.Terminate("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
+		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
 	}
 
 	prepPath, err := preparation.Prepare(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, c.TestName)
 	if err != nil {
-		utilities.Terminate("Could not prepare the module", err)
+		log.Fatalln("Could not prepare the module", err)
 	}
 
 	testDetails, err := discovery.ResolveTestDetailsInCurrentDir(c.TestName)
 	if err != nil {
-		utilities.Terminate("Could not find test details")
+		log.Fatalln("Could not find test details")
 	}
 
 	evolutionTarget, err := NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
 	if err != nil {
-		utilities.Terminate("Failed in slot_manager.NewSession()", err)
+		log.Fatalln("Failed in slot_manager.NewSession()", err)
 	}
 
 	var session = slot_manager.NewSession(prepPath, testDetails)

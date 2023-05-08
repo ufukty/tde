@@ -1,6 +1,7 @@
 package command
 
 import (
+	"log"
 	"tde/internal/utilities"
 
 	"flag"
@@ -301,7 +302,7 @@ func parsePositionalArguments(f *flag.FlagSet, cmd Command) error {
 
 func Route() {
 	if len(os.Args) < 2 {
-		utilities.Terminate("Expected command. Run \"tde help\"")
+		log.Fatalln("Expected command. Run \"tde help\"")
 	}
 
 	for name, cmd := range commands {
@@ -316,20 +317,20 @@ func Route() {
 			if cmdToRun == "help" {
 				cmdToRun = ""
 			}
-			utilities.Terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
+			log.Fatalln(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 
 		if err := parsePositionalArguments(f, cmd); err != nil {
 			if cmdToRun == "help" {
 				cmdToRun = ""
 			}
-			utilities.Terminate(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
+			log.Fatalln(errors.Wrap(err, fmt.Sprintf("Could not parse arguments. Run \"tde help %s\"", cmdToRun)))
 		}
 
 		cmd.Run()
 		os.Exit(0)
 	} else {
-		utilities.Terminate("Unrecognized command. Run \"tde help\"")
+		log.Fatalln("Unrecognized command. Run \"tde help\"")
 	}
 
 }

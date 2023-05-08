@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"tde/internal/utilities"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -37,6 +36,6 @@ func (c *Command) Run() {
 	if msg, ok := helpFileContent[c.Topic]; ok {
 		fmt.Println(msg)
 	} else {
-		utilities.Terminate("Unrecognized command for help. Run \"tde help\"")
+		log.Fatalln("Unrecognized command for help. Run \"tde help\"")
 	}
 }
