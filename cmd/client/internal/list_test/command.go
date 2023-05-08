@@ -1,6 +1,7 @@
 package list_test
 
 import (
+	"log"
 	astw_util "tde/internal/astw/utilities"
 	"tde/internal/folders/discovery"
 	"tde/internal/utilities"
@@ -21,7 +22,7 @@ func (c *Command) validateArgs() {
 		var err error
 		c.Root, err = discovery.GetModulePath()
 		if err != nil {
-			utilities.Terminate("Could not detect module root:", err)
+			log.Fatalln("Could not detect module root:", err)
 		}
 	}
 }
@@ -94,13 +95,13 @@ func (c *Command) Run() {
 
 	root, err := discovery.GetModulePath()
 	if err != nil {
-		utilities.Terminate("Failed to detect module root path.")
+		log.Fatalln("Failed to detect module root path.")
 	}
 	PrintModule(filepath.Base(root), filepath.Dir(root))
 
 	tests, err := discovery.DiscoverSubdirsForTestFuncDetails(root, root)
 	if err != nil {
-		utilities.Terminate("Failed to detect test functions:", err)
+		log.Fatalln("Failed to detect test functions:", err)
 	}
 
 	for i, test := range tests {
