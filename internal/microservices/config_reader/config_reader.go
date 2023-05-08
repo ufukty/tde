@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"tde/internal/microservices/logger"
 	"tde/internal/utilities"
-	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -15,7 +14,7 @@ import (
 var log = logger.NewLogger("ConfigReader")
 
 type flags struct {
-	Config      string
+	Config string
 	// GracePeriod time.Duration
 }
 
