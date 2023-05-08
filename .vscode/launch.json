@@ -7,8 +7,9 @@
             "mode": "debug",
             "program": "cmd/evolver",
             "cwd": "${workspaceFolder}",
-            "args": ["-config=cmd/evolver/config/dev.yml"],
-            "showLog": true
+            "args": ["-config=cmd/evolver/config/dev.yml"]
+            // "showLog": true
+            // "console": "internalConsole"
         }
     ]
 }
