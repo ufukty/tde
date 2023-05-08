@@ -1,7 +1,6 @@
 package config_reader
 
 import (
-	"flag"
 	"os"
 	"testing"
 
@@ -13,7 +12,7 @@ type TestConfig struct {
 }
 
 func Test_ReadConfig(t *testing.T) {
-	flag.Set("config", "test.yml")
+	os.Args = []string{os.Args[0], "-config", "test.yml"}
 
 	var config = FillAndReturn(&TestConfig{})
 	if config.Test != "49af1177-1cf5-506c-b99d-1fb90ba26c62" {
