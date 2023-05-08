@@ -5,9 +5,8 @@ import (
 )
 
 func Test_ServiceDiscovery(t *testing.T) {
-	filename = "service_discovery_test.json"
-
-	reg := NewServiceDiscovery()
+	var filename = "service_discovery_test.json"
+	reg := NewServiceDiscovery(filename)
 
 	ip_addresses := reg.LookupKind(Runner)
 	if len(ip_addresses) == 0 {

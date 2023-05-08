@@ -10,18 +10,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-var (
-	filename     = "service_discovery.json"
-	updatePeriod = time.Second * 5
-)
-
 type ServiceDiscovery struct {
-	updateLock  sync.Mutex
-	fileContent serviceDiscoveryFile
+	configPath   string
+	updateLock   sync.Mutex
+	fileContent  serviceDiscoveryFile
+	updatePeriod time.Duration
 }
 
-func NewServiceDiscovery() *ServiceDiscovery {
-	sd := ServiceDiscovery{}
+func NewServiceDiscovery(configPath string) *ServiceDiscovery {
+	sd := ServiceDiscovery{
+		configPath:   configPath,
+		updatePeriod: time.Second * 5,
+	}
 	sd.readConfig()
 	go sd.tick()
 	return &sd
@@ -32,21 +32,21 @@ func (sd *ServiceDiscovery) readConfig() {
 		return
 	}
 	log.Println("ServiceDiscovery: reading config file")
-	fileHandler, err := os.Open(filename)
+	fileHandler, err := os.Open(sd.configPath)
 	if err != nil {
-		panic(errors.Wrapf(err, "Failed to open %s", filename))
+		log.Fatalln(errors.Wrapf(err, "Failed to open '%s'", sd.configPath))
 	}
 	defer fileHandler.Close()
 	err = json.NewDecoder(fileHandler).Decode(&sd.fileContent)
 	if err != nil {
-		panic(errors.Wrapf(err, "Failed to decode %s", filename))
+		log.Fatalln(errors.Wrapf(err, "Failed to decode %s", sd.configPath))
 	}
 	log.Println("ServiceDiscovery: reading config file (done)")
 	sd.updateLock.Unlock()
 }
 
 func (sd *ServiceDiscovery) tick() {
-	for range time.Tick(updatePeriod) {
+	for range time.Tick(sd.updatePeriod) {
 		sd.readConfig()
 	}
 }

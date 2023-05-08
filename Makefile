@@ -17,6 +17,10 @@ $(addprefix dev-deploy-,$(PROGRAMS)):
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
 
+.PHONY: run-evolver
+run-evolver: evolver
+	build/$$(bash commands last-build evolver)/evolver-darwin-amd64 --service-discovery-config="platform/3-dev-env-config/service_discovery.json"
+
 # example: make run-client arg1 arg2
 .PHONY: $(addprefix run-,$(PROGRAMS))
 $(addprefix run-,$(PROGRAMS)): 
