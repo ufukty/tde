@@ -36,17 +36,18 @@ func main() {
 	handler_evolution.RegisterCaseManager(cm)
 	handler_evolution.RegisterRunnerCommunicator(rc)
 
-	router.StartRouter(":8081", func(r *mux.Router) {
-		var public = r.Host(config.RouterPublic)
-
-		public.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
-		public.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
-		public.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
-		public.PathPrefix("/session").Methods("POST").HandlerFunc(handler_evolution.Handler)
-		public.PathPrefix("/").HandlerFunc(router.NotFound)
-
-		var private = r.Host(config.RouterPrivate)
-		private.PathPrefix("/session/runner-results").Methods("POST").HandlerFunc(handler_results.Handler)
-		public.PathPrefix("/").HandlerFunc(router.NotFound)
+	router.StartRouter(config.RouterPublic, func(r *mux.Router) {
+		r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
+		r.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
+		r.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
+		r.PathPrefix("/session").Methods("POST").HandlerFunc(handler_evolution.Handler)
+		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
+
+	router.StartRouter(config.RouterPrivate, func(r *mux.Router) {
+		r.PathPrefix("/session/runner-results").Methods("POST").HandlerFunc(handler_results.Handler)
+		r.PathPrefix("/").HandlerFunc(router.NotFound)
+	})
+
+	router.Wait()
 }

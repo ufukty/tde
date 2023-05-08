@@ -13,4 +13,6 @@ func main() {
 
 		sub.PathPrefix("/evolve").HandlerFunc(handler_evolve.Handler)
 	})
+
+	router.Wait()
 }

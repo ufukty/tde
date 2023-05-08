@@ -19,4 +19,6 @@ func main() {
 		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch.Handler)
 		r.HandleFunc("/", handler)
 	})
+
+	router.Wait()
 }

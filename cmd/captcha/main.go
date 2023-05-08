@@ -11,4 +11,6 @@ func main() {
 		r.PathPrefix("/").Methods("GET").HandlerFunc(router.NotFound)
 		r.PathPrefix("/").Methods("POST").HandlerFunc(router.NotFound)
 	})
+
+	router.Wait()
 }

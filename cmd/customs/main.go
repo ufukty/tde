@@ -39,4 +39,6 @@ func main() {
 		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
 		r.PathPrefix("/ast").Methods("GET").HandlerFunc(ast_get.Handler)
 	})
+
+	router.Wait()
 }
