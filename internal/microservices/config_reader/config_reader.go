@@ -2,17 +2,21 @@ package config_reader
 
 import (
 	"flag"
-	"log"
 	"os"
 	"reflect"
+	"tde/internal/microservices/logger"
 	"tde/internal/utilities"
+	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
+var log = logger.NewLogger("ConfigReader")
+
 type flags struct {
-	Config string
+	Config      string
+	GracePeriod time.Duration
 }
 
 func checkZeroValuedFields(subject any) {
@@ -32,9 +36,14 @@ func checkZeroValuedFields(subject any) {
 
 func getFlags() *flags {
 	var flags = &flags{}
+
 	flag.StringVar(&flags.Config, "config", "", "")
-	log.Println("Reading CLI args to learn which path the config file in")
+
+	flag.DurationVar(&flags.GracePeriod, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+
+	log.Println("Parsing CLI args")
 	flag.Parse()
+
 	checkZeroValuedFields(flags)
 	return flags
 }
