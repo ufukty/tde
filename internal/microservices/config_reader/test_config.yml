@@ -1,0 +1,19 @@
+---
+common: &common
+  service-discovery-config: 75c31fcc-6dca-5e99-9bad-ea82ad9fe1f6
+  grace-period: 1s
+
+evolver:
+  <<: *common
+
+runner:
+  <<: *common
+
+customs:
+  <<: *common
+
+api_gateway:
+  <<: *common
+
+captcha:
+  <<: *common

@@ -1,10 +1,10 @@
 [Unit]
-Description=App server for runner
+Description=App server for customs
 
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/runner
+ExecStart=/home/ufukty/customs -config=/home/ufukty/config.yml
 Restart=always
 
 [Install]

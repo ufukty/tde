@@ -13,8 +13,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const gracefulShutdownTimeout = 15 * time.Second
-
 var servers = []*http.Server{}
 
 var log = logger.NewLogger("Router")
@@ -76,7 +74,7 @@ func StartTLSRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 	servers = append(servers, server)
 }
 
-func Wait() {
+func Wait(gracePeriod time.Duration) {
 	sigInterruptChannel := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
@@ -86,13 +84,13 @@ func Wait() {
 	<-sigInterruptChannel
 
 	// Create a deadline to wait for.
-	ctx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), gracePeriod)
 	defer cancel()
 
 	for _, server := range servers {
 		// Doesn't block if no connections, but will otherwise wait
 		// until the timeout deadline.
-		log.Printf("Sending shutdown signal to one of the servers, grace period is '%s'\n", gracefulShutdownTimeout.String())
+		log.Printf("Sending shutdown signal to one of the servers, grace period is '%s'\n", gracePeriod.String())
 		go server.Shutdown(ctx)
 	}
 

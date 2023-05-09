@@ -141,4 +141,6 @@ examples/**/tde
 *.retry
 inventory.cfg
 service_discovery.json
-!cmd/evolver/config/dev/*
+
+### Miscellaneous
+platform/local/mount

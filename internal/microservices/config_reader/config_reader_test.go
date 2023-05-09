@@ -7,15 +7,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type TestConfig struct {
-	Test string
-}
-
 func Test_ReadConfig(t *testing.T) {
-	os.Args = []string{os.Args[0], "-config", "test.yml"}
+	os.Args = []string{os.Args[0], "-config", "test_config.yml"}
 
-	var config = FillAndReturn(&TestConfig{})
-	if config.Test != "49af1177-1cf5-506c-b99d-1fb90ba26c62" {
+	var config = GetConfig()
+	if config.Evolver.ServiceDiscoveryConfig != "75c31fcc-6dca-5e99-9bad-ea82ad9fe1f6" {
 		t.Error("validation")
 	}
 

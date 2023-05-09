@@ -34,32 +34,30 @@ func checkZeroValuedFields(subject any) {
 }
 
 func getFlags() *flags {
-	var flags = &flags{}
-
-	flag.StringVar(&flags.Config, "config", "", "")
-
-	// flag.DurationVar(&flags.GracePeriod, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
-
 	log.Println("Parsing CLI args")
+	var flags = &flags{}
+	flag.StringVar(&flags.Config, "config", "", "")
 	flag.Parse()
-
 	checkZeroValuedFields(flags)
 	return flags
 }
 
-func FillAndReturn[T any](target *T) *T {
-	var flags = getFlags()
-
+func GetConfig() *Config {
+	var (
+		flags           = getFlags()
+		fileReadHandler *os.File
+		err             error
+		config          = &Config{}
+	)
 	log.Printf("Reading '%s' as config file\n", flags.Config)
-	var fileReadHandler, err = os.Open(flags.Config)
+	fileReadHandler, err = os.Open(flags.Config)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not open config file"))
 	}
-	err = yaml.NewDecoder(fileReadHandler).Decode(target)
+	err = yaml.NewDecoder(fileReadHandler).Decode(config)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not decode config file"))
 	}
-
-	checkZeroValuedFields(target)
-	return target
+	checkZeroValuedFields(config)
+	return config
 }

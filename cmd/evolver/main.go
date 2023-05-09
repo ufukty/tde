@@ -15,16 +15,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Config struct {
-	ServiceDiscoveryConfig string `yaml:"service-discovery-config"`
-	RouterPublic           string `yaml:"router_public"`
-	RouterPrivate          string `yaml:"router_private"`
-}
-
 func main() {
 	var (
-		config = config_reader.FillAndReturn(&Config{})
-		sd     = service_discovery.NewServiceDiscovery(config.ServiceDiscoveryConfig)
+		config = config_reader.GetConfig()
+		sd     = service_discovery.NewServiceDiscovery(config.Evolver.ServiceDiscoveryConfig)
 		cm     = case_manager.NewCaseManager()
 	)
 
@@ -36,7 +30,7 @@ func main() {
 	handler_evolution.RegisterCaseManager(cm)
 	handler_evolution.RegisterRunnerCommunicator(rc)
 
-	router.StartRouter(config.RouterPublic, func(r *mux.Router) {
+	router.StartRouter(config.Evolver.RouterPublic, func(r *mux.Router) {
 		r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
@@ -44,10 +38,10 @@ func main() {
 		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
-	router.StartRouter(config.RouterPrivate, func(r *mux.Router) {
+	router.StartRouter(config.Evolver.RouterPrivate, func(r *mux.Router) {
 		r.PathPrefix("/session/runner-results").Methods("POST").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
-	router.Wait()
+	router.Wait(config.Evolver.GracePeriod)
 }

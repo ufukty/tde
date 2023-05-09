@@ -1,4 +1,0 @@
----
-service-discovery-config: cmd/evolver/config/dev/service_discovery.json
-router_private: :8082
-router_public: :8081

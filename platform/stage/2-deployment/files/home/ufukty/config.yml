@@ -1,0 +1,31 @@
+---
+common: &common
+  service-discovery-config: /home/ufukty/service_discovery.json
+  grace-period: 15s
+
+evolver:
+  <<: *common
+  router_public: :8080
+  router_private: :8081
+
+runner:
+  <<: *common
+  router_public: :8080
+  router_private: :8081
+
+customs:
+  <<: *common
+  router_public: :8080
+  router_private: :8081
+  grace-period: 30s
+  volume-mount: /mnt/volume_fra1
+
+api_gateway:
+  <<: *common
+  router_public: :8080
+  router_private: :8081
+
+captcha:
+  <<: *common
+  router_public: :8080
+  router_private: :8081

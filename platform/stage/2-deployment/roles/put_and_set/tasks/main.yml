@@ -2,7 +2,7 @@
 - name: "get path to latest binary for {{ program_name }}"
   local_action:
     module: ansible.builtin.shell
-    chdir: "{{ inventory_dir }}/../../"
+    chdir: "{{ inventory_dir }}/../../../"
     cmd: "bash commands last-build {{ program_name }}"
   register: program_name_command
   tags: redeploy
@@ -18,7 +18,7 @@
 
 - name: Copy binaries
   ansible.builtin.copy:
-    src: "{{ inventory_dir }}/../../build/{{ program_name_command.stdout }}/{{ program_name }}-linux-amd64"
+    src: "{{ inventory_dir }}/../../../build/{{ program_name_command.stdout }}/{{ program_name }}-linux-amd64"
     dest: "/home/ufukty/{{ program_name }}"
     mode: "0700"
     owner: ufukty

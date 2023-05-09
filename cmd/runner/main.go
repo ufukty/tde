@@ -2,23 +2,21 @@ package main
 
 import (
 	"tde/cmd/runner/controllers/batch"
+	"tde/internal/microservices/config_reader"
 	"tde/internal/router"
-
-	"fmt"
-	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello world.")
-}
-
 func main() {
-	router.StartRouter(":8082", func(r *mux.Router) {
+	var (
+		config = config_reader.GetConfig()
+	)
+
+	router.StartRouter(config.Runner.RouterPublic, func(r *mux.Router) {
 		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch.Handler)
-		r.HandleFunc("/", handler)
+		r.HandleFunc("/", router.NotFound)
 	})
 
-	router.Wait()
+	router.Wait(config.Runner.GracePeriod)
 }

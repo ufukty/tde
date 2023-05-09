@@ -1,0 +1,31 @@
+---
+common: &common
+  service-discovery-config: platform/local/files/service_discovery.json
+  grace-period: 1s
+
+evolver:
+  <<: *common
+  router_public: :8081
+  router_private: :8082
+
+runner:
+  <<: *common
+  router_public: :8083
+  router_private: :8084
+
+customs:
+  <<: *common
+  router_public: :8085
+  router_private: :8086
+  grace-period: 2s
+  volume-mount: platform/local/mount/customs
+
+api_gateway:
+  <<: *common
+  router_public: :8087
+  router_private: :8088
+
+captcha:
+  <<: *common
+  router_public: :8089
+  router_private: :8090

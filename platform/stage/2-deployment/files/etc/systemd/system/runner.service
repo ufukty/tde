@@ -1,10 +1,10 @@
 [Unit]
-Description=App server for evolver
+Description=App server for runner
 
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/evolver
+ExecStart=/home/ufukty/runner -config=/home/ufukty/config.yml
 Restart=always
 
 [Install]

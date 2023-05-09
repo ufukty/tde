@@ -1,10 +1,10 @@
 [Unit]
-Description=App server for customs
+Description=App server for evolver
 
 [Service]
 User=ufukty
 WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/customs -volume=/mnt/volume_fra1
+ExecStart=/home/ufukty/evolver -config=/home/ufukty/config.yml
 Restart=always
 
 [Install]

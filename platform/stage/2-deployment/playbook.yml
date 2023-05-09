@@ -15,6 +15,12 @@
         dest: "~/service_discovery.json"
         mode: "0600"
 
+    - name: config.yml
+      ansible.builtin.copy:
+        src: "files/home/ufukty/config.yml"
+        dest: "/home/ufukty/config.yml"
+        mode: "0600"
+
     - name: Put the binary and set systemd item
       include_role:
         name: put_and_set
