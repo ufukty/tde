@@ -1,17 +1,59 @@
 #!/usr/bin/env bash -i
 
-run() {
-    echo -e "r: \033[35m$@\033[0m" && $@
+# MARK: utilities
+
+with_echo() {
+    echo -e "\033[35m@echo\033[0m $@" && $@
     ret=$?
     if [ $ret -ne 0 ]; then
-        echo -e "r: \e[31mrun has failed\e[0m" && exit $ret
+        echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
     fi
 }
 
-programs="evolver-server poc runner-server client customs" # $(ls cmd)
+shortlist() {
+    typeset -f | awk '/ \(\) $/ { print $1 } ' | grep -v -e shortlist -e with_echo -e install_completion
+}
+
+install_completion() {
+    mkdir -p ~/.bash_completion.d
+    SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+    cat >~/.bash_completion.d/tde_commands.sh <<-HERE
+        _script()
+        {
+        _script_commands="\$(bash "$SCRIPT_DIR/commands" shortlist)"
+
+        local cur
+        COMPREPLY=()
+        cur="\${COMP_WORDS[COMP_CWORD]}"
+        COMPREPLY=( \$(compgen -W "\${_script_commands}" -- \${cur}) )
+
+        return 0
+        }
+        complete -o nospace -F _script commands
+HERE
+    source ~/.bash_completion.d/tde_commands.sh
+}
+
+CLIENT_PROGRAM_NAMES="client poc ast-inspect serdeser"
+SERVER_PROGRAM_NAMES="evolver runner customs"
+PROGRAM_NAMES="$SERVER_PROGRAM_NAMES $CLIENT_PROGRAM_NAMES"
 
 version() {
     echo "$(date -u +%y%m%d-%H%M%S)-$(git rev-parse HEAD | cut -b 1-8)"
+}
+
+# MARK: Compile
+
+compile() {
+    PROGRAM_NAME="$1" && shift
+    VERSION="$(version)"
+    mkdir -p "build/$VERSION"
+    with_echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
+    with_echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
+}
+
+compile-all() {
+    for PROGRAM_NAME in $PROGRAM_NAMES; do with_echo compile "$PROGRAM_NAME"; done
 }
 
 last-build-any() {
@@ -19,28 +61,38 @@ last-build-any() {
 }
 
 last-build() {
-    find build -name "*$@*" | sort | tail -n 1 | cut -f 2 -d '/'
+    PROGRAM_NAME="$1" && shift
+    find build -name "*$PROGRAM_NAME*" | sort | tail -n 1 | cut -f 2 -d '/'
 }
 
-compile() {
-    ver="$(version)"
-    mkdir -p "build/$ver"
-    run env GOOS=darwin GOARCH=amd64 go build -o "build/$ver/$@-darwin-amd64" ./cmd/$@
-    run env GOOS=linux GOARCH=amd64 go build -o "build/$ver/$@-linux-amd64" ./cmd/$@
+# MARK: Run
+
+run() {
+    PROGRAM_NAME="$1" && shift
+    PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
+    with_echo "./build/$PROGRAM_LAST_BUILD/$PROGRAM_NAME-darwin-amd64" --config="cmd/$PROGRAM_NAME/config/dev.yml" "$@"
 }
 
-compile-all() {
-    for program in $programs; do
-        compile $program
-    done
+compile-run() {
+    PROGRAM_NAME="$1" && shift
+    compile "$PROGRAM_NAME"
+    run "$PROGRAM_NAME" "$@"
 }
 
-deploy-dev-program() {
-    IPs="$(cat platform/provisioning/ansible/inventory.cfg | grep thesis-evolution | cut -f 2 -d ' ' | cut -f 2 -d '=')"
-    echo "$IPs" | while read IP; do
-        run echo rsync "build/evolver-server-linux-amd64" "ufukty@$IP:/home/ufukty/evolver-server"
-    done
+# MARK: Re-Deployment (only binaries for one server kind)
+
+redeploy() {
+    PROGRAM_NAME="$1" && shift
+    (cd platform/2-deployment && with_echo ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
 }
+
+compile-redeploy() {
+    PROGRAM_NAME="$1" && shift
+    compile "$PROGRAM_NAME"
+    redeploy "$PROGRAM_NAME"
+}
+
+# MARK: API
 
 print-endpoints() {
     cat api.http | grep HTTP/1.1 |
@@ -49,4 +101,6 @@ print-endpoints() {
         sed -E 's/(.*){{api}}(.*)/\1 \2/'
 }
 
-$@
+# MARK: main
+
+SUBCOMMAND="$1" && shift && "$SUBCOMMAND" "$@"

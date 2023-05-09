@@ -1,30 +1,5 @@
-PROGRAMS := ast-inspect client evolver runner customs poc
-
-all: $(PROGRAMS)
-
-$(PROGRAMS):
-	bash commands compile $@
-
-dev-deploy: runner evolver
-	cd platform && make dev-deploy
-
-# example: make dev-deploy-client arg1 arg2
-.PHONY: $(addprefix dev-deploy-,$(PROGRAMS))
-$(addprefix dev-deploy-,$(PROGRAMS)): 
-	make $(subst dev-deploy-,,$@)
-	cd platform/2-deployment; ansible-playbook --forks=20 --limit=$(subst dev-deploy-,,$@) --tags=redeploy playbook.yml
-
 test-word-reverse:
 	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
-
-.PHONY: run-evolver
-run-evolver: evolver
-	build/$$(bash commands last-build evolver)/evolver-darwin-amd64 --service-discovery-config="platform/3-dev-env-config/service_discovery.json"
-
-# example: make run-client arg1 arg2
-.PHONY: $(addprefix run-,$(PROGRAMS))
-$(addprefix run-,$(PROGRAMS)): 
-	build/$$(bash commands last-build $(subst run-,,$@))/$(subst run-,,$@)-darwin-amd64 $(filter-out $@,$(MAKECMDGOALS))
 
 initial-environment-setup:
 	brew update && brew install \
