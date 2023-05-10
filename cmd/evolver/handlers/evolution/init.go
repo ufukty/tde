@@ -1,8 +1,8 @@
 package evolution
 
 import (
-	"tde/cmd/evolver/internal/case_manager"
-	"tde/cmd/evolver/internal/runner_communicator"
+	"tde/cmd/evolver/internal/case-manager"
+	"tde/cmd/evolver/internal/runner-communicator"
 )
 
 var (

@@ -3,7 +3,7 @@ package node_constructor
 import (
 	"go/ast"
 	"go/token"
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 )
 
 func FuncDecl(ctx *context.Context, limit int) *ast.FuncDecl {

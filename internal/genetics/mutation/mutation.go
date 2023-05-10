@@ -2,11 +2,11 @@ package mutation
 
 import (
 	"tde/internal/genetics/mutation/common"
-	"tde/internal/genetics/mutation/import_path"
+	"tde/internal/genetics/mutation/import-path"
 	"tde/internal/genetics/mutation/literals"
-	"tde/internal/genetics/mutation/remove_line"
-	"tde/internal/genetics/mutation/switch_lines"
-	"tde/internal/genetics/mutation/token_shuffle"
+	"tde/internal/genetics/mutation/remove-line"
+	"tde/internal/genetics/mutation/switch-lines"
+	"tde/internal/genetics/mutation/token-shuffle"
 	"tde/internal/utilities"
 )
 

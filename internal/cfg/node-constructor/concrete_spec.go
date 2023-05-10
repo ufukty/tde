@@ -1,7 +1,7 @@
 package node_constructor
 
 import (
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 	utl "tde/internal/utilities"
 
 	"go/ast"

@@ -1,19 +1,19 @@
 package produce
 
 import (
-	"log"
 	astw_utl "tde/internal/astw/utilities"
 	"tde/internal/command"
 	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
 	"tde/internal/folders/preparation"
-	"tde/internal/folders/slot_manager"
+	slot_manager "tde/internal/folders/slot-manager"
 	"tde/internal/folders/types"
-	"tde/models/common_models"
+	common_models "tde/models/common-models"
 
 	"fmt"
 	"go/ast"
+	"log"
 	"path/filepath"
 
 	"github.com/davecgh/go-spew/spew"

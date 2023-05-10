@@ -4,8 +4,8 @@ import (
 	ast_get "tde/cmd/customs/endpoints/ast/get"
 	module_get "tde/cmd/customs/endpoints/module/get"
 	module_post "tde/cmd/customs/endpoints/module/post"
-	"tde/cmd/customs/internal/volume_manager"
-	"tde/internal/microservices/config_reader"
+	"tde/cmd/customs/internal/volume-manager"
+	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/router"
 
 	"github.com/gorilla/mux"

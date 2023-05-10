@@ -1,7 +1,7 @@
 package slot_manager
 
 import (
-	"tde/internal/folders/copy_module"
+	"tde/internal/folders/copy-module"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
 	models "tde/models/program"

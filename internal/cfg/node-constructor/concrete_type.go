@@ -1,9 +1,9 @@
 package node_constructor
 
 import (
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 	utl "tde/internal/utilities"
-	
+
 	"go/ast"
 )
 
@@ -22,8 +22,8 @@ func ArrayType(ctx *context.Context, limit int) *ast.ArrayType {
 	}
 	return &ast.ArrayType{
 		// Lbrack: token.NoPos,
-		Len:    nil,
-		Elt:    Type(ctx, limit-1),
+		Len: nil,
+		Elt: Type(ctx, limit-1),
 	}
 }
 
@@ -97,8 +97,8 @@ func ParenExprForType(ctx *context.Context, limit int) *ast.ParenExpr {
 }
 
 // should cover needs for:
-//   - package.Type such as: types.NodeType  
-//   - 
+//   - package.Type such as: types.NodeType
+//     -
 func SelectorExprForType(ctx *context.Context, limit int) *ast.SelectorExpr {
 	if limit == 0 {
 		return nil

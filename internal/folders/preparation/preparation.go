@@ -2,8 +2,8 @@ package preparation
 
 import (
 	"os"
-	"tde/internal/folders/copy_module"
-	"tde/internal/folders/tester_package"
+	"tde/internal/folders/copy-module"
+	"tde/internal/folders/tester-package"
 	"tde/internal/folders/types"
 
 	"github.com/pkg/errors"

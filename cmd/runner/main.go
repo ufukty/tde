@@ -2,7 +2,7 @@ package main
 
 import (
 	"tde/cmd/runner/controllers/batch"
-	"tde/internal/microservices/config_reader"
+	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/router"
 
 	"github.com/gorilla/mux"

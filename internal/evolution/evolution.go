@@ -1,7 +1,7 @@
 package evolution
 
 import (
-	"tde/models/common_models"
+	"tde/models/common-models"
 	models "tde/models/program"
 
 	"sort"

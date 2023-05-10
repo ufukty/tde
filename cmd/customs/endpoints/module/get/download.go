@@ -2,7 +2,7 @@ package module
 
 import (
 	"net/http"
-	"tde/cmd/customs/internal/volume_manager"
+	"tde/cmd/customs/internal/volume-manager"
 )
 
 const (

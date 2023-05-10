@@ -1,14 +1,14 @@
 package cfg
 
 import (
-	"fmt"
 	trav "tde/internal/astw/traverse"
 	ast_types "tde/internal/astw/types"
-	"tde/internal/cfg/context_resolution"
-	"tde/internal/cfg/context_resolution/context"
-	nc "tde/internal/cfg/node_constructor"
+	context_resolution "tde/internal/cfg/context-resolution"
+	"tde/internal/cfg/context-resolution/context"
+	nc "tde/internal/cfg/node-constructor"
 	utl "tde/internal/utilities"
 
+	"fmt"
 	"go/ast"
 
 	"github.com/pkg/errors"

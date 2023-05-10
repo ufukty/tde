@@ -1,12 +1,13 @@
 package evaluation
 
 import (
+	"tde/internal/folders/slot-manager"
+	models "tde/models/program"
+
 	"fmt"
 	"go/printer"
 	"go/token"
 	"os"
-	"tde/internal/folders/slot_manager"
-	models "tde/models/program"
 )
 
 type Evaluator struct {

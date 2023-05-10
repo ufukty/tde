@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"tde/models/common_models"
+	"tde/models/common-models"
 
 	"go/ast"
 )

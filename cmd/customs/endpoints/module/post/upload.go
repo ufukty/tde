@@ -3,7 +3,7 @@ package module
 import (
 	"log"
 	"strconv"
-	"tde/cmd/customs/internal/volume_manager"
+	"tde/cmd/customs/internal/volume-manager"
 	"tde/models/dto"
 
 	"encoding/json"

@@ -3,7 +3,7 @@ package function_examiner
 import (
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 
 	"fmt"
 	"go/ast"

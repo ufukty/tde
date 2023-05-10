@@ -1,9 +1,10 @@
 package evaluation
 
 import (
-	"fmt"
+	"tde/internal/folders/tester-package"
+	
 	"os"
-	"tde/internal/folders/tester_package"
+	"fmt"
 	"testing"
 
 	"github.com/pkg/errors"

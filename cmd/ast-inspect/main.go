@@ -8,8 +8,8 @@ import (
 	"go/token"
 	"log"
 	"os"
-	"tde/internal/astw/clone/clean_clone"
-	"tde/internal/astw/cp_printer"
+	clean_clone "tde/internal/astw/clone/clean-clone"
+	cp_printer "tde/internal/astw/cp-printer"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"

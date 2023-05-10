@@ -1,12 +1,13 @@
 package evaluation
 
 import (
+	"tde/internal/folders/slot-manager"
+	models "tde/models/program"
+
 	"fmt"
 	"os/exec"
 	"path/filepath"
-	"tde/internal/folders/slot_manager"
-	models "tde/models/program"
-
+	
 	"github.com/pkg/errors"
 )
 

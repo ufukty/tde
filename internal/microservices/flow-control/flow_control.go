@@ -1,7 +1,7 @@
 package flow_control
 
 import (
-	"tde/internal/microservices/state_machine"
+	"tde/internal/microservices/state-machine"
 
 	"fmt"
 )

@@ -1,9 +1,9 @@
 package pattern_constructor
 
 import (
-	"tde/internal/cfg/context_resolution/context"
-	"tde/internal/cfg/node_constructor"
-	
+	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/node-constructor"
+
 	"go/ast"
 	"go/token"
 )

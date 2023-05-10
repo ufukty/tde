@@ -25,7 +25,7 @@ Functions:
 
 import (
 	"tde/cmd/client/internal/help"
-	"tde/cmd/client/internal/list_test"
+	"tde/cmd/client/internal/list-test"
 	"tde/cmd/client/internal/produce"
 	"tde/cmd/client/internal/upload"
 

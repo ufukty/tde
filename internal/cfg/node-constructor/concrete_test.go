@@ -2,7 +2,7 @@ package node_constructor
 
 import (
 	"fmt"
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 
 	"testing"
 )

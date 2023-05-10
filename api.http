@@ -1,6 +1,6 @@
-@ip = 167.99.135.13
-@port = 8083
-@api = http://{{ip}}:{{port}}/api/v0.1
+@ip = 127.0.0.1
+@port = 8085
+@api = http://{{ip}}:{{port}}
 @createdAt = {{$datetime iso8601}}
 
 ###
@@ -97,7 +97,7 @@ POST {{api}}/module HTTP/1.1
 Content-Type: application/zip
 Authorization: Bearer
 
-../../.gitignore
+< ./.gitignore
 
 ###
 

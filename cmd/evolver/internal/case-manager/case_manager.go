@@ -3,7 +3,7 @@ package case_manager
 import (
 	"errors"
 	"tde/internal/evolution"
-	"tde/models/common_models"
+	common_models "tde/models/common-models"
 
 	"github.com/google/uuid"
 )

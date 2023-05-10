@@ -1,7 +1,7 @@
 package package_examiner
 
 import (
-	"tde/internal/cfg/context_resolution/context"
+	"tde/internal/cfg/context-resolution/context"
 
 	"go/ast"
 	"go/token"
