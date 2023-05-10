@@ -1,7 +1,7 @@
 package service_discovery
 
 import (
-	"tde/internal/microservices/service_discovery/models"
+	"tde/internal/microservices/service-discovery/models"
 
 	"encoding/json"
 	"log"
@@ -13,9 +13,9 @@ import (
 )
 
 type ServiceDiscovery struct {
+	models.File  `yaml:",inline"`
 	configPath   string
 	updateLock   sync.Mutex
-	fileContent  models.File
 	updatePeriod time.Duration
 }
 
@@ -39,7 +39,7 @@ func (sd *ServiceDiscovery) readConfig() {
 		log.Fatalln(errors.Wrapf(err, "Failed to open '%s'", sd.configPath))
 	}
 	defer fileHandler.Close()
-	err = json.NewDecoder(fileHandler).Decode(&sd.fileContent)
+	err = json.NewDecoder(fileHandler).Decode(&sd)
 	if err != nil {
 		log.Fatalln(errors.Wrapf(err, "Failed to decode %s", sd.configPath))
 	}
@@ -51,22 +51,4 @@ func (sd *ServiceDiscovery) tick() {
 	for range time.Tick(sd.updatePeriod) {
 		sd.readConfig()
 	}
-}
-
-type Kind string
-
-const (
-	Runner  = Kind("runner")
-	Evolver = Kind("evolver")
-)
-
-func (sd *ServiceDiscovery) LookupKind(kind Kind) (ip_addresses []string) {
-	switch kind {
-	case Runner:
-		return sd.fileContent.Runner.GetIPs()
-
-	case Evolver:
-		return sd.fileContent.Evolver.GetIPs()
-	}
-	return nil
 }

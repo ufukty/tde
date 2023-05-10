@@ -1,6 +1,6 @@
 package models
 
-import "tde/internal/microservices/service_discovery/models/provider"
+import "tde/internal/microservices/service-discovery/models/provider"
 
 type Service struct {
 	Digitalocean []provider.DigitaloceanDroplet `json:"digitalocean"`
