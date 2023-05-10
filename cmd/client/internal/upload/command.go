@@ -23,7 +23,7 @@ func (c *Command) Run() {
 	}
 
 	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
-	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs)
+	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}

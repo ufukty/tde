@@ -17,8 +17,8 @@ func Test_Preparation(t *testing.T) {
 
 	dupl, err := Prepare(
 		types.AbsolutePath(abs),
-		types.InModulePath("examples/word_reverse"),
-		"tde/examples/word_reverse",
+		types.InModulePath("examples/word-reverse"),
+		"tde/examples/word-reverse",
 		"TDE_WordReverse",
 	)
 

@@ -13,12 +13,12 @@ import (
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := ast_utl.LoadDir("../../test_package")
+	_, astPkgs, err := ast_utl.LoadDir("../../test-package")
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
 	}
 	astPkg := astPkgs["test_package"]
-	astFile := astPkg.Files["../../test_package/walk.go"]
+	astFile := astPkg.Files["../../test-package/walk.go"]
 	funcDecl, err := ast_utl.FindFuncDecl(astPkg, "WalkWithNils")
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "could not find test function")

@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const testFilePath = "../../../internal/test_package/walk.go"
+const testFilePath = "../../../internal/test-package/walk.go"
 
 func Test_Print(t *testing.T) {
 	f, err := parser.ParseFile(token.NewFileSet(), testFilePath, nil, parser.AllErrors)

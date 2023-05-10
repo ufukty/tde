@@ -20,8 +20,8 @@ func Test_SlotManager(t *testing.T) {
 
 	clone, err := preparation.Prepare(
 		types.AbsolutePath(absPath),
-		types.InModulePath("examples/word_reverse"),
-		"tde/examples/word_reverse",
+		types.InModulePath("examples/word-reverse"),
+		"tde/examples/word-reverse",
 		"TDE_WordReverse",
 	)
 	if err != nil {
@@ -38,10 +38,10 @@ func Test_SlotManager(t *testing.T) {
 	var (
 		modulePath = types.AbsolutePath(clone)
 		config     = &types.TestDetails{
-			PackagePath:   types.InModulePath("examples/word_reverse"),
-			PackageImport: "tde/examples/word_reverse",
-			ImplFuncFile:  types.InModulePath("examples/word_reverse/word_reverse.go"),
-			TestFuncFile:  types.InModulePath("examples/word_reverse/word_reverse_tde.go"),
+			PackagePath:   types.InModulePath("examples/word-reverse"),
+			PackageImport: "tde/examples/word-reverse",
+			ImplFuncFile:  types.InModulePath("examples/word-reverse/word_reverse.go"),
+			TestFuncFile:  types.InModulePath("examples/word-reverse/word_reverse_tde.go"),
 			TestFuncName:  "TDE_WordReverse",
 		}
 	)

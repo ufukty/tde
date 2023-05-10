@@ -14,7 +14,7 @@ import (
 )
 
 func Test_GetContextForSpot(t *testing.T) {
-	_, astPkgs, err := ast_utl.LoadDir("../../test_package")
+	_, astPkgs, err := ast_utl.LoadDir("../../test-package")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on loading package"))
 	}

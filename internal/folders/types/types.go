@@ -51,14 +51,14 @@ type DiscoveryResponse struct {
 }
 
 type TestDetails struct {
-	PackagePath   InModulePath // eg. .../examples/word_reverse
-	PackageImport string       // eg. examples/word_reverse/word_reverse
+	PackagePath   InModulePath // eg. .../examples/word-reverse
+	PackageImport string       // eg. examples/word-reverse/word_reverse
 
-	ImplFuncFile InModulePath // eg. .../examples/word_reverse/word_reverse.go
+	ImplFuncFile InModulePath // eg. .../examples/word-reverse/word_reverse.go
 	ImplFuncName string       // eg. WordReverse
 	ImplFuncLine int
 
-	TestFuncFile InModulePath // eg. .../examples/word_reverse/word_reverse_tde.go
+	TestFuncFile InModulePath // eg. .../examples/word-reverse/word_reverse_tde.go
 	TestFuncName string       // eg. TDE_WordReverse
 	TestFuncLine int
 }

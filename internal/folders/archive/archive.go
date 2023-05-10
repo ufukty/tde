@@ -13,7 +13,7 @@ import (
 
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
 
-func Directory(relativePath string, includeSubfolders bool, skipDirs []string) (path string, err error) {
+func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs []string) (path string, err error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to create temporary zip file")
@@ -34,7 +34,11 @@ func Directory(relativePath string, includeSubfolders bool, skipDirs []string) (
 		}
 
 		if fileInfo.IsDir() {
-			if !includeSubfolders || slices.Index(skipDirs, inZipSubPath) != -1 {
+			var (
+				isInSkipDirs    = slices.Index(skipDirs, inZipSubPath) != -1
+				isInSkipSubdirs = slices.Index(skipSubdirs, filepath.Base(inZipSubPath)) != -1
+			)
+			if !includeSubfolders || isInSkipDirs || isInSkipSubdirs {
 				log.Println("skip dir:", inZipSubPath)
 				return filepath.SkipDir
 			}

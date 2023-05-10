@@ -12,7 +12,8 @@ import (
 )
 
 func Test_ArchiveDirectory(t *testing.T) {
-	path, err := Directory("../../../../", true, []string{".git", "build", "docs", ".vscode"})
+	exclude := []string{".git", "build", "docs", ".vscode"}
+	path, err := Directory("../../../../", true, exclude, exclude)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed to archive directory"))
 	}
