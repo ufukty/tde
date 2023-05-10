@@ -3,8 +3,8 @@ package main
 import (
 	handler_evolution "tde/cmd/evolver/handlers/evolution"
 	handler_results "tde/cmd/evolver/handlers/results"
-	"tde/cmd/evolver/internal/case-manager"
-	"tde/cmd/evolver/internal/runner-communicator"
+	case_manager "tde/cmd/evolver/internal/case-manager"
+	runner_communicator "tde/cmd/evolver/internal/runner-communicator"
 	config_reader "tde/internal/microservices/config-reader"
 	service_discovery "tde/internal/microservices/service-discovery"
 	"tde/internal/router"
