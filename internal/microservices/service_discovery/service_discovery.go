@@ -1,7 +1,7 @@
 package service_discovery
 
 import (
-	"tde/internal/microservices/service_discovery/model"
+	"tde/internal/microservices/service_discovery/models"
 
 	"encoding/json"
 	"log"
@@ -15,7 +15,7 @@ import (
 type ServiceDiscovery struct {
 	configPath   string
 	updateLock   sync.Mutex
-	fileContent  model.File
+	fileContent  models.File
 	updatePeriod time.Duration
 }
 
