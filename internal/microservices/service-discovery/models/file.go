@@ -7,7 +7,7 @@ type Service struct {
 	Local        string                         `json:"local"`
 }
 
-func (s Service) GetIPs() (ips []string) {
+func (s Service) ListPrivateIPs() (ips []string) {
 	for _, droplet := range s.Digitalocean {
 		ips = append(ips, droplet.Ipv4AddressPrivate)
 	}
@@ -21,4 +21,16 @@ type File struct {
 	Runner  Service `json:"runner"`
 	Evolver Service `json:"evolver"`
 	Customs Service `json:"customs"`
+}
+
+func (f File) ListPrivateIPs(service string) []string {
+	switch service {
+	case "runner":
+		return f.Runner.ListPrivateIPs()
+	case "evolver":
+		return f.Evolver.ListPrivateIPs()
+	case "customs":
+		return f.Customs.ListPrivateIPs()
+	}
+	return []string{}
 }
