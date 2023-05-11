@@ -4,7 +4,7 @@ import (
 	ast_get "tde/cmd/customs/endpoints/ast/get"
 	module_get "tde/cmd/customs/endpoints/module/get"
 	module_post "tde/cmd/customs/endpoints/module/post"
-	"tde/cmd/customs/internal/volume-manager"
+	volume_manager "tde/cmd/customs/internal/volume-manager"
 	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/router"
 

@@ -1,26 +1,13 @@
 package main
 
 import (
+	"tde/cmd/api-gateway/forwarders/customs"
 	config_reader "tde/internal/microservices/config-reader"
 	service_discovery "tde/internal/microservices/service-discovery"
 	"tde/internal/router"
 
-	"net/http"
-	"os"
-
 	"github.com/gorilla/mux"
-	"gopkg.in/yaml.v3"
 )
-
-func RedirectClosure(targetURL string) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		yaml.NewEncoder(os.Stdout).Encode(r)
-	}
-}
-
-func RegisterRedirect(router *mux.Router, src, target string) {
-	router.PathPrefix(src).HandlerFunc(RedirectClosure(target))
-}
 
 func main() {
 	var (
@@ -28,12 +15,13 @@ func main() {
 		sd     = service_discovery.NewServiceDiscovery(config.APIGateway.ServiceDiscoveryConfig, config.APIGateway.ServiceDiscoveryUpdatePeriod)
 	)
 
+	customs.Register(config, sd)
+
 	router.StartRouter(config.APIGateway.RouterPublic, func(r *mux.Router) {
-		sub := r.PathPrefix("/api").Subrouter()
-
-		RegisterRedirect(sub, "/api/customs", config.Customs.RouterPublic)
-
-		sub.PathPrefix("/evolve").HandlerFunc(RedirectClosure("newURI"))
+		sub := r.PathPrefix("/api/v1.0.0").Subrouter()
+		sub.PathPrefix("/customs").HandlerFunc(customs.Forwarder)
+		// sub.PathPrefix("/evolve").HandlerFunc()
+		sub.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
 	router.Wait(config.APIGateway.GracePeriod)

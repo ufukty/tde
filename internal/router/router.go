@@ -29,10 +29,10 @@ func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 
 	r.Use(chi_mw.RequestID)
 	r.Use(chi_mw.Timeout(time.Second * 2))
-	// r.Use(Logger)
 	r.Use(chi_mw.Logger)
 	// r.Use(middleware.MWAuthorization)
 	r.Use(mux.CORSMethodMiddleware(r))
+	r.Use(chi_mw.Recoverer)
 
 	server := &http.Server{
 		Addr: baseURL,
