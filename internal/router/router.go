@@ -9,6 +9,7 @@ import (
 	"tde/internal/microservices/logger"
 	"time"
 
+	chi_mw "github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -25,6 +26,11 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 	r := mux.NewRouter()
 	endpointRegisterer(r)
+
+	r.Use(chi_mw.RequestID)
+	r.Use(chi_mw.Timeout(time.Second * 2))
+	// r.Use(Logger)
+	r.Use(chi_mw.Logger)
 	// r.Use(middleware.MWAuthorization)
 	r.Use(mux.CORSMethodMiddleware(r))
 
@@ -74,14 +80,17 @@ func StartTLSRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 	servers = append(servers, server)
 }
 
-func Wait(gracePeriod time.Duration) {
+func waitInterrupSignal() {
 	sigInterruptChannel := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
 	signal.Notify(sigInterruptChannel, os.Interrupt)
-
 	// Block until we receive our signal.
 	<-sigInterruptChannel
+}
+
+func Wait(gracePeriod time.Duration) {
+	waitInterrupSignal()
 
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), gracePeriod)
