@@ -1,14 +1,13 @@
 package module
 
 import (
-	"log"
+	"fmt"
 	"strconv"
-	"tde/cmd/customs/internal/volume-manager"
+	volume_manager "tde/cmd/customs/internal/volume-manager"
+	"tde/internal/microservices/logger"
 	"tde/models/dto"
 
-	"encoding/json"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -46,111 +45,106 @@ import (
 // }
 
 const (
-	HTTPErrBadRequest = "Bad request"
+	MAX_CONTENT_LENGTH = 40 * 1024 * 1024
+	ALLOWED_MIME_TYPE  = "multipart/form-data"
 )
 
-const (
-	maxAllowedContentLength = 40 * 1024 * 1024
+var (
+	log           = logger.NewLogger("http handler in customs/module/post")
+	volumeManager *volume_manager.VolumeManager
 )
-
-var volumeManager *volume_manager.VolumeManager
 
 func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
 	volumeManager = vm
 }
 
-func jsonPart(part *multipart.Part, req *dto.Customs_Upload_Request) error {
-	err := json.NewDecoder(part).Decode(req)
+func writeToPath(r *http.Request, storagePath string) error {
+	srcFileHandler, _, err := r.FormFile("file")
 	if err != nil {
-		return errors.Wrap(err, "Deserialization")
+		return errors.Wrap(err, "Could not get the file from request")
 	}
-	return nil
-}
+	defer srcFileHandler.Close()
 
-func zipPart(part *multipart.Part, storagePath string) error {
 	dest, err := os.Create(storagePath)
 	if err != nil {
 		return errors.Wrap(err, "Create destination file")
 	}
 	defer dest.Close()
 
-	_, err = io.Copy(dest, part)
+	_, err = io.Copy(dest, srcFileHandler)
 	if err != nil {
 		return errors.Wrap(err, "Write into destination file")
 	}
 	return nil
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func checkHeaderContentType(r *http.Request) error {
+	if contentTypeHeader := r.Header.Get("Content-Type")[:len(ALLOWED_MIME_TYPE)]; contentTypeHeader != ALLOWED_MIME_TYPE {
+		return errors.New(fmt.Sprintf("Content-Type '%s' is not allowed.", contentTypeHeader))
+	}
+	return nil
+}
+
+func checkHeaderContentLength(r *http.Request) error {
 	var (
-		archiveID        string
 		contentLength    int
 		contentLengthStr string
 		err              error
-		part             *multipart.Part
-		req              *dto.Customs_Upload_Request
-		requestID        string
-		storagePath      string
+	)
+	contentLengthStr = r.Header.Get("Content-Length")
+	if contentLengthStr == "" {
+		return errors.New("Content-Length is empty")
+	}
+	contentLength, err = strconv.Atoi(contentLengthStr)
+	if err != nil {
+		return errors.New("Content-Length is not an integer")
+	}
+	if contentLength > MAX_CONTENT_LENGTH {
+		return errors.New("Content-Length is bigger than allowed")
+	}
+	return nil
+}
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	var (
+		archiveID   string
+		err         error
+		requestID   string
+		storagePath string
+		destPath    string
 	)
 
 	requestID = uuid.NewString()
 
-	contentLengthStr = r.Header.Get("Content-Length")
-	if contentLengthStr == "" {
-		log.Println(requestID, `Content-Length is empty`, err)
-		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
-		return
-	}
-	contentLength, err = strconv.Atoi(contentLengthStr)
-	if err != nil {
-		log.Println(requestID, `strconv.Atoi(r.Header.Get("Content-Length"))`, err)
-		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
-		return
-	}
-	if contentLength > maxAllowedContentLength {
-		log.Println(requestID, `contentLength > maxAllowedContentLength`, err)
-		http.Error(w, HTTPErrBadRequest, http.StatusRequestEntityTooLarge)
+	if err = checkHeaderContentType(r); err != nil {
+		log.Println(errors.Wrap(err, requestID))
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
-	req = &dto.Customs_Upload_Request{}
+	if err = checkHeaderContentLength(r); err != nil {
+		log.Println(errors.Wrap(err, requestID))
+		http.Error(w, "", http.StatusRequestEntityTooLarge)
+		return
+	}
 
 	archiveID = volumeManager.CreateUniqueFilename()
 	storagePath, err = volumeManager.CreateDestPath(archiveID)
 	if err != nil {
-		http.Error(w, errors.Wrap(err, "Could not create dir entries to place incoming file into").Error(), http.StatusInternalServerError)
+		log.Println(errors.Wrap(errors.Wrap(err, "Could not create dir entries to place incoming file into"), requestID))
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
-	multipartReader, err := r.MultipartReader()
+	destPath = filepath.Join(storagePath, archiveID+".zip")
+	err = writeToPath(r, destPath)
 	if err != nil {
-		http.Error(w, errors.Wrap(err, "").Error(), http.StatusBadRequest)
+		log.Println(errors.Wrap(errors.Wrap(err, "Could not parse the file part of multipart request"), requestID))
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-	for {
-		part, err = multipartReader.NextPart()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			http.Error(w, errors.Wrap(err, "Could not complete parsing multipart request").Error(), http.StatusBadRequest)
-			return
-		}
-		switch part.FormName() {
-		case "json":
-			err = jsonPart(part, req)
-			if err != nil {
-				http.Error(w, errors.Wrap(err, "Could not parse the file part of multipart request").Error(), http.StatusBadRequest)
-				return
-			}
-		case "file":
-			err = zipPart(part, filepath.Join(storagePath, archiveID+".zip"))
-			if err != nil {
-				http.Error(w, errors.Wrap(err, "Could not parse the file part of multipart request").Error(), http.StatusBadRequest)
-				return
-			}
-		}
-	}
+
+	w.WriteHeader(http.StatusOK)
 
 	var res = &dto.Customs_Upload_Response{
 		ArchiveID: archiveID,

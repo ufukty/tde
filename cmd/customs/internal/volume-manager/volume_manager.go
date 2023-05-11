@@ -25,14 +25,16 @@ func (vm *VolumeManager) CreateUniqueFilename() string {
 	return uuid.NewString()
 }
 
-// returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63/filename
-func (vm *VolumeManager) CreateDestPath(filename string) (path string, err error) {
-	slicedSubdirs := strings.Join(utilities.StringFold(strings.ReplaceAll(filename, "-", ""), 2), "/")
-	dirPath := filepath.Join(vm.root, slicedSubdirs)
+func pathSlice(uuid string) string {
+	return strings.Join(utilities.StringFold(strings.ReplaceAll(uuid, "-", ""), 2), "/")
+}
+
+// returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63 after creating it as dir
+func (vm *VolumeManager) CreateDestPath(archiveID string) (path string, err error) {
+	dirPath := filepath.Join(vm.root, pathSlice(archiveID))
 	err = os.MkdirAll(dirPath, 0700)
 	if err != nil {
 		return "", errors.Wrap(err, "Could not create folders in created destination path")
 	}
-	path = filepath.Join(dirPath, filename)
-	return
+	return dirPath, nil
 }
