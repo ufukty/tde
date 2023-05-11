@@ -27,7 +27,7 @@ func main() {
 	module_get.RegisterVolumeManager(volumeManager)
 	ast_get.RegisterVolumeManager(volumeManager)
 
-	router.StartRouter(config.Customs.RouterPublic, func(r *mux.Router) {
+	router.StartRouter(config.Customs.RouterPrivate, func(r *mux.Router) {
 		r.PathPrefix("/module").Methods("POST").HandlerFunc(module_post.Handler)
 		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
 		r.PathPrefix("/ast").Methods("GET").HandlerFunc(ast_get.Handler)
