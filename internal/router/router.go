@@ -39,7 +39,7 @@ func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		log.Println("Calling ListenAndServe")
+		log.Printf("Calling ListenAndServe on '%s'\n", baseURL)
 		if err := server.ListenAndServe(); err != nil {
 			log.Println(errors.Wrap(err, "http.Server returned an error from ListendAndServe call"))
 		}
@@ -65,7 +65,7 @@ func StartTLSRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		log.Println("Calling ListenAndServeTLS")
+		log.Printf("Calling ListenAndServeTLS on '%s'\n", baseURL)
 		if err := server.ListenAndServeTLS(publicCertPath, privateCertPath); err != nil {
 			log.Println(errors.Wrap(err, "http.Server returned an error from ListenAndServeTLS call"))
 		}

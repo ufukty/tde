@@ -2,6 +2,7 @@ package main
 
 import (
 	config_reader "tde/internal/microservices/config-reader"
+	service_discovery "tde/internal/microservices/service-discovery"
 	"tde/internal/router"
 
 	"net/http"
@@ -24,6 +25,7 @@ func RegisterRedirect(router *mux.Router, src, target string) {
 func main() {
 	var (
 		config = config_reader.GetConfig()
+		sd     = service_discovery.NewServiceDiscovery(config.APIGateway.ServiceDiscoveryConfig, config.APIGateway.ServiceDiscoveryUpdatePeriod)
 	)
 
 	router.StartRouter(config.APIGateway.RouterPublic, func(r *mux.Router) {

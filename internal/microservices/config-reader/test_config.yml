@@ -1,6 +1,7 @@
 ---
 common: &common
   service-discovery-config: 75c31fcc-6dca-5e99-9bad-ea82ad9fe1f6
+  service-discovery-update-period: 5s
   grace-period: 1s
 
 evolver:

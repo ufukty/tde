@@ -19,10 +19,10 @@ type ServiceDiscovery struct {
 	updatePeriod time.Duration
 }
 
-func NewServiceDiscovery(configPath string) *ServiceDiscovery {
+func NewServiceDiscovery(configPath string, updatePeriod time.Duration) *ServiceDiscovery {
 	sd := ServiceDiscovery{
 		configPath:   configPath,
-		updatePeriod: time.Second * 5,
+		updatePeriod: updatePeriod,
 	}
 	sd.readConfig()
 	go sd.tick()

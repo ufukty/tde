@@ -18,7 +18,7 @@ import (
 func main() {
 	var (
 		config = config_reader.GetConfig()
-		sd     = service_discovery.NewServiceDiscovery(config.Evolver.ServiceDiscoveryConfig)
+		sd     = service_discovery.NewServiceDiscovery(config.Evolver.ServiceDiscoveryConfig, config.Evolver.ServiceDiscoveryUpdatePeriod)
 		cm     = case_manager.NewCaseManager()
 	)
 

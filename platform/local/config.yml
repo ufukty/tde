@@ -1,6 +1,7 @@
 ---
 common: &common
   service-discovery-config: platform/local/files/service_discovery.json
+  service-discovery-update-period: 30s
   grace-period: 1s
 
 evolver:

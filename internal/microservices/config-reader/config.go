@@ -3,10 +3,11 @@ package config_reader
 import "time"
 
 type Common struct {
-	ServiceDiscoveryConfig string        `yaml:"service-discovery-config"`
-	GracePeriod            time.Duration `yaml:"grace-period"`
-	RouterPublic           string        `yaml:"router_public"`
-	RouterPrivate          string        `yaml:"router_private"`
+	ServiceDiscoveryConfig       string        `yaml:"service-discovery-config"`
+	ServiceDiscoveryUpdatePeriod time.Duration `yaml:"service-discovery-update-period"`
+	GracePeriod                  time.Duration `yaml:"grace-period"`
+	RouterPublic                 string        `yaml:"router_public"`
+	RouterPrivate                string        `yaml:"router_private"`
 }
 
 type APIGateway struct {
