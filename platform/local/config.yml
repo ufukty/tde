@@ -2,7 +2,9 @@
 common: &common
   service-discovery-config: platform/local/files/service_discovery.json
   service-discovery-update-period: 30s
-  grace-period: 1s
+  grace-period: 1ms
+  router_public: :8080
+  router_private: :8081
 
 evolver:
   <<: *common
@@ -18,7 +20,6 @@ customs:
   <<: *common
   router_public: :8085
   router_private: :8086
-  grace-period: 2s
   volume-mount: platform/local/mount/customs
 
 api_gateway:

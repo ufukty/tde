@@ -18,19 +18,24 @@ type flags struct {
 	// GracePeriod time.Duration
 }
 
-func checkZeroValuedFields(subject any) {
-	var valueOf = reflect.Indirect(reflect.ValueOf(subject))
-	var typeOf = valueOf.Type()
-
+func checkZeroValuedFieldsHelper(typeOf reflect.Type, valueOf reflect.Value) {
 	var nFields = typeOf.NumField()
 	for i := range utilities.Range(nFields) {
 		var fieldValue = valueOf.Field(i)
 		var fieldType = typeOf.Field(i)
 
-		if fieldValue.IsZero() {
+		if fieldType.Type.Kind() == reflect.Struct {
+			checkZeroValuedFieldsHelper(fieldType.Type, fieldValue)
+		} else if fieldValue.IsZero() {
 			log.Fatalf("Field '%s' is set to zero-value: '%s'\n", fieldType.Name, fieldValue)
 		}
 	}
+}
+
+func checkZeroValuedFields(subject any) {
+	var valueOf = reflect.Indirect(reflect.ValueOf(subject))
+	var typeOf = valueOf.Type()
+	checkZeroValuedFieldsHelper(typeOf, valueOf)
 }
 
 func getFlags() *flags {

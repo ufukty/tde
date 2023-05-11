@@ -20,7 +20,7 @@ type Captcha struct {
 
 type Customs struct {
 	Common    `yaml:",inline"`
-	MountPath string `yaml:"volume"`
+	MountPath string `yaml:"volume-mount"`
 }
 
 type Evolver struct {
