@@ -1,0 +1,11 @@
+[Unit]
+Description=App server for api-gateway
+
+[Service]
+User=ufukty
+WorkingDirectory=/home/ufukty
+ExecStart=/home/ufukty/api-gateway -config=/home/ufukty/config.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -24,8 +24,9 @@ locals {
   slug            = "s-1vcpu-1gb"
   base_image_name = "thesis-base-focal-64"
   instances = {
-    runner  = 10,
-    evolver = 1,
+    runner      = 10,
+    evolver     = 1,
+    api-gateway = 1,
   }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
 }
@@ -107,13 +108,31 @@ resource "digitalocean_droplet" "customs" {
   vpc_uuid    = digitalocean_vpc.vpc.id
 }
 
+resource "digitalocean_droplet" "api-gateway" {
+  count = local.instances.api-gateway
+
+  image  = data.digitalocean_droplet_snapshot.last_snapshot.id
+  name   = "thesis-api-gateway-${count.index}"
+  region = local.region
+  size   = local.slug
+  tags   = ["thesis", "thesis-api-gateway"]
+
+  ipv6        = true
+  backups     = false
+  monitoring  = true
+  resize_disk = false
+  ssh_keys    = local.ssh_fingerprints
+  vpc_uuid    = digitalocean_vpc.vpc.id
+}
+
 resource "local_file" "inventory" {
   content = templatefile(
     "${path.module}/templates/inventory.template.cfg",
     {
-      runner  = digitalocean_droplet.runner
-      evolver = digitalocean_droplet.evolver
-      customs = digitalocean_droplet.customs
+      runner      = digitalocean_droplet.runner
+      evolver     = digitalocean_droplet.evolver
+      customs     = digitalocean_droplet.customs
+      api-gateway = digitalocean_droplet.api-gateway
     }
   )
   filename = abspath("${path.module}/../2-deployment/inventory.cfg")
@@ -124,9 +143,10 @@ resource "local_file" "service_discovery" {
     "${path.module}/templates/service_discovery.json.tftpl",
     {
       content = jsonencode({
-        runner  = { digitalocean = digitalocean_droplet.runner }
-        evolver = { digitalocean = digitalocean_droplet.evolver }
-        customs = { digitalocean = digitalocean_droplet.customs }
+        runner      = { digitalocean = digitalocean_droplet.runner }
+        evolver     = { digitalocean = digitalocean_droplet.evolver }
+        customs     = { digitalocean = digitalocean_droplet.customs }
+        api-gateway = { digitalocean = digitalocean_droplet.api-gateway }
       })
     }
   )
