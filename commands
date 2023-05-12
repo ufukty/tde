@@ -34,9 +34,7 @@ HERE
     source ~/.bash_completion.d/tde_commands.sh
 }
 
-CLIENT_PROGRAM_NAMES="client poc ast-inspect serdeser"
-SERVER_PROGRAM_NAMES="evolver runner customs"
-PROGRAM_NAMES="$SERVER_PROGRAM_NAMES $CLIENT_PROGRAM_NAMES"
+PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
 
 version() {
     echo "$(date -u +%y%m%d-%H%M%S)-$(git rev-parse HEAD | cut -b 1-8)"
