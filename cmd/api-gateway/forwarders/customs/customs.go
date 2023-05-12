@@ -6,8 +6,9 @@ import (
 	"tde/internal/microservices/logger"
 	service_discovery "tde/internal/microservices/service-discovery"
 
-	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/middleware"
 )
 
 var (
@@ -28,7 +29,7 @@ func Register(config_ *config_reader.Config, sd_ *service_discovery.ServiceDisco
 }
 
 func Forwarder(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Redirecting request to", r.Host, r.URL.Path)
+	log.Printf("Redirecting request '%s' to '%s%s'", middleware.GetReqID(r.Context()), r.Host, r.URL.Path)
 	lb.Forward(w, r)
 
 }

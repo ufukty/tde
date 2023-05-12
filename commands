@@ -104,6 +104,13 @@ print-endpoints() {
         sed -E 's/(.*){{api}}(.*)/\1 \2/'
 }
 
+update_stage() {
+    API_GATEWAY_IP_ADDRESS="$(cat platform/stage/2-deployment/service_discovery.json | jq -r '.["api-gateway"].digitalocean[0].ipv4_address')"
+    CUSTOMS_IP_ADDRESS="$(cat platform/stage/2-deployment/service_discovery.json | jq -r '.["customs"].digitalocean[0].ipv4_address')"
+    gsed --in-place "s;@api.*;@api = http://${API_GATEWAY_IP_ADDRESS}:8080/api/v1.0.0;" api.http
+    gsed --in-place "s;@customs.*;@customs = http://${CUSTOMS_IP_ADDRESS}:8080;" api.http
+}
+
 # MARK: main
 
 SUBCOMMAND="$1" && shift && "$SUBCOMMAND" "$@"

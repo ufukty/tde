@@ -1,6 +1,5 @@
-@ip = 127.0.0.1
-@port = 8085
-@api = http://{{ip}}:{{port}}
+@api = http://104.248.255.145:8080/api/v1.0.0
+@customs = http://159.65.117.216:8080
 @createdAt = {{$datetime iso8601}}
 
 ###
@@ -93,11 +92,16 @@ Authorization: Bearer
 
 // MARK: module
 
-POST {{customs}}/module HTTP/1.1
-Content-Type: multipart/form-data
+POST {{api}}/customs/module HTTP/1.1
+Content-Type: multipart/form-data; boundary=------------------------ba2f2477bab928da
 Authorization: Bearer
 
-< ./.gitignore
+--------------------------ba2f2477bab928da
+Content-Disposition: form-data; name="file"; filename="file.zip"
+Content-Type: application/zip
+
+< ./artifacts/tde.CodeArchive.2033531773.zip
+--------------------------ba2f2477bab928da--
 
 ###
 
