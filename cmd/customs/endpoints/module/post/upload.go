@@ -1,6 +1,8 @@
 package module
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
@@ -105,6 +107,31 @@ func checkHeaderContentLength(r *http.Request) error {
 	return nil
 }
 
+func checkMD5Sum(r *http.Request) error {
+	md5sumSent := r.FormValue("md5sum")
+	if md5sumSent == "" {
+		return errors.New("Error MD5 checksum not found")
+	}
+
+	filePart, _, err := r.FormFile("file")
+	if err != nil {
+		return errors.Wrap(err, "Error retrieving file")
+	}
+	defer filePart.Close()
+
+	hash := md5.New()
+	_, err = io.Copy(hash, filePart)
+	if err != nil {
+		return errors.Wrap(err, "Error calculating MD5 checksum")
+	}
+
+	md5sumCalculated := hex.EncodeToString(hash.Sum(nil))
+	if md5sumCalculated != md5sumSent {
+		return errors.New("MD5 checksum mismatch")
+	}
+	return nil
+}
+
 func Handler(w http.ResponseWriter, r *http.Request) {
 	var (
 		archiveID   string
@@ -117,30 +144,48 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	requestID = uuid.NewString()
 
 	if err = checkHeaderContentType(r); err != nil {
-		log.Println(errors.Wrap(err, requestID))
-		http.Error(w, "", http.StatusBadRequest)
+		var message = "Unaccepted Content-Type header"
+		log.Println(errors.Wrap(err, message))
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	if err = checkHeaderContentLength(r); err != nil {
-		log.Println(errors.Wrap(err, requestID))
-		http.Error(w, "", http.StatusRequestEntityTooLarge)
+		var message = "Unaccepted Content-Length header"
+		log.Println(errors.Wrap(err, message))
+		http.Error(w, message, http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	if err = r.ParseMultipartForm(0); err != nil {
+		var message = "Error parsing form data"
+		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	archiveID = volumeManager.CreateUniqueFilename()
 	storagePath, err = volumeManager.CreateDestPath(archiveID)
 	if err != nil {
-		log.Println(errors.Wrap(errors.Wrap(err, "Could not create dir entries to place incoming file into"), requestID))
-		http.Error(w, "", http.StatusInternalServerError)
+		var message = "Could not create dir entries to place incoming file into"
+		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
+		http.Error(w, message, http.StatusInternalServerError)
+		return
+	}
+
+	if err = checkMD5Sum(r); err != nil {
+		var message = "Could not validate check sum of file"
+		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	destPath = filepath.Join(storagePath, archiveID+".zip")
 	err = writeToPath(r, destPath)
 	if err != nil {
-		log.Println(errors.Wrap(errors.Wrap(err, "Could not parse the file part of multipart request"), requestID))
-		http.Error(w, "", http.StatusBadRequest)
+		var message = "Could not parse the file part of multipart request"
+		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
