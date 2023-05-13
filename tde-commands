@@ -2,14 +2,6 @@
 
 # MARK: utilities
 
-# SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)"
-SCRIPT_DIR="$(dirname "$(readlink "$0")")"
-if [[ "_${SCRIPT_DIR}" == "_" ]]; then
-    echo "Failed to get directory path"
-    exit 1
-fi
-cd "$SCRIPT_DIR"
-
 with-echo() {
     echo -e "\033[35m@echo\033[0m $@" && $@
     ret=$?
@@ -22,33 +14,10 @@ shortlist() {
     typeset -f | awk '/ \(\) $/ { print $1 } ' | grep -v -e shortlist -e with-echo -e install_completion
 }
 
-install() {
-
-    install-completion() {
-        mkdir -p ~/.bash_completion.d
-        cat >~/.bash_completion.d/tde_commands.sh <<-HERE
-            _script() {
-                _script_commands="\$(bash "$SCRIPT_DIR/tde-commands" shortlist)"
-
-                local cur
-                COMPREPLY=()
-                cur="\${COMP_WORDS[COMP_CWORD]}"
-                COMPREPLY=( \$(compgen -W "\${_script_commands}" -- \${cur}) )
-
-                return 0
-            }
-            complete -o nospace -F _script "tde-commands"
-HERE
-        source ~/.bash_completion.d/tde_commands.sh
-    }
-
-    install-to-path() {
-        rm "$HOME/bin/tde-commands"
-        ln -s "$SCRIPT_DIR/tde-commands" "$HOME/bin/tde-commands"
-    }
-
-    with-echo install-to-path
-    with-echo install-completion
+install-completion() {
+    mkdir -p "$HOME/.bash_completion.d"
+    sed "s;{{PROJECT_DIR}};$(pwd -P);g" shell/tde-commands.completion.template.sh >"$HOME/.bash_completion.d/tde_commands.sh"
+    source "$HOME/.bash_completion.d/tde_commands.sh"
 }
 
 PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
