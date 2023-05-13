@@ -2,6 +2,14 @@
 
 # MARK: utilities
 
+# SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)"
+SCRIPT_DIR="$(dirname "$(readlink "$0")")"
+if [[ "_${SCRIPT_DIR}" == "_" ]]; then
+    echo "Failed to get directory path"
+    exit 1
+fi
+cd "$SCRIPT_DIR"
+
 with-echo() {
     echo -e "\033[35m@echo\033[0m $@" && $@
     ret=$?
@@ -15,11 +23,6 @@ shortlist() {
 }
 
 install() {
-    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)"
-    if [[ "_${SCRIPT_DIR}" == "_" ]]; then
-        echo "Failed to get directory path"
-        exit 1
-    fi
 
     install-completion() {
         mkdir -p ~/.bash_completion.d
@@ -123,6 +126,11 @@ update-stage() {
     CUSTOMS_IP_ADDRESS="$(cat platform/stage/2-deployment/service_discovery.json | jq -r '.["customs"].digitalocean[0].ipv4_address')"
     gsed --in-place "s;^@api.*;@api = http://${API_GATEWAY_IP_ADDRESS}:8080/api/v1.0.0;" api.http
     gsed --in-place "s;^# @api.*;# @api = http://127.0.0.1:8087/api/v1.0.0;" api.http
+}
+
+ip-of() {
+    PROGRAM_NAME="$1"
+    cat platform/stage/2-deployment/service_discovery.json | jq -r ".[\"$PROGRAM_NAME\"].digitalocean[0].ipv4_address"
 }
 
 # MARK: main
