@@ -23,7 +23,7 @@ locals {
   region = "fra1"
   slug   = "s-1vcpu-1gb"
   instances = {
-    runner      = 10,
+    runner      = 3,
     evolver     = 1,
     api-gateway = 1,
   }
