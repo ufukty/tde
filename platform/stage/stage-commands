@@ -1,0 +1,75 @@
+#!/usr/local/bin/bash
+
+SSH_KEY_NAME="mbp-ed"
+PYTHON_VIRTUAL_ENV="$HOME/venv/bin/activate"
+
+# MARK: utilities
+
+note() {
+    echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
+}
+
+with-echo() {
+    echo -e "\033[35m@echo\033[0m $@" && $@
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
+    fi
+}
+
+shortlist() {
+    typeset -f | awk '/ \(\) $/ { print $1 } ' | grep -v -e shortlist -e with-echo -e install_completion
+}
+
+install-completion() {
+    mkdir -p "$HOME/.bash_completion.d"
+    sed "s;{{PROJECT_DIR}};$(pwd -P);g" shell/tde-commands.completion.template.sh >"$HOME/.bash_completion.d/tde_commands.sh"
+    source "$HOME/.bash_completion.d/tde_commands.sh"
+}
+
+check() {
+    check-ssh() { ssh-add -l | grep ${SSH_KEY_NAME} >/dev/null; }
+    enable-ssh() { note "Calling ssh-agent" && ssh-agent && ssh-add; }
+    check-ssh || enable-ssh
+
+    check-virtual-env() { which ansible >/dev/null; }
+    enable-virtual-env() { . ${PYTHON_VIRTUAL_ENV}; }
+    check-virtual-env || enable-virtual-env
+
+    check-env-vars() { test -n "$TF_VAR_DIGITALOCEAN_TOKEN"; }
+    enable-env-vars() { . .env; }
+    check-env-vars || enable-env-vars
+}
+
+# MARK: terraform && post-deployment-configurations
+
+stage-up() {
+    check
+    cd 1-provisioning && with-echo terraform apply
+
+}
+
+stage-down() {
+    check
+    cd 1-provisioning && with-echo terraform destroy
+
+}
+
+stage-deploy() {
+    check
+    cd 2-deployment && with-echo ansible-playbook --forks 20 playbook.yml
+
+}
+
+stage-redeploy() {
+    check
+    cd 2-deployment && with-echo ansible-playbook --forks=20 --tags=redeploy playbook.yml
+
+}
+
+stage() {
+    with-echo stage-up
+    with-echo stage-deploy
+}
+
+COMMAND="$1" && shift && $COMMAND "$@"
