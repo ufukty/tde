@@ -1,3 +1,0 @@
-post_tasks:
-  - export DIR_NAME="$( basename "$( pwd )" )"
-  - packer build packer.pkr.hcl
