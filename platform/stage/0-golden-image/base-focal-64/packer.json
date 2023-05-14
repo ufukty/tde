@@ -28,12 +28,12 @@
         },
         {
             "type": "file",
-            "source": "../../../certificates/localhost.crt",
+            "source": "../../../../certificates/localhost.crt",
             "destination": "/etc/ssl/certs/localhost.crt"
         },
         {
             "type": "file",
-            "source": "../../../certificates/localhost.key",
+            "source": "../../../../certificates/localhost.key",
             "destination": "/etc/ssl/private/localhost.key"
         }
     ]

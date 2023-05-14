@@ -21,6 +21,7 @@
             pkg:
                 - "{{ 'acl' if ansible_user == 'vagrant' else 'bash' }}"
                 - tree
+                - ccze
         retries: 10
         delay: 1
         register: apt_get_result
