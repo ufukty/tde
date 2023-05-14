@@ -11,7 +11,7 @@ terraform {
 # Variables
 # ------------------------------------------------------------- #
 
-variable "DIGITALOCEAN_THESIS_TOKEN" {
+variable "DIGITALOCEAN_TOKEN" {
   // env var
 }
 
@@ -22,7 +22,7 @@ variable "DIGITALOCEAN_THESIS_TOKEN" {
 locals {
   region          = "fra1"
   slug            = "s-1vcpu-1gb"
-  base_image_name = "thesis-base-focal-64"
+  base_image_name = "base-focal-64"
   instances = {
     runner      = 10,
     evolver     = 1,
@@ -35,19 +35,16 @@ locals {
 # Main
 # ------------------------------------------------------------- #
 
-provider "digitalocean" {
-  # Configuration options
-  token = var.DIGITALOCEAN_THESIS_TOKEN
-}
+provider "digitalocean" {}
 
 data "digitalocean_droplet_snapshot" "last_snapshot" {
-  name_regex  = "^packer-${local.base_image_name}-[0-9]*"
+  name_regex  = "^packer-${local.base_image_name}-.*"
   region      = local.region
   most_recent = true
 }
 
 resource "digitalocean_vpc" "vpc" {
-  name   = "thesis-vpc"
+  name   = "vpc"
   region = local.region
 }
 
@@ -55,10 +52,10 @@ resource "digitalocean_droplet" "runner" {
   count = local.instances.runner
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name   = "thesis-runner-${count.index}"
+  name   = "runner-${count.index}"
   region = local.region
   size   = local.slug
-  tags   = ["thesis", "thesis-runner"]
+  tags   = ["thesis", "runner"]
 
   ipv6        = true
   backups     = false
@@ -72,10 +69,10 @@ resource "digitalocean_droplet" "evolver" {
   count = local.instances.evolver
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name   = "thesis-evolver-${count.index}"
+  name   = "evolver-${count.index}"
   region = local.region
   size   = local.slug
-  tags   = ["thesis", "thesis-evolver"]
+  tags   = ["thesis", "evolver"]
 
   ipv6        = true
   backups     = false
@@ -94,11 +91,11 @@ resource "digitalocean_droplet" "customs" {
   count = 1
 
   image      = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name       = "thesis-customs-${count.index}"
+  name       = "customs-${count.index}"
   region     = local.region
   size       = local.slug
   volume_ids = [data.digitalocean_volume.customs_storage_volume.id]
-  tags       = ["thesis", "thesis-customs"]
+  tags       = ["thesis", "customs"]
 
   ipv6        = true
   backups     = false
@@ -112,10 +109,10 @@ resource "digitalocean_droplet" "api-gateway" {
   count = local.instances.api-gateway
 
   image  = data.digitalocean_droplet_snapshot.last_snapshot.id
-  name   = "thesis-api-gateway-${count.index}"
+  name   = "api-gateway-${count.index}"
   region = local.region
   size   = local.slug
-  tags   = ["thesis", "thesis-api-gateway"]
+  tags   = ["thesis", "api-gateway"]
 
   ipv6        = true
   backups     = false
