@@ -20,9 +20,8 @@ variable "DIGITALOCEAN_TOKEN" {
 # ------------------------------------------------------------- #
 
 locals {
-  region          = "fra1"
-  slug            = "s-1vcpu-1gb"
-  base_image_name = "base-focal-64"
+  region = "fra1"
+  slug   = "s-1vcpu-1gb"
   instances = {
     runner      = 10,
     evolver     = 1,
@@ -38,7 +37,7 @@ locals {
 provider "digitalocean" {}
 
 data "digitalocean_droplet_snapshot" "last_snapshot" {
-  name_regex  = "^packer-${local.base_image_name}-.*"
+  name_regex  = "^packer-base-.*"
   region      = local.region
   most_recent = true
 }
