@@ -3,7 +3,7 @@
   local_action:
     module: ansible.builtin.shell
     chdir: "{{ inventory_dir }}/../../../"
-    cmd: "bash commands last-build {{ program_name }}"
+    cmd: "bash tde-commands last-build {{ program_name }}"
   register: program_name_command
   tags: redeploy
 
