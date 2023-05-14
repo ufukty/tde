@@ -9,7 +9,7 @@ packer {
 
 locals {
   dir_name      = basename(abspath(path.root))
-  snapshot_name = replace("packer-${local.dir_name}-${timestamp()}", "_", "_")
+  snapshot_name = replace("packer-${local.dir_name}-${formatdate("YY-MM-DD-'T'-hh-mm-ss-ZZZ", timestamp())}", "_", "_")
 }
 
 source "digitalocean" "droplet" {
