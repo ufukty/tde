@@ -14,7 +14,7 @@ version() {
 
 build() {
     PROGRAM_NAME="$1" && shift
-    VERSION="${1:?"$(version)"}"
+    VERSION="${1:-"$(version)"}"
     mkdir -p "build/$VERSION"
     with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
     with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
