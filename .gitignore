@@ -146,3 +146,5 @@ service_discovery.json
 platform/local/mount
 
 .env
+
+personal.sh
