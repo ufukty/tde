@@ -3,22 +3,18 @@
 . ../../shell/utilities.sh
 
 stage-up() {
-    check
     (cd 1-provisioning && with-echo terraform apply)
 }
 
 stage-down() {
-    check
     (cd 1-provisioning && with-echo terraform destroy)
 }
 
 stage-deploy() {
-    check
     (cd 2-deployment && with-echo ansible-playbook --forks 20 playbook.yml)
 }
 
 stage-redeploy() {
-    check
     (cd 2-deployment && with-echo ansible-playbook --forks=20 --tags=redeploy playbook.yml)
 }
 
