@@ -8,6 +8,6 @@ with-echo() {
     fi
 }
 
-shortlist() {
-    typeset -f | awk '/ \(\) $/ { print $1 } ' | grep -v -e shortlist -e with-echo -e install_completion
+note() {
+    echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
 }
