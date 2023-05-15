@@ -14,14 +14,15 @@ version() {
 
 build() {
     PROGRAM_NAME="$1" && shift
-    VERSION="$(version)"
+    VERSION="${1:?"$(version)"}"
     mkdir -p "build/$VERSION"
     with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
     with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
 }
 
 build-all() {
-    for PROGRAM_NAME in $PROGRAM_NAMES; do with-echo build "$PROGRAM_NAME"; done
+    VERSION="$(version)"
+    for PROGRAM_NAME in $PROGRAM_NAMES; do with-echo build "$PROGRAM_NAME" "$VERSION"; done
 }
 
 last-build-any() {
