@@ -1,24 +1,8 @@
 #!/usr/bin/env bash -i
 
+. ./shell/utilities.sh
+
 # MARK: utilities
-
-with-echo() {
-    echo -e "\033[35m@echo\033[0m $@" && $@
-    ret=$?
-    if [ $ret -ne 0 ]; then
-        echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
-    fi
-}
-
-shortlist() {
-    typeset -f | awk '/ \(\) $/ { print $1 } ' | grep -v -e shortlist -e with-echo -e install_completion
-}
-
-install-completion() {
-    mkdir -p "$HOME/.bash_completion.d"
-    sed "s;{{PROJECT_DIR}};$(pwd -P);g" shell/tde-commands.completion.template.sh >"$HOME/.bash_completion.d/tde_commands.sh"
-    source "$HOME/.bash_completion.d/tde_commands.sh"
-}
 
 PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
 
