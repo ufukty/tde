@@ -15,7 +15,8 @@ stage-deploy() {
 }
 
 stage-redeploy() {
-    (cd 2-deployment && with-echo ansible-playbook --forks=20 --tags=redeploy playbook.yml)
+    PROGRAM_NAME="$1" && shift
+    (cd 2-deployment && with-echo ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
 }
 
 stage() {
