@@ -4,8 +4,6 @@
 
 # MARK: utilities
 
-PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
-
 version() {
     echo "$(date -u +%y%m%d-%H%M%S)-$(git rev-parse HEAD | cut -b 1-8)"
 }
@@ -13,16 +11,15 @@ version() {
 # MARK: Compile
 
 build() {
-    PROGRAM_NAME="$1" && shift
-    VERSION="${1:-"$(version)"}"
-    mkdir -p "build/$VERSION"
-    with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
-    with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
-}
-
-build-all() {
-    VERSION="$(version)"
-    for PROGRAM_NAME in $PROGRAM_NAMES; do with-echo build "$PROGRAM_NAME" "$VERSION"; done
+    PROGRAM_NAMES="$@"
+    if test -z "$PROGRAM_NAMES"; then
+        PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
+    fi
+    VERSION="$(version)" && mkdir -p "build/$VERSION"
+    for PROGRAM_NAME in $PROGRAM_NAMES; do
+        with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
+        with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
+    done
 }
 
 last-build-any() {
