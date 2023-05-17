@@ -1,0 +1,5 @@
+pre_tasks:
+  - echo "Don't forget \"ssh-agent\""
+
+post_tasks:
+  - packer build -force -on-error=abort base.pkr.hcl
