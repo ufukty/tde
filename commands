@@ -12,23 +12,21 @@ version() {
 
 build() {
     PROGRAM_NAMES="$@"
-    if test -z "$PROGRAM_NAMES"; then
-        PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
-    fi
-    VERSION="$(version)" && mkdir -p "build/$VERSION"
+    test -z "$PROGRAM_NAMES" && PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
+    VERSION="$(version)" && mkdir -p build/$VERSION/{darwin,linux}
     for PROGRAM_NAME in $PROGRAM_NAMES; do
-        with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-darwin-amd64" ./cmd/$PROGRAM_NAME
-        with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/$PROGRAM_NAME-linux-amd64" ./cmd/$PROGRAM_NAME
+        with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/darwin/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
+        with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/linux/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
     done
-}
-
-last-build-any() {
-    find build -type d -maxdepth 2 -mindepth 1 | sort | tail -n 1 | cut -f 2 -d '/'
 }
 
 last-build() {
     PROGRAM_NAME="$1" && shift
-    find build -name "*$PROGRAM_NAME*" | sort | tail -n 1 | cut -f 2 -d '/'
+    if test -z "$PROGRAM_NAME"; then
+        find build -type d -maxdepth 2 -mindepth 1 | sort | tail -n 1 | cut -f 2 -d '/'
+    else
+        find build -name "*$PROGRAM_NAME*" | sort | tail -n 1 | cut -f 2 -d '/'
+    fi
 }
 
 # MARK: Run
