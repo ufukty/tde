@@ -1,0 +1,15 @@
+[Unit]
+Description=Picarus Sync application server
+After=picarus-sync-backend.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+ExecStart=/var/wwwapp/picarus-sync
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=/var/log/picarus-sync-app/backup.log
+
+[Install]
+WantedBy=multi-user.target

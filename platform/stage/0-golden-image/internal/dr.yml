@@ -1,0 +1,19 @@
+pre_tasks:
+  - echo "Don't forget \"ssh-agent\""
+  - echo "Don't forget connect to VPN in network; pic-sync-fra1"
+
+depends_on:
+  folder: ../../common-images/internal-base-focal-64
+
+post_tasks:
+  - export DR_PROJECT_NAME="$(basename $(dirname $(pwd -P)))"
+  - export DR_IMAGE_NAME="$(basename $(pwd -P))"
+  - export DR_SNAPSHOT_NAME="packer-${DR_PROJECT_NAME}-${DR_IMAGE_NAME}-$(date -u +'%Y-%m-%d-%H-%M')"
+  - |
+    export DR_ENV_VAR_PACKER_IMAGE_DO="$(
+      doctl compute image list | \
+      grep packer-common-images-internal-base-focal-64 | \
+      tail -n 1 | cut -d $' ' -f 1
+    )"
+  - export DR_ENV_VAR_VPC_UUID="$( doctl vpcs list | grep pic-sync-fra1 | cut -d $' ' -f 1 )"
+  - packer build -force packer.pkr.hcl
