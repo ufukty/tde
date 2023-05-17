@@ -1,0 +1,135 @@
+# ---------------------------------------------------------------------------- #
+# FILTER
+# ---------------------------------------------------------------------------- #
+
+*filter
+
+# Setting default filter policy
+:INPUT DROP [0:0]
+:OUTPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:LOG-ATTACK - [0:0]
+
+# ---------------------------------------------------------------------------- #
+# FILTER / INPUT
+# ---------------------------------------------------------------------------- #
+
+# loopback
+-A INPUT -i lo -j ACCEPT
+# keep state
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# ssh
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ssh for vagrant (it will make available the vm from 127.0.0.1:2222->22)
+-A INPUT -i enp0s3 -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# # http
+# -A INPUT -i <<PRIVATE_ETHERNET_INTERFACE>> -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+# # https
+# -A INPUT -i <<PRIVATE_ETHERNET_INTERFACE>> -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+# ping reply (originated from the server)
+-A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+
+# ------------------------------------------------------------------ #
+# FILTER / INPUT / OPENVPN SERVER
+# ------------------------------------------------------------------ #
+
+# Allow incoming DNS requests coming from other hosts in same VPC
+-A INPUT -p tcp -i <<PRIVATE_ETHERNET_INTERFACE>> --dport 53 -j ACCEPT
+-A INPUT -p udp -i <<PRIVATE_ETHERNET_INTERFACE>> --dport 53 -j ACCEPT
+# Allow incoming OpenVPN
+-A INPUT -p <<OPENVPN_CUSTOM_PROTOCOL>> --dport <<OPENVPN_CUSTOM_PORT>> -m conntrack --ctstate NEW -j ACCEPT
+# Allow TUN interface connections to OpenVPN server
+-A INPUT -i tun0 -m conntrack --ctstate NEW -j ACCEPT
+
+# ------------------------------------------------------------------ #
+# FILTER / INPUT / LOG ATTACK
+# ------------------------------------------------------------------ #
+
+# blocking null packets.
+-A INPUT -p tcp --tcp-flags ALL NONE -j LOG-ATTACK
+# drop the packets with incoming fragments
+-A INPUT -f -j LOG-ATTACK
+# make sure NEW incoming tcp connections are SYN packets
+-A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j LOG-ATTACK
+# drop incoming malformed XMAS packets
+-A INPUT -p tcp --tcp-flags ALL ALL -j LOG-ATTACK
+-A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j LOG-ATTACK
+-A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG-ATTACK
+
+# ------------------------------------------------------------------ #
+# FILTER / INPUT / LOGGING
+# ------------------------------------------------------------------ #
+
+# log dropped packets
+-A INPUT -m limit --limit 2/min -j LOG --log-prefix "[iptables] DROP: " --log-level 7
+# log and drop for attack chain
+-A LOG-ATTACK -m limit --limit 2/min -j LOG --log-prefix "[iptables] ATTACK DROP: " --log-level 7
+-A LOG-ATTACK -j DROP
+
+# ---------------------------------------------------------------------------- #
+# FILTER / FORWARD
+# ---------------------------------------------------------------------------- #
+
+# ------------------------------------------------------------------ #
+# FILTER / FORWARD / OPENVPN SERVER
+# ------------------------------------------------------------------ #
+
+# Keep state
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# Allow TUN interface connections to be forwarded through other interfaces
+-A FORWARD -i tun0 -o <<PUBLIC_ETHERNET_INTERFACE>> -m conntrack --ctstate NEW -j ACCEPT
+-A FORWARD -o tun0 -i <<PUBLIC_ETHERNET_INTERFACE>> -m conntrack --ctstate NEW -j ACCEPT
+-A FORWARD -i tun0 -o <<PRIVATE_ETHERNET_INTERFACE>> -m conntrack --ctstate NEW -j ACCEPT
+-A FORWARD -o tun0 -i <<PRIVATE_ETHERNET_INTERFACE>> -m conntrack --ctstate NEW -j ACCEPT
+
+# Block client-to-client routing on the VPN
+-A FORWARD -i tun0 -s <<OPENVPN_SUBNET_ADDRESS>>/24 -d <<OPENVPN_SUBNET_ADDRESS>>/24 -j DROP
+
+# Allow outbound access to all networks on the Internet from the VPN
+-A FORWARD -i tun0 -s <<OPENVPN_SUBNET_ADDRESS>>/24 -m conntrack --ctstate NEW -j ACCEPT
+
+# ------------------------------------------------------------- #
+# FILTER / OUTPUT
+# ------------------------------------------------------------- #
+
+# loopback
+-A OUTPUT -o lo -j ACCEPT
+# keep state
+-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# ssh
+-A OUTPUT -o <<PRIVATE_ETHERNET_INTERFACE>> -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ssh-vagrant
+-A OUTPUT -o enp0s3 -p tcp --sport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ping
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+# dns
+-A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+-A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# http
+-A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+# https
+-A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+
+COMMIT
+
+# ---------------------------------------------------------------------------- #
+# NAT
+# ---------------------------------------------------------------------------- #
+
+*nat
+
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# ---------------------------------------------------------------------------- #
+# NAT / POSTROUTING
+# ---------------------------------------------------------------------------- #
+
+# Enable NAT for the VPN
+-A POSTROUTING -s <<OPENVPN_SUBNET_ADDRESS>>/24 -o <<PUBLIC_ETHERNET_INTERFACE>> -j MASQUERADE
+-A POSTROUTING -s <<OPENVPN_SUBNET_ADDRESS>>/24 -o <<PRIVATE_ETHERNET_INTERFACE>> -j MASQUERADE
+
+COMMIT

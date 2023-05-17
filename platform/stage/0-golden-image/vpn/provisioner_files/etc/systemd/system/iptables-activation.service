@@ -1,0 +1,13 @@
+[Unit]
+Description=iptables rules for OpenVPN
+Before=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iptables-restore /etc/iptables/iptables-rules.v4
+ExecReload=/usr/bin/iptables-restore /etc/iptables/iptables-rules.v4
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

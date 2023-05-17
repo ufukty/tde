@@ -1,0 +1,10 @@
+pre_tasks:
+  - echo "Don't forget \"ssh-agent\""
+
+depends_on:
+  folder: ../base
+
+post_tasks:
+  - export DR_ENV_VAR_PACKER_IMAGE_DO="$(doctl compute image list-user | grep packer-base | tail -n 1 | cut -d $' ' -f 1)"
+  - export DR_ENV_VAR_VPC_UUID="$(doctl vpcs list | grep pic-fra1 | cut -d $' ' -f 1)"
+  - packer build -force -on-error=abort vpn.pkr.hcl
