@@ -11,21 +11,35 @@ version() {
 
 build() {
     PROGRAM_NAMES="$@"
-    test -z "$PROGRAM_NAMES" && PROGRAM_NAMES="$(find cmd -name 'main.go' | cut -d '/' -f 2 | sort | uniq)"
-    VERSION="$(version)" && mkdir -p build/$VERSION/{darwin,linux}
-    for PROGRAM_NAME in $PROGRAM_NAMES; do
-        with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/darwin/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
-        with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/linux/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
-    done
+    test -z "$PROGRAM_NAMES" && PROGRAM_NAMES="$(find application/cmd -name 'main.go' | cut -d '/' -f 3 | sort | uniq)"
+    (
+        cd application
+        VERSION="$(version)" && mkdir -p build/$VERSION/{darwin,linux}
+        for PROGRAM_NAME in $PROGRAM_NAMES; do
+            with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/darwin/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
+            with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/linux/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
+        done
+    )
 }
 
 last-build() {
     PROGRAM_NAME="$1" && shift
     if test -z "$PROGRAM_NAME"; then
-        find build -type d -maxdepth 2 -mindepth 1 | sort | tail -n 1 | cut -f 2 -d '/'
+        find application/build -type d -maxdepth 3 -mindepth 2 | sort | tail -n 1 | cut -f 3 -d '/'
     else
-        find build -name "*$PROGRAM_NAME*" | sort | tail -n 1 | cut -f 2 -d '/'
+        find application/build -name "*$PROGRAM_NAME*" | sort | tail -n 1 | cut -f 3 -d '/'
     fi
+}
+
+path-last-build() {
+    PROGRAM_NAME="$1" && shift
+    ARCH="$1" && shift
+    PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
+    echo "application/build/$PROGRAM_LAST_BUILD/$ARCH/$PROGRAM_NAME"
+}
+
+clean-build() {
+    rm -rf application/build
 }
 
 # MARK: Run
@@ -38,7 +52,7 @@ run() {
 run-last-build() {
     PROGRAM_NAME="$1" && shift
     PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
-    with-echo "./build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
+    with-echo "./application/build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
 }
 
 build-and-run() {
