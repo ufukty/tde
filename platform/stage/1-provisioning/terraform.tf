@@ -23,6 +23,7 @@ locals {
   region = "fra1"
   slug   = "s-1vcpu-1gb"
   instances = {
+    vpn         = 1,
     runner      = 3,
     evolver     = 1,
     api-gateway = 1,
@@ -36,8 +37,14 @@ locals {
 
 provider "digitalocean" {}
 
-data "digitalocean_droplet_snapshot" "last_snapshot" {
+data "digitalocean_droplet_snapshot" "golden_base" {
   name_regex  = "^packer-base-.*"
+  region      = local.region
+  most_recent = true
+}
+
+data "digitalocean_droplet_snapshot" "golden_vpn" {
+  name_regex  = "^packer-vpn-.*"
   region      = local.region
   most_recent = true
 }
@@ -47,10 +54,27 @@ resource "digitalocean_vpc" "vpc" {
   region = local.region
 }
 
+resource "digitalocean_droplet" "vpn" {
+  count = local.instances.vpn
+
+  image  = data.digitalocean_droplet_snapshot.golden_vpn.id
+  name   = "vpn-${count.index}"
+  region = local.region
+  size   = local.slug
+  tags   = ["thesis", "vpn"]
+
+  ipv6        = true
+  backups     = false
+  monitoring  = true
+  resize_disk = false
+  ssh_keys    = local.ssh_fingerprints
+  vpc_uuid    = digitalocean_vpc.vpc.id
+}
+
 resource "digitalocean_droplet" "runner" {
   count = local.instances.runner
 
-  image  = data.digitalocean_droplet_snapshot.last_snapshot.id
+  image  = data.digitalocean_droplet_snapshot.golden_base.id
   name   = "runner-${count.index}"
   region = local.region
   size   = local.slug
@@ -67,7 +91,7 @@ resource "digitalocean_droplet" "runner" {
 resource "digitalocean_droplet" "evolver" {
   count = local.instances.evolver
 
-  image  = data.digitalocean_droplet_snapshot.last_snapshot.id
+  image  = data.digitalocean_droplet_snapshot.golden_base.id
   name   = "evolver-${count.index}"
   region = local.region
   size   = local.slug
@@ -89,7 +113,7 @@ data "digitalocean_volume" "customs_storage_volume" {
 resource "digitalocean_droplet" "customs" {
   count = 1
 
-  image      = data.digitalocean_droplet_snapshot.last_snapshot.id
+  image      = data.digitalocean_droplet_snapshot.golden_base.id
   name       = "customs-${count.index}"
   region     = local.region
   size       = local.slug
@@ -107,7 +131,7 @@ resource "digitalocean_droplet" "customs" {
 resource "digitalocean_droplet" "api-gateway" {
   count = local.instances.api-gateway
 
-  image  = data.digitalocean_droplet_snapshot.last_snapshot.id
+  image  = data.digitalocean_droplet_snapshot.golden_base.id
   name   = "api-gateway-${count.index}"
   region = local.region
   size   = local.slug
@@ -125,6 +149,7 @@ resource "local_file" "inventory" {
   content = templatefile(
     "${path.module}/templates/inventory.template.cfg",
     {
+      vpn         = digitalocean_droplet.vpn
       runner      = digitalocean_droplet.runner
       evolver     = digitalocean_droplet.evolver
       customs     = digitalocean_droplet.customs
@@ -139,6 +164,7 @@ resource "local_file" "service_discovery" {
     "${path.module}/templates/service_discovery.json.tftpl",
     {
       content = jsonencode({
+        vpn         = { digitalocean = digitalocean_droplet.vpn }
         runner      = { digitalocean = digitalocean_droplet.runner }
         evolver     = { digitalocean = digitalocean_droplet.evolver }
         customs     = { digitalocean = digitalocean_droplet.customs }
