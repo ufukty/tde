@@ -14,5 +14,15 @@
         "editor.codeActionsOnSave": {
             "source.fixAll": true
         }
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.DS_Store": true,
+        "**/.git": true,
+        "**/.hg": true,
+        "**/.svn": true,
+        "**/.terraform*": true,
+        "**/CVS": true,
+        "**/terraform.tfstate*": true
     }
 }
