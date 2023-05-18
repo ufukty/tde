@@ -147,7 +147,7 @@ ENCRYPTION_HMAC_ALG="${ENCRYPTION_HMAC_ALG:-"SHA256"}"
 #   and encrypt them.
 TLS_SIG="${TLS_SIG:-"tls-crypt"}"
 
-EASY_RSA_VERSION="${EASY_RSA_VERSION:-"3.0.7"}"
+EASY_RSA_VERSION="${EASY_RSA_VERSION:-"3.1.2"}"
 
 EASYRSA_REQ_COUNTRY="${EASYRSA_REQ_COUNTRY:-"US"}"
 EASYRSA_REQ_PROVINCE="${EASYRSA_REQ_PROVINCE:-"NewYork"}"
@@ -294,7 +294,7 @@ function install_ovpn_auth() {
     tar -xzf ovpn-auth-210813-linux-amd64.tar.gz
 
     info "moving ovpn-auth into /etc/openvpn"
-    mv etc/openvpn/ovpn-auth /etc/openvpn/ovpn-auth
+    mv ovpn-auth /etc/openvpn/ovpn-auth
 
     info "change the file permission and ownership of ovpn-auth"
     chmod 755 /etc/openvpn/ovpn-auth
