@@ -2,6 +2,9 @@
 - hosts: all
   name: Configure all servers
   serial: 100%
+  vars:
+    workspace_dir: "{{ inventory_dir }}/../../.."
+
   tasks:
     - name: Restart journald
       systemd:
@@ -26,7 +29,7 @@
         name: put_and_set
       vars:
         program_name: "{{ hostvars[inventory_hostname].app_slug }}"
-        workspace_dir: "{{ inventory_dir }}/../../.."
+        workspace_dir: "{{ workspace_dir }}"
       tags: redeploy
 
 - hosts: customs
