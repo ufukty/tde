@@ -149,11 +149,20 @@ resource "local_file" "inventory" {
   content = templatefile(
     "${path.module}/templates/inventory.template.cfg",
     {
-      vpn         = digitalocean_droplet.vpn
-      runner      = digitalocean_droplet.runner
-      evolver     = digitalocean_droplet.evolver
-      customs     = digitalocean_droplet.customs
-      api-gateway = digitalocean_droplet.api-gateway
+      providers = {
+        digitalocean = {
+          fra1 = {
+            vpc = digitalocean_vpc.vpc
+            services = {
+              api-gateway = digitalocean_droplet.api-gateway
+              customs     = digitalocean_droplet.customs
+              evolver     = digitalocean_droplet.evolver
+              runner      = digitalocean_droplet.runner
+              vpn         = digitalocean_droplet.vpn
+            }
+          }
+        }
+      }
     }
   )
   filename = abspath("${path.module}/../2-deployment/inventory.cfg")
@@ -164,11 +173,18 @@ resource "local_file" "service_discovery" {
     "${path.module}/templates/service_discovery.json.tftpl",
     {
       content = jsonencode({
-        vpn         = { digitalocean = digitalocean_droplet.vpn }
-        runner      = { digitalocean = digitalocean_droplet.runner }
-        evolver     = { digitalocean = digitalocean_droplet.evolver }
-        customs     = { digitalocean = digitalocean_droplet.customs }
-        api-gateway = { digitalocean = digitalocean_droplet.api-gateway }
+        digitalocean = {
+          fra1 = {
+            vpc = digitalocean_vpc.vpc
+            services = {
+              api-gateway = digitalocean_droplet.api-gateway
+              customs     = digitalocean_droplet.customs
+              evolver     = digitalocean_droplet.evolver
+              runner      = digitalocean_droplet.runner
+              vpn         = digitalocean_droplet.vpn
+            }
+          }
+        }
       })
     }
   )
