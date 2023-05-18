@@ -1,6 +1,7 @@
 #!/usr/local/bin/bash
 
-. ../../shell/utilities.sh
+. "$WORKSPACE/shell/utilities.sh"
+cd "$WORKSPACE/platform/stage"
 
 stage-up() {
     (cd 1-provisioning && with-echo terraform apply)

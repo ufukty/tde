@@ -133,7 +133,7 @@ build
 artifacts
 
 # to ignore tde package created by tde
-examples/**/tde
+application/examples/**/tde
 
 *.log
 

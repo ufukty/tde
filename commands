@@ -1,6 +1,7 @@
 #!/usr/bin/env bash -i
 
-. ./shell/utilities.sh
+. $WORKSPACE/shell/utilities.sh
+cd "$WORKSPACE"
 
 # MARK: Compile
 
@@ -37,7 +38,7 @@ run() {
 run-last-build() {
     PROGRAM_NAME="$1" && shift
     PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
-    with-echo "./build/$PROGRAM_LAST_BUILD/$PROGRAM_NAME-darwin-amd64" --config="platform/local/config.yml" "$@"
+    with-echo "./build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
 }
 
 build-and-run() {

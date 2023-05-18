@@ -3,7 +3,7 @@
 SSH_KEY_NAME="mbp-ed"
 PYTHON_VIRTUAL_ENV="$HOME/venv/bin/activate"
 
-. ../../../shell/utilities.sh
+. "$WORKSPACE/shell/utilities.sh"
 
 # MARK: images
 
