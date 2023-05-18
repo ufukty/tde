@@ -3,7 +3,7 @@
   local_action:
     module: ansible.builtin.shell
     chdir: "{{ inventory_dir }}/../../../"
-    cmd: "bash commands last-build {{ program_name }}"
+    cmd: "bash commands path-last-build {{ program_name }} linux"
   register: program_name_command
   tags: redeploy
 
@@ -18,7 +18,7 @@
 
 - name: Copy binaries
   ansible.builtin.copy:
-    src: "{{ inventory_dir }}/../../../build/{{ program_name_command.stdout }}/linux/{{ program_name }}"
+    src: "{{ workspace_dir }}/{{ program_name_command.stdout }}"
     dest: "/home/ufukty/{{ program_name }}"
     mode: "0700"
     owner: ufukty

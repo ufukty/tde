@@ -26,6 +26,7 @@
         name: put_and_set
       vars:
         program_name: "{{ hostvars[inventory_hostname].app_slug }}"
+        workspace_dir: "{{ inventory_dir }}/../../.."
       tags: redeploy
 
 - hosts: customs
