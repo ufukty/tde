@@ -1,0 +1,18 @@
+# Include ~/.ssh/config
+
+%{ for provider, regions in providers ~}
+%{ for region, resources in regions ~}
+%{ for service, hosts in resources.services ~}
+%{ for host in hosts ~}
+Host ${host.name}
+  HostName ${host.ipv4_address}
+%{ endfor ~}
+
+%{ endfor ~}
+%{ endfor ~}
+%{ endfor ~}
+
+Host *
+  StrictHostKeyChecking no
+  IdentitiesOnly yes
+  User ufukty

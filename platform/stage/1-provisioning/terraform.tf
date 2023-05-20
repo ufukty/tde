@@ -147,7 +147,7 @@ resource "digitalocean_droplet" "api-gateway" {
 
 resource "local_file" "inventory" {
   content = templatefile(
-    "${path.module}/templates/inventory.template.cfg",
+    "${path.module}/templates/inventory.cfg.tftpl",
     {
       providers = {
         digitalocean = {
@@ -166,6 +166,29 @@ resource "local_file" "inventory" {
     }
   )
   filename = abspath("${path.module}/../2-deployment/inventory.cfg")
+}
+
+resource "local_file" "ssh-config" {
+  content = templatefile(
+    "${path.module}/templates/ssh.conf.tftpl",
+    {
+      providers = {
+        digitalocean = {
+          fra1 = {
+            vpc = digitalocean_vpc.vpc
+            services = {
+              api-gateway = digitalocean_droplet.api-gateway
+              customs     = digitalocean_droplet.customs
+              evolver     = digitalocean_droplet.evolver
+              runner      = digitalocean_droplet.runner
+              vpn         = digitalocean_droplet.vpn
+            }
+          }
+        }
+      }
+    }
+  )
+  filename = abspath("${path.module}/../ssh.conf")
 }
 
 resource "local_file" "service_discovery" {

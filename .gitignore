@@ -147,4 +147,5 @@ platform/local/mount
 
 .env
 
-.source-me.sh
+.source-me-untracked.sh
+**/ssh.conf
