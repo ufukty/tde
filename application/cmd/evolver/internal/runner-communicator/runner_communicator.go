@@ -2,6 +2,7 @@ package runner_communicator
 
 import (
 	service_discovery "tde/internal/microservices/service-discovery"
+	"tde/internal/microservices/service-discovery/models/services"
 
 	"github.com/pkg/errors"
 )
@@ -29,7 +30,7 @@ func NewRunnerCommunicator(sd *service_discovery.ServiceDiscovery) (*RunnerCommu
 }
 
 func (rc *RunnerCommunicator) discover() error {
-	rc.ip_addresses = rc.sd.Runner.ListPrivateIPs()
+	rc.ip_addresses = rc.sd.ListPrivateIPs(services.Runner)
 	if !(len(rc.ip_addresses) > 0) {
 		return ErrNoAvailableRunners
 	}

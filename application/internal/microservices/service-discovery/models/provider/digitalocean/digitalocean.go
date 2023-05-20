@@ -1,6 +1,8 @@
-package provider
+package digitalocean
 
-type DigitaloceanDroplet struct {
+import "tde/internal/microservices/service-discovery/models/services"
+
+type Droplet struct {
 	Backups            bool     `json:"backups"`              // false,
 	CreatedAt          string   `json:"created_at"`           // "2023-04-25T18:37:17Z",
 	Disk               int      `json:"disk"`                 // 25,
@@ -31,4 +33,41 @@ type DigitaloceanDroplet struct {
 	VolumeIds          []string `json:"volume_ids"`           // [],
 	VpcUuid            string   `json:"vpc_uuid"`             // "c3d39a86-99fa-4e2d-86ab-e71b18215b1e"
 	// DropletAgent       string `json:"droplet_agent"`        // null,
+}
+
+type VPC struct {
+	CreatedAt   string `yaml:"created_at"`  // "2023-05-20 06:49:46 +0000 UTC",
+	Default     bool   `yaml:"default"`     // false,
+	Description string `yaml:"description"` // "",
+	Id          string `yaml:"id"`          // "d7576efa-6236-43a3-8c75-eb52299b60d8",
+	IpRange     string `yaml:"ip_range"`    // "10.150.0.0/20",
+	Name        string `yaml:"name"`        // "vpc",
+	Region      string `yaml:"region"`      // "fra1",
+	Timeouts    string `yaml:"timeouts"`    // null,
+	Urn         string `yaml:"urn"`         // "do:vpc:d7576efa-6236-43a3-8c75-eb52299b60d8"
+}
+
+type Region struct {
+	Services map[services.ServiceName][]Droplet `yaml:"services"`
+	VPC      VPC                                `yaml:"vpc"`
+}
+
+func (r *Region) ListPrivateIPs(service services.ServiceName) (ips []string) {
+	if hosts, ok := r.Services[service]; ok {
+		for _, host := range hosts {
+			ips = append(ips, host.Ipv4AddressPrivate)
+		}
+	}
+	return
+}
+
+type RegionName string
+
+type Digitalocean map[RegionName]Region
+
+func (do *Digitalocean) ListPrivateIPs(service services.ServiceName) (ips []string) {
+	for _, region := range *do {
+		ips = append(ips, region.ListPrivateIPs(service)...)
+	}
+	return
 }

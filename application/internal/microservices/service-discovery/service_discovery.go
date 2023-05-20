@@ -13,10 +13,10 @@ import (
 )
 
 type ServiceDiscovery struct {
-	models.File  `yaml:",inline"`
-	configPath   string
-	updateLock   sync.Mutex
-	updatePeriod time.Duration
+	models.ServiceDiscoveryFile `yaml:",inline"`
+	configPath                  string
+	updateLock                  sync.Mutex
+	updatePeriod                time.Duration
 }
 
 func NewServiceDiscovery(configPath string, updatePeriod time.Duration) *ServiceDiscovery {

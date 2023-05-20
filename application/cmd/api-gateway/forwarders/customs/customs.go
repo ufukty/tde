@@ -5,6 +5,7 @@ import (
 	load_balancer "tde/internal/microservices/load-balancer"
 	"tde/internal/microservices/logger"
 	service_discovery "tde/internal/microservices/service-discovery"
+	"tde/internal/microservices/service-discovery/models/services"
 
 	"net/http"
 
@@ -21,7 +22,7 @@ var (
 func Register(config_ *config_reader.Config, sd_ *service_discovery.ServiceDiscovery) {
 	config = config_
 	sd = sd_
-	var hosts = sd.Customs.ListPrivateIPs()
+	var hosts = sd.ListPrivateIPs(services.Customs)
 	if len(hosts) == 0 {
 		log.Fatalf("Not enough servers found for '%s' services\n", "customs")
 	}

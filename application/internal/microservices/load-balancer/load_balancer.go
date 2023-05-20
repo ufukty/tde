@@ -9,6 +9,7 @@ import (
 	"strings"
 	"tde/internal/microservices/logger"
 	service_discovery "tde/internal/microservices/service-discovery"
+	"tde/internal/microservices/service-discovery/models/services"
 	"tde/internal/utilities"
 )
 
@@ -21,7 +22,7 @@ type LoadBalancer struct {
 	pool          map[string]*httputil.ReverseProxy
 	index         int
 	targetPort    string
-	targetService string
+	targetService services.ServiceName
 	stripFromPath string
 	addToPath     string
 }
@@ -31,7 +32,7 @@ var log = logger.NewLogger("LoadBalancer")
 // service: ip address and host
 // hosts: ip addresses of available hosts
 // port: port which will be used as forwarded target
-func New(sd *service_discovery.ServiceDiscovery, targetService, targetPort, stripFromPath, addToPath string) *LoadBalancer {
+func New(sd *service_discovery.ServiceDiscovery, targetService services.ServiceName, targetPort, stripFromPath, addToPath string) *LoadBalancer {
 	return &LoadBalancer{
 		sd:            sd,
 		pool:          map[string]*httputil.ReverseProxy{},
