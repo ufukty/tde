@@ -10,7 +10,7 @@ packer {
 locals {
   dir_name      = basename(abspath(path.root))
   now           = formatdate("YY-MM-DD-'T'-hh-mm-ss-ZZZ", timestamp())
-  snapshot_name = replace("packer-${local.dir_name}-${now}", "_", "_")
+  snapshot_name = replace("packer-${local.dir_name}-${local.now}", "_", "_")
 }
 
 source "digitalocean" "droplet" {
@@ -33,11 +33,11 @@ build {
 
   provisioner "file" {
     destination = "/etc/ssl/certs/localhost.crt"
-    source      = "../../../../certificates/localhost.crt"
+    source      = "certificates/localhost.crt"
   }
 
   provisioner "file" {
     destination = "/etc/ssl/private/localhost.key"
-    source      = "../../../../certificates/localhost.key"
+    source      = "certificates/localhost.key"
   }
 }

@@ -1,6 +1,6 @@
 ---
 root_password: &password "$6$rounds=656000$MmorzYA37voUNOZa$gxr94k2mUfOV7sj/.u7D8HW2n4tN.F2OsTLYonIsLoyaERmvMpsfyn.2QPgGxy/JuNyuuJw.jfbaApxc1bMnE1"
-user_name: &user_name ufukty
+user_name: &user_name 2iuFDs13YDedYc3N
 user_password: *password
 ssh_pub_keys: |
   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGzgeYYzQSKbbjU3fFkijh4B9Tx7Rz6VHfB2DJv9kKcg mbp-ed
