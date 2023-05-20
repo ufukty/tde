@@ -20,11 +20,14 @@ _ssh_completion() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD - 1]}"
-    opts=$(grep '^Host' $WORKSPACE/platform/stage/ssh.conf 2>/dev/null | grep -v '[?*]' | cut -d ' ' -f 2-)
+    opts=$(grep '^Host' $WORKSPACE/platform/stage/artifacts/ssh.conf 2>/dev/null | grep -v '[?*]' | cut -d ' ' -f 2-)
 
     COMPREPLY=($(compgen -W "$opts" -- ${cur}))
     return 0
 }
 complete -F _ssh_completion ssh
 
-alias ssh="ssh -F $WORKSPACE/platform/stage/ssh.conf"
+alias ssh="ssh -F $WORKSPACE/platform/stage/artifacts/ssh.conf"
+
+check-python-pkg ansible "python3 -m pip install --user ansible"
+check-python-pkg qr "pip install qrcode"

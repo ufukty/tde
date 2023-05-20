@@ -11,3 +11,13 @@ with-echo() {
 note() {
     echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
 }
+
+check-python-pkg() {
+    CLI_NAME="$1" && shift
+    PIP_COMMAND="$@"
+
+    if ! which "$CLI_NAME" >/dev/null; then
+        note "CLI command '$CLI_NAME' is not found."
+        echo "Run: $PIP_COMMAND"
+    fi
+}
