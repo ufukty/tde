@@ -112,7 +112,7 @@ resource "local_file" "inventory" {
       }
     }
   )
-  filename = abspath("${path.module}/../2-deployment/inventory.cfg")
+  filename = abspath("${path.module}/../../deployment/inventory.cfg")
 }
 
 resource "local_file" "ssh-config" {
@@ -135,7 +135,7 @@ resource "local_file" "ssh-config" {
       }
     }
   )
-  filename = abspath("${path.module}/../artifacts/ssh.conf")
+  filename = abspath("${path.module}/../../artifacts/ssh.conf")
 }
 
 resource "local_file" "service_discovery" {
@@ -158,5 +158,5 @@ resource "local_file" "service_discovery" {
       })
     }
   )
-  filename = abspath("${path.module}/../2-deployment/service_discovery.json")
+  filename = abspath("${path.module}/../../deployment/service_discovery.json")
 }
