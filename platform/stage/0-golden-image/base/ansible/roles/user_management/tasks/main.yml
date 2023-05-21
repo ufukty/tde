@@ -8,7 +8,7 @@
 - name: change root user's password via chpasswd
   shell: echo 'root:{{ root_password }}' | sudo chpasswd -e
 
-- name: creating the two sudo users
+- name: creating the sudo user
   remote_user: root
   user:
     name: "{{ item.name }}"
