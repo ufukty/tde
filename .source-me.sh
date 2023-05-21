@@ -4,6 +4,28 @@ export WORKSPACE="$(pwd -P)"
 . $WORKSPACE/shell/utilities.sh
 test -f .source-me-untracked.sh && . .source-me-untracked.sh
 
+with-echo() {
+    echo -e "\033[35m@echo\033[0m $@" && $@
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
+    fi
+}
+
+note() {
+    echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
+}
+
+check-python-pkg() {
+    CLI_NAME="$1" && shift
+    PIP_COMMAND="$@"
+
+    if ! which "$CLI_NAME" >/dev/null; then
+        note "CLI command '$CLI_NAME' is not found."
+        echo "Run: $PIP_COMMAND"
+    fi
+}
+
 _commands_completion() {
     _shortlist="$(cat commands | grep "() {" | tr -cd '[A-Za-z\-\n]')"
     local cur
