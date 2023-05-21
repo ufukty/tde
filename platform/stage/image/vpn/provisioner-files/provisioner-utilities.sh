@@ -13,9 +13,9 @@ function retry() {
     until $@; do
         count=$((count + 1))
         if [[ $count -le 300 ]]; then
-            info "Attempted to run $1, but it's failed for $count times, now trying again..." && sleep 2
+            echo "Attempted to run $1, but it's failed for $count times, now trying again..." && sleep 2
         else
-            error "Seems like $1 is busy right now, please try again later."
+            echo "Seems like $1 is busy right now, please try again later."
         fi
     done
 }
@@ -35,6 +35,11 @@ function wait_cloud_init() {
 
 function check_tun_availability() {
     if [ ! -e /dev/net/tun ]; then error "TUN is not available at /dev/net/tun"; fi
+}
+
+function deploy_provisioner_files() {
+    rsync -avz --remove-source-files "$PROVISIONER_FILES/etc/" "/etc"
+    rm -r "$PROVISIONER_FILES/etc/"
 }
 
 export DEBIAN_FRONTEND=noninteractive

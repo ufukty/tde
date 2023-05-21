@@ -11,7 +11,7 @@ PROVISIONER_FILES="$(pwd -P)"
 function install_openvpn() {
     with-echo retry apt-get update
     with-echo retry apt-get install -y ca-certificates gnupg openvpn iptables openssl wget ca-certificates curl
-    [[ -d /etc/openvpn/easy-rsa/ ]] && rm -rf /etc/openvpn/easy-rsa/
+    test -d /etc/openvpn/easy-rsa && rm -rf /etc/openvpn/easy-rsa
 }
 
 function install_argon2() {
@@ -21,16 +21,13 @@ function install_argon2() {
         with-echo cd phc-winner-argon2-20190702
         with-echo make install
     )
-    with-echo rm -rf $PROVISIONER_FILES/phc-winner-argon2-20190702 $PROVISIONER_FILES/phc-winner-argon2-20190702.tar.gz
+    with-echo rm -rf phc-winner-argon2-20190702 phc-winner-argon2-20190702.tar.gz
 }
 
 function install_easy_rsa() {
-    with-echo mkdir -p /etc/openvpn/easy-rsa
-    (
-        with-echo cd /etc/openvpn/easy-rsa
-        with-echo tar xzf $PROVISIONER_FILES/EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
-        with-echo rm -f $PROVISIONER_FILES/EasyRSA-3.1.3.tgz
-    )
+    mkdir -p /etc/openvpn/easy-rsa
+    with-echo tar xzf EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
+    with-echo rm -f EasyRSA-3.1.3.tgz
 }
 
 function install_ovpn_auth() {
@@ -57,3 +54,5 @@ install_argon2
 install_easy_rsa
 install_ovpn_auth
 install_unbound
+
+deploy_provisioner_files
