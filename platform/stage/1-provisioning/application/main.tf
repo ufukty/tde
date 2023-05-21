@@ -7,44 +7,8 @@ terraform {
   }
 }
 
-# ------------------------------------------------------------- #
-# Variables
-# ------------------------------------------------------------- #
-
-variable "DIGITALOCEAN_TOKEN" {
-  // env var
-}
-
-# ------------------------------------------------------------- #
-# Locals
-# ------------------------------------------------------------- #
-
-locals {
-  region = "fra1"
-  slug   = "s-1vcpu-1gb"
-  instances = {
-    vpn         = 1,
-    runner      = 3,
-    evolver     = 1,
-    api-gateway = 1,
-  }
-  ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
-}
-
-# ------------------------------------------------------------- #
-# Main
-# ------------------------------------------------------------- #
-
-provider "digitalocean" {}
-
 data "digitalocean_droplet_snapshot" "golden_base" {
   name_regex  = "^packer-base-.*"
-  region      = local.region
-  most_recent = true
-}
-
-data "digitalocean_droplet_snapshot" "golden_vpn" {
-  name_regex  = "^packer-vpn-.*"
   region      = local.region
   most_recent = true
 }
@@ -52,23 +16,6 @@ data "digitalocean_droplet_snapshot" "golden_vpn" {
 resource "digitalocean_vpc" "vpc" {
   name   = "vpc"
   region = local.region
-}
-
-resource "digitalocean_droplet" "vpn" {
-  count = local.instances.vpn
-
-  image  = data.digitalocean_droplet_snapshot.golden_vpn.id
-  name   = "vpn-${count.index}"
-  region = local.region
-  size   = local.slug
-  tags   = ["thesis", "vpn"]
-
-  ipv6        = true
-  backups     = false
-  monitoring  = true
-  resize_disk = false
-  ssh_keys    = local.ssh_fingerprints
-  vpc_uuid    = digitalocean_vpc.vpc.id
 }
 
 resource "digitalocean_droplet" "runner" {
@@ -158,7 +105,7 @@ resource "local_file" "inventory" {
               customs     = digitalocean_droplet.customs
               evolver     = digitalocean_droplet.evolver
               runner      = digitalocean_droplet.runner
-              vpn         = digitalocean_droplet.vpn
+              #   vpn         = digitalocean_droplet.vpn
             }
           }
         }
@@ -188,7 +135,7 @@ resource "local_file" "ssh-config" {
       }
     }
   )
-  filename = abspath("${path.module}/../ssh.conf")
+  filename = abspath("${path.module}/../artifacts/ssh.conf")
 }
 
 resource "local_file" "service_discovery" {
@@ -204,7 +151,7 @@ resource "local_file" "service_discovery" {
               customs     = digitalocean_droplet.customs
               evolver     = digitalocean_droplet.evolver
               runner      = digitalocean_droplet.runner
-              vpn         = digitalocean_droplet.vpn
+              #   vpn         = digitalocean_droplet.vpn
             }
           }
         }
