@@ -1,13 +1,13 @@
 #!/bin/bash
 
-cd $WORKSPACE/platform/stage/provisioning/vpc
+cd $WORKSPACE/platform/stage/provisioning/vpn
 
 up() {
-    terraform apply --auto-approve --var-file=../vars.tfvars
+    terraform apply --var-file=../vars.tfvars
 }
 
 destroy() {
-    terraform destroy --auto-approve --var-file=../vars.tfvars
+    terraform destroy --var-file=../vars.tfvars
 }
 
 SUBCOMMAND="$1" && shift && $SUBCOMMAND "$@"
