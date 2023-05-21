@@ -1,7 +1,6 @@
 #!/usr/bin/env bash -i
 
 export WORKSPACE="$(pwd -P)"
-. $WORKSPACE/shell/utilities.sh
 test -f .source-me-untracked.sh && . .source-me-untracked.sh
 
 with-echo() {
