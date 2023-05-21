@@ -7,23 +7,32 @@ terraform {
   }
 }
 
-variable "regions" {
+
+variable "project_prefix" {
+  type = string
+}
+
+variable "vpc_details" {
   type = object({
-    do = set(string)
+    do = object({
+      sfo2 = object({ range = string })
+      sfo3 = object({ range = string })
+      tor1 = object({ range = string })
+      nyc1 = object({ range = string })
+      nyc3 = object({ range = string })
+      lon1 = object({ range = string })
+      ams3 = object({ range = string })
+      fra1 = object({ range = string })
+      blr1 = object({ range = string })
+      sgp1 = object({ range = string })
+    })
   })
 }
 
 resource "digitalocean_vpc" "vpc" {
-  for_each = toset(var.regions.do)
+  for_each = toset(keys(var.vpc_details.do))
 
-  name   = "thesis-${each.value}"
-  region = each.value
-}
-
-output "output" {
-  value = [for vpc in digitalocean_vpc.vpc : {
-    region   = vpc.region,
-    ip_range = vpc.ip_range,
-    uuid     = vpc.uuid,
-  }]
+  name     = "${var.project_prefix}-${each.value}"
+  region   = each.value
+  ip_range = var.vpc_details.do[each.value].range
 }

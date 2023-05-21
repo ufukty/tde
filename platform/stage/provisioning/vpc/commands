@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd $WORKSPACE/platform/stage/provisioning/vpc
+
+up() {
+    terraform apply --auto-approve --var-file=../vars.tfvars
+}
+
+destroy() {
+    terraform destroy --auto-approve --var-file=../vars.tfvars
+}
+
+SUBCOMMAND="$1" && shift && $SUBCOMMAND "$@"
