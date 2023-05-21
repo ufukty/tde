@@ -1,6 +1,6 @@
 ---
 common: &common
-  service-discovery-config: /home/ufukty/service_discovery.json
+  service-discovery-config: /home/2iuFDs13YDedYc3N/service_discovery.json
   service-discovery-update-period: 30s
   grace-period: 15s
   router_public: :8080

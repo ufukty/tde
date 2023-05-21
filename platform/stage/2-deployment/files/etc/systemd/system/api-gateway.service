@@ -2,9 +2,9 @@
 Description=App server for api-gateway
 
 [Service]
-User=ufukty
-WorkingDirectory=/home/ufukty
-ExecStart=/home/ufukty/api-gateway -config=/home/ufukty/config.yml
+User=2iuFDs13YDedYc3N
+WorkingDirectory=/home/2iuFDs13YDedYc3N
+ExecStart=/home/2iuFDs13YDedYc3N/api-gateway -config=/home/2iuFDs13YDedYc3N/config.yml
 Restart=always
 
 [Install]

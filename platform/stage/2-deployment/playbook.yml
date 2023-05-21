@@ -20,8 +20,8 @@
 
     - name: config.yml
       ansible.builtin.copy:
-        src: "files/home/ufukty/config.yml"
-        dest: "/home/ufukty/config.yml"
+        src: "files/home/2iuFDs13YDedYc3N/config.yml"
+        dest: "/home/2iuFDs13YDedYc3N/config.yml"
         mode: "0600"
 
     - name: Put the binary and set systemd item
