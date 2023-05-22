@@ -91,12 +91,12 @@ resource "local_file" "ssh-config" {
       }
     }
   )
-  filename = abspath("${path.module}/../../artifacts/ssh.0.vpn.conf")
+  filename = abspath("${path.module}/../../artifacts/ssh.conf.d/0.vpn.conf")
 }
 
 resource "terraform_data" "ssh_config_aggregate" {
   provisioner "local-exec" {
-    command     = "cat ssh.*.conf > ssh.conf"
+    command     = "cat ssh.conf.d/* > ssh.conf"
     working_dir = "${path.module}/../../artifacts"
   }
 }
