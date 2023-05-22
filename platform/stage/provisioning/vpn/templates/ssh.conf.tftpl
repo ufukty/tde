@@ -1,0 +1,6 @@
+%{ for provider, regions in providers ~}
+%{ for region, host in regions ~}
+Host ${host.name}
+  HostName ${host.ipv4_address}
+%{ endfor ~}
+%{ endfor ~}

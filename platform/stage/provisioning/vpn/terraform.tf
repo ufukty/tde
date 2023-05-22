@@ -81,3 +81,24 @@ resource "digitalocean_droplet" "vpn-server" {
   vpc_uuid    = data.digitalocean_vpc.vpc[each.value].id
   tags        = ["vpn", "thesis"]
 }
+
+resource "local_file" "ssh-config" {
+  content = templatefile(
+    "${path.module}/templates/ssh.conf.tftpl",
+    {
+      providers = {
+        digitalocean = digitalocean_droplet.vpn-server
+      }
+    }
+  )
+  filename = abspath("${path.module}/../../artifacts/ssh.0.vpn.conf")
+}
+
+resource "terraform_data" "ssh_config_aggregate" {
+  provisioner "local-exec" {
+    command     = "cat ssh.*.conf > ssh.conf"
+    working_dir = "${path.module}/../../artifacts"
+  }
+}
+
+

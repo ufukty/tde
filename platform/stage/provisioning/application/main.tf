@@ -135,7 +135,14 @@ resource "local_file" "ssh-config" {
       }
     }
   )
-  filename = abspath("${path.module}/../../artifacts/ssh.conf")
+  filename = abspath("${path.module}/../../artifacts/ssh.0.application.conf")
+}
+
+resource "terraform_data" "ssh_config_aggregate" {
+  provisioner "local-exec" {
+    command     = "cat ssh.*.conf > ssh.conf"
+    working_dir = "${path.module}/../../artifacts"
+  }
 }
 
 resource "local_file" "service_discovery" {

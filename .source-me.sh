@@ -1,7 +1,6 @@
 #!/usr/bin/env bash -i
 
 export WORKSPACE="$(pwd -P)"
-test -f .source-me-untracked.sh && . .source-me-untracked.sh
 
 with-echo() {
     echo -e "\033[35m@echo\033[0m $@" && $@
@@ -14,6 +13,10 @@ with-echo() {
 note() {
     echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
 }
+
+alias ssh="ssh -F $WORKSPACE/platform/stage/artifacts/ssh.conf"
+
+test -f .source-me-untracked.sh && . .source-me-untracked.sh
 
 check-python-pkg() {
     CLI_NAME="$1" && shift
@@ -47,8 +50,6 @@ _ssh_completion() {
     return 0
 }
 complete -F _ssh_completion ssh
-
-alias ssh="ssh -F $WORKSPACE/platform/stage/artifacts/ssh.conf"
 
 check-python-pkg ansible "python3 -m pip install --user ansible"
 check-python-pkg qr "pip install qrcode"
