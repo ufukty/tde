@@ -10,8 +10,8 @@ destroy() {
     terraform destroy --var-file=../vars.tfvars
 }
 
-add_client() {
+# add_client() {
 
-}
+# }
 
 SUBCOMMAND="$1" && shift && $SUBCOMMAND "$@"

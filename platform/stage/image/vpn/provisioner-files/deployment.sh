@@ -25,7 +25,7 @@
 #                    PUBLIC_ETHERNET_INTERFACE="eth0" \
 #                    PRIVATE_ETHERNET_INTERFACE="eth1" \
 #                    SERVER_NAME="my_server" \
-#                    EASYRSA_REQ_CN="my_server_common_name" \
+#                    SERVER_NAME="my_server_common_name" \
 #                    sudo --preserve-env bash sh.sh \
 #                    my_client_1 my_client_2 my_client_n
 
@@ -41,20 +41,8 @@ USER_ACCOUNT_NAME="${USER_ACCOUNT_NAME:?"USER_ACCOUNT_NAME is required."}"
 PUBLIC_IP="${PUBLIC_IP:?"PUBLIC_IP is required."}"
 PRIVATE_IP="${PRIVATE_IP:?"PRIVATE_IP is required."}"
 
-# VPC_CIDR is the address of Virtual Private Cloud (LAN) + range mask
-VPC_CIDR="${VPC_CIDR:?"VPC_CIDR is required."}"
-
-# VPC_ADDRESS is the address of Virtual Private Cloud (LAN)
-# It should be the address without the range suffix (like /24)
-VPC_ADDRESS="${VPC_ADDRESS:?"VPC_ADDRESS is required."}"
-
-# SUBNET_ADDRESS is the address of the subnet will be used by
 # OpenVPN to handle underlying networking jobs. e.g. $SUBNET_ADDRESS
 SUBNET_ADDRESS="${SUBNET_ADDRESS:?"SUBNET_ADDRESS is required. Example: 10.147.0.0"}"
-
-# DNS_ADDRESS is the address od the internal DNS server (Unbound). It
-# could be the address of first host in subnet.
-DNS_ADDRESS="${DNS_ADDRESS:?"DNS_ADDRESS is required."}"
 
 # PUBLIC_ETHERNET_INTERFACE
 # Like eth0
@@ -66,12 +54,6 @@ PRIVATE_ETHERNET_INTERFACE="${PRIVATE_ETHERNET_INTERFACE:?"Required. Example: et
 
 # SERVER_NAME is used for EasyRSA, and it could be an arbitrary string
 SERVER_NAME="${SERVER_NAME:?"SERVER_NAME is required."}"
-
-# EASYRSA_REQ_CN is the common name of the server, and it could be an arbitrary string
-EASYRSA_REQ_CN="${EASYRSA_REQ_CN:?"EASYRSA_REQ_CN is required."}"
-
-# OTP_URI_ISSUER_NAME will be used to make OTP URI distinctive
-OTP_URI_ISSUER_NAME="${OTP_URI_ISSUER_NAME:?"OTP_URI_ISSUER_NAME is required."}"
 
 # OVPN_USERNAME and OVPN_HASH will be used as login credentials
 OVPN_USERNAME="${OVPN_USERNAME:?"OVPN_USERNAME is required"}"
@@ -148,13 +130,6 @@ ENCRYPTION_HMAC_ALG="${ENCRYPTION_HMAC_ALG:-"SHA256"}"
 #   and encrypt them.
 TLS_SIG="${TLS_SIG:-"tls-crypt"}"
 
-EASYRSA_REQ_COUNTRY="${EASYRSA_REQ_COUNTRY:-"US"}"
-EASYRSA_REQ_PROVINCE="${EASYRSA_REQ_PROVINCE:-"NewYork"}"
-EASYRSA_REQ_CITY="${EASYRSA_REQ_CITY:-"New York City"}"
-EASYRSA_REQ_ORG="${EASYRSA_REQ_ORG:-"Lorem Ipsum"}"
-EASYRSA_REQ_EMAIL="${EASYRSA_REQ_EMAIL:-"admin@loremi"}"
-EASYRSA_REQ_OU="${EASYRSA_REQ_OU:-"Lorem Ipsum Pri"}"
-
 # Iptables template will be filled with those variables' values
 IPTABLES_PUBLIC_ETHERNET_INTERFACE="${IPTABLES_PUBLIC_ETHERNET_INTERFACE:-"$PUBLIC_ETHERNET_INTERFACE"}"
 IPTABLES_PRIVATE_ETHERNET_INTERFACE="${IPTABLES_PRIVATE_ETHERNET_INTERFACE:-"$PRIVATE_ETHERNET_INTERFACE"}"
@@ -182,13 +157,7 @@ function configure_easy_rsa() {
     (
         cd /etc/openvpn/easy-rsa
 
-        echo "set_var EASYRSA_REQ_CN         \"$EASYRSA_REQ_CN\"" >vars
-        echo "set_var EASYRSA_REQ_COUNTRY    \"$EASYRSA_REQ_COUNTRY\"" >>vars
-        echo "set_var EASYRSA_REQ_PROVINCE   \"$EASYRSA_REQ_PROVINCE\"" >>vars
-        echo "set_var EASYRSA_REQ_CITY       \"$EASYRSA_REQ_CITY\"" >>vars
-        echo "set_var EASYRSA_REQ_ORG        \"$EASYRSA_REQ_ORG\"" >>vars
-        echo "set_var EASYRSA_REQ_EMAIL      \"$EASYRSA_REQ_EMAIL\"" >>vars
-        echo "set_var EASYRSA_REQ_OU         \"$EASYRSA_REQ_OU\"" >>vars
+        echo "set_var EASYRSA_REQ_CN         \"$SERVER_NAME\"" >vars
 
         if [[ $ENCRYPTION_CERT_TYPE == "ECDSA" ]]; then
             echo "set_var EASYRSA_ALGO           \"ec\"" >>vars
@@ -219,7 +188,7 @@ function create_secrets_file_for_ovpn_auth() {
         cd /etc/openvpn
 
         otp_secret="$(head -n 100 /dev/urandom | base32 | cut -b 1-64 | head -n 1)"
-        authenticator_string="otpauth://totp/OpenVPN:${TOTP_USERNAME}@${OTP_URI_ISSUER_NAME}?secret=${otp_secret}&issuer=OpenVPN"
+        authenticator_string="otpauth://totp/OpenVPN:${TOTP_USERNAME}@${SERVER_NAME}?secret=${otp_secret}&issuer=OpenVPN"
 
         (
             USERNAME=$(who am i | awk '{ print $1 }')
@@ -276,10 +245,12 @@ function configure_openvpn() {
             ENCRYPTION_CC_CIPHER="$ENCRYPTION_RSA_CC_CIPHER"
         fi
 
+        DNS_LISTEN_ADDRESS="$(ip -json route list dev $PRIVATE_ETHERNET_INTERFACE | jq -r '.[0].prefsrc')" # IP points to itself
+
         # "Populating the configure file at: /etc/openvpn/server.conf"
         sed --in-place \
             -e "s;{{DH_CONF_STR}};$DH_CONF_STR;g" \
-            -e "s;{{DNS_ADDRESS}};$DNS_ADDRESS;g" \
+            -e "s;{{DNS_LISTEN_ADDRESS}};$DNS_LISTEN_ADDRESS;g" \
             -e "s;{{ENCRYPTION_CC_CIPHER}};$ENCRYPTION_CC_CIPHER;g" \
             -e "s;{{ENCRYPTION_CIPHER}};$ENCRYPTION_CIPHER;g" \
             -e "s;{{ENCRYPTION_HMAC_ALG}};$ENCRYPTION_HMAC_ALG;g" \
@@ -292,17 +263,10 @@ function configure_openvpn() {
             -e "s;{{VPC_ADDRESS}};$VPC_ADDRESS;g" \
             /etc/openvpn/server.conf
 
-        # Create client-config-dir dir
-        mkdir -p /etc/openvpn/ccd
+        mkdir -p /etc/openvpn/ccd # Create client-config-dir dir
+        mkdir -p /var/log/openvpn # Create log dir
 
-        # Create log dir
-        mkdir -p /var/log/openvpn
-
-        # Enable routing
-        # echo 'net.ipv4.ip_forward=1' >/etc/sysctl.d/20-openvpn.conf
-
-        # "Apply sysctl rules"
-        sysctl --system
+        sysctl --system # "Apply sysctl rules"
 
         # If SELinux is enabled and a custom port was selected, we need this
         if hash sestatus 2>/dev/null; then
@@ -342,12 +306,15 @@ function configure_iptables() {
 }
 
 function configure_unbound() {
+    VPC_CIDR="$(ip -json route list dev $PRIVATE_ETHERNET_INTERFACE | jq -r '.[0].dst')"
+    DNS_LISTEN_ADDRESS="$(ip -json route list dev $PRIVATE_ETHERNET_INTERFACE | jq -r '.[0].prefsrc')" # IP points to itself
+
     sed --in-place \
-        -e "s;{{DNS_ADDRESS}};$DNS_ADDRESS;g" \
+        -e "s;{{DNS_LISTEN_ADDRESS}};$DNS_LISTEN_ADDRESS;g" \
         -e "s;{{SUBNET_ADDRESS}};$SUBNET_ADDRESS;g" \
-        -e "s;{{HOST_ADDRESS}};$PRIVATE_IP;g" \
-        -e "s;{{VPC_CIDR}};$VPC_CIDR;g" \
         /etc/unbound/unbound.conf
+    # -e "s;{{HOST_ADDRESS}};$PRIVATE_IP;g" \
+    # -e "s;{{VPC_CIDR}};$VPC_CIDR;g" \
 
     systemctl enable unbound
     systemctl restart unbound

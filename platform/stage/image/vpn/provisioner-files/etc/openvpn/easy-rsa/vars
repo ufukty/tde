@@ -1,0 +1,6 @@
+set_var EASYRSA_REQ_COUNTRY    "US"
+set_var EASYRSA_REQ_PROVINCE   "NewYork"
+set_var EASYRSA_REQ_CITY       "New York City"
+set_var EASYRSA_REQ_ORG        "Lorem Ipsum"
+set_var EASYRSA_REQ_EMAIL      "admin@loremi"
+set_var EASYRSA_REQ_OU         "Lorem Ipsum Pri"
