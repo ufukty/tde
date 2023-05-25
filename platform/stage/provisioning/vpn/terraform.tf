@@ -109,32 +109,25 @@ resource "digitalocean_droplet" "vpn-server" {
     timeout = "2m"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/provisioner-files"
+    destination = "/home/${var.sudo_user}"
+  }
+
   provisioner "remote-exec" {
     inline = [
       <<EOF
-        cd provisioner_files && \
-            USER_ACCOUNT_NAME=\
-                "${var.sudo_user}" \
-            SERVER_NAME=\
-                "${var.project_prefix}-do-${each.value}-vpn" \
-            PUBLIC_IP=\
-                "${self.ipv4_address}" \
-            PRIVATE_IP=\
-                "${self.ipv4_address_private}" \
-            VPC_CIDR=\
-                "${data.digitalocean_vpc.vpc[each.value].ip_range}" \
-            VPC_ADDRESS=\
-                "${cidrhost(data.digitalocean_vpc.vpc[each.value].ip_range, 0)}" \
-            SUBNET_ADDRESS=\
-                "${var.digitalocean.config.vpn[each.value].subnet_address}" \
-            PUBLIC_ETHERNET_INTERFACE=\
-                "${local.public_ethernet_interface}" \
-            PRIVATE_ETHERNET_INTERFACE=\
-                "${local.private_ethernet_interface}" \
-            OVPN_USERNAME=\
-                "${var.OVPN_USER}" \
-            OVPN_HASH=\
-                "${var.OVPN_HASH}" \
+        cd provisioner-files && \
+                     USER_ACCOUNT_NAME="${var.sudo_user}" \
+                           SERVER_NAME="${var.project_prefix}-do-${each.value}-vpn" \
+                             PUBLIC_IP="${self.ipv4_address}" \
+                            PRIVATE_IP="${self.ipv4_address_private}" \
+                OPENVPN_SUBNET_ADDRESS="${var.digitalocean.config.vpn[each.value].subnet_address}" \
+                   OPENVPN_SUBNET_MASK="255.255.255.0" \
+             PUBLIC_ETHERNET_INTERFACE="${local.public_ethernet_interface}" \
+            PRIVATE_ETHERNET_INTERFACE="${local.private_ethernet_interface}" \
+                         OVPN_USERNAME="${var.OVPN_USER}" \
+                             OVPN_HASH="${var.OVPN_HASH}" \
             sudo --preserve-env bash deployment.sh 
       EOF
     ]

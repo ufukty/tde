@@ -3,11 +3,15 @@
 cd $WORKSPACE/platform/stage/provisioning/vpn
 
 up() {
-    terraform apply --var-file=../vars.tfvars
+    terraform apply "$@" --var-file=../vars.tfvars
 }
 
 destroy() {
-    terraform destroy --var-file=../vars.tfvars
+    terraform destroy "$@" --var-file=../vars.tfvars
+}
+
+re() {
+    destroy "$@" && up "$@"
 }
 
 # add_client() {
