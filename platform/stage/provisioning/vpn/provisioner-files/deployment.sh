@@ -161,17 +161,18 @@ PROVISIONER_FILES="$(pwd -P)"
 # Definitions
 # ---------------------------------------------------------------------------- #
 
-EASYRSA_GENERATED="/etc/openvpn/easy-rsa/generated"
-EASYRSA_GENERATED_EASYRSA_CA_CERT_NAME="$EASYRSA_GENERATED/certificate_authority_common_name"
-EASYRSA_GENERATED_SERVER_CERT_NAME="$EASYRSA_GENERATED/openvpn_server_cert_name"
-EASYRSA_CA_CERT_NAME="$SERVER_NAME-certificate-authority"
-EASYRSA_SERVER_CERT_NAME="$SERVER_NAME-server"
-OVPN_GENERATED_OTP_URI="/home/$USER_ACCOUNT_NAME/otp-uri.txt"
+EASYRSA_CA_NAME="$SERVER_NAME-certificate-authority"
+EASYRSA_SERVER_NAME="$SERVER_NAME-server"
+OVPN_GENERATED_TOTP_SHARE_FILE="/home/$USER_ACCOUNT_NAME/remove/totp-share.txt"
+
+mkdir -p "/etc/openvpn/easy-rsa/generated"
+mkdir -p "/home/$USER_ACCOUNT_NAME/remove"
+echo -n "$EASYRSA_CA_NAME" >"/etc/openvpn/easy-rsa/generated/ca_name"
+echo -n "$EASYRSA_SERVER_NAME" >"/etc/openvpn/easy-rsa/generated/server_name"
 
 function configure_easy_rsa() {
     (
         cd /etc/openvpn/easy-rsa
-        mkdir -p "$EASYRSA_GENERATED"
 
         if [[ $ENCRYPTION_CERT_TYPE == "ECDSA" ]]; then
             echo "set_var EASYRSA_ALGO           \"ec\"" >>vars
@@ -182,17 +183,14 @@ function configure_easy_rsa() {
 
         # Create the PKI, set up the CA, the DH params and the server certificate
         with-echo ./easyrsa --vars=./vars init-pki
-        with-echo ./easyrsa --vars=./vars --batch --req-cn="$EASYRSA_CA_CERT_NAME" build-ca nopass
+        with-echo ./easyrsa --vars=./vars --batch --req-cn="$EASYRSA_CA_NAME" build-ca nopass
 
         # ECDH keys are generated on-the-fly so we don't need to generate them beforehand
         if [[ $ENCRYPTION_DH_TYPE == "DH" ]]; then
             openssl dhparam -out dh.pem $ENCRYPTION_DH_KEY_SIZE
         fi
 
-        echo -n "$EASYRSA_CA_CERT_NAME" >"$EASYRSA_GENERATED_EASYRSA_CA_CERT_NAME"
-        echo -n "$EASYRSA_SERVER_CERT_NAME" >"$EASYRSA_GENERATED_SERVER_CERT_NAME"
-
-        with-echo ./easyrsa --vars=./vars --batch build-server-full "$EASYRSA_SERVER_CERT_NAME" nopass
+        with-echo ./easyrsa --vars=./vars --batch build-server-full "$EASYRSA_SERVER_NAME" nopass
         EASYRSA_CRL_DAYS=3650 with-echo ./easyrsa --vars=./vars gen-crl
 
         # Generate tls-crypt or tls-auth key
@@ -208,8 +206,8 @@ function configure_openvpn() {
         cp \
             "/etc/openvpn/easy-rsa/pki/ca.crt" \
             "/etc/openvpn/easy-rsa/pki/private/ca.key" \
-            "/etc/openvpn/easy-rsa/pki/issued/$EASYRSA_SERVER_CERT_NAME.crt" \
-            "/etc/openvpn/easy-rsa/pki/private/$EASYRSA_SERVER_CERT_NAME.key" \
+            "/etc/openvpn/easy-rsa/pki/issued/$EASYRSA_SERVER_NAME.crt" \
+            "/etc/openvpn/easy-rsa/pki/private/$EASYRSA_SERVER_NAME.key" \
             "/etc/openvpn/easy-rsa/pki/crl.pem" \
             "/etc/openvpn"
 
@@ -245,7 +243,7 @@ function configure_openvpn() {
         echo "OPENVPN_PROTOCOL         = $OPENVPN_PROTOCOL"
         echo "OPENVPN_SUBNET_ADDRESS   = $OPENVPN_SUBNET_ADDRESS"
         echo "OPENVPN_SUBNET_MASK      = $OPENVPN_SUBNET_MASK"
-        echo "EASYRSA_SERVER_CERT_NAME = $EASYRSA_SERVER_CERT_NAME"
+        echo "EASYRSA_SERVER_NAME      = $EASYRSA_SERVER_NAME"
         echo "TLS_SIG                  = $TLS_SIG"
         echo "UNBOUND_ADDRESS          = $UNBOUND_ADDRESS"
         echo "VPC_RANGE_ADDRESS        = $VPC_RANGE_ADDRESS"
@@ -262,7 +260,7 @@ function configure_openvpn() {
             -e "s;{{OPENVPN_PROTOCOL}};$OPENVPN_PROTOCOL;g" \
             -e "s;{{OPENVPN_SUBNET_ADDRESS}};$OPENVPN_SUBNET_ADDRESS;g" \
             -e "s;{{OPENVPN_SUBNET_MASK}};$OPENVPN_SUBNET_MASK;g" \
-            -e "s;{{EASYRSA_SERVER_CERT_NAME}};$EASYRSA_SERVER_CERT_NAME;g" \
+            -e "s;{{EASYRSA_SERVER_NAME}};$EASYRSA_SERVER_NAME;g" \
             -e "s;{{TLS_SIG}};$TLS_SIG;g" \
             -e "s;{{UNBOUND_ADDRESS}};$UNBOUND_ADDRESS;g" \
             -e "s;{{VPC_RANGE_ADDRESS}};$VPC_RANGE_ADDRESS;g" \
@@ -283,17 +281,8 @@ function configure_openvpn() {
             fi
         fi
 
-        # Don't modify package-provided service
-        cp /lib/systemd/system/openvpn@.service /etc/systemd/system/openvpn@.service
-
-        # Workaround to fix OpenVPN service on OpenVZ
-        sed -i 's|LimitNPROC|#LimitNPROC|' /etc/systemd/system/openvpn@.service
-        # Another workaround to keep using /etc/openvpn/
-        sed -i 's|/etc/openvpn/server|/etc/openvpn|' /etc/systemd/system/openvpn@.service
-
-        with-echo systemctl daemon-reload
-        with-echo systemctl enable openvpn@server
-        with-echo systemctl restart openvpn@server
+        with-echo systemctl enable openvpn
+        with-echo systemctl start openvpn
     )
 }
 
@@ -304,9 +293,9 @@ function configure_ovpn() {
         TOTP_SECRET="$(head -n 100 /dev/urandom | base32 | cut -b 1-64 | head -n 1)"
         SHARE_STRING="otpauth://totp/OpenVPN:${TOTP_USERNAME}@${SERVER_NAME}?secret=${TOTP_SECRET}&issuer=OpenVPN"
 
-        echo "$SHARE_STRING" >"$OVPN_GENERATED_OTP_URI"
-        chmod 700 "$OVPN_GENERATED_OTP_URI"
-        chown "$USER_ACCOUNT_NAME" "$OVPN_GENERATED_OTP_URI"
+        echo "$SHARE_STRING" >"$OVPN_GENERATED_TOTP_SHARE_FILE"
+        chmod 700 "$OVPN_GENERATED_TOTP_SHARE_FILE"
+        chown "$USER_ACCOUNT_NAME" "$OVPN_GENERATED_TOTP_SHARE_FILE"
 
         sed --in-place \
             -e "s;<<OVPN_USERNAME>>;$OVPN_USERNAME;g" \
@@ -320,6 +309,13 @@ function configure_ovpn() {
 }
 
 function configure_iptables() {
+    echo "templating /etc/iptables/iptables-rules.v4 with:"
+    echo "PRIVATE_ETHERNET_INTERFACE = $PRIVATE_ETHERNET_INTERFACE"
+    echo "PUBLIC_ETHERNET_INTERFACE  = $PUBLIC_ETHERNET_INTERFACE"
+    echo "OPENVPN_PROTOCOL           = $OPENVPN_PROTOCOL"
+    echo "OPENVPN_PORT               = $OPENVPN_PORT"
+    echo "OPENVPN_SUBNET_ADDRESS     = $OPENVPN_SUBNET_ADDRESS"
+
     sed --in-place \
         -e "s;{{PRIVATE_ETHERNET_INTERFACE}};$PRIVATE_ETHERNET_INTERFACE;g" \
         -e "s;{{PUBLIC_ETHERNET_INTERFACE}};$PUBLIC_ETHERNET_INTERFACE;g" \
@@ -334,6 +330,9 @@ function configure_iptables() {
 }
 
 function configure_unbound() {
+    echo "templating /etc/unbound/unbound.conf with:"
+    echo "UNBOUND_ADDRESS        = $UNBOUND_ADDRESS"
+    echo "OPENVPN_SUBNET_ADDRESS = $OPENVPN_SUBNET_ADDRESS"
 
     sed --in-place \
         -e "s;{{UNBOUND_ADDRESS}};$UNBOUND_ADDRESS;g" \
@@ -342,8 +341,8 @@ function configure_unbound() {
     # -e "s;{{HOST_ADDRESS}};$PRIVATE_IP;g" \
     # -e "s;{{VPC_CIDR}};$VPC_CIDR;g" \
 
-    systemctl enable unbound
-    systemctl restart unbound
+    with-echo systemctl enable unbound
+    with-echo systemctl restart unbound
 }
 
 with-echo assert_sudo
