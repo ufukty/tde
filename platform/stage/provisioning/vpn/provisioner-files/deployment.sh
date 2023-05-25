@@ -235,22 +235,38 @@ function configure_openvpn() {
             ENCRYPTION_CC_CIPHER="$ENCRYPTION_RSA_CC_CIPHER"
         fi
 
+        echo "templating /etc/openvpn/server.conf with:"
+        echo "DH_CONF_STR              = $DH_CONF_STR"
+        echo "ENCRYPTION_CC_CIPHER     = $ENCRYPTION_CC_CIPHER"
+        echo "ENCRYPTION_CIPHER        = $ENCRYPTION_CIPHER"
+        echo "ENCRYPTION_HMAC_ALG      = $ENCRYPTION_HMAC_ALG"
+        echo "NOGROUP                  = $NOGROUP"
+        echo "OPENVPN_PORT             = $OPENVPN_PORT"
+        echo "OPENVPN_PROTOCOL         = $OPENVPN_PROTOCOL"
+        echo "OPENVPN_SUBNET_ADDRESS   = $OPENVPN_SUBNET_ADDRESS"
+        echo "OPENVPN_SUBNET_MASK      = $OPENVPN_SUBNET_MASK"
+        echo "EASYRSA_SERVER_CERT_NAME = $EASYRSA_SERVER_CERT_NAME"
+        echo "TLS_SIG                  = $TLS_SIG"
+        echo "UNBOUND_ADDRESS          = $UNBOUND_ADDRESS"
+        echo "VPC_RANGE_ADDRESS        = $VPC_RANGE_ADDRESS"
+        echo "VPC_RANGE_MASK           = $VPC_RANGE_MASK"
+
         # "Populating the configure file at: /etc/openvpn/server.conf"
-        with-echo sed --in-place \
-            "s;{{DH_CONF_STR}};$DH_CONF_STR;g" \
-            "s;{{ENCRYPTION_CC_CIPHER}};$ENCRYPTION_CC_CIPHER;g" \
-            "s;{{ENCRYPTION_CIPHER}};$ENCRYPTION_CIPHER;g" \
-            "s;{{ENCRYPTION_HMAC_ALG}};$ENCRYPTION_HMAC_ALG;g" \
-            "s;{{NOGROUP}};$NOGROUP;g" \
-            "s;{{OPENVPN_PORT}};$OPENVPN_PORT;g" \
-            "s;{{OPENVPN_PROTOCOL}};$OPENVPN_PROTOCOL;g" \
-            "s;{{OPENVPN_SUBNET_ADDRESS}};$OPENVPN_SUBNET_ADDRESS;g" \
-            "s;{{OPENVPN_SUBNET_MASK}};$OPENVPN_SUBNET_MASK;g" \
-            "s;{{EASYRSA_SERVER_CERT_NAME}};$EASYRSA_SERVER_CERT_NAME;g" \
-            "s;{{TLS_SIG}};$TLS_SIG;g" \
-            "s;{{UNBOUND_ADDRESS}};$UNBOUND_ADDRESS;g" \
-            "s;{{VPC_RANGE_ADDRESS}};$VPC_RANGE_ADDRESS;g" \
-            "s;{{VPC_RANGE_MASK}};$VPC_RANGE_MASK;g" \
+        sed --in-place \
+            -e "s;{{DH_CONF_STR}};$DH_CONF_STR;g" \
+            -e "s;{{ENCRYPTION_CC_CIPHER}};$ENCRYPTION_CC_CIPHER;g" \
+            -e "s;{{ENCRYPTION_CIPHER}};$ENCRYPTION_CIPHER;g" \
+            -e "s;{{ENCRYPTION_HMAC_ALG}};$ENCRYPTION_HMAC_ALG;g" \
+            -e "s;{{NOGROUP}};$NOGROUP;g" \
+            -e "s;{{OPENVPN_PORT}};$OPENVPN_PORT;g" \
+            -e "s;{{OPENVPN_PROTOCOL}};$OPENVPN_PROTOCOL;g" \
+            -e "s;{{OPENVPN_SUBNET_ADDRESS}};$OPENVPN_SUBNET_ADDRESS;g" \
+            -e "s;{{OPENVPN_SUBNET_MASK}};$OPENVPN_SUBNET_MASK;g" \
+            -e "s;{{EASYRSA_SERVER_CERT_NAME}};$EASYRSA_SERVER_CERT_NAME;g" \
+            -e "s;{{TLS_SIG}};$TLS_SIG;g" \
+            -e "s;{{UNBOUND_ADDRESS}};$UNBOUND_ADDRESS;g" \
+            -e "s;{{VPC_RANGE_ADDRESS}};$VPC_RANGE_ADDRESS;g" \
+            -e "s;{{VPC_RANGE_MASK}};$VPC_RANGE_MASK;g" \
             /etc/openvpn/server.conf
 
         mkdir -p /etc/openvpn/ccd # Create client-config-dir dir

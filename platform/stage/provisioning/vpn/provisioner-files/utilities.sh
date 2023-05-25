@@ -20,12 +20,16 @@ function retry() {
     done
 }
 
-function assert_sudo() {
-    if [[ "$EUID" > 0 ]]; then error "You need to run this script as root user (or with sudo)"; fi
+function apt_update() {
+    with-echo retry apt-get update
 }
 
 function restart_journald() {
     systemctl restart systemd-journald
+}
+
+function assert_sudo() {
+    if [[ "$EUID" > 0 ]]; then error "You need to run this script as root user (or with sudo)"; fi
 }
 
 function remove_password_change_requirement() {
