@@ -2,16 +2,20 @@
 
 PROVISIONER_FILES="$(pwd -P)"
 
-. provisioner-utilities.sh
+. utilities.sh
 
 # ---------------------------------------------------------------------------- #
 # Definitions
 # ---------------------------------------------------------------------------- #
 
+function install_utilities() {
+    with-echo retry apt-get install -y ipcalc
+}
+
 function install_openvpn() {
-    with-echo retry apt-get update
     with-echo retry apt-get install -y ca-certificates gnupg openvpn iptables openssl wget ca-certificates curl
     test -d /etc/openvpn/easy-rsa && rm -rf /etc/openvpn/easy-rsa
+    return "0"
 }
 
 function install_argon2() {
@@ -45,14 +49,18 @@ function install_unbound() {
 # Main
 # ---------------------------------------------------------------------------- #
 
-assert_sudo
-check_tun_availability
-wait_cloud_init
+with-echo assert_sudo
+with-echo restart_journald
+with-echo check_tun_availability
+with-echo wait_cloud_init
 
-install_openvpn
-install_argon2
-install_easy_rsa
-install_ovpn_auth
-install_unbound
+with-echo apt_update
 
-deploy_provisioner_files
+with-echo install_utilities
+with-echo install_openvpn
+with-echo install_argon2
+with-echo install_easy_rsa
+with-echo install_ovpn_auth
+with-echo install_unbound
+
+with-echo deploy_provisioner_files

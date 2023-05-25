@@ -37,7 +37,7 @@
 -A INPUT -p tcp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 53 -j ACCEPT
 -A INPUT -p udp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 53 -j ACCEPT
 # Allow incoming OpenVPN
--A INPUT -p {{OPENVPN_CUSTOM_PROTOCOL}} --dport {{OPENVPN_CUSTOM_PORT}} -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p {{OPENVPN_PROTOCOL}} --dport {{OPENVPN_PORT}} -m conntrack --ctstate NEW -j ACCEPT
 # Allow TUN interface connections to OpenVPN server
 -A INPUT -i tun0 -m conntrack --ctstate NEW -j ACCEPT
 
