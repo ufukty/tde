@@ -9,10 +9,15 @@ with-echo() {
         echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
     fi
 }
-
 note() {
     echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
 }
+export -f note
+
+error() {
+    echo -e "\033[38m\033[41m\033[1m ${@} \033[0m"
+}
+export -f error
 
 alias ssh="ssh -F $WORKSPACE/platform/stage/artifacts/ssh.conf"
 
@@ -53,3 +58,18 @@ complete -F _ssh_completion ssh
 
 check-python-pkg ansible "python3 -m pip install --user ansible"
 check-python-pkg qr "pip install qrcode"
+
+check-argon2() {
+    which argon2 >/dev/null || error "argon2 not found"
+}
+
+check-argon2
+
+check-env-vars() {
+    test -z "$DIGITALOCEAN_TOKEN" && error "DIGITALOCEAN_TOKEN is empty"
+    test -z "$TF_VAR_DIGITALOCEAN_TOKEN" && error "TF_VAR_DIGITALOCEAN_TOKEN is empty"
+    test -z "$TF_VAR_OVPN_USER" && error "TF_VAR_OVPN_USER is empty"
+    test -z "$TF_VAR_OVPN_HASH" && error "TF_VAR_OVPN_HASH is empty"
+}
+
+check-env-vars

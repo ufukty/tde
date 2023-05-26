@@ -1,6 +1,5 @@
 #!/usr/local/bin/bash
 
-. "$WORKSPACE/shell/utilities.sh"
 cd "$WORKSPACE/platform/stage"
 
 up() {
@@ -27,17 +26,23 @@ all() {
     with-echo deploy
 }
 
-totp() {
-    OTP_FILES="$(ls -1 artifacts/vpn/do-*otp-uri.txt | sort -r | rev | uniq -s 29 | rev)"
+vpn-totp() {
+    (
+        cd artifacts/vpn &&
+            find . -name '*totp*' | xargs -n 1 cat | qr &&
+            find . -name '*totp*' -delete
+    )
+}
 
-    echo "$OTP_FILES" | while read -r OTP_FILE; do
-        cat "$OTP_FILE" | qr >"$OTP_FILE.png"
-        OTP_FILENAME="$(basename "$OTP_FILE")"
-        echo "Opening: ${OTP_FILENAME:0:7}"
-        open -W "$OTP_FILE.png"
-        rm "$OTP_FILE.png" "$OTP_FILE"
-    done
+vpn-connect() {
+    REGION_SLUG="$1" && shift
+    test -z "$REGION_SLUG" && error "REGION_SLUG is required." && exit 1
 
+    sudo -v
+    sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
+    # sleep 1 && sudo killall mDNSResponder{,Helper}
+    # sudo -k
+    # fg
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"

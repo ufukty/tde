@@ -146,12 +146,6 @@ echo "VPC_RANGE_ADDRESS = ${VPC_RANGE_ADDRESS:?"Failed to detect VPC_RANGE_ADDRE
 echo "VPC_RANGE_MASK    = ${VPC_RANGE_MASK:?"Failed to detect VPC_RANGE_MASK"}"
 
 # ---------------------------------------------------------------------------- #
-# Constants
-# ---------------------------------------------------------------------------- #
-
-PROVISIONER_FILES="$(pwd -P)"
-
-# ---------------------------------------------------------------------------- #
 # Imports
 # ---------------------------------------------------------------------------- #
 
@@ -163,10 +157,10 @@ PROVISIONER_FILES="$(pwd -P)"
 
 EASYRSA_CA_NAME="$SERVER_NAME-certificate-authority"
 EASYRSA_SERVER_NAME="$SERVER_NAME-server"
-OVPN_GENERATED_TOTP_SHARE_FILE="/home/$USER_ACCOUNT_NAME/remove/totp-share.txt"
+OVPN_GENERATED_TOTP_SHARE_FILE="/home/$USER_ACCOUNT_NAME/artifacts/totp-share.txt"
 
 mkdir -p "/etc/openvpn/easy-rsa/generated"
-mkdir -p "/home/$USER_ACCOUNT_NAME/remove"
+mkdir -p "/home/$USER_ACCOUNT_NAME/artifacts"
 echo -n "$EASYRSA_CA_NAME" >"/etc/openvpn/easy-rsa/generated/ca_name"
 echo -n "$EASYRSA_SERVER_NAME" >"/etc/openvpn/easy-rsa/generated/server_name"
 
@@ -291,7 +285,7 @@ function configure_ovpn() {
         cd /etc/openvpn
 
         TOTP_SECRET="$(head -n 100 /dev/urandom | base32 | cut -b 1-64 | head -n 1)"
-        SHARE_STRING="otpauth://totp/OpenVPN:${TOTP_USERNAME}@${SERVER_NAME}?secret=${TOTP_SECRET}&issuer=OpenVPN"
+        SHARE_STRING="otpauth://totp/$SERVER_NAME:$OVPN_USERNAME@$SERVER_NAME?secret=$TOTP_SECRET&issuer=$SERVER_NAME"
 
         echo "$SHARE_STRING" >"$OVPN_GENERATED_TOTP_SHARE_FILE"
         chmod 700 "$OVPN_GENERATED_TOTP_SHARE_FILE"
