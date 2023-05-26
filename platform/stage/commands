@@ -40,9 +40,9 @@ vpn-connect() {
 
     sudo -v
     sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
-    # sleep 1 && sudo killall mDNSResponder{,Helper}
-    # sudo -k
-    # fg
+    sleep 1 && sudo killall mDNSResponder{,Helper}
+    sudo -k
+    fg
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"
