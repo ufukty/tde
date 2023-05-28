@@ -114,7 +114,7 @@ resource "digitalocean_droplet" "vpn-server" {
              PUBLIC_ETHERNET_INTERFACE="${local.public_ethernet_interface}" \
             PRIVATE_ETHERNET_INTERFACE="${local.private_ethernet_interface}" \
                          OVPN_USERNAME="${var.OVPN_USER}" \
-                             OVPN_HASH="${var.OVPN_HASH}" \
+                             OVPN_HASH='${var.OVPN_HASH}' \
             sudo --preserve-env bash deployment.sh 
 
         cd ~/provisioner-files && \
@@ -123,7 +123,6 @@ resource "digitalocean_droplet" "vpn-server" {
                   CLIENT_NAME="${var.openvpn_client_name}" \
             sudo --preserve-env bash new_client.sh
       EOF   
-
     ]
   }
 
@@ -142,10 +141,15 @@ resource "digitalocean_droplet" "vpn-server" {
 
   // Clean up in server & last changes
   provisioner "remote-exec" {
-    inline = [
-      "rm -rf ~/artifacts ~/provisioner_files",
-      #   "sudo systemctl restart systemd-journald",
-      #   "sudo sed -i \"s;${var.username}\\(.*\\)NOPASSWD:\\(.*\\);${var.username} \\1 \\2;\" /etc/sudoers",
+    on_failure = continue
+    inline = [<<EOF
+        rm -rf ~/artifacts ~/provisioner-files
+        sudo bash -c "\
+            systemctl restart systemd-journald;\
+            systemctl restart iptables-activation;\
+            sed -E -in-place \"s;${var.sudo_user}(.*)NOPASSWD:(.*);${var.sudo_user} \1 \2;\" /etc/sudoers;\
+        "
+    EOF
     ]
   }
 }
@@ -170,5 +174,3 @@ resource "terraform_data" "ssh_config_aggregate" {
     working_dir = "${path.module}/../../artifacts"
   }
 }
-
-

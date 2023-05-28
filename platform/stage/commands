@@ -27,7 +27,7 @@ all() {
 }
 
 vpn-totp() {
-    (
+    test -n "$(find artifacts/vpn -name '*totp*')" && (
         cd artifacts/vpn &&
             find . -name '*totp*' | xargs -n 1 cat | qr &&
             find . -name '*totp*' -delete
@@ -40,9 +40,8 @@ vpn-connect() {
 
     sudo -v
     sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
-    sleep 1 && sudo killall mDNSResponder{,Helper}
+    # sleep 1 && sudo killall mDNSResponder{,Helper}
     sudo -k
-    fg
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"

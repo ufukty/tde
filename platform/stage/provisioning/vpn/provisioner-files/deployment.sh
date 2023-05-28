@@ -320,7 +320,6 @@ function configure_iptables() {
 
     with-echo systemctl daemon-reload
     with-echo systemctl enable iptables-activation
-    with-echo systemctl restart iptables-activation
 }
 
 function configure_unbound() {
