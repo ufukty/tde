@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cd $WORKSPACE/platform/stage/provisioning/application
+
+up() {
+    terraform apply "$@" --var-file=../vars.tfvars
+}
+
+destroy() {
+    terraform destroy "$@" --var-file=../vars.tfvars
+}
+
+re() {
+    destroy "$@" && up "$@"
+}
+
+SUBCOMMAND="$1" && shift && $SUBCOMMAND "$@"

@@ -5,14 +5,10 @@
 %{ for service, hosts in resources.services ~}
 %{ for host in hosts ~}
 Host ${host.name}
-  HostName ${host.ipv4_address}
+  HostName ${host.ipv4_address_private}
 %{ endfor ~}
 
 %{ endfor ~}
 %{ endfor ~}
 %{ endfor ~}
-
-Host *
-  StrictHostKeyChecking no
-  IdentitiesOnly yes
-  User 2iuFDs13YDedYc3N
+1

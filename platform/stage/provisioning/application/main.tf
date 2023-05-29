@@ -7,6 +7,33 @@ terraform {
   }
 }
 
+# ------------------------------------------------------------- #
+# Variables
+# ------------------------------------------------------------- #
+
+variable "DIGITALOCEAN_TOKEN" {
+  // env var
+}
+
+# ------------------------------------------------------------- #
+# Locals
+# ------------------------------------------------------------- #
+
+locals {
+  region = "fra1"
+  slug   = "s-1vcpu-1gb"
+  instances = {
+    runner      = 3,
+    evolver     = 1,
+    api-gateway = 1,
+  }
+  ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
+}
+
+# ------------------------------------------------------------- #
+# Main
+# ------------------------------------------------------------- #
+
 data "digitalocean_droplet_snapshot" "golden_base" {
   name_regex  = "^packer-base-.*"
   region      = local.region
@@ -105,7 +132,6 @@ resource "local_file" "inventory" {
               customs     = digitalocean_droplet.customs
               evolver     = digitalocean_droplet.evolver
               runner      = digitalocean_droplet.runner
-              #   vpn         = digitalocean_droplet.vpn
             }
           }
         }
@@ -128,7 +154,6 @@ resource "local_file" "ssh-config" {
               customs     = digitalocean_droplet.customs
               evolver     = digitalocean_droplet.evolver
               runner      = digitalocean_droplet.runner
-              vpn         = digitalocean_droplet.vpn
             }
           }
         }
@@ -158,7 +183,6 @@ resource "local_file" "service_discovery" {
               customs     = digitalocean_droplet.customs
               evolver     = digitalocean_droplet.evolver
               runner      = digitalocean_droplet.runner
-              #   vpn         = digitalocean_droplet.vpn
             }
           }
         }
