@@ -4,12 +4,18 @@ cd "$WORKSPACE/platform/stage"
 
 up() {
     FOLDER="$1" && shift # application, vpn etc.
-    (cd "provisioning/$FOLDER" && with-echo terraform apply --var-file=../vars.tfvars)
+    test -z "$FOLDER" && error "FOLDER is required." && exit 1
+    (cd "provisioning/$FOLDER" && with-echo terraform apply "$@" --var-file=../vars.tfvars)
 }
 
 down() {
     FOLDER="$1" && shift # application, vpn etc.
-    (cd "provisioning/$FOLDER" && with-echo terraform destroy --var-file=../vars.tfvars)
+    test -z "$FOLDER" && error "FOLDER is required." && exit 1
+    (cd "provisioning/$FOLDER" && with-echo terraform destroy "$@" --var-file=../vars.tfvars)
+}
+
+re() {
+    down "$@" && up "$@"
 }
 
 deploy() {
@@ -18,6 +24,7 @@ deploy() {
 
 redeploy() {
     PROGRAM_NAME="$1" && shift
+    test -z "$PROGRAM_NAME" && error "PROGRAM_NAME is required." && exit 1
     (cd "deployment" && with-echo ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
 }
 
