@@ -1,5 +1,3 @@
-# Include ~/.ssh/config
-
 %{ for provider, regions in providers ~}
 %{ for region, resources in regions ~}
 %{ for service, hosts in resources.services ~}
@@ -11,4 +9,3 @@ Host ${host.name}
 %{ endfor ~}
 %{ endfor ~}
 %{ endfor ~}
-1
