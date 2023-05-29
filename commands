@@ -1,6 +1,5 @@
 #!/usr/bin/env bash -i
 
-. $WORKSPACE/shell/utilities.sh
 cd "$WORKSPACE"
 
 # MARK: Compile

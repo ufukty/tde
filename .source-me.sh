@@ -9,6 +9,8 @@ with-echo() {
         echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
     fi
 }
+export -f with-echo
+
 note() {
     echo -e "\033[30m\033[43m\033[1m ${@} \033[0m"
 }
