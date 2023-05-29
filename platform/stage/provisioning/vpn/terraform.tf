@@ -165,12 +165,3 @@ resource "local_file" "ssh-config" {
   )
   filename = abspath("${path.module}/../../artifacts/ssh.conf.d/0.vpn.conf")
 }
-
-resource "terraform_data" "ssh_config_aggregate" {
-  depends_on = [local_file.ssh-config]
-
-  provisioner "local-exec" {
-    command     = "cat ssh.conf.d/* > ssh.conf"
-    working_dir = "${path.module}/../../artifacts"
-  }
-}

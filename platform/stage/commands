@@ -2,16 +2,25 @@
 
 cd "$WORKSPACE/platform/stage"
 
+artifacts-update-ssh-aggregation() {
+    (
+        cd artifacts
+        cat ssh.conf.d/* >ssh.conf
+    )
+}
+
 up() {
     FOLDER="$1" && shift # application, vpn etc.
     test -z "$FOLDER" && error "FOLDER is required." && exit 1
     (cd "provisioning/$FOLDER" && with-echo terraform apply "$@" --var-file=../vars.tfvars)
+    with-echo artifacts-update-ssh-aggregation
 }
 
 down() {
     FOLDER="$1" && shift # application, vpn etc.
     test -z "$FOLDER" && error "FOLDER is required." && exit 1
     (cd "provisioning/$FOLDER" && with-echo terraform destroy "$@" --var-file=../vars.tfvars)
+    with-echo artifacts-update-ssh-aggregation
 }
 
 re() {
