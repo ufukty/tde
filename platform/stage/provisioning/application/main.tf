@@ -11,9 +11,7 @@ terraform {
 # Variables
 # ------------------------------------------------------------- #
 
-variable "DIGITALOCEAN_TOKEN" {
-  // env var
-}
+variable "project_prefix" { type = string }
 
 # ------------------------------------------------------------- #
 # Locals
@@ -40,16 +38,15 @@ data "digitalocean_droplet_snapshot" "golden_base" {
   most_recent = true
 }
 
-resource "digitalocean_vpc" "vpc" {
-  name   = "vpc"
-  region = local.region
+data "digitalocean_vpc" "vpc" {
+  name = "${var.project_prefix}-${local.region}"
 }
 
 resource "digitalocean_droplet" "runner" {
   count = local.instances.runner
 
   image  = data.digitalocean_droplet_snapshot.golden_base.id
-  name   = "runner-${count.index}"
+  name   = "${local.region}-runner-${count.index}"
   region = local.region
   size   = local.slug
   tags   = ["thesis", "runner"]
@@ -59,14 +56,14 @@ resource "digitalocean_droplet" "runner" {
   monitoring  = true
   resize_disk = false
   ssh_keys    = local.ssh_fingerprints
-  vpc_uuid    = digitalocean_vpc.vpc.id
+  vpc_uuid    = data.digitalocean_vpc.vpc.id
 }
 
 resource "digitalocean_droplet" "evolver" {
   count = local.instances.evolver
 
   image  = data.digitalocean_droplet_snapshot.golden_base.id
-  name   = "evolver-${count.index}"
+  name   = "${local.region}-evolver-${count.index}"
   region = local.region
   size   = local.slug
   tags   = ["thesis", "evolver"]
@@ -76,7 +73,7 @@ resource "digitalocean_droplet" "evolver" {
   monitoring  = true
   resize_disk = false
   ssh_keys    = local.ssh_fingerprints
-  vpc_uuid    = digitalocean_vpc.vpc.id
+  vpc_uuid    = data.digitalocean_vpc.vpc.id
 }
 
 data "digitalocean_volume" "customs_storage_volume" {
@@ -88,7 +85,7 @@ resource "digitalocean_droplet" "customs" {
   count = 1
 
   image      = data.digitalocean_droplet_snapshot.golden_base.id
-  name       = "customs-${count.index}"
+  name       = "${local.region}-customs-${count.index}"
   region     = local.region
   size       = local.slug
   volume_ids = [data.digitalocean_volume.customs_storage_volume.id]
@@ -99,14 +96,14 @@ resource "digitalocean_droplet" "customs" {
   monitoring  = true
   resize_disk = false
   ssh_keys    = local.ssh_fingerprints
-  vpc_uuid    = digitalocean_vpc.vpc.id
+  vpc_uuid    = data.digitalocean_vpc.vpc.id
 }
 
 resource "digitalocean_droplet" "api-gateway" {
   count = local.instances.api-gateway
 
   image  = data.digitalocean_droplet_snapshot.golden_base.id
-  name   = "api-gateway-${count.index}"
+  name   = "${local.region}-api-gateway-${count.index}"
   region = local.region
   size   = local.slug
   tags   = ["thesis", "api-gateway"]
@@ -116,7 +113,7 @@ resource "digitalocean_droplet" "api-gateway" {
   monitoring  = true
   resize_disk = false
   ssh_keys    = local.ssh_fingerprints
-  vpc_uuid    = digitalocean_vpc.vpc.id
+  vpc_uuid    = data.digitalocean_vpc.vpc.id
 }
 
 resource "local_file" "inventory" {
@@ -126,7 +123,7 @@ resource "local_file" "inventory" {
       providers = {
         digitalocean = {
           fra1 = {
-            vpc = digitalocean_vpc.vpc
+            vpc = data.digitalocean_vpc.vpc
             services = {
               api-gateway = digitalocean_droplet.api-gateway
               customs     = digitalocean_droplet.customs
@@ -148,7 +145,7 @@ resource "local_file" "ssh-config" {
       providers = {
         digitalocean = {
           fra1 = {
-            vpc = digitalocean_vpc.vpc
+            vpc = data.digitalocean_vpc.vpc
             services = {
               api-gateway = digitalocean_droplet.api-gateway
               customs     = digitalocean_droplet.customs
@@ -170,7 +167,7 @@ resource "local_file" "service_discovery" {
       content = jsonencode({
         digitalocean = {
           fra1 = {
-            vpc = digitalocean_vpc.vpc
+            vpc = data.digitalocean_vpc.vpc
             services = {
               api-gateway = digitalocean_droplet.api-gateway
               customs     = digitalocean_droplet.customs
