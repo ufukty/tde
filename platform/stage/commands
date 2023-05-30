@@ -11,15 +11,15 @@ artifacts-update-ssh-aggregation() {
 
 up() {
     FOLDER="$1" && shift # application, vpn etc.
-    test -z "$FOLDER" && error "FOLDER is required." && exit 1
-    (cd "provisioning/$FOLDER" && terraform apply "$@" --var-file=../vars.tfvars)
+    test -z "$FOLDER" && error "FOLDER is required." && exit
+    (cd "provisioning/$FOLDER" && terraform apply "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
 }
 
 down() {
     FOLDER="$1" && shift # application, vpn etc.
-    test -z "$FOLDER" && error "FOLDER is required." && exit 1
-    (cd "provisioning/$FOLDER" && terraform destroy "$@" --var-file=../vars.tfvars)
+    test -z "$FOLDER" && error "FOLDER is required." && exit
+    (cd "provisioning/$FOLDER" && terraform destroy "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
 }
 
@@ -28,19 +28,21 @@ re() {
 }
 
 deploy() {
-    (cd "deployment" && ansible-playbook --forks="20" playbook.yml)
-}
-
-redeploy() {
-    PROGRAM_NAME="$1" && shift
-    test -z "$PROGRAM_NAME" && error "PROGRAM_NAME is required." && exit 1
-    (cd "deployment" && ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
+    export PROGRAM_NAME="$1" && shift
+    (
+        cd "deployment"
+        if test -z "$PROGRAM_NAME"; then
+            ansible-playbook --forks="20" playbook.yml
+        else
+            ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml
+        fi
+    )
 }
 
 all() {
-    up vpc --auto-approve
-    up vpn --auto-approve
-    up application --auto-approve
+    up vpc --auto-approve || exit
+    up vpn --auto-approve || exit
+    up application --auto-approve || exit
     deploy
 }
 
@@ -54,7 +56,7 @@ vpn-totp() {
 
 vpn-connect() {
     REGION_SLUG="$1" && shift
-    test -z "$REGION_SLUG" && error "REGION_SLUG is required." && exit 1
+    test -z "$REGION_SLUG" && error "REGION_SLUG is required." && exit
 
     sudo -v
     sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
