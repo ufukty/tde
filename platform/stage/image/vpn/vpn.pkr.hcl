@@ -35,7 +35,7 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "./provisioner-files"
+    source      = "${path.root}/provisioner-files"
     destination = "~"
   }
 
