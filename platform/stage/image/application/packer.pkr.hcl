@@ -38,13 +38,8 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "${path.root}/provisioner_files"
+    source      = "${path.root}/provisioner-files"
     destination = "~"
-  }
-
-  provisioner "file" {
-    source      = "${path.root}/../../include/utilities.sh"
-    destination = "~/provisioner-files"
   }
 
   provisioner "file" {

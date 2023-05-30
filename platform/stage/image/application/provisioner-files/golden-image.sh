@@ -50,13 +50,11 @@ function configure-iptables() {
     sed --in-place \
         -e "s/{{PRIVATE_ETHERNET_INTERFACE}}/$IPTABLES_PRIVATE_ETHERNET_INTERFACE/g" \
         "/etc/iptables/custom-rules.v4"
+
     systemctl restart custom-rules
 }
 
 function configure-ssh() {
-
-    mv "$PROVISIONER_FILES/sync-application-server.private" "/home/$SUDO_USER/.ssh/sync-application-server.private"
-
     # "add public key of Postgres server to .ssh/known_hosts"
     ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >>"/home/$SUDO_USER/.ssh/known_hosts"
     ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >>"/root/.ssh/known_hosts"
