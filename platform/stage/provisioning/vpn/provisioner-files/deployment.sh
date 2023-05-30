@@ -323,14 +323,14 @@ function configure_iptables() {
 }
 
 function configure_unbound() {
-    echo "templating /etc/unbound/unbound.conf with:"
+    echo "templating /etc/unbound/unbound.conf.d/unbound.conf with:"
     echo "UNBOUND_ADDRESS        = $UNBOUND_ADDRESS"
     echo "OPENVPN_SUBNET_ADDRESS = $OPENVPN_SUBNET_ADDRESS"
 
     sed --in-place \
         -e "s;{{UNBOUND_ADDRESS}};$UNBOUND_ADDRESS;g" \
         -e "s;{{OPENVPN_SUBNET_ADDRESS}};$OPENVPN_SUBNET_ADDRESS;g" \
-        /etc/unbound/unbound.conf
+        /etc/unbound/unbound.conf.d/unbound.conf
     # -e "s;{{HOST_ADDRESS}};$PRIVATE_IP;g" \
     # -e "s;{{VPC_CIDR}};$VPC_CIDR;g" \
 
