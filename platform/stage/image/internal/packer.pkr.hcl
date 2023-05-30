@@ -38,23 +38,23 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "./provisioner_files"
+    source      = "${path.root}/provisioner_files"
     destination = "~"
   }
 
   provisioner "file" {
-    source      = "${path.root}/../../../companions/shell_commons.sh"
-    destination = "~/provisioner_files/shell_commons.sh"
+    source      = "${path.root}/../../include/utilities.sh"
+    destination = "~/provisioner-files"
   }
 
   provisioner "file" {
     source      = "${path.root}/../../../certificates/sync/ssh-key-for-database-access/sync-application-server.private"
-    destination = "~/provisioner_files/sync-application-server.private"
+    destination = "~/provisioner-files/sync-application-server.private"
   }
 
   provisioner "file" {
     source      = "${path.root}/../../../certificates/sync/tls-cert-for-api-server/" // NOTE: don't remove trailing slash
-    destination = "~/provisioner_files"
+    destination = "~/provisioner-files"
   }
 
   provisioner "shell" {
@@ -65,7 +65,7 @@ build {
       "IPTABLES_PRIVATE_ETHERNET_INTERFACE=eth1"
     ]
     inline = [
-      "cd ~/provisioner_files && sudo -u root --preserve-env bash shell.sh"
+      "cd ~/provisioner-files && sudo -u root --preserve-env bash shell.sh"
     ]
   }
 
