@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# IMPORTANT:
-# This script should be called from the directory that this script located in
-
 # ---------------------------------------------------------------------------- #
 # Variables
 # ---------------------------------------------------------------------------- #
@@ -20,35 +17,16 @@ POSTGRES_SERVER_PRIVATE_IP="${POSTGRES_SERVER_PRIVATE_IP:?"Required. Example: 10
 IPTABLES_PRIVATE_ETHERNET_INTERFACE="${IPTABLES_PRIVATE_ETHERNET_INTERFACE:?"Required. Example: eth1"}"
 
 # ---------------------------------------------------------------------------- #
-# Constants
-# ---------------------------------------------------------------------------- #
-
-PROVISIONER_FILES="/home/$SUDO_USER/provisioner_files"
-
-# ---------------------------------------------------------------------------- #
 # Include
 # ---------------------------------------------------------------------------- #
 
-# shell_commons.sh file will be located at same directory if the script
-# is running by a provisioner (vagrant, packer, etc) in guest/remote server
-[ -f shell_commons.sh ] && . shell_commons.sh || . $(realpath $PATH_OF_FILE/../../companions/shell_commons.sh)
+PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
+cd "$PROVISIONER_FILES"
+. utilities.sh
 
 # ---------------------------------------------------------------------------- #
 # Function definitions
 # ---------------------------------------------------------------------------- #
-
-function wait_cloud_init() {
-    cloud-init status --wait
-}
-
-function deploy_application_binary() {
-    official_md5="04d93715d673213ade88f5822ec7cb74"
-
-    mkdir -p /var/wwwapp
-    tar -xzf "/home/$SUDO_USER/provisioner_files/linux-amd64-2021.11.21-16.51.06-UTC.tar.gz"
-    mv linux-amd64 /var/wwwapp/picarus-sync
-    chmod +x /var/wwwapp/picarus-sync
-}
 
 function create_and_enable_systemd_services() {
     info "deploy service definitions into /etc/systemd/system"
@@ -60,23 +38,22 @@ function create_and_enable_systemd_services() {
         "/etc/systemd/system/picarus-sync-postgres-tunnel.service"
 
     info "template the service file"
-    sed \
-        --in-place \
-        -e "s/<<SUDO_USER>>/$SUDO_USER/g" \
-        -e "s/<<POSTGRES_USER>>/$POSTGRES_USER/g" \
-        -e "s/<<POSTGRES_SERVER_PRIVATE_IP>>/$POSTGRES_SERVER_PRIVATE_IP/g" \
+    sed --in-place \
+        -e "s/{{SUDO_USER}}/$SUDO_USER/g" \
+        -e "s/{{POSTGRES_USER}}/$POSTGRES_USER/g" \
+        -e "s/{{POSTGRES_SERVER_PRIVATE_IP}}/$POSTGRES_SERVER_PRIVATE_IP/g" \
         "/etc/systemd/system/picarus-sync-postgres-tunnel.service"
 
     info "systemctl daemon-reload"
     systemctl daemon-reload
-    
+
     info "enable and start 'picarus-sync-postgres-tunnel'"
     systemctl enable picarus-sync-postgres-tunnel
     systemctl start picarus-sync-postgres-tunnel
-    
+
     info "enable and start 'picarus-sync-backend'"
-    systemctl enable picarus-sync-backend 
-    systemctl start picarus-sync-backend 
+    systemctl enable picarus-sync-backend
+    systemctl start picarus-sync-backend
 }
 
 function iptables_configure() {
@@ -88,7 +65,7 @@ function iptables_configure() {
 
     info "Modify the iptables file to reflect the correct network adapter"
     sed --in-place \
-        -e "s/<<PRIVATE_ETHERNET_INTERFACE>>/$IPTABLES_PRIVATE_ETHERNET_INTERFACE/g" \
+        -e "s/{{PRIVATE_ETHERNET_INTERFACE}}/$IPTABLES_PRIVATE_ETHERNET_INTERFACE/g" \
         "/etc/iptables/picarus-custom-firewall.v4"
 
     info "restart 'picarus-custom-firewall'"
@@ -103,8 +80,8 @@ function configure_ssh() {
     mv "$PROVISIONER_FILES/sync-application-server.private" "/home/$SUDO_USER/.ssh/sync-application-server.private"
 
     info "add public key of Postgres server to .ssh/known_hosts"
-    ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >> "/home/$SUDO_USER/.ssh/known_hosts"
-    ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >> "/root/.ssh/known_hosts"
+    ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >>"/home/$SUDO_USER/.ssh/known_hosts"
+    ssh-keyscan $POSTGRES_SERVER_PRIVATE_IP >>"/root/.ssh/known_hosts"
 
     info "update .ssh directory with correct ownership and permissions"
     chmod -R 700 "/home/$SUDO_USER/.ssh"
@@ -148,14 +125,12 @@ function logging_enable() {
 # Main
 # ---------------------------------------------------------------------------- #
 
-execute_task assert_sudo
-execute_task wait_cloud_init
-execute_task remove_password_change_requirement
+with-echo assert_sudo
+with-echo restart_journald
+with-echo remove_password_change_requirement
+with-echo check_tun_availability
+with-echo wait_cloud_init
 
-execute_task_in_golden_image logging_enable
-execute_task_in_golden_image deploy_application_binary
-execute_task_in_golden_image deploy_tls_certificates
-execute_task_in_golden_image iptables_configure
+with-echo apt_update
 
-execute_task_in_deployment configure_ssh
-execute_task_in_deployment create_and_enable_systemd_services
+with-echo deploy_provisioner_files
