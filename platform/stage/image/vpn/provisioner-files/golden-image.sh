@@ -19,26 +19,33 @@ function install_openvpn() {
 }
 
 function install_argon2() {
-    with-echo tar -xvf phc-winner-argon2-20190702.tar.gz
-    with-echo retry apt-get install -y gcc build-essential
     (
-        with-echo cd phc-winner-argon2-20190702
-        with-echo make install
+        with-echo cd dependencies
+        with-echo tar -xvf phc-winner-argon2-20190702.tar.gz
+        with-echo retry apt-get install -y gcc build-essential
+        (
+            with-echo cd phc-winner-argon2-20190702
+            with-echo make install
+        )
     )
-    with-echo rm -rf phc-winner-argon2-20190702 phc-winner-argon2-20190702.tar.gz
 }
 
 function install_easy_rsa() {
     mkdir -p /etc/openvpn/easy-rsa
-    with-echo tar xzf EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
-    with-echo rm -f EasyRSA-3.1.3.tgz
+    (
+        with-echo cd dependencies
+        with-echo tar xzf EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
+    )
 }
 
 function install_ovpn_auth() {
-    with-echo tar -xzf ovpn-auth-210813-linux-amd64.tar.gz
-    with-echo mv ovpn-auth /etc/openvpn/ovpn-auth
-    with-echo chmod 755 /etc/openvpn/ovpn-auth
-    with-echo chown root:root /etc/openvpn/ovpn-auth
+    (
+        with-echo cd dependencies
+        with-echo tar -xzf ovpn-auth-210813-linux-amd64.tar.gz
+        with-echo mv ovpn-auth /etc/openvpn/ovpn-auth
+        with-echo chmod 755 /etc/openvpn/ovpn-auth
+        with-echo chown root:root /etc/openvpn/ovpn-auth
+    )
 }
 
 function install_unbound() {

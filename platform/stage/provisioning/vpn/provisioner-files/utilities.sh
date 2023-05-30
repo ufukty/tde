@@ -46,8 +46,10 @@ function check_tun_availability() {
 }
 
 function deploy_provisioner_files() {
-    rsync -avz --remove-source-files "$PROVISIONER_FILES/etc/" "/etc"
-    rm -r "$PROVISIONER_FILES/etc/"
+    chmod 700 -R "$PROVISIONER_FILES/map"
+    chown root:root -R "$PROVISIONER_FILES/map"
+    rsync -vr --remove-source-files --ignore-existing "$PROVISIONER_FILES/map/" "/"
+    rm -r "$PROVISIONER_FILES/map"
 }
 
 export DEBIAN_FRONTEND=noninteractive
