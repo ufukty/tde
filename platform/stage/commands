@@ -1,26 +1,26 @@
 #!/usr/local/bin/bash
 
+PS4='\033[35m@echo\033[0m \033[34m${BASH_SOURCE}:${LINENO}\033[0m: \033[33m${FUNCNAME[0]:+${FUNCNAME[0]}(): }\033[0m'
+set -o xtrace
+
 cd "$WORKSPACE/platform/stage"
 
 artifacts-update-ssh-aggregation() {
-    (
-        cd artifacts
-        cat ssh.conf.d/* >ssh.conf
-    )
+    (cd artifacts && cat ssh.conf.d/* >ssh.conf)
 }
 
 up() {
     FOLDER="$1" && shift # application, vpn etc.
     test -z "$FOLDER" && error "FOLDER is required." && exit 1
-    (cd "provisioning/$FOLDER" && with-echo terraform apply "$@" --var-file=../vars.tfvars)
-    with-echo artifacts-update-ssh-aggregation
+    (cd "provisioning/$FOLDER" && terraform apply "$@" --var-file=../vars.tfvars)
+    artifacts-update-ssh-aggregation
 }
 
 down() {
     FOLDER="$1" && shift # application, vpn etc.
     test -z "$FOLDER" && error "FOLDER is required." && exit 1
-    (cd "provisioning/$FOLDER" && with-echo terraform destroy "$@" --var-file=../vars.tfvars)
-    with-echo artifacts-update-ssh-aggregation
+    (cd "provisioning/$FOLDER" && terraform destroy "$@" --var-file=../vars.tfvars)
+    artifacts-update-ssh-aggregation
 }
 
 re() {
@@ -28,18 +28,20 @@ re() {
 }
 
 deploy() {
-    (cd "deployment" && with-echo ansible-playbook --forks="20" playbook.yml)
+    (cd "deployment" && ansible-playbook --forks="20" playbook.yml)
 }
 
 redeploy() {
     PROGRAM_NAME="$1" && shift
     test -z "$PROGRAM_NAME" && error "PROGRAM_NAME is required." && exit 1
-    (cd "deployment" && with-echo ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
+    (cd "deployment" && ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml)
 }
 
 all() {
-    with-echo up
-    with-echo deploy
+    up vpc --auto-approve
+    up vpn --auto-approve
+    up application --auto-approve
+    deploy
 }
 
 vpn-totp() {
