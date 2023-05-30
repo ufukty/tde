@@ -1,0 +1,13 @@
+[Unit]
+Description=iptables rules for private server template
+Before=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iptables-restore /etc/iptables/picarus-custom-firewall.v4
+ExecReload=/usr/bin/iptables-restore /etc/iptables/picarus-custom-firewall.v4
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

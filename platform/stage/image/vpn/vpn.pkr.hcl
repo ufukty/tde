@@ -8,8 +8,7 @@ packer {
 }
 
 variables {
-  base_image_name = "${env("DR_ENV_VAR_PACKER_IMAGE_DO")}"
-  //   vpc_uuid        = "${env("DR_ENV_VAR_VPC_UUID")}"
+  base_image_id = "${env("BASE_IMAGE_ID")}"
 }
 
 locals {
@@ -20,7 +19,7 @@ locals {
 }
 
 source "digitalocean" "droplet" {
-  image              = var.base_image_name
+  image              = var.base_image_id
   region             = "fra1"
   size               = "s-1vcpu-1gb"
   snapshot_name      = local.snapshot_name

@@ -1,37 +1,36 @@
+packer {
+  required_plugins {
+    digitalocean = {
+      source  = "github.com/digitalocean/digitalocean"
+      version = ">=1.1.1"
+    }
+  }
+}
 
 variables {
-  token_digitalocean = "${env("DO_API_KEY")}"
-  base_image_name    = "${env("DR_ENV_VAR_PACKER_IMAGE_DO")}"
-  vpc_uuid           = "${env("DR_ENV_VAR_VPC_UUID")}"
-
-  snapshot_name = "${env("DR_SNAPSHOT_NAME")}"
-  project_name  = "${env("DR_PROJECT_NAME")}"
-  image_name    = "${env("DR_IMAGE_NAME")}"
+  base_image_id = "${env("BASE_IMAGE_ID")}"
+  vpc_uuid      = "${env("VPC_UUID")}"
 }
 
 locals {
-  sudo_user = "a4v95e281o7hvmc"
-  timestamp = regex_replace(timestamp(), "[- TZ:]", "")
+  sudo_user     = "2iuFDs13YDedYc3N"
+  dir_name      = basename(abspath(path.root))
+  now           = formatdate("YY-MM-DD-'T'-hh-mm-ss-ZZZ", timestamp())
+  snapshot_name = replace("packer-${local.dir_name}-${local.now}", "_", "_")
 }
 
 source "digitalocean" "droplet" {
-  api_token = var.token_digitalocean
-
-  image  = var.base_image_name
-  region = "fra1"
-  size   = "s-1vcpu-1gb"
-
-  snapshot_name    = replace(var.snapshot_name, "_", "-")
-  snapshot_regions = ["fra1", "nyc3"]
-
+  image                   = var.base_image_id
+  region                  = "fra1"
+  size                    = "s-1vcpu-1gb"
+  snapshot_name           = local.snapshot_name
+  snapshot_regions        = ["fra1", "nyc3"]
   private_networking      = true
   vpc_uuid                = var.vpc_uuid
   connect_with_private_ip = true
-
-  ssh_agent_auth = true
-  ssh_username   = local.sudo_user
-
-  tags = [var.image_name, var.project_name]
+  ssh_agent_auth          = true
+  ssh_username            = local.sudo_user
+  tags                    = [local.dir_name]
 }
 
 build {
