@@ -19,7 +19,7 @@
 # keep state
 -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 # ssh
-# -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p tcp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 # ssh for vagrant (it will make available the vm from 127.0.0.1:2222->22)
 # -A INPUT -i enp0s3 -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 # # http
@@ -33,8 +33,6 @@
 # FILTER / INPUT / OPENVPN SERVER
 # ------------------------------------------------------------------ #
 
-# ssh
--A INPUT -p tcp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 # Allow incoming DNS requests coming from other hosts in same VPC
 -A INPUT -p tcp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 53 -j ACCEPT
 -A INPUT -p udp -i {{PRIVATE_ETHERNET_INTERFACE}} --dport 53 -j ACCEPT
