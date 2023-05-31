@@ -33,7 +33,7 @@ locals {
 # ------------------------------------------------------------- #
 
 data "digitalocean_droplet_snapshot" "golden_base" {
-  name_regex  = "^packer-base-.*"
+  name_regex  = "^packer-internal-.*"
   region      = local.region
   most_recent = true
 }
@@ -135,7 +135,7 @@ resource "local_file" "inventory" {
       }
     }
   )
-  filename = abspath("${path.module}/../../deployment/inventory.cfg")
+  filename = abspath("${path.module}/../../artifacts/deployment/inventory.cfg")
 }
 
 resource "local_file" "ssh-config" {
@@ -179,5 +179,5 @@ resource "local_file" "service_discovery" {
       })
     }
   )
-  filename = abspath("${path.module}/../../deployment/service_discovery.json")
+  filename = abspath("${path.module}/../../artifacts/deployment/service_discovery.json")
 }

@@ -5,7 +5,7 @@
 %{ for service, hosts in resources.services ~}
 [${provider}-${region}-${service}]
 %{ for host in hosts ~}
-${host.name} ansible_host=${host.ipv4_address} ipv4_address_private=${host.ipv4_address_private}
+${host.name} ansible_host=${host.ipv4_address_private} ipv4_address=${host.ipv4_address}
 %{ endfor ~}
 %{ endfor ~}
 %{ endfor ~}
