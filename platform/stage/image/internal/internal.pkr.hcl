@@ -37,13 +37,12 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "./provisioner-files"
+    source      = "${path.root}/provisioner-files"
     destination = "~"
   }
 
   provisioner "shell" {
     environment_vars = [
-      "EXECUTION_MODE=GOLDEN_IMAGE",
       "IPTABLES_PRIVATE_ETHERNET_INTERFACE=eth1"
     ]
     inline = [
