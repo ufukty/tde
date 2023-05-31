@@ -46,7 +46,7 @@ build {
       "IPTABLES_PRIVATE_ETHERNET_INTERFACE=eth1"
     ]
     inline = [
-      "cd provisioner-files; sudo -u root --preserve-env bash shell.sh",
+      "cd provisioner-files; sudo --preserve-env bash golden-image.sh",
       "rm -rfv ~/provisioner-files"
     ]
   }

@@ -33,7 +33,6 @@ function assert_sudo() {
 }
 
 function remove_password_change_requirement() {
-    info "remove password change requirement to root"
     sed --in-place -E 's/root:(.*):0:0:(.*):/root:\1:18770:0:\2:/g' /etc/shadow
 }
 

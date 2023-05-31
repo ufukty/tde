@@ -12,6 +12,7 @@ IPTABLES_PRIVATE_ETHERNET_INTERFACE="${IPTABLES_PRIVATE_ETHERNET_INTERFACE:?"IPT
 
 PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
 cd "$PROVISIONER_FILES"
+. utilities.sh
 
 # ---------------------------------------------------------------------------- #
 # Tasks
@@ -20,7 +21,7 @@ cd "$PROVISIONER_FILES"
 function iptables_configure() {
     sed --in-place \
         -e "s/{{PRIVATE_ETHERNET_INTERFACE}}/$IPTABLES_PRIVATE_ETHERNET_INTERFACE/g" \
-        "/etc/iptables/custom-rules.v4"
+        "/etc/iptables/iptables-rules.v4"
 
     systemctl daemon-reload
     systemctl enable iptables-activation
