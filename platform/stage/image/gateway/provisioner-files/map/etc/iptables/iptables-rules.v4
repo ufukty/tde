@@ -1,0 +1,86 @@
+# ---------------------------------------------------------------------------- #
+# FILTER
+# ---------------------------------------------------------------------------- #
+
+*filter
+
+# Setting default filter policy
+:INPUT DROP [0:0]
+:OUTPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:LOG-ATTACK - [0:0]
+
+# ---------------------------------------------------------------------------- #
+# FILTER / INPUT
+# ---------------------------------------------------------------------------- #
+
+# loopback
+-A INPUT -i lo -j ACCEPT
+# keep state
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# ssh
+-A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ssh for vagrant (it will make available the vm from 127.0.0.1:2222->22)
+-A INPUT -i enp0s3 -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# http
+-A INPUT -i {{PUBLIC_ETHERNET_INTERFACE}} -p tcp --dport 8080 -m conntrack --ctstate NEW -j ACCEPT
+# # https
+# -A INPUT -i {{PUBLIC_ETHERNET_INTERFACE}} -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+# ping reply (originated from the server)
+-A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+
+# ------------------------------------------------------------------ #
+# FILTER / INPUT / LOG ATTACK
+# ------------------------------------------------------------------ #
+
+# blocking null packets.
+-A INPUT -p tcp --tcp-flags ALL NONE -j LOG-ATTACK
+# drop the packets with incoming fragments
+-A INPUT -f -j LOG-ATTACK
+# make sure NEW incoming tcp connections are SYN packets
+-A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j LOG-ATTACK
+# drop incoming malformed XMAS packets
+-A INPUT -p tcp --tcp-flags ALL ALL -j LOG-ATTACK
+-A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j LOG-ATTACK
+-A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG-ATTACK
+
+# ------------------------------------------------------------------ #
+# FILTER / INPUT / LOGGING
+# ------------------------------------------------------------------ #
+
+# log dropped packets
+-A INPUT -m limit --limit 2/min -j LOG --log-prefix "[iptables] DROP: " --log-level 7
+# log and drop for attack chain
+-A LOG-ATTACK -m limit --limit 2/min -j LOG --log-prefix "[iptables] ATTACK DROP: " --log-level 7
+-A LOG-ATTACK -j DROP
+
+# ---------------------------------------------------------------------------- #
+# FILTER / OUTPUT
+# ---------------------------------------------------------------------------- #
+
+# loopback
+-A OUTPUT -o lo -j ACCEPT
+# keep state
+-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# ssh
+-A OUTPUT -o {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ssh-vagrant
+-A OUTPUT -o enp0s3 -p tcp --sport 22 -m conntrack --ctstate NEW -j ACCEPT
+# ping
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+# dns
+-A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+-A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# http
+-A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+# https
+-A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+
+# ------------------------------------------------------------------ #
+# FILTER / OUTPUT / LOGGING
+# ------------------------------------------------------------------ #
+
+# log dropped packets
+-A OUTPUT -m limit --limit 2/min -j LOG --log-prefix "[iptables] OUTPUT-DROP: " --log-level 7
+
+COMMIT

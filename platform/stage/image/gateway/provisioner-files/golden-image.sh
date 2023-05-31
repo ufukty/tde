@@ -1,0 +1,47 @@
+#!/bin/bash
+
+PS4='\033[36m@echo\033[0m \033[31m${BASH_SOURCE}:${LINENO}\033[0m: \033[33m${FUNCNAME[0]:+${FUNCNAME[0]}(): }\033[0m'
+set -o xtrace
+
+# ---------------------------------------------------------------------------- #
+# Required variables
+# ---------------------------------------------------------------------------- #
+
+IPTABLES_PRIVATE_ETHERNET_INTERFACE="${IPTABLES_PRIVATE_ETHERNET_INTERFACE:?"IPTABLES_PRIVATE_ETHERNET_INTERFACE is required."}"
+IPTABLES_PUBLIC_ETHERNET_INTERFACE="${IPTABLES_PUBLIC_ETHERNET_INTERFACE:?"IPTABLES_PUBLIC_ETHERNET_INTERFACE is required."}"
+
+# ---------------------------------------------------------------------------- #
+# Constants
+# ---------------------------------------------------------------------------- #
+
+PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
+cd "$PROVISIONER_FILES"
+. utilities.sh
+
+# ---------------------------------------------------------------------------- #
+# Tasks
+# ---------------------------------------------------------------------------- #
+
+function iptables_configure() {
+    sed --in-place \
+        -e "s/{{PRIVATE_ETHERNET_INTERFACE}}/$IPTABLES_PRIVATE_ETHERNET_INTERFACE/g" \
+        -e "s/{{PUBLIC_ETHERNET_INTERFACE}}/$IPTABLES_PUBLIC_ETHERNET_INTERFACE/g" \
+        "/etc/iptables/iptables-rules.v4"
+
+    systemctl daemon-reload
+    systemctl enable iptables-activation
+    systemctl restart iptables-activation
+}
+
+# ---------------------------------------------------------------------------- #
+# Main
+# ---------------------------------------------------------------------------- #
+
+with-echo assert_sudo
+with-echo restart_journald
+with-echo remove_password_change_requirement
+with-echo wait_cloud_init
+
+with-echo deploy_provisioner_files
+
+with-echo iptables_configure

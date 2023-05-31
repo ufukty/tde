@@ -32,12 +32,17 @@ locals {
 # Main
 # ------------------------------------------------------------- #
 
-data "digitalocean_droplet_snapshot" "golden_base" {
+data "digitalocean_droplet_snapshot" "internal" {
   name_regex  = "^packer-internal-.*"
   region      = local.region
   most_recent = true
 }
 
+data "digitalocean_droplet_snapshot" "gateway" {
+  name_regex  = "^packer-gateway-.*"
+  region      = local.region
+  most_recent = true
+}
 data "digitalocean_vpc" "vpc" {
   name = "${var.project_prefix}-${local.region}"
 }
@@ -45,7 +50,7 @@ data "digitalocean_vpc" "vpc" {
 resource "digitalocean_droplet" "runner" {
   count = local.instances.runner
 
-  image  = data.digitalocean_droplet_snapshot.golden_base.id
+  image  = data.digitalocean_droplet_snapshot.internal.id
   name   = "${local.region}-runner-${count.index}"
   region = local.region
   size   = local.slug
@@ -62,7 +67,7 @@ resource "digitalocean_droplet" "runner" {
 resource "digitalocean_droplet" "evolver" {
   count = local.instances.evolver
 
-  image  = data.digitalocean_droplet_snapshot.golden_base.id
+  image  = data.digitalocean_droplet_snapshot.internal.id
   name   = "${local.region}-evolver-${count.index}"
   region = local.region
   size   = local.slug
@@ -84,7 +89,7 @@ data "digitalocean_volume" "customs_storage_volume" {
 resource "digitalocean_droplet" "customs" {
   count = 1
 
-  image      = data.digitalocean_droplet_snapshot.golden_base.id
+  image      = data.digitalocean_droplet_snapshot.internal.id
   name       = "${local.region}-customs-${count.index}"
   region     = local.region
   size       = local.slug
@@ -102,7 +107,7 @@ resource "digitalocean_droplet" "customs" {
 resource "digitalocean_droplet" "api-gateway" {
   count = local.instances.api-gateway
 
-  image  = data.digitalocean_droplet_snapshot.golden_base.id
+  image  = data.digitalocean_droplet_snapshot.gateway.id
   name   = "${local.region}-api-gateway-${count.index}"
   region = local.region
   size   = local.slug
