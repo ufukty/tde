@@ -32,7 +32,7 @@ last-build() {
 
 path-last-build() {
     PROGRAM_NAME="$1" && shift
-    ARCH="$1" && shift
+    ARCH="${1:-"darwin"}" && shift
     PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
     echo "application/build/$PROGRAM_LAST_BUILD/$ARCH/$PROGRAM_NAME"
 }
@@ -83,10 +83,8 @@ api-summary() {
 }
 
 api-update() {
-    API_GATEWAY_IP_ADDRESS="$(cat platform/stage/deployment/service_discovery.json | jq -r '.["api-gateway"].digitalocean[0].ipv4_address')"
-    CUSTOMS_IP_ADDRESS="$(cat platform/stage/deployment/service_discovery.json | jq -r '.["customs"].digitalocean[0].ipv4_address')"
-    gsed --in-place "s;^@api.*;@api = http://${API_GATEWAY_IP_ADDRESS}:8080/api/v1.0.0;" api.http
-    gsed --in-place "s;^# @api.*;# @api = http://127.0.0.1:8087/api/v1.0.0;" api.http
+    API_GATEWAY_IP_ADDRESS="$(cat platform/stage/artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services["api-gateway"][0].ipv4_address')"
+    gsed --in-place "s;^@api.*;@api = http://${API_GATEWAY_IP_ADDRESS}:8080/api/v1.0.0;" application/api.http
 }
 
 ip-of() {
