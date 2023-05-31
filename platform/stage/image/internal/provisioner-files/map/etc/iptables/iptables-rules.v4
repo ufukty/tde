@@ -22,10 +22,11 @@
 -A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 # ssh for vagrant (it will make available the vm from 127.0.0.1:2222->22)
 -A INPUT -i enp0s3 -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
-# # http
-# -A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
-# # https
-# -A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+# http
+# -A INPUT -i {{PUBLIC_ETHERNET_INTERFACE}} -p tcp --dport 8080 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 8081 -m conntrack --ctstate NEW -j ACCEPT
+# https
+-A INPUT -i {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
 # ping reply (originated from the server)
 -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 
