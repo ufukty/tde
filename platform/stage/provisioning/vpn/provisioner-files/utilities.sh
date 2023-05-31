@@ -48,7 +48,7 @@ function check_tun_availability() {
 function deploy_provisioner_files() {
     chmod 700 -R "$PROVISIONER_FILES/map"
     chown root:root -R "$PROVISIONER_FILES/map"
-    rsync -vr --remove-source-files --ignore-existing "$PROVISIONER_FILES/map/" "/"
+    rsync --verbose --recursive "$PROVISIONER_FILES/map/" "/"
     rm -r "$PROVISIONER_FILES/map"
 }
 

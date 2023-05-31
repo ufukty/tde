@@ -48,20 +48,10 @@ function check_tun_availability() {
 }
 
 function deploy_provisioner_files() {
-    rsync -v \
-        --perms \
-        --owner \
-        --group \
-        --recursive \
-        --ignore-existing \
-        --remove-source-files \
-        "$PROVISIONER_FILES/map/" "/"
-}
-
-function deploy_provisioner_files() {
     chmod 700 -R "$PROVISIONER_FILES/map"
     chown root:root -R "$PROVISIONER_FILES/map"
-    rm -r "$PROVISIONER_FILES/map"
+    rsync --verbose --recursive "$PROVISIONER_FILES/map/" "/"
+    rm -rfv "$PROVISIONER_FILES/map"
 }
 
 export DEBIAN_FRONTEND=noninteractive
