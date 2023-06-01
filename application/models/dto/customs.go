@@ -4,10 +4,10 @@ package dto
 
 type (
 	Customs_Upload_Request struct {
-		Token string
+		Token string `json:"token"`
 	}
 
 	Customs_Upload_Response struct {
-		ArchiveID string
+		ArchiveID string `json:"archive_id"`
 	}
 )
