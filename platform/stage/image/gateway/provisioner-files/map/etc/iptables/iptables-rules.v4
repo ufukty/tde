@@ -67,6 +67,8 @@
 -A OUTPUT -o {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 # ssh-vagrant
 -A OUTPUT -o enp0s3 -p tcp --sport 22 -m conntrack --ctstate NEW -j ACCEPT
+# make requests to microservices in region
+-A OUTPUT -o {{PRIVATE_ETHERNET_INTERFACE}} -p tcp --dport 8081 -m conntrack --ctstate NEW -j ACCEPT 
 # ping
 -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 # dns
