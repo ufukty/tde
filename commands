@@ -1,5 +1,8 @@
 #!/usr/bin/env bash -i
 
+PS4='\033[36m@echo\033[0m \033[35m${BASH_SOURCE}:${LINENO}\033[0m: \033[34m${FUNCNAME[0]:+${FUNCNAME[0]}(): }\033[0m'
+set -o xtrace
+
 cd "$WORKSPACE"
 
 # MARK: Compile
@@ -15,8 +18,8 @@ build() {
         cd application
         VERSION="$(version)" && mkdir -p build/$VERSION/{darwin,linux}
         for PROGRAM_NAME in $PROGRAM_NAMES; do
-            with-echo env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/darwin/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
-            with-echo env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/linux/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
+            env GOOS=darwin GOARCH=amd64 go build -o "build/$VERSION/darwin/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
+            env GOOS=linux GOARCH=amd64 go build -o "build/$VERSION/linux/$PROGRAM_NAME" ./cmd/$PROGRAM_NAME
         done
     )
 }
@@ -45,13 +48,16 @@ clean-build() {
 
 run() {
     PROGRAM_NAME="$1" && shift
-    with-echo go run "tde/cmd/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
+    (
+        cd application
+        go run "tde/cmd/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
+    )
 }
 
 run-last-build() {
     PROGRAM_NAME="$1" && shift
     PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
-    with-echo "./application/build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
+    "./application/build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
 }
 
 build-and-run() {
