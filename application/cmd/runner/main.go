@@ -13,10 +13,12 @@ func main() {
 		config = config_reader.GetConfig()
 	)
 
-	router.StartRouter(config.Runner.RouterPublic, func(r *mux.Router) {
+	config_reader.Print(config.Runner)
+
+	router.StartRouter(config.Runner.RouterPublic, &config.Runner.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch.Handler)
 		r.HandleFunc("/", router.NotFound)
 	})
 
-	router.Wait(config.Runner.GracePeriod)
+	router.Wait(&config.Runner.RouterParameters)
 }

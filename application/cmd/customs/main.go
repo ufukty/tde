@@ -23,15 +23,16 @@ func main() {
 		volumeManager = volume_manager.NewVolumeManager(config.Customs.MountPath)
 	)
 
+	config_reader.Print(config.Customs)
 	module_post.RegisterVolumeManager(volumeManager)
 	module_get.RegisterVolumeManager(volumeManager)
 	ast_get.RegisterVolumeManager(volumeManager)
 
-	router.StartRouter(config.Customs.RouterPrivate, func(r *mux.Router) {
+	router.StartRouter(config.Customs.RouterPrivate, &config.Customs.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/module").Methods("POST").HandlerFunc(module_post.Handler)
 		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
 		r.PathPrefix("/ast").Methods("GET").HandlerFunc(ast_get.Handler)
 	})
 
-	router.Wait(config.Customs.GracePeriod)
+	router.Wait(&config.Customs.RouterParameters)
 }

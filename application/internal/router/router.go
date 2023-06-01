@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/microservices/logger"
 	"time"
 
@@ -23,12 +24,12 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 }
 
-func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
+func StartRouter(baseURL string, cfg *config_reader.RouterParameters, endpointRegisterer func(r *mux.Router)) {
 	r := mux.NewRouter()
 	endpointRegisterer(r)
 
 	r.Use(chi_mw.RequestID)
-	r.Use(chi_mw.Timeout(time.Second * 2))
+	r.Use(chi_mw.Timeout(cfg.RequestTimeout))
 	r.Use(chi_mw.Logger)
 	// r.Use(middleware.MWAuthorization)
 	r.Use(mux.CORSMethodMiddleware(r))
@@ -37,9 +38,9 @@ func StartRouter(baseURL string, endpointRegisterer func(r *mux.Router)) {
 	server := &http.Server{
 		Addr: baseURL,
 		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
+		WriteTimeout: cfg.WriteTimeout,
+		ReadTimeout:  cfg.ReadTimeout,
+		IdleTimeout:  cfg.IdleTimeout,
 		Handler:      r, // Pass our instance of gorilla/mux in.
 	}
 
@@ -89,17 +90,17 @@ func waitInterrupSignal() {
 	<-sigInterruptChannel
 }
 
-func Wait(gracePeriod time.Duration) {
+func Wait(cfg *config_reader.RouterParameters) {
 	waitInterrupSignal()
 
 	// Create a deadline to wait for.
-	ctx, cancel := context.WithTimeout(context.Background(), gracePeriod)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.GracePeriod)
 	defer cancel()
 
 	for _, server := range servers {
 		// Doesn't block if no connections, but will otherwise wait
 		// until the timeout deadline.
-		log.Printf("Sending shutdown signal to one of the servers, grace period is '%s'\n", gracePeriod.String())
+		log.Printf("Sending shutdown signal to one of the servers, grace period is '%s'\n", cfg.GracePeriod.String())
 		go server.Shutdown(ctx)
 	}
 

@@ -22,6 +22,7 @@ func main() {
 		cm     = case_manager.NewCaseManager()
 	)
 
+	config_reader.Print(config.Evolver)
 	rc, err := runner_communicator.NewRunnerCommunicator(sd)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "failed on launch"))
@@ -30,7 +31,7 @@ func main() {
 	handler_evolution.RegisterCaseManager(cm)
 	handler_evolution.RegisterRunnerCommunicator(rc)
 
-	router.StartRouter(config.Evolver.RouterPublic, func(r *mux.Router) {
+	router.StartRouter(config.Evolver.RouterPublic, &config.Evolver.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
@@ -38,10 +39,10 @@ func main() {
 		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
-	router.StartRouter(config.Evolver.RouterPrivate, func(r *mux.Router) {
+	router.StartRouter(config.Evolver.RouterPrivate, &config.Evolver.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/session/runner-results").Methods("POST").HandlerFunc(handler_results.Handler)
 		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
-	router.Wait(config.Evolver.GracePeriod)
+	router.Wait(&config.Evolver.RouterParameters)
 }

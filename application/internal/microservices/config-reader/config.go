@@ -2,12 +2,20 @@ package config_reader
 
 import "time"
 
+type RouterParameters struct {
+	RequestTimeout time.Duration `yaml:"request-timeout"`
+	WriteTimeout   time.Duration `yaml:"write-timeout"`
+	ReadTimeout    time.Duration `yaml:"read-timeout"`
+	IdleTimeout    time.Duration `yaml:"idle-timeout"`
+	GracePeriod    time.Duration `yaml:"grace-period"`
+}
+
 type Common struct {
+	RouterParameters             `yaml:",inline"`
 	ServiceDiscoveryConfig       string        `yaml:"service-discovery-config"`
 	ServiceDiscoveryUpdatePeriod time.Duration `yaml:"service-discovery-update-period"`
-	GracePeriod                  time.Duration `yaml:"grace-period"`
-	RouterPublic                 string        `yaml:"router_public"`
-	RouterPrivate                string        `yaml:"router_private"`
+	RouterPublic                 string        `yaml:"router-public"`
+	RouterPrivate                string        `yaml:"router-private"`
 }
 
 type APIGateway struct {

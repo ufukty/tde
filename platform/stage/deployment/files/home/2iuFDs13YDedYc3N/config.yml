@@ -1,10 +1,17 @@
 ---
+router-parameters: &router-parameters
+  request-timeout: 200ms
+  write-timeout: 15s
+  read-timeout: 15s
+  idle-timeout: 60s
+  grace-period: 15s
+
 common: &common
+  <<: *router-parameters
   service-discovery-config: /home/2iuFDs13YDedYc3N/service_discovery.json
   service-discovery-update-period: 30s
-  grace-period: 15s
-  router_public: :8080
-  router_private: :8081
+  router-public: :8080
+  router-private: :8081
 
 evolver:
   <<: *common
@@ -15,6 +22,7 @@ runner:
 customs:
   <<: *common
   grace-period: 30s
+  request-timeout: 20s
   volume-mount: /mnt/volume_fra1
 
 api_gateway:

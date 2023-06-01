@@ -1,11 +1,13 @@
 package config_reader
 
 import (
+	"tde/internal/microservices/logger"
+	"tde/internal/utilities"
+
 	"flag"
 	"os"
 	"reflect"
-	"tde/internal/microservices/logger"
-	"tde/internal/utilities"
+	"strings"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -65,4 +67,25 @@ func GetConfig() *Config {
 	}
 	checkZeroValuedFields(config)
 	return config
+}
+
+func printConfigHelper(typeOf reflect.Type, valueOf reflect.Value, scopeStack []string) {
+	var nFields = typeOf.NumField()
+	for i := range utilities.Range(nFields) {
+		var fieldValue = valueOf.Field(i)
+		var fieldType = typeOf.Field(i)
+		if fieldType.Type.Kind() == reflect.Struct {
+			printConfigHelper(fieldType.Type, fieldValue, append(scopeStack, fieldType.Name))
+		} else {
+			log.Printf("%s/%s = %s\n", strings.Join(scopeStack, "/"), fieldType.Name, fieldValue)
+		}
+	}
+}
+
+func Print(subject any) {
+	log.Println("")
+	var valueOf = reflect.Indirect(reflect.ValueOf(subject))
+	var typeOf = valueOf.Type()
+	printConfigHelper(typeOf, valueOf, []string{})
+	log.Println("")
 }
