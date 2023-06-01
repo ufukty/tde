@@ -43,6 +43,7 @@ all() {
     up vpc --auto-approve || exit
     up vpn --auto-approve || exit
     up application --auto-approve || exit
+    ssh-key-update
     deploy
 }
 
@@ -62,6 +63,14 @@ vpn-connect() {
     sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
     # sleep 1 && sudo killall mDNSResponder{,Helper}
     sudo -k
+}
+
+ssh-key-update() {
+    ADDRESSES="$(cat artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services[] | .[] | .ipv4_address_private')"
+    echo "$ADDRESSES" | while read ADDRESS; do
+        ssh-keygen -R "$ADDRESS" >/dev/null 2>&1
+        ssh-keyscan "$ADDRESS" >>~/.ssh/known_hosts 2>&1
+    done
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"
