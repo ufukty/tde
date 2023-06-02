@@ -74,6 +74,17 @@ ssh-key-update() {
     wait $(jobs -p)
 }
 
+generate-keys() {
+    (
+        cd certificates
+        folders=("dasds" "asdasd")
+        cat "$folders" | while read folder; do
+            (
+                echo $folder
+                # openssl -a 4000 -b 1024 -C "" -o -t rsa
+            )
+        done
+    )
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"
