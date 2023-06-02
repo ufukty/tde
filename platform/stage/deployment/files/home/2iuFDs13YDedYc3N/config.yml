@@ -27,6 +27,7 @@ customs:
 
 api_gateway:
   <<: *common
+  request-timeout: 20s # FIXME: Separate file server and API gateway
 
 captcha:
   <<: *common
