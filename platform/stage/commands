@@ -69,8 +69,11 @@ ssh-key-update() {
     ADDRESSES="$(cat artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services[] | .[] | .ipv4_address_private')"
     echo "$ADDRESSES" | while read ADDRESS; do
         ssh-keygen -R "$ADDRESS" >/dev/null 2>&1
-        ssh-keyscan "$ADDRESS" >>~/.ssh/known_hosts 2>&1
+        ssh-keyscan "$ADDRESS" >>~/.ssh/known_hosts 2>&1 &
     done
+    wait $(jobs -p)
+}
+
 }
 
 COMMAND="$1" && shift && $COMMAND "$@"
