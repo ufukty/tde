@@ -70,7 +70,7 @@ build-and-run() {
 
 redeploy() {
     PROGRAM_NAME="$1" && shift
-    (cd platform/stage && ./commands stage-redeploy "$PROGRAM_NAME" "$@")
+    (cd platform/stage && ./commands deploy "$PROGRAM_NAME" "$@")
 }
 
 build-redeploy() {
