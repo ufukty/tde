@@ -1,14 +1,14 @@
 package module
 
 import (
+	volume_manager "tde/cmd/customs/internal/volume-manager"
+
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"regexp"
-	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -59,7 +59,6 @@ func TestUploadHandler(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "validation prep"))
 	}
-	fmt.Printf("%v", rr.Body.Bytes())
 	if !expectedBodyRegexp.Match(rr.Body.Bytes()) {
 		t.Errorf("validation/body. Got %s, want %s", rr.Body.Bytes(), expectedResponseBody)
 	}
