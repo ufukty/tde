@@ -1,60 +1,66 @@
 package module
 
 import (
-	"tde/models/dto"
-
 	"bytes"
-	"io"
+	"fmt"
 	"mime/multipart"
 	"net/http"
+	"net/http/httptest"
 	"os"
+	"regexp"
+	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
-func Test_Endpoint(t *testing.T) {
-
-	req := dto.Customs_Upload_Request{
-		Token: "922a5105-28e4-55bb-bbf5-1d3bb72ec38d",
-	}
-	httpReq, err := req.NewRequest("POST", "http://localhost:8080")
+func init() {
+	var root, err = os.MkdirTemp(os.TempDir(), "*")
 	if err != nil {
-		t.Error(errors.Wrapf(err, ""))
+		panic(errors.Wrapf(err, "prep"))
 	}
+	volumeManager = volume_manager.NewVolumeManager(root)
+}
 
-	// Set up the zip file
-	file, err := os.Open("file.zip")
+func TestUploadHandler(t *testing.T) {
+	var (
+		err                error
+		fileContent        []byte
+		req                *http.Request
+		expectedBodyRegexp *regexp.Regexp
+	)
+	fileContent, err = os.ReadFile("test-files/do-not-edit")
 	if err != nil {
-		panic(err)
+		t.Error(errors.Wrapf(err, "prep"))
 	}
-	defer file.Close()
-
-	// Set up the HTTP request
-	requestBodyBuf := &bytes.Buffer{}
-	multipartWriter := multipart.NewWriter(requestBodyBuf)
-	zipWriter, err := multipartWriter.CreateFormFile("file", "file.zip")
+	var md5sum = "4b5f52abb39268d758e369fa535f5e80"
+	var body = &bytes.Buffer{}
+	var writer = multipart.NewWriter(body)
+	var md5Field, _ = writer.CreateFormField("md5sum")
+	md5Field.Write([]byte(md5sum))
+	var fileField, _ = writer.CreateFormFile("file", "file.zip")
+	fileField.Write(fileContent)
+	writer.Close()
+	var contentType = writer.FormDataContentType()
+	req, err = http.NewRequest("POST", "/api/v1.0.0/customs/module", body)
 	if err != nil {
-		panic(err)
+		t.Fatalf("prep. Failed to create request: %v", err)
 	}
-	_, err = io.Copy(zipWriter, file)
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Length", "101010")
+	req.Header.Set("Authorization", "Bearer")
+	var rr = httptest.NewRecorder()
+	Handler(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("validation/header. Got %v, want %v", rr.Code, http.StatusOK)
+	}
+	var expectedResponseBody = `^{"archive_id":"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"}\n$`
+	expectedBodyRegexp, err = regexp.Compile(expectedResponseBody)
 	if err != nil {
-		panic(err)
+		t.Error(errors.Wrapf(err, "validation prep"))
 	}
-	multipartWriter.Close()
-
-	httpReq.Header.Set("Content-Type", multipartWriter.FormDataContentType())
-
-	// Send the HTTP request
-	client := &http.Client{}
-	httpResp, err := client.Do(httpReq)
-	if err != nil {
-		panic(err)
+	fmt.Printf("%v", rr.Body.Bytes())
+	if !expectedBodyRegexp.Match(rr.Body.Bytes()) {
+		t.Errorf("validation/body. Got %s, want %s", rr.Body.Bytes(), expectedResponseBody)
 	}
-	defer httpResp.Body.Close()
-
-	res := dto.Customs_Upload_Response{}
-	res.DeserializeResponse(httpResp)
-	spew.Println(res)
 }
