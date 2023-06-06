@@ -1,18 +1,18 @@
 package module
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
-	"strconv"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"tde/internal/microservices/logger"
 	"tde/models/dto"
 
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
