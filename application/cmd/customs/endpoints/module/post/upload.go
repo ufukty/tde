@@ -18,34 +18,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// type Error struct {
-// 	public  []error
-// 	private []error
-// }
-
-// func NewError() *Error {
-// 	return &Error{}
-// }
-
-// func (e *Error) Wrap(pub, pri error) {
-// 	if pub != nil {
-// 		e.public = append(e.public, pub)
-// 	}
-// 	if pri != nil {
-// 		e.private = append(e.private, pri)
-// 	}
-// }
-
-// func (e *Error) IsIn(pub, pri error) bool {
-// 	if pub != nil {
-// 		return slices.Index(e.public, pub) != -1
-// 	}
-// 	if pri != nil {
-// 		return slices.Index(e.private, pri) != -1
-// 	}
-// 	return false
-// }
-
 const (
 	MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 	ALLOWED_MIME_TYPE  = "multipart/form-data"
