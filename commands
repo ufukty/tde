@@ -44,28 +44,6 @@ clean-build() {
     rm -rf application/build
 }
 
-# MARK: Run
-
-run() {
-    PROGRAM_NAME="$1" && shift
-    (
-        cd application
-        go run "tde/cmd/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
-    )
-}
-
-run-last-build() {
-    PROGRAM_NAME="$1" && shift
-    PROGRAM_LAST_BUILD="$(last-build $PROGRAM_NAME)"
-    "./application/build/$PROGRAM_LAST_BUILD/darwin/$PROGRAM_NAME" --config="platform/local/config.yml" "$@"
-}
-
-build-and-run() {
-    PROGRAM_NAME="$1" && shift
-    build "$PROGRAM_NAME"
-    run-last-build "$PROGRAM_NAME" "$@"
-}
-
 # MARK: Re-Deployment (only binaries for one server kind)
 
 redeploy() {
