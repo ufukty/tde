@@ -1,52 +1,55 @@
 package rule
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
+	"tde/internal/microservices/errors/bucket"
+	"tde/internal/microservices/errors/detailed"
+	"tde/internal/microservices/errors/loggable"
+	"tde/internal/microservices/errors/tagged"
 
 	"github.com/google/uuid"
 )
 
 var (
-	ErrRequiredFieldIsEmpty       = errors.New("required field is empty")
-	ErrWrongTypeInt               = errors.New("type validation: Integer")
-	ErrWrongTypeUUID              = errors.New("type validation: UUID")
-	ErrIntegerNotLessOrEqual      = errors.New("given value is not less or equal than what is expected")
-	ErrValueDoesNotContainPattern = errors.New("value does not contain pattern")
+	ErrRequiredFieldIsEmpty       = detailed.New("Field can not be empty", "ErrRequiredFieldIsEmpty@Rule")
+	ErrWrongTypeInt               = detailed.New("Field value is expected to be an integer.", "ErrWrongTypeInt@Rule")
+	ErrWrongTypeUUID              = detailed.New("Field value is expected to be an UUID", "ErrWrongTypeUUID@Rule")
+	ErrIntegerNotLessOrEqual      = detailed.New("Field value is bigger than expected", "ErrIntegerNotLessOrEqual@Rule")
+	ErrValueDoesNotContainPattern = detailed.New("Field value is different that expected", "ErrValueDoesNotContainPattern@Rule")
 )
 
-type Rule []func(string) error
+type Rule []func(string) loggable.Loggable
 
 func New() *Rule {
 	return &Rule{}
 }
 
-func (vp *Rule) Required() *Rule {
-	*vp = append(*vp, func(value string) error {
-		if value == "" {
+func (r *Rule) Required() *Rule {
+	*r = append(*r, func(s string) loggable.Loggable {
+		if s == "" {
 			return ErrRequiredFieldIsEmpty
 		} else {
 			return nil
 		}
 	})
-	return vp
+	return r
 }
 
-func (vp *Rule) UUID() *Rule {
-	*vp = append(*vp, func(value string) error {
-		var _, err = uuid.Parse(value)
+func (r *Rule) UUID() *Rule {
+	*r = append(*r, func(s string) loggable.Loggable {
+		var _, err = uuid.Parse(s)
 		if err != nil {
-			return errors.Join(err, ErrWrongTypeUUID)
+			return tagged.New(ErrWrongTypeUUID, detailed.AddBase(err, ""))
 		}
 		return nil
 	})
-	return vp
+	return r
 }
 
-func (vp *Rule) LessOrEqual(number int) *Rule {
-	*vp = append(*vp, func(s string) error {
+func (r *Rule) LessOrEqual(number int) *Rule {
+	*r = append(*r, func(s string) loggable.Loggable {
 		var integer, err = strconv.ParseInt(s, 10, 0)
 		if err != nil {
 			return ErrWrongTypeInt
@@ -56,32 +59,33 @@ func (vp *Rule) LessOrEqual(number int) *Rule {
 		}
 		return nil
 	})
-	return vp
+	return r
 }
 
-func (vp *Rule) Match(pattern string) *Rule {
+func (r *Rule) Match(pattern string) *Rule {
 	var rgx, err = regexp.Compile(pattern)
 	if err != nil {
 		panic("could not compile regex for rule: " + pattern)
 	}
-	*vp = append(*vp, func(s string) error {
+	*r = append(*r, func(s string) loggable.Loggable {
 		if ok := rgx.Match([]byte(s)); !ok {
 			return ErrValueDoesNotContainPattern
 		}
 		return nil
 	})
-	return vp
+	return r
 }
 
-func (vp *Rule) MatchWhole(pattern string) *Rule {
-	return vp.Match(fmt.Sprintf("^%s$", pattern))
+func (r *Rule) MatchWhole(pattern string) *Rule {
+	return r.Match(fmt.Sprintf("^%s$", pattern))
 }
 
-func (vp *Rule) Test(value string) (errs []error) {
-	for _, rule := range *vp {
+func (r *Rule) Test(value string) *bucket.Bucket {
+	var bucket = &bucket.Bucket{}
+	for _, rule := range *r {
 		if err := rule(value); err != nil {
-			errs = append(errs, err)
+			bucket.Add(err)
 		}
 	}
-	return
+	return bucket
 }
