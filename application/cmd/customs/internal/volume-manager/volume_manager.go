@@ -38,3 +38,17 @@ func (vm *VolumeManager) CreateDestPath(archiveID string) (path string, err erro
 	}
 	return dirPath, nil
 }
+
+func (vm *VolumeManager) CheckIfExists(archiveID string) bool {
+	var (
+		path string
+		err  error
+	)
+	path = filepath.Join(vm.root, pathSlice(archiveID), archiveID)
+	_, err = os.Stat(path)
+	return err != nil // who cares about the condition where the file exists but there is an error
+}
+
+func (vm *VolumeManager) FindPath(archiveID string) string {
+	return filepath.Join(vm.root, pathSlice(archiveID), archiveID) + ".zip"
+}
