@@ -1,0 +1,40 @@
+---
+router-parameters: &router-parameters
+  request-timeout: 30m
+  write-timeout: 30m
+  read-timeout: 30m
+  idle-timeout: 30m
+  grace-period: 1µs
+
+common: &common
+  <<: *router-parameters
+  service-discovery-config: ../platform/debug/files/service_discovery.json
+  service-discovery-update-period: 30s
+  router-public: :8080
+  router-private: :8081
+
+evolver:
+  <<: *common
+  router-public: :8081
+  router-private: :8082
+
+runner:
+  <<: *common
+  router-public: :8083
+  router-private: :8084
+
+customs:
+  <<: *common
+  router-public: :8085
+  router-private: :8086
+  volume-mount: ../platform/debug/mount/customs
+
+api_gateway:
+  <<: *common
+  router-public: :8087
+  router-private: :8088
+
+captcha:
+  <<: *common
+  router-public: :8089
+  router-private: :8090

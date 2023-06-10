@@ -146,6 +146,9 @@ service_discovery.json
 
 ### Miscellaneous
 platform/local/mount
+platform/debug/mount
+
+**/test-files
 
 .env
 
