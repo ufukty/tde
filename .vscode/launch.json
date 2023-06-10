@@ -1,13 +1,35 @@
 {
     "configurations": [
         {
+            "name": "Gateway",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "application/cmd/api-gateway",
+            "cwd": "${workspaceFolder}/application",
+            "args": ["-config=../platform/debug/config.yml"]
+            // "showLog": true
+            // "console": "internalConsole"
+        },
+        {
             "name": "Evolver",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "cmd/evolver",
-            "cwd": "${workspaceFolder}",
-            "args": ["-config=cmd/evolver/config/dev.yml"]
+            "program": "application/cmd/evolver",
+            "cwd": "${workspaceFolder}/application",
+            "args": ["-config=../platform/debug/config.yml"]
+            // "showLog": true
+            // "console": "internalConsole"
+        },
+        {
+            "name": "Customs",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "application/cmd/customs",
+            "cwd": "${workspaceFolder}/application",
+            "args": ["-config=../platform/debug/config.yml"]
             // "showLog": true
             // "console": "internalConsole"
         }
