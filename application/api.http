@@ -113,7 +113,7 @@ Content-Type: application/json
 Authorization: Bearer
 
 {
-    "archive_id": "ee600e3e-78d4-4b59-a991-4f6689fc4a59"
+    "archive_id": "bb3f36e6-6847-43e2-8328-42c6283268fc"
 }
 
 ###
@@ -123,8 +123,7 @@ Content-Type: application/json
 Authorization: Bearer
 
 {
-    "archive_id": "",
-    "client_time": "{{createdAt}}"
+    "archive_id": "bb3f36e6-6847-43e2-8328-42c6283268fc",
 }
 
 ###
