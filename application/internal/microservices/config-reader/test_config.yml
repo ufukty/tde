@@ -1,10 +1,17 @@
 ---
+router-parameters: &router-parameters
+  request-timeout: 2s
+  write-timeout: 15s
+  read-timeout: 15s
+  idle-timeout: 60s
+  grace-period: 1ms
+
 common: &common
+  <<: *router-parameters
   service-discovery-config: 75c31fcc-6dca-5e99-9bad-ea82ad9fe1f6
   service-discovery-update-period: 5s
-  grace-period: 1s
-  router_public: 8080
-  router_private: 8081
+  router-public: 8080
+  router-private: 8081
 
 evolver:
   <<: *common
