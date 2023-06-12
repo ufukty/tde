@@ -75,3 +75,5 @@ check-env-vars() {
 }
 
 check-env-vars
+
+alias cd="_source_me; cd $@"
