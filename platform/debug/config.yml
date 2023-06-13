@@ -8,7 +8,7 @@ router-parameters: &router-parameters
 
 common: &common
   <<: *router-parameters
-  service-discovery-config: ../platform/debug/files/service_discovery.json
+  service-discovery-config: ../platform/local/files/service_discovery.json
   service-discovery-update-period: 30s
   router-public: :8080
   router-private: :8081
