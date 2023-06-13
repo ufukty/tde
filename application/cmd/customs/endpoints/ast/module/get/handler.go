@@ -60,7 +60,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ok := volumeManager.CheckIfExists(bindReq.ArchiveId); !ok {
-		
+
 	}
 
 }

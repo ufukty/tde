@@ -2,8 +2,8 @@ package runner_communicator
 
 import (
 	"go/ast"
+	"tde/cmd/runner/endpoints/batch/batch_post"
 	"tde/internal/utilities"
-	transfer_models "tde/models/dto"
 	models "tde/models/program"
 )
 
@@ -22,19 +22,19 @@ func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
 	return
 }
 
-func (batch *Batch) GetRequestDTO() *transfer_models.RunnerService_Batch_Request {
-	dto := transfer_models.RunnerService_Batch_Request{
-		Candidates:   []transfer_models.Candidate{},
+func (batch *Batch) GetRequestDTO() *batch_post.Request {
+	var req = batch_post.Request{
+		Candidates:   []batch_post.Candidate{},
 		ArchiveID:    "", // FIXME:
 		FileTemplate: batch.File,
 	}
 
 	for _, candidate := range batch.Candidates {
-		dto.Candidates = append(dto.Candidates, transfer_models.Candidate{
+		req.Candidates = append(req.Candidates, batch_post.Candidate{
 			CandidateID: string(candidate.UUID),
 			FuncDecl:    candidate.AST.FuncDecl,
 		})
 	}
 
-	return &dto
+	return &req
 }

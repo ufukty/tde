@@ -1,0 +1,18 @@
+package results
+
+//go:generate serdeser bind.go
+
+type TestResult struct {
+	CandidateID string
+	Completed   bool // without run time error
+	Distance    float64
+}
+
+type Request struct {
+	TestResults []TestResult
+	CaseID      string
+}
+
+type EvolverService_Results_Response struct {
+	Success bool
+}

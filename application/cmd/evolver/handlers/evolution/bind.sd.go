@@ -1,14 +1,13 @@
-package dto
+package evolution
 
 import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-
 	"github.com/pkg/errors"
 )
 
-func (req *Customs_Upload_Request) NewRequest(method, url string) (*http.Request, error) {
+func (req *Request) NewRequest(method, url string) (*http.Request, error) {
 	buffer := new(bytes.Buffer)
 	err := json.NewEncoder(buffer).Encode(req)
 	if err != nil {
@@ -20,14 +19,14 @@ func (req *Customs_Upload_Request) NewRequest(method, url string) (*http.Request
 	}
 	return httpRequest, nil
 }
-func (req *Customs_Upload_Request) ParseRequest(r *http.Request) error {
+func (req *Request) ParseRequest(r *http.Request) error {
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")
 	}
 	return nil
 }
-func (req *Customs_Upload_Request) Send(method, url string) (*Customs_Upload_Response, error) {
+func (req *Request) Send(method, url string) (*Response, error) {
 	httpRequest, err := req.NewRequest(method, url)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on creating an object for request")
@@ -36,21 +35,21 @@ func (req *Customs_Upload_Request) Send(method, url string) (*Customs_Upload_Res
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on sending the request")
 	}
-	res := Customs_Upload_Response{}
+	res := Response{}
 	err = res.DeserializeResponse(httpResponse)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on parsing the response body")
 	}
 	return &res, nil
 }
-func (res *Customs_Upload_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
+func (res *Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(res)
 	if err != nil {
 		return errors.Wrap(err, "failed on serialization")
 	}
 	return nil
 }
-func (s *Customs_Upload_Response) DeserializeResponse(res *http.Response) error {
+func (s *Response) DeserializeResponse(res *http.Response) error {
 	err := json.NewDecoder(res.Body).Decode(s)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")

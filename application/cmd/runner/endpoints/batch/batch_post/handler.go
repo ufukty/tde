@@ -1,13 +1,12 @@
-package batch
+package batch_post
 
 import (
 	"fmt"
 	"net/http"
-	models "tde/models/dto"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	reqDTO := models.RunnerService_Batch_Request{}
+	reqDTO := Request{}
 	err := reqDTO.ParseRequest(r)
 	if err != nil {
 		fmt.Fprintln(w, "Error")

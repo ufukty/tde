@@ -1,6 +1,6 @@
 package ast
 
-//go:generate serdeser request-model.go
+//go:generate serdeser bind.go
 type Request struct {
 	ArchiveId string `json:"archive_id"`
 }

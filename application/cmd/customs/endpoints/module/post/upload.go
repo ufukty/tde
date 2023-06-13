@@ -3,7 +3,6 @@ package module
 import (
 	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"tde/internal/microservices/logger"
-	"tde/models/dto"
 
 	"crypto/md5"
 	"encoding/hex"
@@ -163,7 +162,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	var res = &dto.Customs_Upload_Response{
+	var res = &Response{
 		ArchiveID: archiveID,
 	}
 

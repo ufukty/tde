@@ -3,7 +3,6 @@ package evolution
 import (
 	"fmt"
 	"net/http"
-	"tde/models/dto"
 )
 
 // var (
@@ -11,7 +10,7 @@ import (
 // )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	reqDTO := dto.EvolverService_Evolve_Request{}
+	reqDTO := Request{}
 	err := reqDTO.ParseRequest(r)
 	if err != nil {
 		fmt.Fprintln(w, "Error")

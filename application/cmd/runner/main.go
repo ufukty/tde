@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tde/cmd/runner/controllers/batch"
+	"tde/cmd/runner/endpoints/batch/batch_post"
 	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/router"
 
@@ -16,7 +16,7 @@ func main() {
 	config_reader.Print(config.Runner)
 
 	router.StartRouter(config.Runner.RouterPublic, &config.Runner.RouterParameters, func(r *mux.Router) {
-		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch.Handler)
+		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch_post.Handler)
 		r.HandleFunc("/", router.NotFound)
 	})
 

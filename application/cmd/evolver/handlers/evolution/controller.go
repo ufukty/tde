@@ -1,9 +1,8 @@
 package evolution
 
 import (
-	"tde/cmd/evolver/internal/case-manager"
+	case_manager "tde/cmd/evolver/internal/case-manager"
 	"tde/internal/evolution"
-	"tde/models/dto"
 )
 
 type ArchiveStatus int
@@ -18,7 +17,7 @@ func validateArchiveID(archiveID string) ArchiveStatus {
 	return ArchiveNotFound
 }
 
-func Controller(request dto.EvolverService_Evolve_Request) (response dto.EvolverService_Evolve_Response) {
+func Controller(request Request) (response Response) {
 	archiveStatus := validateArchiveID(request.ArchiveID)
 	if archiveStatus == ArchiveNoAuth || archiveStatus == ArchiveNotFound {
 		response.Started = false
