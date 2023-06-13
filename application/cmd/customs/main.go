@@ -1,6 +1,7 @@
 package main
 
 import (
+	dbo "tde/cmd/customs/database"
 	ast_module_get "tde/cmd/customs/endpoints/ast/module/get"
 	module_get "tde/cmd/customs/endpoints/module/get"
 	module_post "tde/cmd/customs/endpoints/module/post"
@@ -23,6 +24,9 @@ func main() {
 		volumeManager = volume_manager.NewVolumeManager(config.Customs.MountPath)
 	)
 
+	dbo.Connect()
+	defer dbo.Close()
+
 	config_reader.Print(config.Customs)
 	module_post.RegisterVolumeManager(volumeManager)
 	module_get.RegisterVolumeManager(volumeManager)
@@ -33,7 +37,6 @@ func main() {
 		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
 		r.PathPrefix("/ast/module").Methods("GET").HandlerFunc(ast_module_get.Handler)
 		r.PathPrefix("/ast/module/package").Methods("GET").HandlerFunc(ast_module_get.Handler)
-
 	})
 
 	router.Wait(&config.Customs.RouterParameters)
