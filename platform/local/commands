@@ -25,4 +25,41 @@ run() {
 #     run-last-build "$PROGRAM_NAME" "$@"
 # }
 
+# MARK: Database
+
+database-migration-list() {
+    local PROGRAM_NAME="$1" && shift
+    test -z "$PROGRAM_NAME" && error "Specify a program name to run its migration script." && return
+    test ! -f "$WORKSPACE/application/$PROGRAM_NAME/migration/create.sql" && error "Program folder does not contain a migration script" && return
+    (
+        cd "$WORKSPACE"
+        find application/cmd -type f -name 'create.sql' | grep "migrations/create.sql\$"
+    )
+}
+
+database-migrate() {
+    local PROGRAM_NAME="$1" && shift
+    test -z "$PROGRAM_NAME" && error "Specify a program name to run its migration script." && return
+    local MIGRATION_SCRIPT="$WORKSPACE/application/$PROGRAM_NAME/migration/create.sql"
+    test ! -f "$MIGRATION_SCRIPT" && error "Program folder does not contain a migration script" && return
+    (
+        cd "$WORKSPACE/application/$PROGRAM_NAME"
+        psql -U "$PSQL_USER" -d postgres -f create.sql
+    )
+}
+
+database-connect() {
+    local DATABASE_NAME="$1" && shift
+    test -z "$DATABASE_NAME" && error "Specify a database name to connect." && return
+    psql -U "$PSQL_USER" -d "$DATABASE_NAME" "$@"
+}
+
+database-first-run() {
+    brew install postgresql@15
+}
+
+database-run() {
+    brew services run postgresql@15
+}
+
 SUBCOMMAND="$1" && shift && "$SUBCOMMAND" "$@"

@@ -7,9 +7,8 @@
             "mode": "debug",
             "program": "application/cmd/api-gateway",
             "cwd": "${workspaceFolder}/application",
-            "args": ["-config=../platform/debug/config.yml"]
-            // "showLog": true
-            // "console": "internalConsole"
+            "args": ["-config=../platform/debug/config.yml"],
+            "envFile": "${workspaceFolder}/platform/local/.env"
         },
         {
             "name": "Evolver",
@@ -18,9 +17,8 @@
             "mode": "debug",
             "program": "application/cmd/evolver",
             "cwd": "${workspaceFolder}/application",
-            "args": ["-config=../platform/debug/config.yml"]
-            // "showLog": true
-            // "console": "internalConsole"
+            "args": ["-config=../platform/debug/config.yml"],
+            "envFile": "${workspaceFolder}/platform/local/.env"
         },
         {
             "name": "Customs",
@@ -29,9 +27,8 @@
             "mode": "debug",
             "program": "application/cmd/customs",
             "cwd": "${workspaceFolder}/application",
-            "args": ["-config=../platform/debug/config.yml"]
-            // "showLog": true
-            // "console": "internalConsole"
+            "args": ["-config=../platform/debug/config.yml"],
+            "envFile": "${workspaceFolder}/platform/local/.env"
         }
     ]
 }
