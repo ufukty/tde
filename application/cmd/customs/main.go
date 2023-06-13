@@ -7,7 +7,7 @@ import (
 	module_post "tde/cmd/customs/endpoints/module/post"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
 	config_reader "tde/internal/microservices/config-reader"
-	"tde/internal/router"
+	"tde/internal/microservices/router"
 
 	"github.com/gorilla/mux"
 )

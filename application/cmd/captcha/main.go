@@ -2,7 +2,7 @@ package main
 
 import (
 	config_reader "tde/internal/microservices/config-reader"
-	"tde/internal/router"
+	"tde/internal/microservices/router"
 
 	"github.com/gorilla/mux"
 )

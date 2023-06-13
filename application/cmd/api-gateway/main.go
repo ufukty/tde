@@ -3,8 +3,8 @@ package main
 import (
 	"tde/cmd/api-gateway/forwarders/customs"
 	config_reader "tde/internal/microservices/config-reader"
+	"tde/internal/microservices/router"
 	service_discovery "tde/internal/microservices/service-discovery"
-	"tde/internal/router"
 
 	"github.com/gorilla/mux"
 )
