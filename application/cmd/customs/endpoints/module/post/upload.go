@@ -1,13 +1,13 @@
 package module
 
 import (
+	"tde/cmd/customs/internal/utilities"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"tde/internal/microservices/logger"
 
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -79,24 +79,24 @@ func checkHeaderContentLength(r *http.Request) error {
 }
 
 func checkMD5Sum(r *http.Request) error {
-	md5sumSent := r.FormValue("md5sum")
+	var (
+		err              error
+		filePart         multipart.File
+		md5sumSent       string
+		md5sumCalculated string
+	)
+
+	md5sumSent = r.FormValue("md5sum")
 	if md5sumSent == "" {
 		return errors.New("Error MD5 checksum not found")
 	}
 
-	filePart, _, err := r.FormFile("file")
+	filePart, _, err = r.FormFile("file")
 	if err != nil {
 		return errors.Wrap(err, "Error retrieving file")
 	}
 	defer filePart.Close()
-
-	hash := md5.New()
-	_, err = io.Copy(hash, filePart)
-	if err != nil {
-		return errors.Wrap(err, "Error calculating MD5 checksum")
-	}
-
-	md5sumCalculated := hex.EncodeToString(hash.Sum(nil))
+	md5sumCalculated, err = utilities.MD5(filePart)
 	if md5sumCalculated != md5sumSent {
 		return errors.New("MD5 checksum mismatch")
 	}

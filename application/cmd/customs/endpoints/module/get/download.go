@@ -1,16 +1,14 @@
 package module
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
+	"tde/cmd/customs/internal/utilities"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
 	"tde/internal/microservices/errors/bucket"
 	"tde/internal/microservices/errors/detailed"
 	"tde/internal/microservices/logger"
 	"time"
 
-	"io"
 	"net/http"
 	"os"
 
@@ -28,15 +26,6 @@ var (
 
 func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
 	volumeManager = vm
-}
-
-func checksum(fileHandler *os.File) (string, error) {
-	hash := md5.New()
-	var _, err = io.Copy(hash, fileHandler)
-	if err != nil {
-		return "", errors.Wrap(err, "Error calculating MD5 checksum")
-	}
-	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 func assertHeader(r *http.Request, headerField, want string) *detailed.DetailedError {
@@ -98,7 +87,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeContent(w, r, "file.zip", time.Now(), fileHandler)
 
-	digest, err = checksum(fileHandler)
+	digest, err = utilities.MD5(fileHandler)
 	if err != nil {
 		http.Error(w, "Could not calculate the checksum of file", http.StatusInternalServerError)
 		return
