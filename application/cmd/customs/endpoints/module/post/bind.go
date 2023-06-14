@@ -36,8 +36,8 @@ func NewRequest(file io.Reader) (*Request, error) {
 	req.body = bytes.NewBuffer([]byte{})
 	mpWriter = multipart.NewWriter(req.body)
 
-	var checksumFieldRead = bytes.NewBuffer([]byte{})
-	var fileFieldRead = io.TeeReader(file, checksumFieldRead)
+	var fileFieldRead = bytes.NewBuffer([]byte{})
+	var checksumFieldRead = io.TeeReader(file, fileFieldRead)
 
 	{
 		digest, err = utilities.MD5(checksumFieldRead)
