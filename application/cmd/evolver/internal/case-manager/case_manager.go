@@ -3,7 +3,6 @@ package case_manager
 import (
 	"errors"
 	"tde/internal/evolution"
-	common_models "tde/models/common-models"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ func NewCaseID() CaseID {
 
 type Case struct {
 	EvolutionManager *evolution.EvolutionManager
-	EvolutionConfig  *common_models.EvolutionConfig
+	EvolutionConfig  *evolution.EvolutionConfig
 }
 
 type CaseManager struct {

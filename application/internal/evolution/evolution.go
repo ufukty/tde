@@ -1,7 +1,6 @@
 package evolution
 
 import (
-	"tde/models/common-models"
 	models "tde/models/program"
 
 	"sort"
@@ -15,12 +14,12 @@ type Evaluator interface {
 
 type EvolutionManager struct {
 	Evaluation Evaluator
-	Target     *common_models.EvolutionTarget
+	Target     *EvolutionTarget
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewEvolutionManager(target *common_models.EvolutionTarget) *EvolutionManager {
+func NewEvolutionManager(target *EvolutionTarget) *EvolutionManager {
 	return &EvolutionManager{
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},

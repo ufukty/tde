@@ -9,7 +9,6 @@ import (
 	"tde/internal/folders/preparation"
 	slot_manager "tde/internal/folders/slot-manager"
 	"tde/internal/folders/types"
-	common_models "tde/models/common-models"
 
 	"fmt"
 	"go/ast"
@@ -34,7 +33,7 @@ type Command struct {
 	TestName   string              `precedence:"0"`
 }
 
-func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*common_models.EvolutionTarget, error) {
+func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*evolution.EvolutionTarget, error) {
 	pkgName := filepath.Base(importPath)
 
 	_, pkgs, err := astw_utl.LoadDir(string(modulePath.Join(packagePath)))
@@ -53,7 +52,7 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named function: \"%s\"", funcName))
 	}
 
-	return &common_models.EvolutionTarget{
+	return &evolution.EvolutionTarget{
 		Package:  pkg,
 		File:     file,
 		FuncDecl: funcDecl,

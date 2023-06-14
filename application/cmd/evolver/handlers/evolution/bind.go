@@ -1,15 +1,17 @@
 package evolution
 
-import common_models "tde/models/common-models"
+import (
+	"tde/internal/evolution"
+)
 
 //go:generate serdeser bind.go
 
 type (
 	Request struct {
-		ArchiveID       string                         `json:"archive_id"`
-		File            string                         `json:"file"`
-		EvolutionTarget *common_models.EvolutionTarget `json:"evolution_target"`
-		EvolutionConfig *common_models.EvolutionConfig `json:"evolution_config"`
+		ArchiveID       string                     `json:"archive_id"`
+		File            string                     `json:"file"`
+		EvolutionTarget *evolution.EvolutionTarget `json:"evolution_target"`
+		EvolutionConfig *evolution.EvolutionConfig `json:"evolution_config"`
 	}
 
 	Response struct {
