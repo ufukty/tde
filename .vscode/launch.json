@@ -29,6 +29,16 @@
             "cwd": "${workspaceFolder}/application",
             "args": ["-config=../platform/debug/config.yml"],
             "envFile": "${workspaceFolder}/platform/local/.env"
+        },
+        {
+            "name": "Client > Upload",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "application/cmd/client",
+            "cwd": "${workspaceFolder}/application",
+            "args": ["upload"],
+            "envFile": "${workspaceFolder}/platform/local/.env"
         }
     ]
 }
