@@ -1,14 +1,48 @@
 package session_post
 
+import (
+	"go/ast"
+	"tde/internal/evolution"
+)
+
 //go:generate serdeser bind.go
 
-type Request struct {
-	ArchiveId string `json:"archive_id"`
-	// SnapshotId string `json:"snapshot_id"` // TODO:
-	Iterations int `json:"iterations"`
-	Population int `json:"population"`
+type (
+	OnPremisesRunnerConfig struct {
+		Address string
+		Port    string
+		Token   string
+	}
 
-	Package int `json:"package"`
-}
+	EvolutionTarget struct {
+		// TODO: Module          map[string]*ast.Package // import path -> package
+		Package  *ast.Package
+		File     *ast.File
+		FuncDecl *ast.FuncDecl
+	}
 
-type Response struct{}
+	EvolutionConfig struct {
+		Timeout    int      // in seconds
+		Runner     string   // ip address
+		Continue   string   // session
+		Model      string   //
+		Ratios     string   //
+		Population int      //
+		Iterate    int      //
+		Size       int      //
+		Package    []string // packages allowed to import
+		TestName   string
+	}
+
+	Request struct {
+		ArchiveID       string                     `json:"archive_id"`
+		File            string                     `json:"file"`
+		EvolutionTarget *evolution.EvolutionTarget `json:"evolution_target"`
+		EvolutionConfig *evolution.EvolutionConfig `json:"evolution_config"`
+	}
+
+	Response struct {
+		Started bool
+		CaseID  string
+	}
+)

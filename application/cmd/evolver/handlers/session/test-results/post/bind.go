@@ -1,4 +1,4 @@
-package results
+package test_results_post
 
 //go:generate serdeser bind.go
 

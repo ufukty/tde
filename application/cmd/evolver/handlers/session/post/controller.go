@@ -1,4 +1,4 @@
-package evolution
+package session_post
 
 import (
 	case_manager "tde/cmd/evolver/internal/case-manager"

@@ -1,4 +1,4 @@
-package evolution
+package test_results_post
 
 import (
 	"bytes"
@@ -26,30 +26,14 @@ func (req *Request) ParseRequest(r *http.Request) error {
 	}
 	return nil
 }
-func (req *Request) Send(method, url string) (*Response, error) {
-	httpRequest, err := req.NewRequest(method, url)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on creating an object for request")
-	}
-	httpResponse, err := http.DefaultClient.Do(httpRequest)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on sending the request")
-	}
-	res := Response{}
-	err = res.DeserializeResponse(httpResponse)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on parsing the response body")
-	}
-	return &res, nil
-}
-func (res *Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
+func (res *EvolverService_Results_Response) SerializeIntoResponseWriter(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(res)
 	if err != nil {
 		return errors.Wrap(err, "failed on serialization")
 	}
 	return nil
 }
-func (s *Response) DeserializeResponse(res *http.Response) error {
+func (s *EvolverService_Results_Response) DeserializeResponse(res *http.Response) error {
 	err := json.NewDecoder(res.Body).Decode(s)
 	if err != nil {
 		return errors.Wrap(err, "failed on parsing the response body")

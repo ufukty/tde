@@ -1,8 +1,8 @@
 package main
 
 import (
-	handler_evolution "tde/cmd/evolver/handlers/evolution"
-	handler_results "tde/cmd/evolver/handlers/results"
+	session_post "tde/cmd/evolver/handlers/session/post"
+	test_results_post "tde/cmd/evolver/handlers/session/test-results/post"
 	case_manager "tde/cmd/evolver/internal/case-manager"
 	runner_communicator "tde/cmd/evolver/internal/runner-communicator"
 	config_reader "tde/internal/microservices/config-reader"
@@ -28,19 +28,15 @@ func main() {
 		log.Fatalln(errors.Wrap(err, "failed on launch"))
 	}
 
-	handler_evolution.RegisterCaseManager(cm)
-	handler_evolution.RegisterRunnerCommunicator(rc)
+	session_post.RegisterCaseManager(cm)
+	session_post.RegisterRunnerCommunicator(rc)
 
 	router.StartRouter(config.Evolver.RouterPublic, &config.Evolver.RouterParameters, func(r *mux.Router) {
-		r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
-		r.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
-		r.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
-		r.PathPrefix("/session").Methods("POST").HandlerFunc(handler_evolution.Handler)
-		r.PathPrefix("/").HandlerFunc(router.NotFound)
-	})
-
-	router.StartRouter(config.Evolver.RouterPrivate, &config.Evolver.RouterParameters, func(r *mux.Router) {
-		r.PathPrefix("/session/runner-results").Methods("POST").HandlerFunc(handler_results.Handler)
+		// r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)
+		// r.PathPrefix("/session/generation/{:individual-id}").Methods("GET").HandlerFunc(handler_results.Handler)
+		// r.PathPrefix("/session/generation").Methods("GET").HandlerFunc(handler_results.Handler)
+		r.PathPrefix("/session/test-results").Methods("POST").HandlerFunc(test_results_post.Handler)
+		r.PathPrefix("/session").Methods("POST").HandlerFunc(session_post.Handler)
 		r.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
