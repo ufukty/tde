@@ -97,6 +97,9 @@ func checkMD5Sum(r *http.Request) error {
 	}
 	defer filePart.Close()
 	md5sumCalculated, err = utilities.MD5(filePart)
+	if err != nil {
+		return errors.Wrap(err, "could not call the md5 utility")
+	}
 	if md5sumCalculated != md5sumSent {
 		return errors.New("MD5 checksum mismatch")
 	}
