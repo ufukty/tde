@@ -1,6 +1,6 @@
 package module
 
-//go:generate serdeser dto.go
+//go:generate serdeser bind.go
 
 type (
 	Request struct {
