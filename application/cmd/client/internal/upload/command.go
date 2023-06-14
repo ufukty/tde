@@ -6,7 +6,6 @@ import (
 	"tde/internal/folders/archive"
 	"tde/internal/folders/discovery"
 
-	"fmt"
 	"log"
 	"os"
 
@@ -37,26 +36,27 @@ func (c *Command) Run() {
 		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}
 
-	fmt.Println("Archive path:", zipPath)
+	log.Println("Archive path:", zipPath)
 	if c.OnlyArchive {
 		os.Exit(0)
 	}
 
 	fileHandler, err = os.Open(zipPath)
 	if err != nil {
-		panic(errors.Wrap(err, "Could not open file to upload"))
+		log.Fatalln(errors.Wrap(err, "Could not open file to upload"))
 	}
 	defer fileHandler.Close()
 
 	req, err = module.NewRequest(fileHandler)
 	if err != nil {
-		panic(errors.Wrap(err, "Could not create request"))
+		log.Fatalln(errors.Wrap(err, "Could not create request"))
 	}
 
+	log.Println("Uploading...")
 	resp, err = req.Send("POST", "http://127.0.0.1:8087/api/v1.0.0/customs/module")
 	if err != nil {
-		panic(errors.Wrap(err, "Failed"))
+		log.Fatalln(errors.Wrap(err, "Failed"))
 	}
 
-	fmt.Println("Archive ID:", resp.ArchiveID)
+	log.Println("Archive ID:", resp.ArchiveID)
 }
