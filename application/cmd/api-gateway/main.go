@@ -2,6 +2,7 @@ package main
 
 import (
 	"tde/cmd/api-gateway/forwarders/customs"
+	"tde/cmd/api-gateway/forwarders/evolver"
 	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/microservices/router"
 	service_discovery "tde/internal/microservices/service-discovery"
@@ -21,7 +22,7 @@ func main() {
 	router.StartRouter(config.APIGateway.RouterPublic, &config.APIGateway.RouterParameters, func(r *mux.Router) {
 		sub := r.PathPrefix("/api/v1.0.0").Subrouter()
 		sub.PathPrefix("/customs").HandlerFunc(customs.Forwarder)
-		// sub.PathPrefix("/evolve").HandlerFunc()
+		sub.PathPrefix("/evolve").HandlerFunc(evolver.Forwarder)
 		sub.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
