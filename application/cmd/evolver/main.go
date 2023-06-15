@@ -4,6 +4,7 @@ import (
 	session_post "tde/cmd/evolver/handlers/session/post"
 	test_results_post "tde/cmd/evolver/handlers/session/test-results/post"
 	case_manager "tde/cmd/evolver/internal/case-manager"
+	customs_proxy "tde/cmd/evolver/internal/customs-proxy"
 	runner_communicator "tde/cmd/evolver/internal/runner-communicator"
 	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/microservices/router"
@@ -20,6 +21,7 @@ func main() {
 		config = config_reader.GetConfig()
 		sd     = service_discovery.NewServiceDiscovery(config.Evolver.ServiceDiscoveryConfig, config.Evolver.ServiceDiscoveryUpdatePeriod)
 		cm     = case_manager.NewCaseManager()
+		cpc    = customs_proxy.New(config, sd)
 	)
 
 	config_reader.Print(config.Evolver)
@@ -28,8 +30,7 @@ func main() {
 		log.Fatalln(errors.Wrap(err, "failed on launch"))
 	}
 
-	session_post.RegisterCaseManager(cm)
-	session_post.RegisterRunnerCommunicator(rc)
+	session_post.Register(rc, cm, cpc)
 
 	router.StartRouter(config.Evolver.RouterPublic, &config.Evolver.RouterParameters, func(r *mux.Router) {
 		// r.PathPrefix("/session/hall-of-fame").Methods("GET").HandlerFunc(handler_results.Handler)

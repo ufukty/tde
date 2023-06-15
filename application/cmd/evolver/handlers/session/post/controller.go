@@ -25,8 +25,8 @@ func Controller(request Request) (response Response) {
 	}
 
 	cs := &case_manager.Case{
-		EvolutionManager: evolution.NewEvolutionManager(request.EvolutionTarget),
-		EvolutionConfig:  request.EvolutionConfig,
+		EvolutionManager: evolution.NewEvolutionManager((*evolution.EvolutionTarget)(&request.EvolutionTarget)),
+		EvolutionConfig:  (*evolution.EvolutionConfig)(&request.EvolutionConfig),
 	}
 	caseId := caseManager.NewCase(cs)
 	response.CaseID = string(caseId)

@@ -1,19 +1,19 @@
 package session_post
 
 import (
-	"tde/cmd/evolver/internal/case-manager"
-	"tde/cmd/evolver/internal/runner-communicator"
+	case_manager "tde/cmd/evolver/internal/case-manager"
+	customs_proxy "tde/cmd/evolver/internal/customs-proxy"
+	runner_communicator "tde/cmd/evolver/internal/runner-communicator"
 )
 
 var (
 	runnerCommunicator *runner_communicator.RunnerCommunicator
 	caseManager        *case_manager.CaseManager
+	customsProxyCache  *customs_proxy.Cache
 )
 
-func RegisterRunnerCommunicator(rc *runner_communicator.RunnerCommunicator) {
+func Register(rc *runner_communicator.RunnerCommunicator, cm *case_manager.CaseManager, cpc *customs_proxy.Cache) {
 	runnerCommunicator = rc
-}
-
-func RegisterCaseManager(cm *case_manager.CaseManager) {
 	caseManager = cm
+	customsProxyCache = cpc
 }
