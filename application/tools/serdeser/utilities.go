@@ -62,8 +62,14 @@ type ReqResPair struct {
 
 func FindReqResPairs(reqModels, resModels []*ast.Ident) (pairs []ReqResPair) {
 	for _, reqModel := range reqModels {
+		if len(reqModel.Name) < len("Request") {
+			continue
+		}
 		reqName := stripSuffix(reqModel.Name, "Request")
 		for _, resModel := range resModels {
+			if len(resModel.Name) < len("Request") {
+				continue
+			}
 			resName := stripSuffix(resModel.Name, "Response")
 			if reqName == resName {
 				pairs = append(pairs, ReqResPair{reqModel, resModel})
