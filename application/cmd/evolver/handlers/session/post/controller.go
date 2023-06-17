@@ -1,7 +1,7 @@
 package session_post
 
 import (
-	case_manager "tde/cmd/evolver/internal/case-manager"
+	sessions "tde/cmd/evolver/internal/sessions"
 	"tde/internal/evolution"
 )
 
@@ -20,18 +20,20 @@ func validateArchiveID(archiveID string) ArchiveStatus {
 func Controller(request Request) (response Response) {
 	archiveStatus := validateArchiveID(request.ArchiveID)
 	if archiveStatus == ArchiveNoAuth || archiveStatus == ArchiveNotFound {
-		response.Started = false
+		response.Status = sessions.Initialized
 		return
 	}
 
-	cs := &case_manager.Case{
-		EvolutionManager: evolution.NewEvolutionManager((*evolution.EvolutionTarget)(&request.EvolutionTarget)),
-		EvolutionConfig:  (*evolution.EvolutionConfig)(&request.EvolutionConfig),
-	}
-	caseId := caseManager.NewCase(cs)
-	response.CaseID = string(caseId)
-	response.Started = true
-	go caseManager.Iterate(caseId) // async
+	var (
+		sc        = &sessions.Config{}
+		em        = evolution.NewManager((*evolution.Target)(&request.EvolutionTarget))
+		session   = sessions.NewSession(em, sc)
+		sessionId = sessionStore.Add(session)
+	)
+
+	response.SessionId = string(sessionId)
+
+	// go sessionManager.Iterate(caseId) // async
 
 	return
 }

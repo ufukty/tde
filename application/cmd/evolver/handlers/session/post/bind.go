@@ -2,6 +2,8 @@ package session_post
 
 import (
 	"go/ast"
+	session_manager "tde/cmd/evolver/internal/sessions"
+	sessions "tde/cmd/evolver/internal/sessions"
 )
 
 //go:generate serdeser bind.go
@@ -29,28 +31,24 @@ type (
 		Timeout int    `json:"timeout"` // in seconds
 		Runner  string `json:"runner"`  // ip address
 
-		// Model         string        `json:"model"`
-		Probabilities Probabilities `json:"probabilities"`
-
-		Population      int      `json:"population"`
-		SizeLimit       int      `json:"size_limit"`
-		AllowedPackages []string `json:"allowed_packages"` // packages allowed to import
+		Probabilities   Probabilities `json:"probabilities"`
+		Population      int           `json:"population"`
+		SizeLimit       int           `json:"size_limit"`
+		AllowedPackages []string      `json:"allowed_packages"` // packages allowed to import
 
 		Iterate  int    `json:"iterate"`
 		TestName string `json:"test_name"`
 	}
 
 	Request struct {
-		ArchiveID string `json:"archive_id"`
-		// File      string `json:"file"`
-
+		ArchiveID       string          `json:"archive_id"`
 		Runner          Runner          `json:"runner"`
 		EvolutionTarget EvolutionTarget `json:"evolution_target"`
 		EvolutionConfig EvolutionConfig `json:"evolution_config"`
 	}
 
 	Response struct {
-		Started bool   `json:"Started"`
-		CaseID  string `json:"CaseID"`
+		SessionId string                 `json:"session_id"`
+		Status    session_manager.Status `json:"status"`
 	}
 )
