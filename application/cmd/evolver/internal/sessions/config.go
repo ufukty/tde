@@ -1,24 +1,13 @@
 package sessions
 
-import "go/ast"
-
-type Config struct {
-	Timeout    int      // in seconds
-	Runner     string   // ip address
-	Continue   string   // session
-	Model      string   //
-	Ratios     string   //
-	Population int      //
-	Iterate    int      //
-	Size       int      //
-	Package    []string // packages allowed to import
-	TestName   string
-}
+import (
+	"go/ast"
+	"time"
+)
 
 type (
 	Runner struct {
-		Address string `json:"address"`
-		Port    string `json:"port"`
+		Address string `json:"address"` // ip:port
 		Token   string `json:"token"`
 	}
 
@@ -34,16 +23,14 @@ type (
 		Mutation  float64 `json:"mutation"`
 	}
 
-	Config2 struct {
-		Timeout int    `json:"timeout"` // in seconds
-		Runner  string `json:"runner"`  // ip address
+	Config struct {
+		Timeout time.Duration `json:"timeout"` // in seconds
+		Runner  Runner        `json:"runner"`  // ip address
 
-		// Model         string        `json:"model"`
-		Probabilities Probabilities `json:"probabilities"`
-
-		Population      int      `json:"population"`
-		SizeLimit       int      `json:"size_limit"`
-		AllowedPackages []string `json:"allowed_packages"` // packages allowed to import
+		Probabilities   Probabilities `json:"probabilities"`
+		Population      int           `json:"population"`
+		SizeLimit       int           `json:"size_limit"`
+		AllowedPackages []string      `json:"allowed_packages"` // packages allowed to import
 
 		Iterate  int    `json:"iterate"`
 		TestName string `json:"test_name"`

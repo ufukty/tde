@@ -6,6 +6,8 @@ import (
 	service_discovery "tde/internal/microservices/service-discovery"
 	"tde/internal/microservices/service-discovery/models/services"
 	models "tde/models/program"
+
+	"github.com/pkg/errors"
 )
 
 type Cache struct {
@@ -26,6 +28,10 @@ func (c *Cache) Get(id models.CandidateID) (*models.Candidate, error) {
 	}
 
 	// cache miss
+	var customs, err = c.lb.Next()
+	if err != nil {
+		return nil, errors.Wrap(err, "No instances of Customs are accessible")
+	}
 
 	return nil, nil
 }

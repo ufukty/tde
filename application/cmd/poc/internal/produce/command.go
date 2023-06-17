@@ -33,7 +33,7 @@ type Command struct {
 	TestName   string              `precedence:"0"`
 }
 
-func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*evolution.EvolutionTarget, error) {
+func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*evolution.Target, error) {
 	pkgName := filepath.Base(importPath)
 
 	_, pkgs, err := astw_utl.LoadDir(string(modulePath.Join(packagePath)))
@@ -52,7 +52,7 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named function: \"%s\"", funcName))
 	}
 
-	return &evolution.EvolutionTarget{
+	return &evolution.Target{
 		Package:  pkg,
 		File:     file,
 		FuncDecl: funcDecl,
@@ -82,7 +82,7 @@ func (c *Command) Run() {
 
 	var session = slot_manager.NewSession(prepPath, testDetails)
 	var evaluator = evaluation.NewEvaluator(session)
-	var evolution = evolution.NewEvolutionManager(evolutionTarget)
+	var evolution = evolution.NewManager(evolutionTarget)
 
 	evolution.InitPopulation(c.Population)
 

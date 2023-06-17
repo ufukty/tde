@@ -12,22 +12,22 @@ type Evaluator interface {
 	Pipeline(candidates []*models.Candidate)
 }
 
-type EvolutionManager struct {
+type Manager struct {
 	Evaluation Evaluator
-	Target     *EvolutionTarget
+	Target     *Target
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewEvolutionManager(target *EvolutionTarget) *EvolutionManager {
-	return &EvolutionManager{
+func NewManager(target *Target) *Manager {
+	return &Manager{
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},
 		Candidates: map[models.CandidateID]*models.Candidate{},
 	}
 }
 
-func (e *EvolutionManager) InitPopulation(n int) error {
+func (e *Manager) InitPopulation(n int) error {
 	for i := 0; i < n; i++ {
 		var candidate, err = models.NewCandidate(e.Target.Package, e.Target.File, e.Target.FuncDecl)
 		if err != nil {
@@ -38,13 +38,13 @@ func (e *EvolutionManager) InitPopulation(n int) error {
 	return nil
 }
 
-func (e *EvolutionManager) Select() {
+func (e *Manager) Select() {
 	// for _, individual := range e.Individuals {
 	// 	individual.Fitness
 	// }
 }
 
-func (e *EvolutionManager) SortedByFitness() []*models.Candidate {
+func (e *Manager) SortedByFitness() []*models.Candidate {
 	ordered := []*models.Candidate{}
 	for _, ind := range e.Candidates {
 		ordered = append(ordered, ind)
@@ -56,7 +56,7 @@ func (e *EvolutionManager) SortedByFitness() []*models.Candidate {
 }
 
 // This won't perform evaluation and will expect the fitnesses are already set
-func (e *EvolutionManager) IterateLoop() {
+func (e *Manager) IterateLoop() {
 	// TODO: selection
 	// TODO: reproduction
 }

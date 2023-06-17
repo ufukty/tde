@@ -2,7 +2,15 @@ package sessions
 
 import (
 	"errors"
+
+	"github.com/google/uuid"
 )
+
+type SessionId string
+
+func NewSessionId() SessionId {
+	return SessionId(uuid.NewString())
+}
 
 type Store struct {
 	sessions map[SessionId]*Session
@@ -32,9 +40,9 @@ func (s *Store) Iterate(sessionId SessionId) error {
 		return errors.New("")
 	}
 
-	session.EvolutionManager.InitPopulation(session.Config.Population)
+	session.Manager.InitPopulation(session.Config.Population)
 	// TODO: make request to runner
-	session.EvolutionManager.IterateLoop()
+	session.Manager.IterateLoop()
 
 	return nil
 }

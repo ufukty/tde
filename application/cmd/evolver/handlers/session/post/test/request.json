@@ -1,0 +1,22 @@
+{
+    "archive_id": "00000000-0000-0000-0000-000000000001",
+    "timeout": 720,
+    "runner": {
+        "address": "127.0.0.1:8087/api/v1.0.0",
+        "token": ""
+    },
+    "probabilities": {
+        "cross_over": 1,
+        "mutation": 1
+    },
+    "population": 10000,
+    "size_limit_bytes": 1000,
+    "allowed_packages": ["fmt", "math", "log"],
+    "iterate": 1,
+    "test_name": "TDE_Walk",
+    "target": {
+        "package": "internal/test-package",
+        "file": "walk.go",
+        "function": "Walk"
+    }
+}
