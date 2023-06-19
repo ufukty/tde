@@ -36,7 +36,7 @@ check-python-pkg() {
 }
 
 _commands_completion() {
-    _shortlist="$(cat commands | grep "() {" | tr -cd '[A-Za-z\-\n]')"
+    _shortlist="$(cat commands | grep -E "^[^ ]+\(\) [\{\(]" | tr -cd '[A-Za-z\-\n]')"
     local cur
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
