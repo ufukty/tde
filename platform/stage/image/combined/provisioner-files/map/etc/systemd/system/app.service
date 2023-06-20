@@ -1,0 +1,15 @@
+[Unit]
+Description=Picarus Sync application server
+# After=app-db-tunnel.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+ExecStart=/var/wwwapp/picarus-sync
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=/var/log/{{PROJECT_PREFIX}}-app/backup.log
+
+[Install]
+WantedBy=multi-user.target
