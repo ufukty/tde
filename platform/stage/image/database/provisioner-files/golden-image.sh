@@ -4,6 +4,14 @@
 
 PS4="\033[36m$(realpath --relative-to="$(dirname "$WORKSPACE")" "$(pwd -P)")\033[32m/\$(basename \"\${BASH_SOURCE}\"):\${LINENO}\033[0m\033[33m\${FUNCNAME[0]:+/\${FUNCNAME[0]}():}\033[0m "
 set -o xtrace
+# ------------------------------------------------------------- #
+# Include
+# ------------------------------------------------------------- #
+
+PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
+cd "$PROVISIONER_FILES"
+. utilities.sh
+. secrets.sh
 
 # ------------------------------------------------------------- #
 # Variables
@@ -13,14 +21,6 @@ set -o xtrace
 POSTGRES_USER="${POSTGRES_USER:?"POSTGRES_USER is required"}"
 
 POSTGRES_REGULAR_USER_PASSWD_HASHED="${POSTGRES_REGULAR_USER_PASSWD_HASHED:?"POSTGRES_REGULAR_USER_PASSWD_HASHED is required"}"
-
-# ------------------------------------------------------------- #
-# Include
-# ------------------------------------------------------------- #
-
-PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
-cd "$PROVISIONER_FILES"
-. utilities.sh
 
 # ------------------------------------------------------------- #
 # Tasks

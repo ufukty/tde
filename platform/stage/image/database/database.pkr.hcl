@@ -47,11 +47,8 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = [
-        "POSTGRES_USER=tde_postgres"
-    ]
     inline = [
-      "cd ~/provisioner-files && source secrets.sh && sudo -u root --preserve-env bash golden-image.sh'",
+      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image.sh'",
       "rm -rfv ~/provisioner-files"
     ]
   }
