@@ -133,6 +133,8 @@ Temporary Items
 
 build
 artifacts
+secrets
+secrets.sh
 
 # to ignore tde package created by tde
 application/examples/**/tde
