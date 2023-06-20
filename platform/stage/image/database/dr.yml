@@ -1,0 +1,11 @@
+pre_tasks:
+  - echo "Don't forget 'ssh-agent'"
+  - echo "Don't forget connect to VPN"
+
+depends_on:
+  folder: ../internal
+
+post_tasks:
+  - export BASE_IMAGE_ID="$(doctl compute image list | grep packer-internal | tail -n 1 | cut -d $' ' -f 1)"
+  - export VPC_UUID="$( doctl vpcs list | grep dth-fra1 | cut -d $' ' -f 1 )"
+  - packer build -force -on-error=abort database.pkr.hcl

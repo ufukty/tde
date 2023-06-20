@@ -74,17 +74,23 @@ ssh-key-update() {
     wait $(jobs -p)
 }
 
-generate-keys() {
-    (
-        cd certificates
-        folders=("dasds" "asdasd")
-        cat "$folders" | while read folder; do
-            (
-                echo $folder
-                # openssl -a 4000 -b 1024 -C "" -o -t rsa
-            )
-        done
+generate-ca() (
+    cd "$WORKSPACE/platform/stage/secrets"
+    easyrsa init-pki soft
+    easyrsa --batch --req-cn="TDE-CA" build-ca nopass
+)
+
+generate-keys() (
+    ssh-app-db() (
+        mkdir -p "image/ssh-app-db" && cd "image/ssh-app-db"
+        ssh-keygen -a 1000 -b 4096 -C "ssh-app-db" -o -t rsa -f app-db -N '' >/dev/null
     )
-}
+    tls-app-db() (
+        easyrsa --batch build-server-full app-db nopass
+    )
+    mkdir -p "$WORKSPACE/platform/stage/secrets" && cd "$WORKSPACE/platform/stage/secrets"
+    ssh-app-db
+    tls-app-db
+)
 
 COMMAND="$1" && shift && $COMMAND "$@"

@@ -66,16 +66,16 @@ function configure-ssh() {
 
 function deploy-tls-certificates() {
     # "moving files"
-    mv "$PROVISIONER_FILES/sync.picarus.net.crt" "/etc/ssl/certs/sync.picarus.net.crt"
-    mv "$PROVISIONER_FILES/sync.picarus.net.key" "/etc/ssl/private/sync.picarus.net.key"
+    mv "$PROVISIONER_FILES/app-db.crt" "/etc/ssl/certs/app-db.crt"
+    mv "$PROVISIONER_FILES/app-db.key" "/etc/ssl/private/app-db.key"
 
     # "adjust permissions"
-    chmod 755 "/etc/ssl/certs/sync.picarus.net.crt"
-    chmod 755 "/etc/ssl/private/sync.picarus.net.key"
+    chmod 755 "/etc/ssl/certs/app-db.crt"
+    chmod 755 "/etc/ssl/private/app-db.key"
 
     # "adjust ownership"
-    chown root:root "/etc/ssl/certs/sync.picarus.net.crt"
-    chown root:root "/etc/ssl/private/sync.picarus.net.key"
+    chown root:root "/etc/ssl/certs/app-db.crt"
+    chown root:root "/etc/ssl/private/app-db.key"
 }
 
 function configure-logging() {
@@ -103,15 +103,13 @@ with-echo restart_journald
 with-echo remove_password_change_requirement
 with-echo check_tun_availability
 with-echo wait_cloud_init
+with-echo apt_update
 
+with-echo deploy_provisioner_files
 
-with-echo app-db-tunnel
+# with-echo app-db-tunnel
 with-echo app-service
 with-echo configure-iptables
 with-echo configure-ssh
 with-echo deploy-tls-certificates
 with-echo configure-logging
-
-with-echo apt_update
-
-with-echo deploy_provisioner_files

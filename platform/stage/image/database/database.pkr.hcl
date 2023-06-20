@@ -37,33 +37,22 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "${path.root}/provisioner-files"
+    source      = "./provisioner-files"
     destination = "~"
   }
 
   provisioner "file" {
-    source      = "${path.root}/../../secrets/image/ssh-app-db/app-db"
-    destination = "~/provisioner-files/ssh-application-db"
-  }
-
-  provisioner "file" {
-    source      = "${path.root}/../../../secrets/pki/issued/app-db.crt"
-    destination = "~/provisioner-files/app-db.crt"
-  }
-
-  provisioner "file" {
-    source      = "${path.root}/../../../secrets/pki/private/app-db.key"
-    destination = "~/provisioner-files/app-db.key"
+    source      = "${path.root}/../../secrets/image/ssh-app-db/app-db.pub"
+    destination = "~/provisioner-files/ssh-app-db.pub"
   }
 
   provisioner "shell" {
     environment_vars = [
-      "POSTGRES_USER=nil",
-      "POSTGRES_SERVER_PRIVATE_IP=nil",
-      "IPTABLES_PRIVATE_ETHERNET_INTERFACE=eth1"
+        "POSTGRES_USER=tde_postgres"
     ]
     inline = [
-      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image.sh"
+      "cd ~/provisioner-files && source secrets.sh && sudo -u root --preserve-env bash golden-image.sh'",
+      "rm -rfv ~/provisioner-files"
     ]
   }
 
