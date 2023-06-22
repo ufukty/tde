@@ -47,6 +47,8 @@ all() {
     deploy
 }
 
+// MARK: VPN
+
 vpn-totp() {
     test -n "$(find artifacts/vpn -name '*totp*')" && (
         cd artifacts/vpn &&
@@ -74,6 +76,8 @@ ssh-key-update() {
     wait $(jobs -p)
 }
 
+// MARK: SECRETS
+
 generate-ca() (
     cd "$WORKSPACE/platform/stage/secrets"
     easyrsa init-pki soft
@@ -96,6 +100,8 @@ generate-keys() (
     tls-application
     tls-non-specific
 )
+
+// MARK: IMAGE
 
 image-clean() {
     function filter_out_latest_images() {
