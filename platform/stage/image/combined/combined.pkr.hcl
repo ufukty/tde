@@ -37,13 +37,8 @@ build {
   sources = ["source.digitalocean.droplet"]
 
   provisioner "file" {
-    source      = "./provisioner-files"
+    source      = "${path.root}/provisioner-files"
     destination = "~"
-  }
-
-  provisioner "file" {
-    source      = "${path.root}/../../secrets/image/ssh-app-db/app-db.pub"
-    destination = "~/provisioner-files/ssh-app-db.pub"
   }
 
   provisioner "file" {
