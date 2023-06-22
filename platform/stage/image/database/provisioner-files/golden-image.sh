@@ -2,8 +2,6 @@
 
 # TODO: Harden Postgres https://www.cybertec-postgresql.com/en/postgresql-security-things-to-avoid-in-real-life/
 
-PS4="\033[36m$(realpath --relative-to="$(dirname "$WORKSPACE")" "$(pwd -P)")\033[32m/\$(basename \"\${BASH_SOURCE}\"):\${LINENO}\033[0m\033[33m\${FUNCNAME[0]:+/\${FUNCNAME[0]}():}\033[0m "
-set -o xtrace
 # ------------------------------------------------------------- #
 # Include
 # ------------------------------------------------------------- #
@@ -80,17 +78,17 @@ function configure-ssh() {
 # Main
 # ------------------------------------------------------------- #
 
-with-echo assert_sudo
-with-echo restart_journald
-with-echo remove_password_change_requirement
-with-echo wait_cloud_init
-with-echo apt_update
+assert_sudo
+restart_journald
+remove_password_change_requirement
+wait_cloud_init
+apt_update
 
-with-echo deploy_provisioner_files
+deploy_provisioner_files
 
-with-echo install-postgresql
-with-echo configure-postgresql
-with-echo postgresql-create-user-and-database
-with-echo restart-postgresql
-with-echo change-postgresql-password
-with-echo configure-ssh
+install-postgresql
+configure-postgresql
+postgresql-create-user-and-database
+restart-postgresql
+change-postgresql-password
+configure-ssh

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PROVISIONER_FILES="$(pwd -P)"
-
 . utilities.sh
 
 # ---------------------------------------------------------------------------- #
@@ -9,23 +8,23 @@ PROVISIONER_FILES="$(pwd -P)"
 # ---------------------------------------------------------------------------- #
 
 function install_utilities() {
-    with-echo retry apt-get install -y ipcalc
+    retry apt-get install -y ipcalc
 }
 
 function install_openvpn() {
-    with-echo retry apt-get install -y ca-certificates gnupg openvpn iptables openssl wget ca-certificates curl
+    retry apt-get install -y ca-certificates gnupg openvpn iptables openssl wget ca-certificates curl
     test -d /etc/openvpn/easy-rsa && rm -rf /etc/openvpn/easy-rsa
     return "0"
 }
 
 function install_argon2() {
     (
-        with-echo cd dependencies
-        with-echo tar -xvf phc-winner-argon2-20190702.tar.gz
-        with-echo retry apt-get install -y gcc build-essential
+        cd dependencies
+        tar -xvf phc-winner-argon2-20190702.tar.gz
+        retry apt-get install -y gcc build-essential
         (
-            with-echo cd phc-winner-argon2-20190702
-            with-echo make install
+            cd phc-winner-argon2-20190702
+            make install
         )
     )
 }
@@ -33,41 +32,41 @@ function install_argon2() {
 function install_easy_rsa() {
     mkdir -p /etc/openvpn/easy-rsa
     (
-        with-echo cd dependencies
-        with-echo tar xzf EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
+        cd dependencies
+        tar xzf EasyRSA-3.1.3.tgz --strip-components=1 --directory /etc/openvpn/easy-rsa
     )
 }
 
 function install_ovpn_auth() {
     (
-        with-echo cd dependencies
-        with-echo tar -xzf ovpn-auth-210813-linux-amd64.tar.gz
-        with-echo mv ovpn-auth /etc/openvpn/ovpn-auth
-        with-echo chmod 755 /etc/openvpn/ovpn-auth
-        with-echo chown root:root /etc/openvpn/ovpn-auth
+        cd dependencies
+        tar -xzf ovpn-auth-210813-linux-amd64.tar.gz
+        mv ovpn-auth /etc/openvpn/ovpn-auth
+        chmod 755 /etc/openvpn/ovpn-auth
+        chown root:root /etc/openvpn/ovpn-auth
     )
 }
 
 function install_unbound() {
-    with-echo retry apt-get install -y unbound
+    retry apt-get install -y unbound
 }
 
 # ---------------------------------------------------------------------------- #
 # Main
 # ---------------------------------------------------------------------------- #
 
-with-echo assert_sudo
-with-echo restart_journald
-with-echo check_tun_availability
-with-echo wait_cloud_init
+assert_sudo
+restart_journald
+check_tun_availability
+wait_cloud_init
 
-with-echo apt_update
+apt_update
 
-with-echo install_utilities
-with-echo install_openvpn
-with-echo install_argon2
-with-echo install_easy_rsa
-with-echo install_ovpn_auth
-with-echo install_unbound
+install_utilities
+install_openvpn
+install_argon2
+install_easy_rsa
+install_ovpn_auth
+install_unbound
 
-with-echo deploy_provisioner_files
+deploy_provisioner_files

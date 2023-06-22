@@ -1,8 +1,5 @@
 #!/bin/bash
 
-PS4='\033[36m@echo\033[0m \033[31m${BASH_SOURCE}:${LINENO}\033[0m: \033[33m${FUNCNAME[0]:+${FUNCNAME[0]}(): }\033[0m'
-set -o xtrace
-
 # ---------------------------------------------------------------------------- #
 # Required variables
 # ---------------------------------------------------------------------------- #
@@ -45,13 +42,13 @@ function fail2ban_configure() {
 # Main
 # ---------------------------------------------------------------------------- #
 
-with-echo assert_sudo
-with-echo restart_journald
-with-echo remove_password_change_requirement
-with-echo wait_cloud_init
+assert_sudo
+restart_journald
+remove_password_change_requirement
+wait_cloud_init
 
-with-echo deploy_provisioner_files
+deploy_provisioner_files
 
-with-echo iptables_configure
-# with-echo sshd_configure
-with-echo fail2ban_configure
+iptables_configure
+# sshd_configure
+fail2ban_configure
