@@ -1,4 +1,4 @@
-/var/log/picarus-sync-app/*.log {
+/var/log/tde.d/*.log {
     daily
     missingok
     rotate 7

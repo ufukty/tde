@@ -85,12 +85,16 @@ generate-keys() (
         mkdir -p "image/ssh-app-db" && cd "image/ssh-app-db"
         ssh-keygen -a 1000 -b 4096 -C "ssh-app-db" -o -t rsa -f app-db -N '' >/dev/null
     )
-    tls-app-db() (
-        easyrsa --batch build-server-full app-db nopass
+    tls-application() (
+        easyrsa --batch build-server-full tde-application nopass
+    )
+    tls-non-specific() (
+        easyrsa --batch build-server-full tde-non-specific nopass
     )
     mkdir -p "$WORKSPACE/platform/stage/secrets" && cd "$WORKSPACE/platform/stage/secrets"
     ssh-app-db
-    tls-app-db
+    tls-application
+    tls-non-specific
 )
 
 image-clean() {

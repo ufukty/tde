@@ -46,10 +46,19 @@ build {
     destination = "~/provisioner-files/ssh-app-db.pub"
   }
 
+  provisioner "file" {
+    source      = "${path.root}/../../secrets/pki/issued/tde-non-specific.crt"
+    destination = "~/provisioner-files/tde-non-specific.crt"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/../../secrets/pki/private/tde-non-specific.key"
+    destination = "~/provisioner-files/tde-non-specific.key"
+  }
+
   provisioner "shell" {
     inline = [
-      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image-db.sh",
-      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image-app.sh",
+      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image.sh",
       "rm -rfv ~/provisioner-files"
     ]
   }
