@@ -1,12 +1,9 @@
 #!/bin/bash
 
-function with-echo() {
-    echo -e "\033[35m@echo\033[0m $@" && $@
-    ret=$?
-    if [ $ret -ne 0 ]; then
-        echo -e "\033[35m@echo run has failed\033[0m" && exit $ret
-    fi
-}
+PS4="\033[36m$(realpath --relative-to="$(dirname "$WORKSPACE")" "$(pwd -P)")\033[32m/\$(basename \"\${BASH_SOURCE}\"):\${LINENO}\033[0m\033[33m\${FUNCNAME[0]:+/\${FUNCNAME[0]}():}\033[0m "
+set -o xtrace
+
+SUDO_USER="${SUDO_USER:?"SUDO_USER is required"}"
 
 function retry() {
     count=0
@@ -21,7 +18,7 @@ function retry() {
 }
 
 function apt_update() {
-    with-echo retry apt-get update
+    retry apt-get update
 }
 
 function restart_journald() {
@@ -33,6 +30,7 @@ function assert_sudo() {
 }
 
 function remove_password_change_requirement() {
+    # info "remove password change requirement to root"
     sed --in-place -E 's/root:(.*):0:0:(.*):/root:\1:18770:0:\2:/g' /etc/shadow
 }
 
