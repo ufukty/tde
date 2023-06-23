@@ -16,7 +16,7 @@ ${host.name} ansible_host=${host.ipv4_address_private} ipv4_address=${host.ipv4_
 %{ for service, hosts in resources.services ~}
 [${provider}-${region}-${service}:vars]
 ansible_connection=ssh 
-ansible_user=2iuFDs13YDedYc3N
+ansible_user=olwgtzjzhnvexhpr
 vpc_cidr=${resources.vpc.ip_range}
 %{ endfor ~}
 %{ endfor ~}

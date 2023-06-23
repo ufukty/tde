@@ -13,7 +13,7 @@ variables {
 }
 
 locals {
-  sudo_user     = "2iuFDs13YDedYc3N"
+  sudo_user     = "olwgtzjzhnvexhpr"
   dir_name      = basename(abspath(path.root))
   now           = formatdate("YY-MM-DD-'T'-hh-mm-ss-ZZZ", timestamp())
   snapshot_name = replace("packer-${local.dir_name}-${local.now}", "_", "_")

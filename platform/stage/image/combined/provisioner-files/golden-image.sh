@@ -16,9 +16,16 @@ cd "$PROVISIONER_FILES"
 # ------------------------------------------------------------- #
 
 # A Linux and Postgres user will be created with this name, in addition to a Postgres Database
-POSTGRES_USER="${POSTGRES_USER:?"POSTGRES_USER is required"}"
+APP_USER="${APP_USER:?"APP_USER is required"}"
+APP_USER_POSTGRES_PASSWD_HASH="${APP_USER_POSTGRES_PASSWD_HASH:?"APP_USER_POSTGRES_PASSWD_HASH is required"}"
 
-POSTGRES_REGULAR_USER_PASSWD_HASHED="${POSTGRES_REGULAR_USER_PASSWD_HASHED:?"POSTGRES_REGULAR_USER_PASSWD_HASHED is required"}"
+# ---------------------------------------------------------------------------- #
+# Miscellaneous Tasks
+# ---------------------------------------------------------------------------- #
+
+function create-user() {
+    adduser --disabled-password --gecos "" "$APP_USER"
+}
 
 # ------------------------------------------------------------- #
 # Database related tasks
@@ -48,9 +55,8 @@ function configure-postgresql() {
 
 function postgresql-create-user-and-database() {
     # Source: https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
-    adduser --disabled-password --gecos "" "$POSTGRES_USER"
-    sudo -u postgres createuser --createdb --no-superuser --no-createrole --no-replication "$POSTGRES_USER"
-    sudo -u "$POSTGRES_USER" createdb "$POSTGRES_USER"
+    sudo -u postgres createuser --createdb --no-superuser --no-createrole --no-replication "$APP_USER"
+    sudo -u "$APP_USER" createdb "$APP_USER"
 }
 
 function restart-postgresql() {
@@ -59,9 +65,9 @@ function restart-postgresql() {
 
 function change-postgresql-password() {
     # source: https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781789537581/1/ch01lvl1sec18/changing-your-password-securely
-    sudo -u "$POSTGRES_USER" psql -c "ALTER USER \"$POSTGRES_USER\" PASSWORD '$POSTGRES_REGULAR_USER_PASSWD_HASHED';"
-    # sudo -u $POSTGRES_USER psql -c "ALTER USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_REGULAR_USER_PASSWD_CLEAR_TEXT';" # clear text version of password
-    rm -rfv "/home/$POSTGRES_USER/.psql_history"
+    sudo -u "$APP_USER" psql -c "ALTER USER \"$APP_USER\" PASSWORD '$APP_USER_POSTGRES_PASSWD_HASH';"
+    # sudo -u $APP_USER psql -c "ALTER USER \"$APP_USER\" WITH PASSWORD '$POSTGRES_REGULAR_USER_PASSWD_CLEAR_TEXT';" # clear text version of password
+    rm -rfv "/home/$APP_USER/.psql_history"
 }
 
 # ---------------------------------------------------------------------------- #
@@ -96,6 +102,8 @@ restart_journald
 remove_password_change_requirement
 wait_cloud_init
 apt_update
+
+create-user
 
 remove-outdated-postgres
 install-postgresql

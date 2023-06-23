@@ -1,11 +1,17 @@
 [Unit]
 Description=App server for runner
+# After=app-db-tunnel.service
 
 [Service]
-User=2iuFDs13YDedYc3N
-WorkingDirectory=/home/2iuFDs13YDedYc3N
-ExecStart=/home/2iuFDs13YDedYc3N/runner -config=/home/2iuFDs13YDedYc3N/config.yml
+Type=simple
+User=tde_app
+WorkingDirectory=/home/tde_app
+ExecStart=/home/tde_app/runner -config=/home/tde_app/config.yml
 Restart=always
+RestartSec=5s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=/var/log/tde.d/backup.log
 
 [Install]
 WantedBy=multi-user.target

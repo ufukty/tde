@@ -2,15 +2,15 @@
 - hosts: all
   name: Configure all servers
   serial: 100%
+  become: true
   vars:
     workspace_dir: "{{ playbook_dir }}/../../.."
-
+    app_user: tde_app
   tasks:
     - name: Restart journald
       systemd:
         name: systemd-journald
         state: restarted
-      become: true
 
     - name: service_discovery.json
       ansible.builtin.copy:
@@ -20,8 +20,8 @@
 
     - name: config.yml
       ansible.builtin.copy:
-        src: "files/home/2iuFDs13YDedYc3N/config.yml"
-        dest: "/home/2iuFDs13YDedYc3N/config.yml"
+        src: "files/home/{{ app_user }}/config.yml"
+        dest: "/home/{{ app_user }}/config.yml"
         mode: "0600"
 
     - name: Put the binary and set systemd item
@@ -33,6 +33,6 @@
 
 - hosts: customs
   name: mount disk
+  become: true
   roles:
     - role: mount_volume
-      become: true

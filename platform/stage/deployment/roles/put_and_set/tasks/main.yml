@@ -19,10 +19,10 @@
 - name: Copy binaries
   ansible.builtin.copy:
     src: "{{ workspace_dir }}/{{ program_name_command.stdout }}"
-    dest: "/home/2iuFDs13YDedYc3N/{{ program_name }}"
+    dest: "/home/{{ app_user }}/{{ program_name }}"
     mode: "0700"
-    owner: 2iuFDs13YDedYc3N
-    group: 2iuFDs13YDedYc3N
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
   tags: redeploy
 
 - name: sudo block

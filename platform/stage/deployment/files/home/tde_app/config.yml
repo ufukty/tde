@@ -8,7 +8,7 @@ router-parameters: &router-parameters
 
 common: &common
   <<: *router-parameters
-  service-discovery-config: /home/2iuFDs13YDedYc3N/service_discovery.json
+  service-discovery-config: /home/tde_app/service_discovery.json
   service-discovery-update-period: 30s
   router-public: :8080
   router-private: :8081

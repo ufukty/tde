@@ -43,6 +43,25 @@ data "digitalocean_droplet_snapshot" "gateway" {
   region      = local.region
   most_recent = true
 }
+
+# data "digitalocean_droplet_snapshot" "application" {
+#   name_regex  = "^packer-application-.*"
+#   region      = local.region
+#   most_recent = true
+# }
+
+data "digitalocean_droplet_snapshot" "combined" {
+  name_regex  = "^packer-combined-.*"
+  region      = local.region
+  most_recent = true
+}
+
+# data "digitalocean_droplet_snapshot" "compiled" {
+#   name_regex  = "^packer-compiled-.*"
+#   region      = local.region
+#   most_recent = true
+# }
+
 data "digitalocean_vpc" "vpc" {
   name = "${var.project_prefix}-${local.region}"
 }
@@ -67,7 +86,7 @@ resource "digitalocean_droplet" "runner" {
 resource "digitalocean_droplet" "evolver" {
   count = local.instances.evolver
 
-  image  = data.digitalocean_droplet_snapshot.internal.id
+  image  = data.digitalocean_droplet_snapshot.combined.id
   name   = "${local.region}-evolver-${count.index}"
   region = local.region
   size   = local.slug
@@ -89,7 +108,7 @@ data "digitalocean_volume" "customs_storage_volume" {
 resource "digitalocean_droplet" "customs" {
   count = 1
 
-  image      = data.digitalocean_droplet_snapshot.internal.id
+  image      = data.digitalocean_droplet_snapshot.combined.id
   name       = "${local.region}-customs-${count.index}"
   region     = local.region
   size       = local.slug
