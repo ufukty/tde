@@ -95,8 +95,6 @@ remove_password_change_requirement
 wait_cloud_init
 apt_update
 
-create-user
-
 remove-outdated-postgres
 install-postgresql
 deploy_provisioner_files
