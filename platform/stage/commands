@@ -9,11 +9,20 @@ artifacts-update-ssh-aggregation() {
     (cd artifacts && cat ssh.conf.d/* >ssh.conf)
 }
 
+ssh-key-update() {
+    ADDRESSES="$(cat artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services[] | .[] | .ipv4_address_private')"
+    echo "$ADDRESSES" | while read ADDRESS; do
+        ssh-keygen -R "$ADDRESS" >/dev/null 2>&1
+        ssh-keyscan "$ADDRESS" >>~/.ssh/known_hosts 2>/dev/null
+    done
+}
+
 up() {
     FOLDER="$1" && shift # application, vpn etc.
     test -z "$FOLDER" && error "FOLDER is required." && exit
     (cd "provisioning/$FOLDER" && terraform apply "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
+    ssh-key-update
 }
 
 down() {
@@ -65,15 +74,6 @@ vpn-connect() {
     sudo openvpn "$WORKSPACE/platform/stage/artifacts/vpn/dth-do-$REGION_SLUG-provisioner.ovpn"
     # sleep 1 && sudo killall mDNSResponder{,Helper}
     sudo -k
-}
-
-ssh-key-update() {
-    ADDRESSES="$(cat artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services[] | .[] | .ipv4_address_private')"
-    echo "$ADDRESSES" | while read ADDRESS; do
-        ssh-keygen -R "$ADDRESS" >/dev/null 2>&1
-        ssh-keyscan "$ADDRESS" >>~/.ssh/known_hosts 2>&1 &
-    done
-    wait $(jobs -p)
 }
 
 # MARK: SECRETS
