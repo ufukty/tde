@@ -3,11 +3,13 @@
   name: Configure all servers
   serial: 100%
   become: true
+  become_user: root
   vars:
     workspace_dir: "{{ playbook_dir }}/../../.."
     app_user: tde_app
   tasks:
     - name: Restart journald
+      become: true
       systemd:
         name: systemd-journald
         state: restarted
@@ -15,14 +17,18 @@
     - name: service_discovery.json
       ansible.builtin.copy:
         src: "../artifacts/deployment/service_discovery.json"
-        dest: "~/service_discovery.json"
+        dest: "/home/{{ app_user }}/service_discovery.json"
         mode: "0600"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
 
     - name: config.yml
       ansible.builtin.copy:
         src: "files/home/{{ app_user }}/config.yml"
         dest: "/home/{{ app_user }}/config.yml"
         mode: "0600"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
 
     - name: Put the binary and set systemd item
       include_role:
@@ -34,5 +40,8 @@
 - hosts: customs
   name: mount disk
   become: true
+  become_user: root
+  vars:
+    app_user: tde_app
   roles:
     - role: mount_volume

@@ -1,9 +1,10 @@
 ---
 - name: "get path to latest binary for {{ program_name }}"
+  become: false
   local_action:
     module: ansible.builtin.shell
     chdir: "{{ workspace_dir }}"
-    cmd: "bash commands path-last-build {{ program_name }} linux"
+    cmd: "bash commands path-last-build {{ program_name }} linux 2>/dev/null"
   register: program_name_command
   tags: redeploy
 
