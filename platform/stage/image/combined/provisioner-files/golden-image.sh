@@ -19,14 +19,6 @@ cd "$PROVISIONER_FILES"
 APP_USER="${APP_USER:?"APP_USER is required"}"
 APP_USER_POSTGRES_PASSWD_HASH="${APP_USER_POSTGRES_PASSWD_HASH:?"APP_USER_POSTGRES_PASSWD_HASH is required"}"
 
-# ---------------------------------------------------------------------------- #
-# Miscellaneous Tasks
-# ---------------------------------------------------------------------------- #
-
-function create-user() {
-    adduser --disabled-password --gecos "" "$APP_USER"
-}
-
 # ------------------------------------------------------------- #
 # Database related tasks
 # ------------------------------------------------------------- #
@@ -35,8 +27,8 @@ function remove-outdated-postgres() {
     apt-get remove --purge postgresql postgresql-*
     rm -rfv /var/lib/postgresql
     rm -rfv /etc/postgresql
-    deluser --remove-home postgres
-    delgroup postgres
+    deluser --remove-home postgres 2>/dev/null
+    delgroup postgres 2>/dev/null
     find / -iname '*postgres*'
 }
 
