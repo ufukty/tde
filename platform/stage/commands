@@ -5,6 +5,8 @@ set -o xtrace
 
 cd "$WORKSPACE/platform/stage"
 
+# MARK: utilities
+
 artifacts-update-ssh-aggregation() {
     (cd artifacts && cat ssh.conf.d/* >ssh.conf)
 }
@@ -17,13 +19,31 @@ ssh-key-update() {
     done
 }
 
-up() {
-    FOLDER="$1" && shift # application, vpn etc.
-    test -z "$FOLDER" && error "FOLDER is required." && exit
-    (cd "provisioning/$FOLDER" && terraform apply "$@" --var-file=../vars.tfvars || exit)
+update-dns-records() (
+    TEMP_FILE="$(mktemp)"
+    local GATEWAY_IP="$(cat artifacts/deployment/service_discovery.json | jq -r '.digitalocean.fra1.services["api-gateway"][0].ipv4_address')"
+    ssh -t -F "$WORKSPACE/platform/stage/artifacts/ssh.conf" \
+        fra1-vpn "sudo bash -c \"sed \\\"s;{{GATEWAY_IP}};$GATEWAY_IP;g\\\" /etc/unbound/unbound.conf.tmpl.d/custom.conf > /etc/unbound/unbound.conf.d/custom.conf && systemctl restart unbound && echo DONE.\""
+    test "${OSTYPE:0:6}" = darwin && sudo killall mDNSResponder{,Helper}
+)
+
+# MARK: provision & deployment
+
+up-vpn() {
+    (cd "provisioning/vpn" && terraform apply "$@" --var-file=../vars.tfvars || exit)
+    artifacts-update-ssh-aggregation
+    vpn-totp
+    read -p "$(note "Connect vpn in separate tab [Enter]")"
+    ssh-key-update
+    update-dns-records
+}
+
+up-app() (
+    (cd "provisioning/application" && terraform apply "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
     ssh-key-update
-}
+    update-dns-records
+)
 
 down() {
     FOLDER="$1" && shift # application, vpn etc.
