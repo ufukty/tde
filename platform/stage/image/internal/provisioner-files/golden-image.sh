@@ -13,10 +13,15 @@ IPTABLES_PRIVATE_ETHERNET_INTERFACE="${IPTABLES_PRIVATE_ETHERNET_INTERFACE:?"IPT
 PROVISIONER_FILES="/home/$SUDO_USER/provisioner-files"
 cd "$PROVISIONER_FILES"
 . utilities.sh
+. secrets.sh
 
 # ---------------------------------------------------------------------------- #
 # Tasks
 # ---------------------------------------------------------------------------- #
+
+function create-app-user() {
+    adduser --disabled-password --gecos "" "$APP_USER"
+}
 
 function iptables_configure() {
     sed --in-place \
@@ -29,9 +34,7 @@ function iptables_configure() {
 }
 
 function sshd_configure() {
-    sed --in-place \
-        -E 's;^AllowUsers (.*);AllowUsers \1 git;' \
-        /etc/ssh/sshd_config
+    sed --in-place -E 's;^AllowUsers (.*);AllowUsers \1 git;' /etc/ssh/sshd_config
 }
 
 function fail2ban_configure() {
@@ -49,6 +52,7 @@ wait_cloud_init
 
 deploy_provisioner_files
 
+create-app-user
 iptables_configure
 # sshd_configure
 fail2ban_configure
