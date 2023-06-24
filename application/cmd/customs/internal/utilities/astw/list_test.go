@@ -1,7 +1,6 @@
 package astw
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -12,7 +11,7 @@ func Test_ListPackages(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "act"))
 	}
-	for pkgName, pkg := range *m {
-		fmt.Println(pkgName, pkg.Dir)
+	if _, ok := (*m)["tde/cmd/customs/internal/utilities/astw"]; !ok {
+		t.Error(errors.Wrapf(err, "assert"))
 	}
 }
