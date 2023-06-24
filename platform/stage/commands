@@ -46,9 +46,7 @@ up-app() (
 )
 
 down-app() {
-    FOLDER="$1" && shift # application, vpn etc.
-    test -z "$FOLDER" && error "FOLDER is required." && exit
-    (cd "provisioning/$FOLDER" && terraform destroy "$@" --var-file=../vars.tfvars || exit)
+    (cd "provisioning/application" && terraform destroy "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
 }
 
