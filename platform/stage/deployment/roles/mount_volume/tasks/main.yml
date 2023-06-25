@@ -1,25 +1,13 @@
-- name: Learn id of attached volume
+- name: Mount volumes
   shell:
-    cmd: ls -1 /dev/disk/by-id/scsi*
-  register: volume_id
-
-- name: Assert it exists
-  ansible.builtin.assert:
-    that:
-      - "'No such file or directory' not in volume_id.stderr"
-    fail_msg: "Deployment has been aborted. 1 or more binaries are absent."
-    quiet: true
-
-- name: Mount the volume
-  ansible.posix.mount:
-    path: /mnt/volume_fra1
-    src: ID={{ volume_id.stdout }}
-    fstype: ext4
-    opts: defaults,nofail,discard,noatime
-    state: mounted
-
-- name: pass ownership
-  file:
-    path: /mnt/volume_fra1
-    owner: "{{ app_user }}"
-    state: directory
+    cmd: |
+      mkdir -p /mnt/attached-a
+      mkdir -p /mnt/attached-b
+      chown {{ app_user }}:{{ app_user }} -R /mnt/attached-a
+      chown {{ app_user }}:{{ app_user }} -R /mnt/attached-b
+      sed --in-place '/\/mnt\/attached/d' /etc/fstab # remove previous
+      echo "$(ls /dev/disk/by-id/scsi-*-a) /mnt/attached-a ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
+      echo "$(ls /dev/disk/by-id/scsi-*-b) /mnt/attached-b ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
+      mount -a
+  args:
+    executable: /bin/bash

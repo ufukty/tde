@@ -23,7 +23,7 @@ customs:
   <<: *common
   grace-period: 30s
   request-timeout: 20s
-  volume-mount: /mnt/volume_fra1
+  volume-mount: /mnt/attached-a # TODO: add backup disk support
 
 api_gateway:
   <<: *common
