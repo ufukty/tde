@@ -24,6 +24,7 @@ locals {
     runner      = 3,
     evolver     = 1,
     api-gateway = 1,
+    customs     = 2,
   }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
 }
@@ -100,20 +101,29 @@ resource "digitalocean_droplet" "evolver" {
   vpc_uuid    = data.digitalocean_vpc.vpc.id
 }
 
-data "digitalocean_volume" "customs_storage_volume" {
-  name   = "volume-fra1-01"
+data "digitalocean_volume" "fra1_customs" {
+  for_each = toset([
+    "fra1-customs-0-a",
+    "fra1-customs-0-b",
+    "fra1-customs-1-a",
+    "fra1-customs-1-b",
+  ])
+  name   = each.value
   region = "fra1"
 }
 
 resource "digitalocean_droplet" "customs" {
-  count = 1
+  count = local.instances.customs
 
-  image      = data.digitalocean_droplet_snapshot.combined.id
-  name       = "${local.region}-customs-${count.index}"
-  region     = local.region
-  size       = local.slug
-  volume_ids = [data.digitalocean_volume.customs_storage_volume.id]
-  tags       = ["thesis", "customs"]
+  image  = data.digitalocean_droplet_snapshot.combined.id
+  name   = "fra1-customs-${count.index}"
+  region = local.region
+  size   = local.slug
+  volume_ids = [
+    data.digitalocean_volume.fra1_customs["fra1-customs-${count.index}-a"].id,
+    data.digitalocean_volume.fra1_customs["fra1-customs-${count.index}-b"].id,
+  ]
+  tags = ["thesis", "customs"]
 
   ipv6        = true
   backups     = false

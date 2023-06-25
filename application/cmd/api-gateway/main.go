@@ -10,6 +10,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func pong(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "pong")
+}
+
 func main() {
 	var (
 		config = config_reader.GetConfig()
@@ -23,6 +27,7 @@ func main() {
 		sub := r.PathPrefix("/api/v1.0.0").Subrouter()
 		sub.PathPrefix("/customs").HandlerFunc(customs.Forwarder)
 		sub.PathPrefix("/evolve").HandlerFunc(evolver.Forwarder)
+		sub.PathPrefix("/ping").HandlerFunc(pong)
 		sub.PathPrefix("/").HandlerFunc(router.NotFound)
 	})
 
