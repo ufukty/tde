@@ -52,7 +52,8 @@ down-app() {
 
 re() {
     down-app "$@" &&
-        up-app "$@"
+        up-app "$@" &&
+        deploy
 }
 
 deploy() {
@@ -65,6 +66,7 @@ deploy() {
             ansible-playbook --forks="20" --limit="$PROGRAM_NAME" --tags="redeploy" playbook.yml
         fi
     )
+    test "$(curl -sSL stage.deepthinker.app:8080/api/v1.0.0/ping)" = "pong" || error "API gateway didn't pong to ping"
 }
 
 all() {
