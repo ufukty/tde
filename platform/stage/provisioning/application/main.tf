@@ -24,7 +24,7 @@ locals {
     runner      = 3,
     evolver     = 1,
     api-gateway = 1,
-    customs     = 2,
+    customs     = 1,
   }
   ssh_fingerprints = ["42:75:b8:ad:c1:76:4b:58:07:ec:e9:85:66:27:9b:e6"]
 }
