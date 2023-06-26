@@ -42,7 +42,7 @@ func assertHeader(r *http.Request, headerField, want string) *detailed.DetailedE
 
 func checkHeaders(r *http.Request) *bucket.Bucket {
 	var errs = new(bucket.Bucket)
-	if de := assertHeader(r, "Content-Type", "application/json"); de != nil {
+	if de := assertHeader(r, "Content-Type", "application/json; charset=utf-8"); de != nil {
 		errs.Add(de)
 	}
 	return errs
