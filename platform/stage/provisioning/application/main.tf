@@ -105,8 +105,8 @@ data "digitalocean_volume" "fra1_customs" {
   for_each = toset([
     "fra1-customs-0-a",
     "fra1-customs-0-b",
-    "fra1-customs-1-a",
-    "fra1-customs-1-b",
+    # "fra1-customs-1-a",
+    # "fra1-customs-1-b",
   ])
   name   = each.value
   region = "fra1"
