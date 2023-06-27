@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	maxAllowedUncompressedTotalFileSize  = 4 * 1024 * 1024 // 4 MB
-	maxAllowedUncompressedSingleFileSize = 10 * 1024       // 10 KB
-	maxAllowedFile                       = 200
+	maxAllowedUncompressedTotalFileSize  = 10 * 1024 * 1024 // 10 MB
+	maxAllowedUncompressedSingleFileSize = 100 * 1024       // 100 KB
+	maxAllowedFile                       = 500
 	maxAllowedSubfolderDepth             = 10
 )
 
