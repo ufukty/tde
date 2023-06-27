@@ -15,6 +15,7 @@ import (
 type Command struct {
 	OnlyArchive bool                `long:"only-archive"`
 	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
+	IncludeExts command.MultiString `short:"i" long:"include-ext"`
 }
 
 func (c *Command) Run() {
@@ -30,8 +31,9 @@ func (c *Command) Run() {
 		log.Fatalln(errors.Wrap(err, "Could not find the path of Go module root"))
 	}
 
+	c.IncludeExts = append(c.IncludeExts, archive.DefaultInclExt...)
 	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
-	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs)
+	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}
@@ -53,7 +55,7 @@ func (c *Command) Run() {
 	}
 
 	log.Println("Uploading...")
-	resp, err = req.Send("POST", "http://127.0.0.1:8087/api/v1.0.0/customs/module")
+	resp, err = req.Send("POST", "http://127.0.0.1:8080/api/v1.0.0/customs/module")
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Failed"))
 	}

@@ -29,11 +29,11 @@ func TestUploadHandler(t *testing.T) {
 		req                *http.Request
 		expectedBodyRegexp *regexp.Regexp
 	)
-	fileContent, err = os.ReadFile("test-files/do-not-edit")
+	fileContent, err = os.ReadFile("test-files/tde.CodeArchive.158761112.zip")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
-	var md5sum = "4b5f52abb39268d758e369fa535f5e80"
+	var md5sum = "76cdb2bad9582d23c1f6f4d868218d6c"
 	var body = &bytes.Buffer{}
 	var writer = multipart.NewWriter(body)
 	var md5Field, _ = writer.CreateFormField("md5sum")

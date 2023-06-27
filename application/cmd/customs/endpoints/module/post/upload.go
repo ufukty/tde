@@ -3,6 +3,7 @@ package module
 import (
 	"tde/cmd/customs/internal/utilities"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
+	"tde/internal/folders/archive"
 	"tde/internal/microservices/logger"
 
 	"fmt"
@@ -10,7 +11,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -31,14 +31,14 @@ func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
 	volumeManager = vm
 }
 
-func writeToPath(r *http.Request, storagePath string) error {
+func writeZipIntoDest(r *http.Request, destForOriginal string) error {
 	srcFileHandler, _, err := r.FormFile("file")
 	if err != nil {
 		return errors.Wrap(err, "Could not get the file from request")
 	}
 	defer srcFileHandler.Close()
 
-	dest, err := os.Create(storagePath)
+	dest, err := os.Create(destForOriginal)
 	if err != nil {
 		return errors.Wrap(err, "Create destination file")
 	}
@@ -108,11 +108,11 @@ func checkMD5Sum(r *http.Request) error {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	var (
-		archiveID   string
-		err         error
-		requestID   string
-		storagePath string
-		destPath    string
+		archiveID       string
+		err             error
+		requestID       string
+		destForOriginal string
+		destForExtract  string
 	)
 
 	requestID = uuid.NewString()
@@ -139,7 +139,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	archiveID = volumeManager.CreateUniqueFilename()
-	storagePath, err = volumeManager.CreateDestPath(archiveID)
+	destForOriginal, destForExtract, err = volumeManager.CreateDestPath(archiveID)
 	if err != nil {
 		var message = "Could not create dir entries to place incoming file into"
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
@@ -154,10 +154,16 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	destPath = filepath.Join(storagePath, archiveID+".zip")
-	err = writeToPath(r, destPath)
+	err = writeZipIntoDest(r, destForOriginal)
 	if err != nil {
 		var message = "Could not parse the file part of multipart request"
+		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
+		http.Error(w, message, http.StatusBadRequest)
+		return
+	}
+
+	if err = archive.Unarchive(destForOriginal, destForExtract); err != nil {
+		var message = "Could not process the upload"
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
 		http.Error(w, message, http.StatusBadRequest)
 		return

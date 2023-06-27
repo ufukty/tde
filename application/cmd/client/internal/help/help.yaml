@@ -38,6 +38,9 @@ upload: |
           compile error of target package. Multiple directories can be specified
           individually.
 
+      -i, -include-ext (Optional)
+          Defaults to "go". Multiple extensions can be specified individually.
+
 produce: |
   Starts the evolution process, iterates specified generations, downloads 
   results, overwrites into working directory.

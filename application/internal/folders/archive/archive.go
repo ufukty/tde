@@ -11,6 +11,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+var DefaultInclExt = []string{"go"}
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
 
 func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string) (path string, err error) {
