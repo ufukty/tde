@@ -38,6 +38,11 @@ up-vpn() {
     update-dns-records
 }
 
+down-vpn() {
+    (cd "provisioning/vpn" && terraform destroy "$@" --var-file=../vars.tfvars || exit)
+    artifacts-update-ssh-aggregation
+}
+
 up-app() (
     (cd "provisioning/application" && terraform apply "$@" --var-file=../vars.tfvars || exit)
     artifacts-update-ssh-aggregation
