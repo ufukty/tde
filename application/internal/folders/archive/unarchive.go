@@ -86,8 +86,7 @@ func Unarchive(src string, dest string) error {
 			return errors.Wrap(ErrRelativePathFound, filename)
 		}
 		if containedFileHandler.UncompressedSize64 > maxAllowedUncompressedSingleFileSize {
-			fmt.Println(errors.Wrap(ErrZipFileExceedsLimit, fmt.Sprintf("%s => %d", filename, containedFileHandler.UncompressedSize64)))
-			continue
+			return errors.Wrap(ErrZipFileExceedsLimit, fmt.Sprintf("%s => %d", filename, containedFileHandler.UncompressedSize64))
 		}
 		if totalFileSize += containedFileHandler.UncompressedSize64; totalFileSize > maxAllowedUncompressedTotalFileSize {
 			return ErrZipExceedsLimit
