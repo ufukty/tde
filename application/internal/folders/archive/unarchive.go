@@ -15,6 +15,7 @@ import (
 const (
 	maxAllowedUncompressedTotalFileSize  = 4 * 1024 * 1024 // 4 MB
 	maxAllowedUncompressedSingleFileSize = 10 * 1024       // 10 KB
+	maxAllowedFile                       = 200
 )
 
 var (
@@ -23,6 +24,7 @@ var (
 	ErrZipFileExceedsLimit = errors.New(fmt.Sprintf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize))
 	ErrZipExceedsLimit     = errors.New(fmt.Sprintf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize))
 	ErrRelativePathFound   = errors.New("Relative paths are not allowed in a zip archive")
+	ErrTooManyFiles        = errors.New("A module upload can not have more than 200 files")
 )
 
 // Regular expression to match relative path segments
@@ -43,6 +45,7 @@ func Unarchive(src string, dest string) error {
 		zipReader     *zip.ReadCloser
 		err           error
 		totalFileSize uint64
+		totalFile     int
 	)
 
 	if !strings.HasSuffix(src, ".zip") {
@@ -57,6 +60,10 @@ func Unarchive(src string, dest string) error {
 
 	for _, containedFileHandler := range zipReader.File {
 
+		if totalFile++; totalFile == maxAllowedFile {
+			return ErrTooManyFiles
+		}
+
 		if !isPathSafe(containedFileHandler.Name) {
 			return errors.Wrap(ErrRelativePathFound, containedFileHandler.Name)
 		}
@@ -64,8 +71,7 @@ func Unarchive(src string, dest string) error {
 		if containedFileHandler.UncompressedSize64 > maxAllowedUncompressedSingleFileSize {
 			return errors.Wrap(ErrZipFileExceedsLimit, fmt.Sprintf("%s => %d", containedFileHandler.Name, containedFileHandler.UncompressedSize64))
 		}
-		totalFileSize += containedFileHandler.UncompressedSize64
-		if totalFileSize > maxAllowedUncompressedTotalFileSize {
+		if totalFileSize += containedFileHandler.UncompressedSize64; totalFileSize > maxAllowedUncompressedTotalFileSize {
 			return ErrZipExceedsLimit
 		}
 
