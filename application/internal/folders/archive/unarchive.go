@@ -34,6 +34,10 @@ func isPathSafe(name string) bool {
 	return !unsafePathFragmentMatcher.MatchString(name)
 }
 
+func isDirInsideDest(dir string, dest string) bool {
+	return strings.HasPrefix(dir, dest)
+}
+
 func Unarchive(src string, dest string) error {
 	var (
 		zipReader     *zip.ReadCloser
@@ -71,7 +75,10 @@ func Unarchive(src string, dest string) error {
 		}
 		defer rc.Close()
 
-		path := filepath.Join(dest, containedFileHandler.Name)
+		path := filepath.Clean(filepath.Join(dest, containedFileHandler.Name))
+		if !isDirInsideDest(path, dest) {
+			return errors.Wrap(ErrRelativePathFound, containedFileHandler.Name)
+		}
 		targetFile, err := os.Create(path)
 		if err != nil {
 			return errors.Wrap(err, fmt.Sprintf("could not create file to write zip file '%s'", containedFileHandler.Name))
