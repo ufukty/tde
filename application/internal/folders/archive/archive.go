@@ -45,7 +45,7 @@ func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdir
 			}
 			return nil // keep walk
 		} else {
-			ext := filepath.Ext(filepath.Base(inZipSubPath))
+			ext := strings.TrimPrefix(filepath.Ext(filepath.Base(inZipSubPath)), ".")
 			if slices.Index(includeExt, ext) == -1 {
 				log.Println("skip ext:", inZipSubPath)
 				return nil
