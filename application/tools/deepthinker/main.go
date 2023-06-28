@@ -24,10 +24,10 @@ Functions:
 */
 
 import (
-	"tde/cmd/client/internal/help"
-	"tde/cmd/client/internal/list-test"
-	"tde/cmd/client/internal/produce"
-	"tde/cmd/client/internal/upload"
+	"tde/tools/deepthinker/internal/help"
+	list_test "tde/tools/deepthinker/internal/list-test"
+	"tde/tools/deepthinker/internal/produce"
+	"tde/tools/deepthinker/internal/upload"
 
 	"tde/internal/command"
 )
