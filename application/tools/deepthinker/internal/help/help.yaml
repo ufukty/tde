@@ -39,7 +39,9 @@ upload: |
           individually.
 
       -i, -include-ext (Optional)
-          Defaults to "go". Multiple extensions can be specified individually.
+          Specify additional file extensions to include in archive. 
+          Multiple extensions can be specified individually.
+          go, mod and sum are preselected. Don't start with a dot (like .go)
 
       -only-archive (Optional)
           Only archive the module. Abort before starting to upload.

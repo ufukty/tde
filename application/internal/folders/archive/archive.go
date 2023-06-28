@@ -12,7 +12,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-var DefaultInclExt = []string{"go"}
+var DefaultInclExt = []string{"go", "mod", "sum"}
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
 
 func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (path string, err error) {
