@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"fmt"
 	module "tde/cmd/customs/endpoints/module/post"
 	"tde/internal/command"
 	"tde/internal/folders/archive"
@@ -16,6 +17,7 @@ type Command struct {
 	OnlyArchive bool                `long:"only-archive"`
 	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
 	IncludeExts command.MultiString `short:"i" long:"include-ext"`
+	Verbose     bool                `short:"v"`
 }
 
 func (c *Command) Run() {
@@ -33,12 +35,14 @@ func (c *Command) Run() {
 
 	c.IncludeExts = append(c.IncludeExts, archive.DefaultInclExt...)
 	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
-	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts)
+	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}
 
-	log.Println("Archive path:", zipPath)
+	if c.Verbose || c.OnlyArchive {
+		fmt.Println("Archived into:", zipPath)
+	}
 	if c.OnlyArchive {
 		os.Exit(0)
 	}
@@ -54,11 +58,13 @@ func (c *Command) Run() {
 		log.Fatalln(errors.Wrap(err, "Could not create request"))
 	}
 
-	log.Println("Uploading...")
+	if c.Verbose {
+		log.Println("Uploading...")
+	}
 	resp, err = req.Send("POST", "http://127.0.0.1:8087/api/v1.0.0/customs/module")
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Failed"))
 	}
 
-	log.Println("Archive ID:", resp.ArchiveID)
+	fmt.Println("Archive ID:", resp.ArchiveID)
 }

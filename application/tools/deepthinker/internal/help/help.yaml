@@ -1,10 +1,10 @@
 ---
 help: |
-  Use tde to produce implementation in Go that complies a test.
+  Use deepthinker to produce implementation in Go that complies a test.
 
   Usage:
 
-      tde <command> [arguments]
+      deepthinker <command> [arguments]
 
   Commands:
 
@@ -12,23 +12,23 @@ help: |
       logout        Deletes session on this device.
       info          Session info and credits remaining.
     
-      upload        Upload go module as an archive to tde servers.
+      upload        Upload go module as an archive to deepthinker.app servers.
       produce       Starts evolution process and downloads results to local.
       
       list-test     Lists all tests found in the module and files have them.
       list-upload   Lists IDs of previous uploads.
       list-produce  Lists IDs of previous runs of produce.
 
-  Use "tde help <command>" for more information about a command and its 
+  Use "deepthinker help <command>" for more information about a command and its 
   arguments.
 
 upload: |
-  Uploads whole go module as an archive to tde servers on first run. Subsequent 
-  runs will only re-upload changed files.
+  Uploads whole go module as an archive to deepthinker.app servers on first run. 
+  One upload can be used for starting many ESs (Evolution Sessions).
 
   Usage:
 
-      tde upload [ arguments ]
+      deepthinker upload [ arguments ]
 
   Arguments:
 
@@ -41,15 +41,21 @@ upload: |
       -i, -include-ext (Optional)
           Defaults to "go". Multiple extensions can be specified individually.
 
+      -only-archive (Optional)
+          Only archive the module. Abort before starting to upload.
+
+      -v (Optional)
+          Verbose logging for error detection purposes.
+
 produce: |
   Starts the evolution process, iterates specified generations, downloads 
   results, overwrites into working directory.
 
-  Needs the current go module already uploaded. See: "tde help upload"
+  Needs the current go module already uploaded. See: "deepthinker help upload"
 
   Usage:
 
-      tde produce [ arguments ] <TDE_TestName>
+      deepthinker produce [ arguments ] <TDE_TestName>
 
   Arguments:
 
@@ -60,7 +66,7 @@ produce: |
 
       -runner (Optional)
           Specify a IP:Port to use custom runners. See 
-          "https://tde.io/docs/runner"
+          "https://deepthinker.io/docs/runner"
 
       -c, -continue (Optional)
           When absent, evolution will start from the latest saved state of files
