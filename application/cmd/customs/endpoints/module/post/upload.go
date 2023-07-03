@@ -1,16 +1,14 @@
 package module
 
 import (
+	"mime"
 	"tde/cmd/customs/internal/utilities"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
-	"tde/internal/folders/archive"
 	"tde/internal/microservices/logger"
 
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -23,32 +21,25 @@ const (
 )
 
 var (
-	log           = logger.NewLogger("http handler in customs/module/post")
-	volumeManager *volume_manager.VolumeManager
+	log = logger.NewLogger("http handler in customs/module/post")
+	vm  *volume_manager.VolumeManager
 )
 
-func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
-	volumeManager = vm
+func RegisterVolumeManager(vm_ *volume_manager.VolumeManager) {
+	vm = vm_
 }
 
-func writeZipIntoDest(r *http.Request, destForOriginal string) error {
-	srcFileHandler, _, err := r.FormFile("file")
+func processUploadWithVolumeManager(r *http.Request) (archiveId string, err error) {
+	fh, _, err := r.FormFile("file")
 	if err != nil {
-		return errors.Wrap(err, "Could not get the file from request")
+		return "", errors.Wrap(err, "retrieving form part 'file'")
 	}
-	defer srcFileHandler.Close()
-
-	dest, err := os.Create(destForOriginal)
-	if err != nil {
-		return errors.Wrap(err, "Create destination file")
+	defer fh.Close()
+	if archiveId, err := vm.New(fh); err != nil {
+		return "", errors.Wrap(err, "passing to VolumeManager")
+	} else {
+		return archiveId, nil
 	}
-	defer dest.Close()
-
-	_, err = io.Copy(dest, srcFileHandler)
-	if err != nil {
-		return errors.Wrap(err, "Write into destination file")
-	}
-	return nil
 }
 
 func checkHeaderContentType(r *http.Request) error {
@@ -88,31 +79,29 @@ func checkMD5Sum(r *http.Request) error {
 
 	md5sumSent = r.FormValue("md5sum")
 	if md5sumSent == "" {
-		return errors.New("Error MD5 checksum not found")
+		return errors.New("retrieving form part 'md5sum'")
 	}
 
 	filePart, _, err = r.FormFile("file")
 	if err != nil {
-		return errors.Wrap(err, "Error retrieving file")
+		return errors.Wrap(err, "retrieving form part 'file'")
 	}
 	defer filePart.Close()
 	md5sumCalculated, err = utilities.MD5(filePart)
 	if err != nil {
-		return errors.Wrap(err, "could not call the md5 utility")
+		return errors.Wrap(err, "getting md5sum of zip")
 	}
 	if md5sumCalculated != md5sumSent {
-		return errors.New("MD5 checksum mismatch")
+		return errors.New("mismatched checksum")
 	}
 	return nil
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	var (
-		archiveID       string
-		err             error
-		requestID       string
-		destForOriginal string
-		destForExtract  string
+		requestID string
+		archiveID string
+		err       error
 	)
 
 	requestID = uuid.NewString()
@@ -138,15 +127,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archiveID = volumeManager.CreateUniqueFilename()
-	destForOriginal, destForExtract, err = volumeManager.CreateDestPath(archiveID)
-	if err != nil {
-		var message = "Could not create dir entries to place incoming file into"
-		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
-		http.Error(w, message, http.StatusInternalServerError)
-		return
-	}
-
 	if err = checkMD5Sum(r); err != nil {
 		var message = "Could not validate check sum of file"
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
@@ -154,21 +134,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = writeZipIntoDest(r, destForOriginal)
+	archiveID, err = processUploadWithVolumeManager(r)
 	if err != nil {
-		var message = "Could not parse the file part of multipart request"
-		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
-		http.Error(w, message, http.StatusBadRequest)
-		return
-	}
-
-	if err = archive.Unarchive(destForOriginal, destForExtract); err != nil {
 		var message = "Could not process the upload"
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
 		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
+	w.Header().Set("Content-Type", mime.TypeByExtension("json"))
 	w.WriteHeader(http.StatusOK)
 
 	var res = &Response{

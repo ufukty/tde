@@ -19,7 +19,7 @@ func init() {
 	if err != nil {
 		panic(errors.Wrapf(err, "prep"))
 	}
-	volumeManager = volume_manager.NewVolumeManager(root)
+	vm = volume_manager.NewVolumeManager(root)
 }
 
 func TestUploadHandler(t *testing.T) {

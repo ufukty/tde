@@ -1,6 +1,9 @@
 package volume_manager
 
 import (
+	"io"
+	"log"
+	"tde/internal/folders/archive"
 	"tde/internal/utilities"
 
 	"os"
@@ -29,31 +32,72 @@ func pathSlice(uuid string) string {
 	return strings.Join(utilities.StringFold(strings.ReplaceAll(uuid, "-", ""), 2), "/")
 }
 
-// returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63/{original.zip,extract} after creating it as dir
-func (vm *VolumeManager) CreateDestPath(archiveID string) (zipPath string, extractPath string, err error) {
-	var slicedId = pathSlice(archiveID)
-	var bundleDest = filepath.Join(vm.root, slicedId)
-	if err = os.MkdirAll(bundleDest, 0700); err != nil {
-		return "", "", errors.Wrap(err, "Could not create dir for upload")
-	}
-	zipPath = filepath.Join(bundleDest, "original.zip")
-	extractPath = filepath.Join(bundleDest, "extract")
-	if err = os.MkdirAll(extractPath, 0700); err != nil {
-		return "", "", errors.Wrap(err, "Could not create dir for extraction")
-	}
+// non-NotExists kind errors resolve to false too
+func (vm *VolumeManager) CheckIfExists(archiveID string) (bundle, zip, extract bool) {
+	var bundle_, zip_, extract_ = vm.FindPath(archiveID)
+	var err error
+	_, err = os.Stat(bundle_)
+	bundle = err != nil
+	_, err = os.Stat(zip_)
+	zip = err != nil
+	_, err = os.Stat(extract_)
+	extract = err != nil
 	return
 }
 
-func (vm *VolumeManager) CheckIfExists(archiveID string) bool {
-	var (
-		path string
-		err  error
-	)
-	path = filepath.Join(vm.root, pathSlice(archiveID), archiveID)
-	_, err = os.Stat(path)
-	return err != nil // who cares about the condition where the file exists but there is an error
+// example output:
+// bundle : 65/36/../8e/63
+// zip    : 65/36/../8e/63/original.zip
+// extract: 65/36/../8e/63/extract
+func (vm *VolumeManager) FindPath(archiveID string) (bundle, zip, extract string) {
+	var sliced = pathSlice(archiveID)
+	bundle = filepath.Join(vm.root, sliced)
+	extract = filepath.Join(bundle, "extract")
+	zip = filepath.Join(bundle, "original.zip")
+	return
 }
 
-func (vm *VolumeManager) FindPath(archiveID string) string {
-	return filepath.Join(vm.root, pathSlice(archiveID), archiveID) + ".zip"
+func removeArtifacts(bundlepath string) error {
+	if err := os.RemoveAll(bundlepath); err != nil {
+		return errors.Wrap(err, "calling os.RemoveAll")
+	}
+	return nil
+}
+
+func (vm *VolumeManager) New(uploadFileHandler io.Reader) (archiveId string, err error) {
+	archiveId = vm.CreateUniqueFilename()
+	var bundle, zip, extract = vm.FindPath(archiveId)
+
+	if err := os.MkdirAll(extract, 0700); err != nil {
+		return "", errors.Wrap(err, "creating path to put uploaded file")
+	}
+
+	out, err := os.Create(zip)
+	if err != nil {
+		return "", errors.Wrap(err, "creating target file for zip")
+	}
+	var closed = false
+	defer func() {
+		if !closed {
+			out.Close()
+		}
+	}()
+
+	if _, err = io.Copy(out, uploadFileHandler); err != nil {
+		return "", errors.Wrap(err, "writing zip file")
+	}
+	closed = true
+	if err = out.Close(); err != nil {
+		log.Println("failed closing a file: " + out.Name())
+		return "", errors.Wrap(err, "closing file")
+	}
+
+	if err = archive.Unarchive(zip, extract); err != nil {
+		err = errors.Wrap(err, "unarchiving with archive package")
+		if err = removeArtifacts(bundle); err != nil {
+			err = errors.Wrap(err, "removing artifacts")
+		}
+		return "", err
+	}
+	return archiveId, nil
 }

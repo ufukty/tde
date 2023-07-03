@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	volumeManager = volume_manager.NewVolumeManager("test-files/mount")
+	vm = volume_manager.NewVolumeManager("test-files/mount")
 }
 
 func Test_DownloadHandler(t *testing.T) {

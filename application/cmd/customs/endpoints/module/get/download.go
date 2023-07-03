@@ -15,17 +15,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	HTTPErrBadRequest = "Bad request"
-)
-
 var (
-	volumeManager *volume_manager.VolumeManager
-	log           = logger.NewLogger("customs/endpoints/module/get/handler")
+	vm  *volume_manager.VolumeManager
+	log = logger.NewLogger("customs/endpoints/module/get/handler")
 )
 
-func RegisterVolumeManager(vm *volume_manager.VolumeManager) {
-	volumeManager = vm
+func RegisterVolumeManager(vm_ *volume_manager.VolumeManager) {
+	vm = vm_
 }
 
 func assertHeader(r *http.Request, headerField, want string) *detailed.DetailedError {
@@ -49,50 +45,50 @@ func checkHeaders(r *http.Request) *bucket.Bucket {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-
 	var (
-		parameters  = new(Request)
 		err         error
-		fileHandler *os.File
 		digest      string
+		fileHandler *os.File
+		bindReq     = new(Request)
 	)
 
 	if bucket := checkHeaders(r); bucket.IsAny() {
-		var tagged = bucket.Tag(detailed.New("Invalid request", "@Handler"))
-		log.Println(tagged.Log())
-		http.Error(w, tagged.Error(), http.StatusBadRequest)
+		log.Println(errors.Wrap(bucket, "checking hearders"))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	if err = parameters.ParseRequest(r); err != nil {
-		var message = "Invalid request body"
-		log.Println(errors.Wrap(err, message))
-		http.Error(w, message, http.StatusBadRequest)
+	if err = bindReq.ParseRequest(r); err != nil {
+		log.Println(errors.Wrap(err, "Invalid request body"))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	if ok := volumeManager.CheckIfExists(parameters.ArchiveId); !ok {
-		http.Error(w, "File not found", http.StatusNotFound)
+	var bundleExists, zipExists, extractExists = vm.CheckIfExists(bindReq.ArchiveId)
+	if !(bundleExists && zipExists && extractExists) {
+		log.Printf("Got asked for non-existent archive '%s'\n", bindReq.ArchiveId)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	var filePath = volumeManager.FindPath(parameters.ArchiveId)
-	fileHandler, err = os.Open(filePath)
+
+	var _, zip, _ = vm.FindPath(bindReq.ArchiveId)
+	fileHandler, err = os.Open(zip)
 	if err != nil {
-		var derr = detailed.New("File not found", err.Error())
-		log.Println(derr.Log())
-		http.Error(w, derr.Error(), http.StatusNotFound)
+		log.Println(errors.Wrap(err, "opening file to read"))
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 	defer fileHandler.Close()
 
+	w.WriteHeader(http.StatusOK)
 	http.ServeContent(w, r, "file.zip", time.Now(), fileHandler)
 
 	digest, err = utilities.MD5(fileHandler)
 	if err != nil {
-		http.Error(w, "Could not calculate the checksum of file", http.StatusInternalServerError)
+		log.Println(errors.Wrap(err, "checking md5sum"))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Digest", fmt.Sprintf("md5=%s", digest))
 	w.Header().Set("Content-Disposition", "attachment; filename=file.zip")
-
 }

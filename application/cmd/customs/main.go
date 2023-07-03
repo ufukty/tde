@@ -1,7 +1,6 @@
 package main
 
 import (
-	dbo "tde/cmd/customs/database"
 	ast_module_get "tde/cmd/customs/endpoints/ast/module/get"
 	module_get "tde/cmd/customs/endpoints/module/get"
 	module_post "tde/cmd/customs/endpoints/module/post"
@@ -24,8 +23,8 @@ func main() {
 		volumeManager = volume_manager.NewVolumeManager(config.Customs.MountPath)
 	)
 
-	dbo.Connect()
-	defer dbo.Close()
+	// dbo.Connect()
+	// defer dbo.Close()
 
 	config_reader.Print(config.Customs)
 	module_post.RegisterVolumeManager(volumeManager)
