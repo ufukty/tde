@@ -13,15 +13,9 @@ import (
 )
 
 var DefaultInclExt = []string{"go", "mod", "sum"}
-var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
+var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
 
-func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (path string, err error) {
-	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
-	if err != nil {
-		return "", errors.Wrap(err, "failed to create temporary zip file")
-	}
-	defer target.Close()
-
+func directory(target io.Writer, relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (err error) {
 	zipWriter := zip.NewWriter(target)
 	defer zipWriter.Close()
 
@@ -80,8 +74,26 @@ func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdir
 		return nil
 	})
 	if err != nil {
-		return target.Name(), errors.Wrap(err, "failed on archiving the directory")
+		return errors.Wrap(err, "failed on archiving the directory")
 	}
 
-	return target.Name(), nil
+	return nil
+}
+
+func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (path string, err error) {
+	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create temporary zip file")
+	}
+	defer target.Close()
+	return target.Name(), directory(target, relativePath, includeSubfolders, skipDirs, skipSubdirs, includeExt, enableLogging)
+}
+
+func DirectoryToFile(target string, relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
+	fh, err := os.Create(target)
+	if err != nil {
+		return errors.Wrap(err, "failed to create temporary zip file")
+	}
+	defer fh.Close()
+	return directory(fh, relativePath, includeSubfolders, skipDirs, skipSubdirs, includeExt, enableLogging)
 }

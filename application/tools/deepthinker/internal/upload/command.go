@@ -15,6 +15,7 @@ import (
 
 type Command struct {
 	OnlyArchive bool                `long:"only-archive"`
+	Output      string              `long:"output"`
 	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
 	IncludeExts command.MultiString `short:"i" long:"include-ext"`
 	Verbose     bool                `short:"v"`
@@ -35,15 +36,22 @@ func (c *Command) Run() {
 
 	c.IncludeExts = append(c.IncludeExts, archive.DefaultInclExt...)
 	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
-	zipPath, err := archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
+
+	var zipPath = ""
+	if c.OnlyArchive && c.Output != "" {
+		err = archive.DirectoryToFile(c.Output, modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
+	} else {
+		zipPath, err = archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
+	}
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
 	}
 
-	if c.Verbose || c.OnlyArchive {
+	if c.Verbose || (c.OnlyArchive && c.Output == "") {
 		fmt.Println("Archived into:", zipPath)
 	}
 	if c.OnlyArchive {
+		fmt.Println("Done.")
 		os.Exit(0)
 	}
 

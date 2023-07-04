@@ -93,6 +93,15 @@ func (req *Request) Send(method, url string) (*Response, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on sending the request")
 	}
+	if httpResponse.StatusCode != http.StatusOK {
+		buf := bytes.NewBuffer([]byte{})
+		_, err := io.Copy(buf, httpResponse.Body)
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not read response body")
+		}
+		return nil, errors.New(buf.String())
+	}
+
 	res := Response{}
 	err = res.DeserializeResponse(httpResponse)
 	if err != nil {

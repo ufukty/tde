@@ -33,18 +33,24 @@ upload: |
   Arguments:
 
       -e, -exclude-dir (Optional)
-          Defaults to exclude ".git" directory. To reduce network usage it is
-          best to exclude every directory that its absence won't lead to any
-          compile error of target package. Multiple directories can be specified
-          individually.
+          To reduce network usage and avoid exceeding limits, exclude every
+          directory that its absence won't lead to any compile error of target 
+          package. Multiple directories can be specified individually.
+          Directories ".git", "build", "docs", ".vscode", "vendor" are excluded 
+          by default.
 
       -i, -include-ext (Optional)
           Specify additional file extensions to include in archive. 
           Multiple extensions can be specified individually.
-          go, mod and sum are preselected. Don't start with a dot (like .go)
+          "go", "mod" and "sum" are preselected. Don't start with a dot 
+          (like .go)
 
       -only-archive (Optional)
           Only archive the module. Abort before starting to upload.
+
+      --output <path> (Optional)
+          Only effective when it is used with -only-archive flag. Append the 
+          target path after flag.
 
       -v (Optional)
           Verbose logging for error detection purposes.
