@@ -1,4 +1,4 @@
-package module
+package post
 
 import (
 	volume_manager "tde/cmd/customs/internal/volume-manager"

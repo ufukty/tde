@@ -25,8 +25,8 @@ var (
 	ErrZipFileExceedsLimit     = errors.New(fmt.Sprintf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize))
 	ErrZipExceedsLimit         = errors.New(fmt.Sprintf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize))
 	ErrRelativePathFound       = errors.New("Relative paths are not allowed in a zip archive")
-	ErrTooManyFiles            = errors.New("A module upload can not have more than 200 files")
-	ErrSubfolderExceedingDepth = errors.New("More than 10 nested subfolders are unallowed.")
+	ErrTooManyFiles            = errors.New(fmt.Sprintf("A module upload can not have more than %d files", maxAllowedFile))
+	ErrSubfolderExceedingDepth = errors.New(fmt.Sprintf("More than %d nested subfolders are unallowed.", maxAllowedSubfolderDepth))
 )
 
 // Regular expression to match relative path segments
@@ -42,11 +42,8 @@ func isDirInsideDest(dir string, dest string) bool {
 	return strings.HasPrefix(dir, dest)
 }
 
-func checkFileDepth(path string, destDepth int) error {
-	if len(strings.Split(path, "/")) > destDepth+maxAllowedFile {
-		return ErrSubfolderExceedingDepth
-	}
-	return nil
+func isPathTooDeep(path string, destDepth int) bool {
+	return len(strings.Split(path, "/")) > destDepth+maxAllowedFile
 }
 
 func createParentFoldersForFile(path string) error {
@@ -56,21 +53,20 @@ func createParentFoldersForFile(path string) error {
 	return nil
 }
 
-func Unarchive(src string, dest string) error {
+func Unarchive(src string, dest string) (err error, errFile string) {
 	var (
 		zipReader     *zip.ReadCloser
-		err           error
 		totalFileSize uint64
 		totalFile     int
 	)
 
 	if !strings.HasSuffix(src, ".zip") {
-		return ErrExtensionUnallowed
+		return ErrExtensionUnallowed, ""
 	}
 
 	zipReader, err = zip.OpenReader(src)
 	if err != nil {
-		return errors.Wrap(err, "could not create zip reader")
+		return errors.Wrap(err, "could not create zip reader"), ""
 	}
 	defer zipReader.Close()
 
@@ -80,47 +76,47 @@ func Unarchive(src string, dest string) error {
 		var filename = containedFileHandler.Name
 
 		if totalFile++; totalFile == maxAllowedFile {
-			return ErrTooManyFiles
+			return ErrTooManyFiles, ""
 		}
 		if !isPathSafe(filename) {
-			return errors.Wrap(ErrRelativePathFound, filename)
+			return ErrRelativePathFound, filename
 		}
 		if containedFileHandler.UncompressedSize64 > maxAllowedUncompressedSingleFileSize {
-			return errors.Wrap(ErrZipFileExceedsLimit, fmt.Sprintf("%s => %d", filename, containedFileHandler.UncompressedSize64))
+			return ErrZipFileExceedsLimit, filename
 		}
 		if totalFileSize += containedFileHandler.UncompressedSize64; totalFileSize > maxAllowedUncompressedTotalFileSize {
-			return ErrZipExceedsLimit
+			return ErrZipExceedsLimit, ""
 		}
 
 		rc, err := containedFileHandler.Open()
 		if err != nil {
-			return errors.Wrapf(err, "could not open the file inside zip '%s'", filename)
+			return err, filename
 		}
 		defer rc.Close()
 
-		path := filepath.Clean(filepath.Join(dest, filename))
+		var path = filepath.Clean(filepath.Join(dest, filename))
 
 		if !isDirInsideDest(path, dest) {
-			return errors.Wrap(ErrRelativePathFound, filename)
+			return ErrRelativePathFound, filename
 		}
-		if err = checkFileDepth(path, moduleDepth); err != nil {
-			return errors.Wrap(err, filename)
+		if isPathTooDeep(path, moduleDepth) {
+			return ErrSubfolderExceedingDepth, filename
 		}
 		if err = createParentFoldersForFile(path); err != nil {
-			return errors.Wrapf(err, "creating parent dirs for file %s", filename)
+			return errors.Wrap(err, "creating parent dirs for file"), ""
 		}
 
 		targetFile, err := os.Create(path)
 		if err != nil {
-			return errors.Wrapf(err, "could not create file to write zip file '%s'", filename)
+			return errors.Wrap(err, "could not create file to write zip file'"), filename
 		}
 		defer targetFile.Close()
 
 		_, err = io.Copy(targetFile, rc)
 		if err != nil {
-			return errors.Wrapf(err, "could not extract the file '%s'", filename)
+			return errors.Wrap(err, "could not extract the file"), filename
 		}
 	}
 
-	return nil
+	return nil, ""
 }

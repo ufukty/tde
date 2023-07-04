@@ -64,17 +64,17 @@ func removeArtifacts(bundlepath string) error {
 	return nil
 }
 
-func (vm *VolumeManager) New(uploadFileHandler io.Reader) (archiveId string, err error) {
+func (vm *VolumeManager) New(uploadFileHandler io.Reader) (archiveId string, errFile string, err error) {
 	archiveId = vm.CreateUniqueFilename()
 	var bundle, zip, extract = vm.FindPath(archiveId)
 
 	if err := os.MkdirAll(extract, 0700); err != nil {
-		return "", errors.Wrap(err, "creating path to put uploaded file")
+		return "", "", errors.Wrap(err, "creating path to put uploaded file")
 	}
 
 	out, err := os.Create(zip)
 	if err != nil {
-		return "", errors.Wrap(err, "creating target file for zip")
+		return "", "", errors.Wrap(err, "creating target file for zip")
 	}
 	var closed = false
 	defer func() {
@@ -84,20 +84,19 @@ func (vm *VolumeManager) New(uploadFileHandler io.Reader) (archiveId string, err
 	}()
 
 	if _, err = io.Copy(out, uploadFileHandler); err != nil {
-		return "", errors.Wrap(err, "writing zip file")
+		return "", "", errors.Wrap(err, "writing zip file")
 	}
 	closed = true
 	if err = out.Close(); err != nil {
 		log.Println("failed closing a file: " + out.Name())
-		return "", errors.Wrap(err, "closing file")
+		return "", "", errors.Wrap(err, "closing file")
 	}
 
-	if err = archive.Unarchive(zip, extract); err != nil {
-		err = errors.Wrap(err, "unarchiving with archive package")
-		if err = removeArtifacts(bundle); err != nil {
-			err = errors.Wrap(err, "removing artifacts")
+	if err, errFile := archive.Unarchive(zip, extract); err != nil {
+		if errCleaning := removeArtifacts(bundle); errCleaning != nil {
+			err = errors.Wrap(err, errors.Wrap(errCleaning, "removing artifacts").Error())
 		}
-		return "", err
+		return "", errFile, err
 	}
-	return archiveId, nil
+	return archiveId, "", nil
 }

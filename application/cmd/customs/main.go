@@ -1,7 +1,7 @@
 package main
 
 import (
-	ast_module_get "tde/cmd/customs/endpoints/ast/module/get"
+	ast_get "tde/cmd/customs/endpoints/ast/module/package/get"
 	module_get "tde/cmd/customs/endpoints/module/get"
 	module_post "tde/cmd/customs/endpoints/module/post"
 	volume_manager "tde/cmd/customs/internal/volume-manager"
@@ -29,13 +29,13 @@ func main() {
 	config_reader.Print(config.Customs)
 	module_post.RegisterVolumeManager(volumeManager)
 	module_get.RegisterVolumeManager(volumeManager)
-	ast_module_get.RegisterVolumeManager(volumeManager)
+	ast_get.RegisterVolumeManager(volumeManager)
 
 	router.StartRouter(config.Customs.RouterPrivate, &config.Customs.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/module").Methods("POST").HandlerFunc(module_post.Handler)
 		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
-		r.PathPrefix("/ast/module").Methods("GET").HandlerFunc(ast_module_get.Handler)
-		r.PathPrefix("/ast/module/package").Methods("GET").HandlerFunc(ast_module_get.Handler)
+		r.PathPrefix("/ast/module").Methods("GET").HandlerFunc(ast_get.Handler)
+		r.PathPrefix("/ast/module/package").Methods("GET").HandlerFunc(ast_get.Handler)
 	})
 
 	router.Wait(&config.Customs.RouterParameters)
