@@ -28,7 +28,7 @@ customs:
   request-timeout: 5s
   router-public: :8085
   router-private: :8086
-  volume-mount: ../platform/local/mount/customs
+  volume-mount: ../platform/local/.mount/customs
 
 api_gateway:
   <<: *common
