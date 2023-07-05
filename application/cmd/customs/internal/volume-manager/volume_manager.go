@@ -37,11 +37,11 @@ func (vm *VolumeManager) CheckIfExists(archiveID string) (bundle, zip, extract b
 	var bundle_, zip_, extract_ = vm.FindPath(archiveID)
 	var err error
 	_, err = os.Stat(bundle_)
-	bundle = err != nil
+	bundle = err == nil
 	_, err = os.Stat(zip_)
-	zip = err != nil
+	zip = err == nil
 	_, err = os.Stat(extract_)
-	extract = err != nil
+	extract = err == nil
 	return
 }
 
