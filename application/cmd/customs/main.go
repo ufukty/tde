@@ -33,9 +33,10 @@ func main() {
 
 	router.StartRouter(config.Customs.RouterPrivate, &config.Customs.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/module").Methods("POST").HandlerFunc(module_post.Handler)
-		r.PathPrefix("/module").Methods("GET").HandlerFunc(module_get.Handler)
-		r.PathPrefix("/ast/module").Methods("GET").HandlerFunc(ast_get.Handler)
-		r.PathPrefix("/ast/module/package").Methods("GET").HandlerFunc(ast_get.Handler)
+		r.PathPrefix("/module/{id}").Methods("GET").HandlerFunc(module_get.Handler)
+		r.PathPrefix("/module/{id}/list").Methods("GET").HandlerFunc(ast_get.Handler)
+		r.PathPrefix("/module/{id}/ast/package/{package}/file/{file}/function/{function}").Methods("GET").HandlerFunc(ast_get.Handler)
+		r.PathPrefix("/module/{id}/context/package/{package}/file/{file}/function/{function}").Methods("GET").HandlerFunc(ast_get.Handler)
 	})
 
 	router.Wait(&config.Customs.RouterParameters)

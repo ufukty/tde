@@ -1,4 +1,4 @@
-package post
+package module
 
 import (
 	"bytes"
