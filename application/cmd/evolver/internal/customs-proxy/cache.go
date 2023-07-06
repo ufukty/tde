@@ -1,6 +1,7 @@
 package customs_proxy
 
 import (
+	customs_ast_endpoint "tde/cmd/customs/endpoints/module/ast/package/get"
 	config_reader "tde/internal/microservices/config-reader"
 	load_balancer "tde/internal/microservices/load-balancer"
 	service_discovery "tde/internal/microservices/service-discovery"
