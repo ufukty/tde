@@ -3,8 +3,8 @@ package services
 type ServiceName string
 
 const (
-	ApiGateway = "api_gateway"
-	Customs    = "customs"
-	Evolver    = "evolver"
-	Runner     = "runner"
+	ApiGateway = ServiceName("api_gateway")
+	Customs    = ServiceName("customs")
+	Evolver    = ServiceName("evolver")
+	Runner     = ServiceName("runner")
 )
