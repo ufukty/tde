@@ -3,6 +3,8 @@
 
 package paths
 
+import "net/http"
+
 var Site = Domain{"http", "deepthinker.app", "8080"}
 var ApiGateway = Gateway{Site, "/api/v1.0.0"}
 
@@ -26,3 +28,21 @@ var (
 	Runner            = Service{ApiGateway, "/runner"}
 	RunnerBatchCreate = Endpoint{Runner, "/batch", GET}
 )
+
+var Handlers = map[Service]map[Endpoint]http.HandlerFunc{
+	Customs: {
+		CustomsModuleUpload:      http.NotFound,
+		CustomsModuleDownload:    http.NotFound,
+		CustomsModuleList:        http.NotFound,
+		CustomsModuleAstFuncDecl: http.NotFound,
+		CustomsModuleAstFile:     http.NotFound,
+		CustomsModuleAstPackage:  http.NotFound,
+		CustomsModuleContext:     http.NotFound,
+	},
+	Evolver: {
+		EvolverSessionCreate: http.NotFound,
+	},
+	Runner: {
+		RunnerBatchCreate: http.NotFound,
+	},
+}

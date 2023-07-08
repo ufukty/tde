@@ -2,7 +2,12 @@ package paths
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
+	"golang.org/x/exp/maps"
 )
 
 type Domain struct {
@@ -58,12 +63,24 @@ func Sort(eps []Endpoint) []Endpoint {
 	return eps
 }
 
-type Method string
+//go:generate stringer -type=Method
+type Method int
 
 const (
-	GET    = Method("GET")
-	POST   = Method("POST")
-	PATCH  = Method("PATCH")
-	DELETE = Method("DELETE")
-	PUT    = Method("PUT")
+	GET = Method(iota)
+	POST
+	PATCH
+	DELETE
+	PUT
 )
+
+func RouteRegisterer(handlers map[Endpoint]http.HandlerFunc) func(*mux.Router) {
+	return func(r *mux.Router) {
+		r = r.UseEncodedPath()
+		for _, ep := range Sort(maps.Keys(handlers)) {
+			var handler = handlers[ep]
+			log.Printf("Registering route: %-6s %s\n", ep.Method, ep.Listens)
+			r.PathPrefix(ep.Listens).Methods(ep.Method.String()).HandlerFunc(handler)
+		}
+	}
+}
