@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -53,13 +54,12 @@ func checkPrefix(a Endpoint, b Endpoint) bool {
 }
 
 func Sort(eps []Endpoint) []Endpoint {
-	for i := 0; i < len(eps); i++ {
-		for j := 1; j < len(eps); j++ {
-			if checkPrefix(eps[j], eps[j-1]) {
-				eps[j-1], eps[j] = eps[j], eps[j-1]
-			}
-		}
-	}
+	sort.Slice(eps, func(i, j int) bool {
+		return eps[i].Url() > eps[j].Url()
+	})
+	sort.Slice(eps, func(i, j int) bool {
+		return strings.HasPrefix(eps[i].Url(), eps[j].Url())
+	})
 	return eps
 }
 
