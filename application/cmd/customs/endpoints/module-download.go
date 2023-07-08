@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (h Handlers) HandleDownload(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) HandleDownload(w http.ResponseWriter, r *http.Request) {
 	var (
 		ok          bool
 		err         error
@@ -31,14 +31,14 @@ func (h Handlers) HandleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bundleExists, zipExists, extractExists = h.vm.CheckIfExists(archiveId)
+	var bundleExists, zipExists, extractExists = em.vm.CheckIfExists(archiveId)
 	if !(bundleExists && zipExists && extractExists) {
 		log.Printf("Got asked for non-existent archive '%s'\n", archiveId)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	var _, zip, _ = h.vm.FindPath(archiveId)
+	var _, zip, _ = em.vm.FindPath(archiveId)
 	fileHandler, err = os.Open(zip)
 	if err != nil {
 		log.Println(errors.Wrap(err, "opening file to read"))

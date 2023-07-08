@@ -106,5 +106,5 @@ func (res *ContextResponse) DeserializeResponse(r *http.Response) error {
 // 	return res, nil
 // }
 
-func (h Handlers) HandleContext(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) HandleContext(w http.ResponseWriter, r *http.Request) {
 }

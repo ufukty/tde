@@ -34,7 +34,7 @@ type UploadResponse struct {
 	ArchiveID string `json:"archive_id"`
 }
 
-func NewRequest(file io.Reader) (*UploadRequest, error) {
+func NewUploadRequest(file io.Reader) (*UploadRequest, error) {
 	var (
 		err          error
 		digest       string
@@ -122,14 +122,14 @@ func (req *UploadRequest) Send(method, url string) (*UploadResponse, error) {
 	return &res, nil
 }
 
-func processUploadWithVolumeManager(h *Handlers, r *http.Request) (archiveId string, errResp string, err error) {
+func processUploadWithVolumeManager(em *EndpointsManager, r *http.Request) (archiveId string, errResp string, err error) {
 	fh, _, err := r.FormFile("file")
 	if err != nil {
 		return "", "", errors.Wrap(err, "retrieving form part 'file'")
 	}
 	defer fh.Close()
 
-	archiveId, errFile, err := h.vm.New(fh)
+	archiveId, errFile, err := em.vm.New(fh)
 	if err != nil {
 		if errors.Is(err, archive.ErrExtensionUnallowed) {
 			errResp = "Check file extension"
@@ -206,7 +206,7 @@ func checkMD5Sum(r *http.Request) error {
 	return nil
 }
 
-func (h Handlers) HandleUpload(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	var (
 		requestID    string
@@ -245,7 +245,7 @@ func (h Handlers) HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archiveID, responseText, err = processUploadWithVolumeManager(&h, r)
+	archiveID, responseText, err = processUploadWithVolumeManager(&em, r)
 	if err != nil {
 		var message = "Could not process the upload response text: " + responseText
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))

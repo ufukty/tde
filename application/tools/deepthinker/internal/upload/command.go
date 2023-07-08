@@ -61,7 +61,7 @@ func (c *Command) Run() {
 	}
 	defer fileHandler.Close()
 
-	req, err = endpoints.NewRequest(fileHandler)
+	req, err = endpoints.NewUploadRequest(fileHandler)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create request"))
 	}

@@ -33,7 +33,7 @@ func Test_UploadDownload(t *testing.T) {
 	}
 	var vm = volmng.NewVolumeManager(tmp)
 	log.Printf("Using %s for volume manager mount", tmp)
-	var handlers = endpoints.New(vm)
+	var handlers = endpoints.NewManager(vm)
 
 	t.Run("Prep", func(t *testing.T) {
 		fh, err := os.Open(testFile)

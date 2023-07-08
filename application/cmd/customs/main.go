@@ -21,7 +21,7 @@ func main() {
 	var (
 		cfg = config_reader.GetConfig()
 		vm  = volmng.NewVolumeManager(cfg.Customs.MountPath)
-		em  = endpoints.New(vm)
+		em  = endpoints.NewManager(vm)
 	)
 
 	// dbo.Connect()

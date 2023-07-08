@@ -24,7 +24,7 @@ type AstPackageResponse struct {
 	Package *ast.Package `json:"package"`
 }
 
-func (h Handlers) HandleAstPackage(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) HandleAstPackage(w http.ResponseWriter, r *http.Request) {
 
 	var (
 		err error
@@ -48,7 +48,7 @@ func (h Handlers) HandleAstPackage(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	if bundle, zip, extract := h.vm.CheckIfExists(bindReq.ArchiveId); !(bundle && zip && extract) {
+	if bundle, zip, extract := em.vm.CheckIfExists(bindReq.ArchiveId); !(bundle && zip && extract) {
 		log.Println(detailed.New("Not found", "volumeManager.CheckIfExists").Log())
 		http.NotFound(w, r)
 		return
