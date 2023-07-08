@@ -32,24 +32,24 @@ type Endpoint struct {
 	Method  Method
 }
 
-func (d Domain) String() string {
+func (d Domain) Url() string {
 	return fmt.Sprintf("%s://%s:%s", d.Protocol, d.Domain, d.Port)
 }
 
-func (g Gateway) String() string {
-	return fmt.Sprintf("%s%s", g.Root.String(), g.Listens)
+func (g Gateway) Url() string {
+	return fmt.Sprintf("%s%s", g.Root.Url(), g.Listens)
 }
 
-func (s Service) String() string {
-	return fmt.Sprintf("%s%s", s.Gateway.String(), s.Listens)
+func (s Service) Url() string {
+	return fmt.Sprintf("%s%s", s.Gateway.Url(), s.Listens)
 }
 
-func (e Endpoint) String() string {
-	return fmt.Sprintf("%s%s", e.Service.String(), e.Listens)
+func (e Endpoint) Url() string {
+	return fmt.Sprintf("%s%s", e.Service.Url(), e.Listens)
 }
 
 func checkPrefix(a Endpoint, b Endpoint) bool {
-	return strings.HasPrefix(a.String(), b.String())
+	return strings.HasPrefix(a.Url(), b.Url())
 }
 
 func Sort(eps []Endpoint) []Endpoint {

@@ -1,9 +1,13 @@
 // Since both the services and their consumers needs to know URL paths, single source-of-truth is needed.
 // TODO: Keep this up to date as new services and endpoints defined.
 
-package paths
+package config
 
-import "net/http"
+import (
+	. "tde/internal/microservices/paths"
+
+	"net/http"
+)
 
 var Site = Domain{"http", "deepthinker.app", "8080"}
 var ApiGateway = Gateway{Site, "/api/v1.0.0"}
