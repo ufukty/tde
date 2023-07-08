@@ -1,18 +1,18 @@
 package endpoints
 
 import (
-	volume_manager "tde/cmd/customs/endpoints/volmng"
+	"tde/cmd/customs/endpoints/volmng"
 	"tde/internal/microservices/logger"
 
 	"net/http"
 )
 
 type EndpointsManager struct {
-	vm  *volume_manager.VolumeManager
+	vm  *volmng.VolumeManager
 	log *logger.Logger
 }
 
-func NewManager(vm *volume_manager.VolumeManager) *EndpointsManager {
+func NewManager(vm *volmng.VolumeManager) *EndpointsManager {
 	return &EndpointsManager{
 		vm:  vm,
 		log: logger.NewLogger("customs/endpoints/module/ast/get"),
