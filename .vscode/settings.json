@@ -2,8 +2,11 @@
     "go.testFlags": ["-v", "-count=1"],
     "gopls": {
         "build.buildFlags": ["-tags=tde"],
-        "ui.semanticTokens": true
+        "ui.semanticTokens": true,
+        "ui.diagnostic.analyses": { "composites": false }, // turn of "unkeyed" struct fields
+        "ui.navigation.importShortcut": "Definition"
     },
+    "go.lintFlags": ["-ST1001"],
     "markdown.preview.fontSize": 14,
     "markdown.preview.lineHeight": 2,
     "markdown.preview.markEditorSelection": false,
