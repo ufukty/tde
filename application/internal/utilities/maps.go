@@ -1,0 +1,28 @@
+package utilities
+
+import "golang.org/x/exp/slices"
+
+// A map implementation that doesn't lose ordering. Not performant as builtin map
+
+type OrderedDict[K comparable, V any] struct {
+	mapping  map[K]V
+	ordering []K
+}
+
+func (od *OrderedDict[K, V]) Set(k K, v V) {
+	od.mapping[k] = v
+	od.ordering = append(od.ordering, k)
+}
+
+func (od *OrderedDict[K, V]) Get(k K) (value V, ok bool) {
+	v, ok := od.mapping[k]
+	return v, ok
+}
+
+func (od OrderedDict[K, V]) Delete(k K) {}
+
+func (od OrderedDict[K, V]) InsertAt(k K, v V, index int) {}
+
+func (od OrderedDict[K, V]) Keys() []K {
+	return slices.Clone(od.ordering)
+}

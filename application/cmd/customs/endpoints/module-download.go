@@ -1,9 +1,8 @@
-package module
+package endpoints
 
 import (
-	"tde/cmd/customs/internal/utilities"
-	volume_manager "tde/cmd/customs/internal/volume-manager"
-	"tde/internal/microservices/logger"
+	"log"
+	"tde/cmd/customs/endpoints/utilities"
 
 	"fmt"
 	"net/http"
@@ -14,16 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var (
-	vm  *volume_manager.VolumeManager
-	log = logger.NewLogger("customs/endpoints/module/get/handler")
-)
-
-func RegisterVolumeManager(vm_ *volume_manager.VolumeManager) {
-	vm = vm_
-}
-
-func Handler(w http.ResponseWriter, r *http.Request) {
+func (h Handlers) HandleDownload(w http.ResponseWriter, r *http.Request) {
 	var (
 		ok          bool
 		err         error
@@ -41,14 +31,14 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bundleExists, zipExists, extractExists = vm.CheckIfExists(archiveId)
+	var bundleExists, zipExists, extractExists = h.vm.CheckIfExists(archiveId)
 	if !(bundleExists && zipExists && extractExists) {
 		log.Printf("Got asked for non-existent archive '%s'\n", archiveId)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	var _, zip, _ = vm.FindPath(archiveId)
+	var _, zip, _ = h.vm.FindPath(archiveId)
 	fileHandler, err = os.Open(zip)
 	if err != nil {
 		log.Println(errors.Wrap(err, "opening file to read"))

@@ -1,15 +1,14 @@
 package main
 
 import (
-	volume_manager "tde/cmd/customs/internal/volume-manager"
+	"tde/cmd/customs/endpoints"
+	"tde/cmd/customs/endpoints/volmng"
 	"tde/config"
 	config_reader "tde/internal/microservices/config-reader"
 	"tde/internal/microservices/paths"
 	"tde/internal/microservices/router"
 
-	mastg "tde/cmd/customs/endpoints/module/ast/package/get"
-	mg "tde/cmd/customs/endpoints/module/get"
-	mp "tde/cmd/customs/endpoints/module/post"
+	"net/http"
 )
 
 // TODO: accepts uploaded files
@@ -20,20 +19,26 @@ import (
 
 func main() {
 	var (
-		cfg           = config_reader.GetConfig()
-		volumeManager = volume_manager.NewVolumeManager(cfg.Customs.MountPath)
+		cfg = config_reader.GetConfig()
+		vm  = volmng.NewVolumeManager(cfg.Customs.MountPath)
+		em  = endpoints.New(vm)
 	)
 
 	// dbo.Connect()
 	// defer dbo.Close()
 
 	config_reader.Print(cfg.Customs)
-	mp.RegisterVolumeManager(volumeManager)
-	mg.RegisterVolumeManager(volumeManager)
-	mastg.RegisterVolumeManager(volumeManager)
 
-	router.StartRouter(cfg.Customs.RouterPrivate, &cfg.Customs.RouterParameters,
-		paths.RouteRegisterer(config.Handlers[config.Customs]),
-	)
+	var handlers = map[paths.Endpoint]http.HandlerFunc{
+		config.CustomsModuleUpload:      em.HandleUpload,
+		config.CustomsModuleDownload:    em.HandleDownload,
+		config.CustomsModuleList:        em.HandleList,
+		config.CustomsModuleAstFuncDecl: http.NotFound,
+		config.CustomsModuleAstFile:     http.NotFound,
+		config.CustomsModuleAstPackage:  em.HandleAstPackage,
+		config.CustomsModuleContext:     em.HandleContext,
+	}
+
+	router.StartRouter(cfg.Customs.RouterPrivate, &cfg.Customs.RouterParameters, paths.RouteRegisterer(handlers))
 	router.Wait(&cfg.Customs.RouterParameters)
 }

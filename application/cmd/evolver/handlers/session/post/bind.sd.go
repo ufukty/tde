@@ -9,7 +9,7 @@ import (
 )
 
 func (req *Request) NewRequest(method, url string) (*http.Request, error) {
-	buffer := new(bytes.Buffer)
+	buffer := bytes.NewBuffer([]byte{})
 	err := json.NewEncoder(buffer).Encode(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed on serialization")

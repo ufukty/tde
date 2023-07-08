@@ -1,4 +1,4 @@
-package volume_manager
+package volmng
 
 import (
 	"io"

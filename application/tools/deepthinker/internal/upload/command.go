@@ -1,12 +1,12 @@
 package upload
 
 import (
-	"fmt"
-	customs_module_post "tde/cmd/customs/endpoints/module/post"
+	"tde/cmd/customs/endpoints"
 	"tde/internal/command"
 	"tde/internal/folders/archive"
 	"tde/internal/folders/discovery"
 
+	"fmt"
 	"log"
 	"os"
 
@@ -25,8 +25,8 @@ func (c *Command) Run() {
 	var (
 		err         error
 		modulePath  string
-		req         *customs_module_post.Request
-		resp        *customs_module_post.Response
+		req         *endpoints.UploadRequest
+		resp        *endpoints.UploadResponse
 		fileHandler *os.File
 	)
 	modulePath, err = discovery.GetModulePath()
@@ -61,7 +61,7 @@ func (c *Command) Run() {
 	}
 	defer fileHandler.Close()
 
-	req, err = customs_module_post.NewRequest(fileHandler)
+	req, err = endpoints.NewRequest(fileHandler)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not create request"))
 	}

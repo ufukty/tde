@@ -1,14 +1,13 @@
 package endpoints_test
 
 import (
-	"io"
-	module_get "tde/cmd/customs/endpoints/module/get"
-	module_post "tde/cmd/customs/endpoints/module/post"
-	"tde/cmd/customs/internal/utilities"
-	volume_manager "tde/cmd/customs/internal/volume-manager"
+	"tde/cmd/customs/endpoints"
+	"tde/cmd/customs/endpoints/utilities"
+	"tde/cmd/customs/endpoints/volmng"
 
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -21,24 +20,20 @@ import (
 	"github.com/pkg/errors"
 )
 
-func TestMain(m *testing.M) {
-	tmp, err := os.MkdirTemp(os.TempDir(), "tde-customs-testing-endpoints-*")
-	if err != nil {
-		log.Fatalln(errors.Wrapf(err, "prep"))
-	}
-	var vm = volume_manager.NewVolumeManager(tmp)
-	module_get.RegisterVolumeManager(vm)
-	module_post.RegisterVolumeManager(vm)
-	log.Printf("Using %s for volume manager mount", tmp)
-	os.Exit(m.Run())
-}
-
 func Test_UploadDownload(t *testing.T) {
 	var (
 		archiveId string
 		checksum  string
 		testFile  = "testdata/to-upload.zip"
 	)
+
+	tmp, err := os.MkdirTemp(os.TempDir(), "tde-customs-testing-endpoints-*")
+	if err != nil {
+		log.Fatalln(errors.Wrapf(err, "prep"))
+	}
+	var vm = volmng.NewVolumeManager(tmp)
+	log.Printf("Using %s for volume manager mount", tmp)
+	var handlers = endpoints.New(vm)
 
 	t.Run("Prep", func(t *testing.T) {
 		fh, err := os.Open(testFile)
@@ -57,7 +52,7 @@ func Test_UploadDownload(t *testing.T) {
 			fileContent        []byte
 			req                *http.Request
 			expectedBodyRegexp *regexp.Regexp
-			bindRes            module_post.Response
+			bindRes            endpoints.UploadResponse
 			resrec             *httptest.ResponseRecorder
 		)
 
@@ -91,7 +86,7 @@ func Test_UploadDownload(t *testing.T) {
 			resrec = httptest.NewRecorder()
 		}
 
-		module_post.Handler(resrec, req)
+		handlers.HandleUpload(resrec, req)
 		var res = resrec.Result()
 
 		{
@@ -106,7 +101,7 @@ func Test_UploadDownload(t *testing.T) {
 			if !expectedBodyRegexp.Match(resrec.Body.Bytes()) {
 				t.Fatalf("validation/body. Got %s, want %s", resrec.Body.Bytes(), expectedResponseBody)
 			}
-			bindRes = module_post.Response{}
+			bindRes = endpoints.UploadResponse{}
 			if err = bindRes.DeserializeResponse(res); err != nil {
 				t.Fatal(errors.Wrapf(err, "validation prep - deserialize"))
 			}
@@ -132,7 +127,7 @@ func Test_UploadDownload(t *testing.T) {
 		})
 
 		r.Header.Set("Authorization", "Bearer")
-		module_get.Handler(resrec, r)
+		handlers.HandleDownload(resrec, r)
 		w = resrec.Result()
 
 		if w.StatusCode != http.StatusOK {

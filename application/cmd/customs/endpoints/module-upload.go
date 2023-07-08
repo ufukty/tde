@@ -1,13 +1,14 @@
-package module
+package endpoints
 
 import (
-	"mime"
-	"tde/cmd/customs/internal/utilities"
-	volume_manager "tde/cmd/customs/internal/volume-manager"
+	"tde/cmd/customs/endpoints/utilities"
 	"tde/internal/folders/archive"
-	"tde/internal/microservices/logger"
 
+	"bytes"
 	"fmt"
+	"io"
+	"log"
+	"mime"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -21,23 +22,114 @@ const (
 	ALLOWED_MIME_TYPE  = "multipart/form-data"
 )
 
-var (
-	log = logger.NewLogger("http handler in customs/module/post")
-	vm  *volume_manager.VolumeManager
-)
+//go:generate serdeser module-upload.go
 
-func RegisterVolumeManager(vm_ *volume_manager.VolumeManager) {
-	vm = vm_
+// NOTE: DON'T use serdeser for multipart/form-data requests
+type UploadRequest struct {
+	body                    *bytes.Buffer
+	contentTypeWithBoundary string
 }
 
-func processUploadWithVolumeManager(r *http.Request) (archiveId string, errResp string, err error) {
+type UploadResponse struct {
+	ArchiveID string `json:"archive_id"`
+}
+
+func NewRequest(file io.Reader) (*UploadRequest, error) {
+	var (
+		err          error
+		digest       string
+		fileField    io.Writer
+		cheksumField io.Writer
+		req          = new(UploadRequest)
+		mpWriter     *multipart.Writer
+	)
+
+	req.body = bytes.NewBuffer([]byte{})
+	mpWriter = multipart.NewWriter(req.body)
+
+	var fileFieldRead = bytes.NewBuffer([]byte{})
+	var checksumFieldRead = io.TeeReader(file, fileFieldRead)
+
+	{
+		digest, err = utilities.MD5(checksumFieldRead)
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to find checksum of file")
+		}
+		cheksumField, err = mpWriter.CreateFormField("md5sum")
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not create form field for checksum")
+		}
+		_, err = cheksumField.Write([]byte(digest))
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not write checksum into request body")
+		}
+	}
+
+	{
+		fileField, err = mpWriter.CreateFormFile("file", "file.zip")
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not create form field for file")
+		}
+		_, err = io.Copy(fileField, fileFieldRead)
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not write the file content into form field")
+		}
+	}
+
+	err = mpWriter.Close()
+	if err != nil {
+		return nil, errors.Wrap(err, "Could not close the writer of request body")
+	}
+
+	req.contentTypeWithBoundary = mpWriter.FormDataContentType()
+
+	return req, nil
+}
+
+func (req *UploadRequest) Send(method, url string) (*UploadResponse, error) {
+	var (
+		httpReq *http.Request
+		err     error
+	)
+	httpReq, err = http.NewRequest(method, url, req.body)
+	if err != nil {
+		return nil, errors.Wrap(err, "Could not create http request instance")
+	}
+
+	httpReq.Header.Set("Content-Type", req.contentTypeWithBoundary)
+	httpReq.Header.Set("Content-Length", fmt.Sprintf("%d", req.body.Len()))
+	// req.Header.Set("Authorization", "Bearer")
+
+	httpResponse, err := http.DefaultClient.Do(httpReq)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed on sending the request")
+	}
+	if httpResponse.StatusCode != http.StatusOK {
+		buf := bytes.NewBuffer([]byte{})
+		_, err := io.Copy(buf, httpResponse.Body)
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not read response body")
+		}
+		return nil, errors.New(buf.String())
+	}
+
+	res := UploadResponse{}
+	err = res.DeserializeResponse(httpResponse)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed on parsing the response body")
+	}
+
+	return &res, nil
+}
+
+func processUploadWithVolumeManager(h *Handlers, r *http.Request) (archiveId string, errResp string, err error) {
 	fh, _, err := r.FormFile("file")
 	if err != nil {
 		return "", "", errors.Wrap(err, "retrieving form part 'file'")
 	}
 	defer fh.Close()
 
-	archiveId, errFile, err := vm.New(fh)
+	archiveId, errFile, err := h.vm.New(fh)
 	if err != nil {
 		if errors.Is(err, archive.ErrExtensionUnallowed) {
 			errResp = "Check file extension"
@@ -114,7 +206,8 @@ func checkMD5Sum(r *http.Request) error {
 	return nil
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func (h Handlers) HandleUpload(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		requestID    string
 		archiveID    string
@@ -152,7 +245,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archiveID, responseText, err = processUploadWithVolumeManager(r)
+	archiveID, responseText, err = processUploadWithVolumeManager(&h, r)
 	if err != nil {
 		var message = "Could not process the upload response text: " + responseText
 		log.Println(errors.Wrap(errors.Wrap(err, message), requestID))
@@ -163,9 +256,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", mime.TypeByExtension("json"))
 	w.WriteHeader(http.StatusOK)
 
-	var res = &Response{
+	var res = &UploadResponse{
 		ArchiveID: archiveID,
 	}
 
 	res.SerializeIntoResponseWriter(w)
+}
+
+type Client struct {
 }
