@@ -30,7 +30,7 @@ func main() {
 	config_reader.Print(cfg.Customs)
 
 	var handlers = map[paths.Endpoint]http.HandlerFunc{
-		config.CustomsModuleUpload:      em.HandleUpload,
+		config.CustomsModuleUpload:      em.UploadHandler(),
 		config.CustomsModuleDownload:    em.HandleDownload,
 		config.CustomsModuleList:        em.HandleList,
 		config.CustomsModuleAstFuncDecl: http.NotFound,

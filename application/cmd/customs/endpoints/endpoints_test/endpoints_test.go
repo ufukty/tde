@@ -86,7 +86,8 @@ func Test_UploadDownload(t *testing.T) {
 			resrec = httptest.NewRecorder()
 		}
 
-		handlers.HandleUpload(resrec, req)
+		var handler = handlers.UploadHandler()
+		handler(resrec, req)
 		var res = resrec.Result()
 
 		{
