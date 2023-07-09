@@ -28,7 +28,7 @@ type ContextResponse struct {
 	Context *context.Context `json:"context"`
 }
 
-func (req *ContextRequest) NewRequest() (*http.Request, error) {
+func (req *ContextRequest) NewContextRequest() (*http.Request, error) {
 	buffer := new(bytes.Buffer)
 	err := json.NewEncoder(buffer).Encode(req)
 	if err != nil {
@@ -106,5 +106,6 @@ func (res *ContextResponse) DeserializeResponse(r *http.Response) error {
 // 	return res, nil
 // }
 
-func (em EndpointsManager) HandleContext(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) ContextHandler() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {}
 }

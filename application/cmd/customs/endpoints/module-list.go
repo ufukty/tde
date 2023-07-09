@@ -17,6 +17,7 @@ type HandleListResponse struct {
 	PackageList []ListRequestPackage `json:"package"`
 }
 
-func (em EndpointsManager) HandleList(w http.ResponseWriter, r *http.Request) {
+func (em EndpointsManager) ListHandler() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {}
 
 }

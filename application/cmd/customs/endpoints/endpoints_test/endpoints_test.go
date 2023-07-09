@@ -86,8 +86,7 @@ func Test_UploadDownload(t *testing.T) {
 			resrec = httptest.NewRecorder()
 		}
 
-		var handler = handlers.UploadHandler()
-		handler(resrec, req)
+		handlers.UploadHandler()(resrec, req)
 		var res = resrec.Result()
 
 		{
@@ -128,7 +127,7 @@ func Test_UploadDownload(t *testing.T) {
 		})
 
 		r.Header.Set("Authorization", "Bearer")
-		handlers.HandleDownload(resrec, r)
+		handlers.DownloadHandler()(resrec, r)
 		w = resrec.Result()
 
 		if w.StatusCode != http.StatusOK {

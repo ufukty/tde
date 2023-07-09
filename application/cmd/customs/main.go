@@ -31,12 +31,12 @@ func main() {
 
 	var handlers = map[paths.Endpoint]http.HandlerFunc{
 		config.CustomsModuleUpload:      em.UploadHandler(),
-		config.CustomsModuleDownload:    em.HandleDownload,
-		config.CustomsModuleList:        em.HandleList,
+		config.CustomsModuleDownload:    em.DownloadHandler(),
+		config.CustomsModuleList:        em.ListHandler(),
 		config.CustomsModuleAstFuncDecl: http.NotFound,
 		config.CustomsModuleAstFile:     http.NotFound,
-		config.CustomsModuleAstPackage:  em.HandleAstPackage,
-		config.CustomsModuleContext:     em.HandleContext,
+		config.CustomsModuleAstPackage:  em.AstPackageHandler(),
+		config.CustomsModuleContext:     em.ContextHandler(),
 	}
 
 	router.StartRouter(cfg.Customs.RouterPrivate, &cfg.Customs.RouterParameters, paths.RouteRegisterer(handlers))
