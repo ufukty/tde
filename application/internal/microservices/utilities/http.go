@@ -5,6 +5,7 @@
 package utilities
 
 import (
+	"io"
 	"tde/internal/microservices/paths"
 
 	"bytes"
@@ -43,8 +44,8 @@ func separateParams(in any) (map[string]string, map[string]any) {
 
 func fillUrlParamaters(muxMap map[string]string, bq any) error {
 	var (
-		t       = reflect.TypeOf(bq)
-		v       = reflect.ValueOf(bq)
+		t       = reflect.TypeOf(bq).Elem()
+		v       = reflect.ValueOf(bq).Elem()
 		fields  = v.NumField()
 		value   string
 		missing = []string{}
@@ -90,8 +91,9 @@ func NewRequest(ep paths.Endpoint, params any) (*http.Request, error) {
 }
 
 func ParseRequest[Request any](rq *http.Request) (bq *Request, err error) {
+	bq = new(Request)
 	err = json.NewDecoder(rq.Body).Decode(bq)
-	if err != nil {
+	if err != nil && errors.Is(err, io.ErrUnexpectedEOF) {
 		err = errors.Wrap(err, "parsing the request body")
 		return
 	}
@@ -126,7 +128,7 @@ func Send[Request any, Response any](ep paths.Endpoint, bq Request) (*Response, 
 	var (
 		rq  *http.Request
 		rs  *http.Response
-		bs  *Response
+		bs  = new(Response)
 		err error
 	)
 	rq, err = NewRequest(ep, bq)
