@@ -45,6 +45,11 @@ func (s Service) Url() string {
 	return fmt.Sprintf("%s%s", s.Gateway.Url(), s.Listens)
 }
 
+// returns the path that is supposed to get trimmed at gateway from each request's Host header
+func (s Service) PathByGateway() string {
+	return fmt.Sprintf("%s%s", s.Gateway.Listens, s.Listens)
+}
+
 func (e Endpoint) Url() string {
 	return fmt.Sprintf("%s%s", e.Service.Url(), e.Listens)
 }
@@ -80,7 +85,7 @@ func RouteRegisterer(handlers map[Endpoint]http.HandlerFunc) func(*mux.Router) {
 		for _, ep := range Sort(maps.Keys(handlers)) {
 			var handler = handlers[ep]
 			log.Printf("Registering route: %-6s %s\n", ep.Method, ep.Listens)
-			r.PathPrefix(ep.Listens).Methods(ep.Method.String()).HandlerFunc(handler)
+			r.HandleFunc(ep.Listens, handler).Methods(ep.Method.String())
 		}
 	}
 }

@@ -69,7 +69,7 @@ func (c *Command) Run() {
 	if c.Verbose {
 		log.Println("Uploading...")
 	}
-	resp, err = req.Send("POST", "http://127.0.0.1:8087/api/v1.0.0/customs/module")
+	resp, err = req.Send()
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Failed"))
 	}

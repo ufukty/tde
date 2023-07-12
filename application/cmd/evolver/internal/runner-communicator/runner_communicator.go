@@ -1,8 +1,8 @@
 package runner_communicator
 
 import (
-	service_discovery "tde/internal/microservices/service-discovery"
-	"tde/internal/microservices/service-discovery/models/services"
+	"tde/internal/microservices/serviced"
+	"tde/internal/microservices/serviced/models/services"
 
 	"github.com/pkg/errors"
 )
@@ -15,11 +15,11 @@ var (
 )
 
 type RunnerCommunicator struct {
-	sd           *service_discovery.ServiceDiscovery
+	sd           *serviced.ServiceDiscovery
 	ip_addresses []string
 }
 
-func NewRunnerCommunicator(sd *service_discovery.ServiceDiscovery) (*RunnerCommunicator, error) {
+func NewRunnerCommunicator(sd *serviced.ServiceDiscovery) (*RunnerCommunicator, error) {
 	rc := &RunnerCommunicator{
 		sd: sd,
 	}

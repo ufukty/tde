@@ -1,6 +1,6 @@
 package local
 
-import "tde/internal/microservices/service-discovery/models/services"
+import "tde/internal/microservices/serviced/models/services"
 
 type IPAddress string
 

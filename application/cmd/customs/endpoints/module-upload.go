@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"tde/cmd/customs/endpoints/utilities"
+	"tde/config"
 	"tde/internal/folders/archive"
 
 	"bytes"
@@ -15,11 +16,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-)
-
-const (
-	MAX_CONTENT_LENGTH = 40 * 1024 * 1024
-	ALLOWED_MIME_TYPE  = "multipart/form-data"
 )
 
 //go:generate serdeser module-upload.go
@@ -86,12 +82,12 @@ func NewUploadRequest(file io.Reader) (*UploadRequest, error) {
 	return req, nil
 }
 
-func (req *UploadRequest) Send(method, url string) (*UploadResponse, error) {
+func (req *UploadRequest) Send() (*UploadResponse, error) {
 	var (
 		httpReq *http.Request
 		err     error
 	)
-	httpReq, err = http.NewRequest(method, url, req.body)
+	httpReq, err = http.NewRequest(config.CustomsModuleUpload.Method.String(), config.CustomsModuleUpload.Url(), req.body)
 	if err != nil {
 		return nil, errors.Wrap(err, "Could not create http request instance")
 	}
@@ -123,6 +119,11 @@ func (req *UploadRequest) Send(method, url string) (*UploadResponse, error) {
 }
 
 func (em EndpointsManager) UploadHandler() func(w http.ResponseWriter, r *http.Request) {
+	const (
+		MAX_CONTENT_LENGTH = 40 * 1024 * 1024
+		ALLOWED_MIME_TYPE  = "multipart/form-data"
+	)
+
 	var processUploadWithVolumeManager = func(em *EndpointsManager, r *http.Request) (archiveId string, errResp string, err error) {
 		fh, _, err := r.FormFile("file")
 		if err != nil {

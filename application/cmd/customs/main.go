@@ -4,7 +4,7 @@ import (
 	"tde/cmd/customs/endpoints"
 	"tde/cmd/customs/endpoints/volmng"
 	"tde/config"
-	config_reader "tde/internal/microservices/config-reader"
+	"tde/internal/microservices/cfgreader"
 	"tde/internal/microservices/paths"
 	"tde/internal/microservices/router"
 
@@ -19,7 +19,7 @@ import (
 
 func main() {
 	var (
-		cfg = config_reader.GetConfig()
+		cfg = cfgreader.GetConfig()
 		vm  = volmng.NewVolumeManager(cfg.Customs.MountPath)
 		em  = endpoints.NewManager(vm)
 	)
@@ -27,7 +27,7 @@ func main() {
 	// dbo.Connect()
 	// defer dbo.Close()
 
-	config_reader.Print(cfg.Customs)
+	cfgreader.Print(cfg.Customs)
 
 	var handlers = map[paths.Endpoint]http.HandlerFunc{
 		config.CustomsModuleUpload:      em.UploadHandler(),
@@ -39,6 +39,6 @@ func main() {
 		config.CustomsModuleContext:     em.ContextHandler(),
 	}
 
-	router.StartRouter(cfg.Customs.RouterPrivate, &cfg.Customs.RouterParameters, paths.RouteRegisterer(handlers))
+	router.StartRouter(":"+cfg.Customs.RouterPrivate, &cfg.Customs.RouterParameters, paths.RouteRegisterer(handlers))
 	router.Wait(&cfg.Customs.RouterParameters)
 }

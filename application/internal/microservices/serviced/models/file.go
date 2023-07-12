@@ -1,10 +1,10 @@
 package models
 
 import (
-	"tde/internal/microservices/service-discovery/models/provider"
-	"tde/internal/microservices/service-discovery/models/provider/digitalocean"
-	"tde/internal/microservices/service-discovery/models/provider/local"
-	"tde/internal/microservices/service-discovery/models/services"
+	"tde/internal/microservices/serviced/models/provider"
+	"tde/internal/microservices/serviced/models/provider/digitalocean"
+	"tde/internal/microservices/serviced/models/provider/local"
+	"tde/internal/microservices/serviced/models/services"
 )
 
 type ServiceDiscoveryFile struct {

@@ -10,8 +10,8 @@ common: &common
   <<: *router-parameters
   service-discovery-config: /home/tde_app/service_discovery.json
   service-discovery-update-period: 30s
-  router-public: :8080
-  router-private: :8081
+  router-public: 8080
+  router-private: 8081
 
 evolver:
   <<: *common

@@ -1,6 +1,6 @@
 package digitalocean
 
-import "tde/internal/microservices/service-discovery/models/services"
+import "tde/internal/microservices/serviced/models/services"
 
 type Droplet struct {
 	Backups            bool     `json:"backups"`              // false,

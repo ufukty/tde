@@ -1,7 +1,7 @@
-package service_discovery
+package serviced
 
 import (
-	"tde/internal/microservices/service-discovery/models/services"
+	"tde/internal/microservices/serviced/models/services"
 	"testing"
 	"time"
 )

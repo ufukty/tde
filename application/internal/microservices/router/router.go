@@ -3,11 +3,9 @@ package router
 import (
 	"context"
 	"net/http"
-	"net/http/httputil"
 	"os"
 	"os/signal"
-	"strings"
-	config_reader "tde/internal/microservices/config-reader"
+	"tde/internal/microservices/cfgreader"
 	"tde/internal/microservices/logger"
 	"time"
 
@@ -20,31 +18,10 @@ var servers = []*http.Server{}
 
 var log = logger.NewLogger("Router")
 
-func dumpRequest(r *http.Request) {
-	var dump, err = httputil.DumpRequest(r, false)
-	if err != nil {
-		log.Println(errors.Wrap(err, "dumping request"))
-	}
-	log.Printf("%q", strings.ReplaceAll(strings.ReplaceAll(string(dump), "\r\n", " || "), "\n", " | "))
-}
-
-func NotFound(w http.ResponseWriter, r *http.Request) {
-	dumpRequest(r)
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-}
-
-func LastMatch(w http.ResponseWriter, r *http.Request) {
-	dumpRequest(r)
-	if r.URL.Path == "/" {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	} else {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	}
-}
-
-func StartRouter(baseURL string, cfg *config_reader.RouterParameters, endpointRegisterer func(r *mux.Router)) {
+func StartRouter(baseURL string, cfg *cfgreader.RouterParameters, endpointRegisterer func(r *mux.Router)) {
 	r := mux.NewRouter()
 	endpointRegisterer(r)
+	r.HandleFunc("/ping", Pong)
 	r.PathPrefix("/").HandlerFunc(LastMatch)
 
 	r.Use(chi_mw.RequestID)
@@ -109,7 +86,7 @@ func waitInterrupSignal() {
 	<-sigInterruptChannel
 }
 
-func Wait(cfg *config_reader.RouterParameters) {
+func Wait(cfg *cfgreader.RouterParameters) {
 	waitInterrupSignal()
 
 	// Create a deadline to wait for.

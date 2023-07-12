@@ -2,7 +2,7 @@ package main
 
 import (
 	"tde/cmd/runner/endpoints/batch/batch_post"
-	config_reader "tde/internal/microservices/config-reader"
+	"tde/internal/microservices/cfgreader"
 	"tde/internal/microservices/router"
 
 	"github.com/gorilla/mux"
@@ -10,10 +10,10 @@ import (
 
 func main() {
 	var (
-		config = config_reader.GetConfig()
+		config = cfgreader.GetConfig()
 	)
 
-	config_reader.Print(config.Runner)
+	cfgreader.Print(config.Runner)
 
 	router.StartRouter(config.Runner.RouterPublic, &config.Runner.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/batch").Methods("POST").HandlerFunc(batch_post.Handler)

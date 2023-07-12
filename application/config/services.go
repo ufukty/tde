@@ -7,7 +7,7 @@ import (
 	. "tde/internal/microservices/paths"
 )
 
-var Site = Domain{"http", "deepthinker.app", "8080"}
+var Site Domain // assigned after config read
 var ApiGateway = Gateway{Site, "/api/v1.0.0"}
 
 var (
@@ -22,8 +22,9 @@ var (
 )
 
 var (
-	Evolver              = Service{ApiGateway, "/evolver"}
-	EvolverSessionCreate = Endpoint{Evolver, "/session", GET}
+	Evolver                   = Service{ApiGateway, "/evolver"}
+	EvolverSessionCreate      = Endpoint{Evolver, "/session", GET}
+	EvolverSessionBatchUpdate = Endpoint{Evolver, "/session/{sid}/batch/{bid}", POST}
 )
 
 var (

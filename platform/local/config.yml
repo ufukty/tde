@@ -10,32 +10,32 @@ common: &common
   <<: *router-parameters
   service-discovery-config: ../platform/local/files/service_discovery.json
   service-discovery-update-period: 30s
-  router-public: :8080
-  router-private: :8081
+  router-public: 8080
+  router-private: 8081
 
 evolver:
   <<: *common
-  router-public: :8081
-  router-private: :8082
+  router-public: 8081
+  router-private: 8082
 
 runner:
   <<: *common
-  router-public: :8083
-  router-private: :8084
+  router-public: 8083
+  router-private: 8084
 
 customs:
   <<: *common
   request-timeout: 5s
-  router-public: :8085
-  router-private: :8086
+  router-public: 8085
+  router-private: 8086
   volume-mount: ../platform/local/.mount/customs
 
 api_gateway:
   <<: *common
-  router-public: :8087
-  router-private: :8088
+  router-public: 8087
+  router-private: 8088
 
 captcha:
   <<: *common
-  router-public: :8089
-  router-private: :8090
+  router-public: 8089
+  router-private: 8090

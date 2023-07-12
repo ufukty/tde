@@ -1,7 +1,7 @@
-package service_discovery
+package serviced
 
 import (
-	"tde/internal/microservices/service-discovery/models"
+	"tde/internal/microservices/serviced/models"
 
 	"encoding/json"
 	"log"
