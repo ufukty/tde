@@ -5,12 +5,12 @@
 package utilities
 
 import (
-	"io"
 	"tde/internal/microservices/paths"
 
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime"
 	"net/http"
 	"reflect"
