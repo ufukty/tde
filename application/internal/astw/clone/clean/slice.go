@@ -1,4 +1,4 @@
-package clean_clone
+package clean
 
 import "go/ast"
 

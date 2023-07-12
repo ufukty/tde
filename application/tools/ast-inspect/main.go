@@ -1,6 +1,9 @@
 package main
 
 import (
+	"tde/internal/astw/clone/clean"
+	"tde/internal/astw/cpprinter"
+
 	"encoding/json"
 	"go/ast"
 	"go/parser"
@@ -8,8 +11,6 @@ import (
 	"go/token"
 	"log"
 	"os"
-	clean_clone "tde/internal/astw/clone/clean-clone"
-	cp_printer "tde/internal/astw/cp-printer"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
@@ -20,7 +21,7 @@ func astPrinter(fileset *token.FileSet, astFile *ast.File) error {
 }
 
 func jsonPrinter(astFile *ast.File) error {
-	cleanFile := clean_clone.File(astFile)
+	cleanFile := clean.File(astFile)
 	return json.NewEncoder(os.Stdout).Encode(cleanFile)
 }
 
@@ -65,7 +66,7 @@ func main() {
 	case "spew":
 		err = spewPrint(astFile)
 	case "cp":
-		cp_printer.Print(astFile)
+		cpprinter.Print(astFile)
 	default:
 		log.Fatalln("Printer not found:", os.Args[1])
 	}

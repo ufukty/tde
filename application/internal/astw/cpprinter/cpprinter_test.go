@@ -1,4 +1,4 @@
-package cp_printer
+package cpprinter
 
 import (
 	"bytes"
