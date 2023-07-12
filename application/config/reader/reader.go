@@ -1,4 +1,4 @@
-package cfgreader
+package reader
 
 import (
 	"tde/internal/microservices/logger"

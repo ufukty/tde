@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tde/internal/microservices/cfgreader"
+	"tde/config/reader"
 	"tde/internal/microservices/router"
 	"tde/internal/microservices/serviced"
 
@@ -10,11 +10,11 @@ import (
 
 func main() {
 	var (
-		cfg = cfgreader.GetConfig()
+		cfg = reader.GetConfig()
 		sd  = serviced.NewServiceDiscovery(cfg.APIGateway.ServiceDiscoveryConfig, cfg.APIGateway.ServiceDiscoveryUpdatePeriod)
 	)
 
-	cfgreader.Print(cfg.APIGateway)
+	reader.Print(cfg.APIGateway)
 
 	router.StartRouter(":"+cfg.APIGateway.RouterPublic, &cfg.APIGateway.RouterParameters, func(r *mux.Router) {
 		r = r.UseEncodedPath()

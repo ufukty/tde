@@ -6,7 +6,7 @@ import (
 	customs_proxy "tde/cmd/evolver/internal/customs-proxy"
 	runner_communicator "tde/cmd/evolver/internal/runner-communicator"
 	"tde/cmd/evolver/internal/sessions"
-	"tde/internal/microservices/cfgreader"
+	"tde/config/reader"
 	"tde/internal/microservices/router"
 	"tde/internal/microservices/serviced"
 
@@ -18,13 +18,13 @@ import (
 
 func main() {
 	var (
-		config = cfgreader.GetConfig()
+		config = reader.GetConfig()
 		sd     = serviced.NewServiceDiscovery(config.Evolver.ServiceDiscoveryConfig, config.Evolver.ServiceDiscoveryUpdatePeriod)
 		sm     = sessions.NewStore()
 		cpc    = customs_proxy.New(config, sd)
 	)
 
-	cfgreader.Print(config.Evolver)
+	reader.Print(config.Evolver)
 	rc, err := runner_communicator.NewRunnerCommunicator(sd)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "failed on launch"))

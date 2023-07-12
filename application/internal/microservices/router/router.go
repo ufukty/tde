@@ -1,15 +1,16 @@
 package router
 
 import (
+	"tde/config/reader"
+	"tde/internal/microservices/logger"
+
 	"context"
 	"net/http"
 	"os"
 	"os/signal"
-	"tde/internal/microservices/cfgreader"
-	"tde/internal/microservices/logger"
 	"time"
 
-	chi_mw "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -18,18 +19,18 @@ var servers = []*http.Server{}
 
 var log = logger.NewLogger("Router")
 
-func StartRouter(baseURL string, cfg *cfgreader.RouterParameters, endpointRegisterer func(r *mux.Router)) {
+func StartRouter(baseURL string, cfg *reader.RouterParameters, endpointRegisterer func(r *mux.Router)) {
 	r := mux.NewRouter()
 	endpointRegisterer(r)
 	r.HandleFunc("/ping", Pong)
 	r.PathPrefix("/").HandlerFunc(LastMatch)
 
-	r.Use(chi_mw.RequestID)
-	r.Use(chi_mw.Timeout(cfg.RequestTimeout))
-	r.Use(chi_mw.Logger)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Timeout(cfg.RequestTimeout))
+	r.Use(middleware.Logger)
 	// r.Use(middleware.MWAuthorization)
 	r.Use(mux.CORSMethodMiddleware(r))
-	r.Use(chi_mw.Recoverer)
+	r.Use(middleware.Recoverer)
 
 	server := &http.Server{
 		Addr: baseURL,
@@ -86,7 +87,7 @@ func waitInterrupSignal() {
 	<-sigInterruptChannel
 }
 
-func Wait(cfg *cfgreader.RouterParameters) {
+func Wait(cfg *reader.RouterParameters) {
 	waitInterrupSignal()
 
 	// Create a deadline to wait for.

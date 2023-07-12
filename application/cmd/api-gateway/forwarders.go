@@ -2,7 +2,7 @@ package main
 
 import (
 	"tde/config"
-	"tde/internal/microservices/cfgreader"
+	"tde/config/reader"
 	"tde/internal/microservices/forwarder"
 	"tde/internal/microservices/serviced"
 	"tde/internal/microservices/serviced/models/services"
@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func RegisterForwarders(sd *serviced.ServiceDiscovery, cfg *cfgreader.Config, sub *mux.Router) {
+func RegisterForwarders(sd *serviced.ServiceDiscovery, cfg *reader.Config, sub *mux.Router) {
 	var (
 		err         error
 		fwdsCustoms http.HandlerFunc

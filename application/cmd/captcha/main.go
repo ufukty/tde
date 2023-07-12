@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tde/internal/microservices/cfgreader"
+	"tde/config/reader"
 	"tde/internal/microservices/router"
 
 	"github.com/gorilla/mux"
@@ -9,10 +9,10 @@ import (
 
 func main() {
 	var (
-		config = cfgreader.GetConfig()
+		config = reader.GetConfig()
 	)
 
-	cfgreader.Print(config.Captcha)
+	reader.Print(config.Captcha)
 	router.StartRouter(config.Captcha.RouterPublic, &config.Captcha.RouterParameters, func(r *mux.Router) {
 		r.PathPrefix("/").Methods("GET").HandlerFunc(router.NotFound)
 		r.PathPrefix("/").Methods("POST").HandlerFunc(router.NotFound)

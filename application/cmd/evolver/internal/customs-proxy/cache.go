@@ -2,7 +2,7 @@ package customs_proxy
 
 import (
 	"tde/cmd/customs/endpoints"
-	"tde/internal/microservices/cfgreader"
+	"tde/config/reader"
 	"tde/internal/microservices/serviced"
 	"tde/internal/microservices/serviced/models/services"
 	models "tde/models/program"
@@ -17,12 +17,12 @@ var (
 )
 
 type Cache struct {
-	config *cfgreader.Config
+	config *reader.Config
 	sd     *serviced.ServiceDiscovery
 	store  map[models.CandidateID]*models.Candidate
 }
 
-func New(config *cfgreader.Config, sd *serviced.ServiceDiscovery) *Cache {
+func New(config *reader.Config, sd *serviced.ServiceDiscovery) *Cache {
 	return &Cache{
 		// lb:    load_balancer.New(sd, services.Customs, config.APIGateway.RouterPrivate, "/customs/"),
 		sd:     sd,
