@@ -42,10 +42,9 @@ func (c *Cache) Get(id models.CandidateID) (*models.Candidate, error) {
 		return nil, ErrNoHosts
 	}
 
-	var req = endpoints.AstPackageRequest{
+	endpoints.AstPackageSend(endpoints.AstPackageRequest{
 		ArchiveId: "",
-	}
-	req.NewRequest("GET", fmt.Sprintf("%s:%s/ast", customs[0], c.config.Customs.RouterPrivate))
+	})
 
 	return nil, nil
 }
@@ -61,11 +60,9 @@ func (c *Cache) GetModuleAST(archiveId string) (*models.Candidate, error) {
 		return nil, ErrNoHosts
 	}
 
-	var req = endpoints.AstPackageRequest{
+	var res, err = endpoints.AstPackageSend(endpoints.AstPackageRequest{
 		ArchiveId: archiveId,
-	}
-
-	var res, err = req.Send("GET", fmt.Sprintf("%s:%s/ast", customs[0], c.config.Customs.RouterPrivate))
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}

@@ -21,7 +21,6 @@ import (
 
 const ResponseMalformedRequest = "Request is malformed"
 
-//go:generate serdeser module-ast-pkg.go
 type AstPackageRequest struct {
 	ArchiveId string `url:"id"`
 	Package   string `url:"package"`
