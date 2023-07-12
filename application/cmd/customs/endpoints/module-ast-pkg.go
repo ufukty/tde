@@ -1,8 +1,10 @@
 package endpoints
 
 import (
+	"fmt"
+	"os"
 	"tde/config"
-	"tde/internal/microservices/errors/detailed"
+	"tde/internal/astw/clone/clean"
 	"tde/internal/microservices/utilities"
 
 	"go/ast"
@@ -10,10 +12,14 @@ import (
 	"go/token"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 
+	"github.com/pkg/errors"
 	"golang.org/x/exp/maps"
 )
+
+const ResponseMalformedRequest = "Request is malformed"
 
 //go:generate serdeser module-ast-pkg.go
 type AstPackageRequest struct {
@@ -30,55 +36,105 @@ func AstPackageSend(q AstPackageRequest) (*AstPackageResponse, error) {
 }
 
 func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *http.Request) {
+
+	var ErrAstConversionFailed = errors.New("AST convertion has failed")
+	var ErrMultiplePackagesFound = errors.New("More than 1 package found at the directory")
+	var ErrNoPackagesFound = errors.New("Package not found in directory")
+
+	var transferReadyAstOfPackage = func(path string) (*ast.Package, error) {
+		var (
+			pkgs map[string]*ast.Package
+			err  error
+			wd   string
+		)
+		wd, err = os.Getwd()
+		if err != nil {
+			return nil, errors.Wrap(err, "Can't get the working directory")
+		}
+		err = os.Chdir(path)
+		if err != nil {
+			return nil, errors.Wrap(err, "Can't switch to the directory of requested package")
+		}
+		defer os.Chdir(wd)
+
+		pkgs, err = parser.ParseDir(token.NewFileSet(), ".", nil, parser.AllErrors)
+		if err != nil {
+			return nil, errors.Wrap(ErrAstConversionFailed, err.Error())
+		}
+		if l := len(maps.Keys(pkgs)); l == 0 {
+			return nil, ErrNoPackagesFound
+		} else if l > 1 {
+			return nil, ErrMultiplePackagesFound
+		}
+
+		return clean.Package(pkgs[maps.Keys(pkgs)[0]]), nil
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			err error
 			bq  *AstPackageRequest
+			pkg *ast.Package
 		)
 
 		if bq, err = utilities.ParseRequest[AstPackageRequest](r); err != nil {
-			var message = "Request is malformed"
-			log.Println(detailed.AddBase(err, message).Log())
-			http.Error(w, message, http.StatusBadRequest)
+			log.Println(errors.Wrap(err, ResponseMalformedRequest))
+			http.Error(w, ResponseMalformedRequest, http.StatusBadRequest)
 			return
 		}
 
 		if bundle, zip, extract := em.vm.CheckIfExists(bq.ArchiveId); !(bundle && zip && extract) {
-			log.Println(detailed.New("Not found", "volumeManager.CheckIfExists").Log())
+			log.Println("Failed at check if exists")
 			http.NotFound(w, r)
 			return
+		}
+
+		bq.Package, err = url.PathUnescape(bq.Package)
+		if err != nil {
+			var response = "Failed at decoding requested package path"
+			errors.Wrap(err, response)
+			http.Error(w, response, http.StatusBadRequest)
 		}
 
 		var folderpath = filepath.Clean(bq.Package)
 		if utilities.IsEvilPath(folderpath) {
-			log.Printf("requested path: '%s'\n", folderpath)
-			http.Error(w, "Bad request. Bad. Bad.", http.StatusBadRequest)
+			var response = fmt.Sprintf("Links are not allowed at paths: '%s'\n", folderpath)
+			fmt.Println(response)
+			http.Error(w, response, http.StatusBadRequest)
 		}
 
-		var pkgs map[string]*ast.Package
-		pkgs, err = parser.ParseDir(token.NewFileSet(), folderpath, nil, parser.AllErrors)
-		if err != nil {
-			http.Error(w, "AST convertion has failed", http.StatusInternalServerError)
-			return
-		}
+		var _, _, extract = em.vm.FindPath(bq.ArchiveId)
+		folderpath = filepath.Clean(filepath.Join(extract, bq.Package))
 
-		if l := len(maps.Keys(pkgs)); l == 0 {
-			http.NotFound(w, r)
-		} else if l > 1 {
-			log.Printf("more than 1 package found in '%s' => '%s'\n", bq.ArchiveId, bq.Package)
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		if pkg, err = transferReadyAstOfPackage(folderpath); err != nil {
+			log.Println(errors.Wrap(err, "requesting ast representation of package at path"))
+			switch {
+			case errors.Is(err, ErrAstConversionFailed):
+				http.Error(w, errors.Cause(err).Error(), http.StatusInternalServerError)
+
+			case errors.Is(err, ErrMultiplePackagesFound):
+				http.Error(w, errors.Cause(err).Error(), http.StatusBadRequest)
+
+			case errors.Is(err, ErrNoPackagesFound):
+				http.Error(w, errors.Cause(err).Error(), http.StatusNotFound)
+
+			default:
+				http.Error(w, "Woops.", http.StatusInternalServerError)
+			}
 			return
 		}
 
 		var bs = &AstPackageResponse{
-			Package: pkgs[maps.Keys(pkgs)[0]],
+			Package: pkg,
 		}
 
-		w.WriteHeader(http.StatusOK)
 		if err = utilities.WriteJsonResponse(bs, w); err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			var response = "Could not write the request body"
+			log.Println(errors.Wrap(err, response))
+			http.Error(w, response, http.StatusInternalServerError)
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
 	}
 }
