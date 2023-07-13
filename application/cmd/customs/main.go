@@ -33,7 +33,7 @@ func main() {
 		config.CustomsModuleUpload:      em.UploadHandler(),
 		config.CustomsModuleDownload:    em.DownloadHandler(),
 		config.CustomsModuleList:        em.ListHandler(),
-		config.CustomsModuleAstFuncDecl: http.NotFound,
+		config.CustomsModuleAstFuncDecl: em.AstFuncDeclHandler(),
 		config.CustomsModuleAstFile:     http.NotFound,
 		config.CustomsModuleAstPackage:  em.AstPackageHandler(),
 		config.CustomsModuleContext:     em.ContextHandler(),
