@@ -11,7 +11,7 @@ func Test_ListPackages(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "act"))
 	}
-	if _, ok := (*m)["tde/cmd/customs/internal/utilities/astw"]; !ok {
+	if _, ok := (*m)["tde/cmd/customs/endpoints/utilities/astw"]; !ok {
 		t.Error(errors.Wrapf(err, "assert"))
 	}
 }
