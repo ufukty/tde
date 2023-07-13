@@ -22,7 +22,3 @@ func NewManager(vm *volmng.VolumeManager) *EndpointsManager {
 func (em EndpointsManager) HandleAstFile(w http.ResponseWriter, r *http.Request) {
 
 }
-
-func (em EndpointsManager) HandleAstFuncDecl(w http.ResponseWriter, r *http.Request) {
-
-}
