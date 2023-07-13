@@ -7,14 +7,11 @@ import (
 	"net/http"
 	"net/url"
 	"tde/config"
+	"tde/i18n"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-)
-
-var (
-	ErrRequiredRequestPatameterNotFound = errors.New("required request parameter (either in url, header or body)")
 )
 
 type ContextRequest struct {
@@ -54,16 +51,16 @@ func BindRequest(r *http.Request) (bind *ContextRequest, err error) {
 	vars = mux.Vars(r)
 
 	if bind.ArchiveId, ok = vars["id"]; !ok {
-		return nil, errors.Wrap(ErrRequiredRequestPatameterNotFound, "id")
+		return nil, errors.Wrap(i18n.ErrMissingParameter, "id")
 	}
 	if bind.Folder, ok = vars["package"]; !ok {
-		return nil, errors.Wrap(ErrRequiredRequestPatameterNotFound, "package")
+		return nil, errors.Wrap(i18n.ErrMissingParameter, "package")
 	}
 	if bind.File, ok = vars["file"]; !ok {
-		return nil, errors.Wrap(ErrRequiredRequestPatameterNotFound, "file")
+		return nil, errors.Wrap(i18n.ErrMissingParameter, "file")
 	}
 	if bind.Function, ok = vars["function"]; !ok {
-		return nil, errors.Wrap(ErrRequiredRequestPatameterNotFound, "function")
+		return nil, errors.Wrap(i18n.ErrMissingParameter, "function")
 	}
 
 	if typedArchiveId, err := uuid.Parse(bind.ArchiveId); err != nil {

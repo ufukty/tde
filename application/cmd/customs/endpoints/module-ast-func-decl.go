@@ -3,6 +3,7 @@ package endpoints
 import (
 	"os"
 	"tde/config"
+	"tde/i18n"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/microservices/utilities"
 
@@ -120,8 +121,8 @@ func (em EndpointsManager) AstFuncDeclHandler() func(w http.ResponseWriter, r *h
 		)
 
 		if bq, err = utilities.ParseRequest[AstFuncDeclRequest](r); err != nil {
-			log.Println(errors.Wrap(err, ResponseMalformedRequest))
-			http.Error(w, ResponseMalformedRequest, http.StatusBadRequest)
+			log.Println(errors.Wrap(err, i18n.MalformedRequest))
+			http.Error(w, i18n.MalformedRequest, http.StatusBadRequest)
 			return
 		}
 

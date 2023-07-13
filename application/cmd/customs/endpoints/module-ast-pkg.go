@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"tde/config"
+	"tde/i18n"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/microservices/utilities"
 
@@ -34,10 +35,6 @@ func AstPackageSend(q AstPackageRequest) (*AstPackageResponse, error) {
 
 func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *http.Request) {
 
-	var ErrAstConversionFailed = errors.New("AST convertion has failed")
-	var ErrMultiplePackagesFound = errors.New("More than 1 package found at the directory")
-	var ErrNoPackagesFound = errors.New("Package not found in directory")
-
 	var transferReadyAstOfPackage = func(path string) (*ast.Package, error) {
 		var (
 			pkgs map[string]*ast.Package
@@ -56,12 +53,12 @@ func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *ht
 
 		pkgs, err = parser.ParseDir(token.NewFileSet(), ".", nil, parser.AllErrors)
 		if err != nil {
-			return nil, errors.Wrap(ErrAstConversionFailed, err.Error())
+			return nil, errors.Wrap(i18n.ErrAstConversionFailed, err.Error())
 		}
 		if l := len(maps.Keys(pkgs)); l == 0 {
-			return nil, ErrNoPackagesFound
+			return nil, i18n.ErrNoPackagesFound
 		} else if l > 1 {
-			return nil, ErrMultiplePackagesFound
+			return nil, i18n.ErrMultiplePackagesFound
 		}
 
 		return clean.Package(pkgs[maps.Keys(pkgs)[0]]), nil
@@ -75,8 +72,8 @@ func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *ht
 		)
 
 		if bq, err = utilities.ParseRequest[AstPackageRequest](r); err != nil {
-			log.Println(errors.Wrap(err, ResponseMalformedRequest))
-			http.Error(w, ResponseMalformedRequest, http.StatusBadRequest)
+			log.Println(errors.Wrap(err, i18n.MalformedRequest))
+			http.Error(w, i18n.MalformedRequest, http.StatusBadRequest)
 			return
 		}
 
@@ -106,13 +103,13 @@ func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *ht
 		if pkg, err = transferReadyAstOfPackage(folderpath); err != nil {
 			log.Println(errors.Wrap(err, "requesting ast representation of package at path"))
 			switch {
-			case errors.Is(err, ErrAstConversionFailed):
+			case errors.Is(err, i18n.ErrAstConversionFailed):
 				http.Error(w, errors.Cause(err).Error(), http.StatusInternalServerError)
 
-			case errors.Is(err, ErrMultiplePackagesFound):
+			case errors.Is(err, i18n.ErrMultiplePackagesFound):
 				http.Error(w, errors.Cause(err).Error(), http.StatusBadRequest)
 
-			case errors.Is(err, ErrNoPackagesFound):
+			case errors.Is(err, i18n.ErrNoPackagesFound):
 				http.Error(w, errors.Cause(err).Error(), http.StatusNotFound)
 
 			default:
