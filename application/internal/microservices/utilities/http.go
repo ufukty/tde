@@ -124,7 +124,7 @@ func ParseJsonResponse[Response any](rs *http.Response) (bs *Response, err error
 	return
 }
 
-func Send[Request any, Response any](ep paths.Endpoint, bq Request) (*Response, error) {
+func Send[Request any, Response any](ep paths.Endpoint, bq *Request) (*Response, error) {
 	var (
 		rq  *http.Request
 		rs  *http.Response

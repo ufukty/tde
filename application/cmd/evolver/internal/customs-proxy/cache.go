@@ -42,7 +42,7 @@ func (c *Cache) Get(id models.CandidateID) (*models.Candidate, error) {
 		return nil, ErrNoHosts
 	}
 
-	endpoints.AstPackageSend(endpoints.AstPackageRequest{
+	endpoints.AstPackageSend(&endpoints.AstPackageRequest{
 		ArchiveId: "",
 	})
 
@@ -60,7 +60,7 @@ func (c *Cache) GetModuleAST(archiveId string) (*models.Candidate, error) {
 		return nil, ErrNoHosts
 	}
 
-	var res, err = endpoints.AstPackageSend(endpoints.AstPackageRequest{
+	var res, err = endpoints.AstPackageSend(&endpoints.AstPackageRequest{
 		ArchiveId: archiveId,
 	})
 	if err != nil {

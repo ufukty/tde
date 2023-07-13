@@ -29,8 +29,8 @@ type AstFuncDeclResponse struct {
 	FuncDecl *ast.FuncDecl `json:"function"`
 }
 
-func AstFuncDeclSend(q AstFuncDeclRequest) (*AstFuncDeclResponse, error) {
-	return utilities.Send[AstFuncDeclRequest, AstFuncDeclResponse](config.CustomsModuleAstFuncDecl, q)
+func AstFuncDeclSend(bq *AstFuncDeclRequest) (*AstFuncDeclResponse, error) {
+	return utilities.Send[AstFuncDeclRequest, AstFuncDeclResponse](config.CustomsModuleAstFuncDecl, bq)
 }
 
 func (em EndpointsManager) AstFuncDeclHandler() func(w http.ResponseWriter, r *http.Request) {

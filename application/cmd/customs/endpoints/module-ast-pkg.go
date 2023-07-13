@@ -29,8 +29,8 @@ type AstPackageResponse struct {
 	Package *ast.Package `json:"package"`
 }
 
-func AstPackageSend(q AstPackageRequest) (*AstPackageResponse, error) {
-	return utilities.Send[AstPackageRequest, AstPackageResponse](config.CustomsModuleAstPackage, q)
+func AstPackageSend(bq *AstPackageRequest) (*AstPackageResponse, error) {
+	return utilities.Send[AstPackageRequest, AstPackageResponse](config.CustomsModuleAstPackage, bq)
 }
 
 func (em EndpointsManager) AstPackageHandler() func(w http.ResponseWriter, r *http.Request) {

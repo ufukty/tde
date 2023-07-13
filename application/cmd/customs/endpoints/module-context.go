@@ -1,13 +1,12 @@
 package endpoints
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 	"net/url"
 	"tde/config"
 	"tde/i18n"
+	"tde/internal/microservices/utilities"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -15,31 +14,14 @@ import (
 )
 
 type ContextRequest struct {
-	ArchiveId string
-	Folder    string
-	File      string
-	Function  string
+	ArchiveId string `url:"archive_id"`
+	Folder    string `url:"package"`
+	File      string `url:"file"`
+	Function  string `url:"function"`
 }
 
 type ContextResponse struct {
 	Context *context.Context `json:"context"`
-}
-
-func (req *ContextRequest) NewContextRequest() (*http.Request, error) {
-	buffer := new(bytes.Buffer)
-	err := json.NewEncoder(buffer).Encode(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on serialization")
-	}
-	httpRequest, err := http.NewRequest(
-		config.CustomsModuleContext.Method.String(),
-		config.CustomsModuleContext.Url(),
-		buffer,
-	)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed on creating request object")
-	}
-	return httpRequest, nil
 }
 
 func BindRequest(r *http.Request) (bind *ContextRequest, err error) {
@@ -81,27 +63,9 @@ func BindRequest(r *http.Request) (bind *ContextRequest, err error) {
 	return bind, nil
 }
 
-func (res *ContextResponse) SerializeIntoResponseWriter(w http.ResponseWriter) error {
-	err := json.NewEncoder(w).Encode(res)
-	if err != nil {
-		return errors.Wrap(err, "failed on serialization")
-	}
-	return nil
+func ContextSend(bq *ContextRequest) (*ContextResponse, error) {
+	return utilities.Send[ContextRequest, ContextResponse](config.CustomsModuleContext, bq)
 }
-
-func (res *ContextResponse) DeserializeResponse(r *http.Response) error {
-	err := json.NewDecoder(r.Body).Decode(res)
-	if err != nil {
-		return errors.Wrap(err, "failed on parsing the response body")
-	}
-	return nil
-}
-
-// func SendContext(req ContextRequest) (res ContextResponse, err error) {
-// 	var r *http.Request
-// 	r, err = req.NewRequest()
-// 	return res, nil
-// }
 
 func (em EndpointsManager) ContextHandler() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {}
