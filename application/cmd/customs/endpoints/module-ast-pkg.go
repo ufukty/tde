@@ -19,8 +19,6 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-const ResponseMalformedRequest = "Request is malformed"
-
 type AstPackageRequest struct {
 	ArchiveId string `url:"id"`
 	Package   string `url:"package"`

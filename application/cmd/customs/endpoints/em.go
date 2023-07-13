@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+const ResponseMalformedRequest = "Request is malformed"
+
 type EndpointsManager struct {
 	vm  *volmng.VolumeManager
 	log *logger.Logger
