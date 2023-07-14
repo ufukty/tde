@@ -1,21 +1,28 @@
 package endpoints
 
 import (
-	"context"
-	"net/http"
-	"net/url"
+	"path/filepath"
 	"tde/config"
 	"tde/i18n"
+	"tde/internal/astw/clone/clean"
+	"tde/internal/astw/traverse"
+	astutils "tde/internal/astw/utilities"
+	context_resolution "tde/internal/cfg/context-resolution"
+	"tde/internal/cfg/context-resolution/context"
 	"tde/internal/microservices/utilities"
 
+	"go/ast"
+	"log"
+	"net/http"
+	"net/url"
+
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
 
 type ContextRequest struct {
-	ArchiveId string `url:"archive_id"`
-	Folder    string `url:"package"`
+	ArchiveId string `url:"id"`
+	Package   string `url:"package"`
 	File      string `url:"file"`
 	Function  string `url:"function"`
 }
@@ -24,49 +31,119 @@ type ContextResponse struct {
 	Context *context.Context `json:"context"`
 }
 
-func BindRequest(r *http.Request) (bind *ContextRequest, err error) {
-	var (
-		vars map[string]string
-		ok   bool
-	)
-
-	vars = mux.Vars(r)
-
-	if bind.ArchiveId, ok = vars["id"]; !ok {
-		return nil, errors.Wrap(i18n.ErrMissingParameter, "id")
-	}
-	if bind.Folder, ok = vars["package"]; !ok {
-		return nil, errors.Wrap(i18n.ErrMissingParameter, "package")
-	}
-	if bind.File, ok = vars["file"]; !ok {
-		return nil, errors.Wrap(i18n.ErrMissingParameter, "file")
-	}
-	if bind.Function, ok = vars["function"]; !ok {
-		return nil, errors.Wrap(i18n.ErrMissingParameter, "function")
-	}
-
-	if typedArchiveId, err := uuid.Parse(bind.ArchiveId); err != nil {
-		return nil, errors.Wrapf(err, "checking sent ArchiveId with uuid package (%s)", bind.ArchiveId)
-	} else {
-		bind.ArchiveId = typedArchiveId.String()
-	}
-	if bind.Folder, err = url.PathUnescape(bind.Folder); err != nil {
-		return nil, errors.Wrapf(err, "decoding urlencode for Folder (%s)", bind.Folder)
-	}
-	if bind.File, err = url.PathUnescape(bind.File); err != nil {
-		return nil, errors.Wrapf(err, "decoding urlencode for File (%s)", bind.File)
-	}
-	if bind.Function, err = url.PathUnescape(bind.Function); err != nil {
-		return nil, errors.Wrapf(err, "decoding urlencode for Function (%s)", bind.Function)
-	}
-
-	return bind, nil
-}
-
 func ContextSend(bq *ContextRequest) (*ContextResponse, error) {
 	return utilities.Send[ContextRequest, ContextResponse](config.CustomsModuleContext, bq)
 }
 
 func (em EndpointsManager) ContextHandler() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	var (
+		ErrUrlDecodingPackage      = errors.New("Failed at decoding requested package path")
+		ErrUrlDecodingFilename     = errors.New("Failed at decoding requested filename")
+		ErrUrlDecodingFunctionName = errors.New("Failed at decoding requested function name")
+		ErrEvilPathFound           = errors.New("Links are not allowed at paths")
+	)
+
+	var sanitizeRequest = func(bq *ContextRequest) error {
+		var err error
+
+		if typedArchiveId, err := uuid.Parse(bq.ArchiveId); err != nil {
+			return errors.Wrap(i18n.ErrInputSanitization, errors.Wrap(err, "ArchiveId").Error())
+		} else {
+			bq.ArchiveId = typedArchiveId.String()
+		}
+
+		if bq.Package, err = url.PathUnescape(bq.Package); err != nil {
+			return ErrUrlDecodingPackage
+		}
+
+		if bq.File, err = url.PathUnescape(bq.File); err != nil {
+			return ErrUrlDecodingFilename
+		}
+
+		if bq.Function, err = url.PathUnescape(bq.Function); err != nil {
+			return ErrUrlDecodingFunctionName
+		}
+
+		bq.Package = filepath.Clean(bq.Package)
+		bq.File = filepath.Clean(filepath.Base(bq.File))
+
+		if utilities.IsEvilPath(bq.Package) {
+			return errors.Wrap(ErrEvilPathFound, bq.Package)
+		}
+		if utilities.IsEvilPath(bq.File) {
+			return errors.Wrap(ErrEvilPathFound, bq.File)
+		}
+
+		var _, _, extract = em.vm.FindPath(bq.ArchiveId)
+		bq.Package = filepath.Join(extract, bq.Package)
+
+		return nil
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		var (
+			err error
+			bq  *ContextRequest
+		)
+
+		if bq, err = utilities.ParseRequest[ContextRequest](r); err != nil {
+			log.Println(errors.Wrap(err, i18n.MalformedRequest))
+			http.Error(w, "Woops.", http.StatusBadRequest)
+			return
+		}
+
+		if err = sanitizeRequest(bq); err != nil {
+			log.Println(errors.Wrap(err, "sanitizating the request"))
+			switch {
+			case errors.Is(err, i18n.ErrInputSanitization):
+				http.Error(w, "Woops.", http.StatusBadRequest)
+			}
+			return
+		}
+
+		var (
+			pkg      *ast.Package
+			file     *ast.File
+			funcDecl *ast.FuncDecl
+			ctx      *context.Context
+			ok       bool
+		)
+
+		if pkg, err = astutils.LoadPackageFromDir(bq.Package); err != nil {
+			log.Println(errors.Wrap(i18n.ErrAstConversionFailed, err.Error()))
+			http.Error(w, "Woops.", http.StatusBadRequest)
+			return
+		}
+
+		pkg = clean.Package(pkg)
+		if file, ok = pkg.Files[bq.File]; !ok {
+			log.Println(i18n.ErrFileNotFoundInPackage)
+			http.Error(w, "Woops.", http.StatusBadRequest)
+			return
+		}
+
+		funcDecl, err = astutils.FindFuncDecl(file, bq.Function)
+		if err != nil {
+			log.Println(errors.Wrap(i18n.ErrAstConversionFailed, err.Error()))
+			http.Error(w, "Woops.", http.StatusBadRequest)
+			return
+		}
+
+		var tFuncDecl = traverse.GetTraversableNodeForASTNode(funcDecl)
+		var funcBody = traverse.GetTraversableNodeForASTNode(funcDecl.Body).GetTraversableSubnodes()
+		var funcBodyLastLine = funcBody[len(funcBody)-1]
+
+		ctx, err = context_resolution.GetContextForSpot(pkg, tFuncDecl, funcBodyLastLine)
+		if err != nil {
+			log.Println(errors.Wrap(errors.New("Could not get context for choosen spot"), err.Error()))
+			http.Error(w, "Woops.", http.StatusBadRequest)
+			return
+		}
+
+		var bs = ContextResponse{
+			Context: ctx,
+		}
+
+		err = utilities.WriteJsonResponse(bs, w)
+	}
 }

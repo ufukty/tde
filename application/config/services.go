@@ -18,7 +18,7 @@ var (
 	CustomsModuleAstFuncDecl = Endpoint{Customs, "/module/{id}/ast/{package}/{file}/{function}", GET}
 	CustomsModuleAstFile     = Endpoint{Customs, "/module/{id}/ast/{package}/{file}", GET}
 	CustomsModuleAstPackage  = Endpoint{Customs, "/module/{id}/ast/{package}", GET}
-	CustomsModuleContext     = Endpoint{Customs, "/module/{id}/context/package/{package}/file/{file}", GET}
+	CustomsModuleContext     = Endpoint{Customs, "/module/{id}/context/{package}/{file}/{function}", GET}
 )
 
 var (
