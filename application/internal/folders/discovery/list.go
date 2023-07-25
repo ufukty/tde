@@ -1,4 +1,4 @@
-package astw
+package discovery
 
 import (
 	"bytes"
