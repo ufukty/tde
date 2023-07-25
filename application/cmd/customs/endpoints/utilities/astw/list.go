@@ -114,19 +114,18 @@ type Packages map[string]*Package
 func ListPackages(path string) (*Packages, error) {
 	var (
 		cmd      *exec.Cmd
-		stdout   = []byte{}
-		stdbuf   = bytes.NewBuffer(stdout)
+		stdbuf   = bytes.NewBuffer([]byte{})
 		err      error
 		packages = &Packages{}
 		decoder  *json.Decoder
 	)
-	cmd = exec.Command("go", "list", "-json", "./...")
+	cmd = exec.Command("go", "list", "-e", "-json", "./...")
 	cmd.Dir = path
 	cmd.Stdout = stdbuf
 	cmd.Stderr = stdbuf
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrap(err, string(stdout))
+		return nil, errors.Wrap(err, stdbuf.String())
 	}
 
 	decoder = json.NewDecoder(stdbuf)
