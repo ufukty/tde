@@ -16,7 +16,7 @@ import (
 	"path/filepath"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/pkg/errors"
+	"golang.org/x/exp/maps"
 )
 
 type Command struct {
@@ -38,18 +38,18 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 
 	_, pkgs, err := astw_utl.LoadDir(string(modulePath.Join(packagePath)))
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("failed to create ast representation for the directory: \"%s\"", packagePath))
+		return nil, fmt.Errorf("failed to create ast representation for the directory %q: %w", packagePath, err)
 	}
 
 	var pkg *ast.Package
 	var ok bool
 	if pkg, ok = pkgs[pkgName]; !ok {
-		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named package: \"%s\"", pkgName))
+		return nil, fmt.Errorf("directory doesn't contain named package %q. Available packages are %v", pkgName, maps.Keys(pkgs))
 	}
 
 	file, funcDecl, err := astw_utl.FindFuncDeclInPkg(pkg, funcName)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("directory doesn't contain named function: \"%s\"", funcName))
+		return nil, fmt.Errorf("directory doesn't contain named function %q: %w", funcName, err)
 	}
 
 	return &evolution.Target{
