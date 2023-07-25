@@ -1,8 +1,8 @@
 package main
 
 import (
-	"tde/cmd/poc/internal/produce"
 	"tde/internal/command"
+	"tde/tools/poc/internal/produce"
 )
 
 func main() {
