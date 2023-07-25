@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PS4="\033[36m$(realpath --relative-to="$(dirname "$WORKSPACE")" "$(pwd -P)")\033[32m/\$(basename \"\${BASH_SOURCE}\"):\${LINENO}\033[0m\033[33m\${FUNCNAME[0]:+/\${FUNCNAME[0]}():}\033[0m "
+PS4="\033[36m$(grealpath --relative-to="$(dirname "$WORKSPACE")" "$(pwd -P)")\033[32m/\$(basename \"\${BASH_SOURCE}\"):\${LINENO}\033[0m\033[33m\${FUNCNAME[0]:+/\${FUNCNAME[0]}():}\033[0m "
 set -o xtrace
 
 SUDO_USER="${SUDO_USER:?"SUDO_USER is required"}"
