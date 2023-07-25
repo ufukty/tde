@@ -43,27 +43,26 @@ build {
 
   provisioner "file" {
     source      = "${path.root}/../../secrets/image/ssh-app-db/app-db"
-    destination = "~/provisioner-files/ssh-application-db"
+    destination = "~/provisioner-files/ssh-app-db"
   }
 
   provisioner "file" {
-    source      = "${path.root}/../../../secrets/pki/issued/app-db.crt"
-    destination = "~/provisioner-files/app-db.crt"
+    source      = "${path.root}/../../secrets/pki/issued/tde-non-specific.crt"
+    destination = "~/provisioner-files/tde-non-specific.crt"
   }
 
   provisioner "file" {
-    source      = "${path.root}/../../../secrets/pki/private/app-db.key"
-    destination = "~/provisioner-files/app-db.key"
+    source      = "${path.root}/../../secrets/pki/private/tde-non-specific.key"
+    destination = "~/provisioner-files/tde-non-specific.key"
   }
 
   provisioner "shell" {
     environment_vars = [
-      "POSTGRES_USER=nil",
-      "POSTGRES_SERVER_PRIVATE_IP=nil",
       "IPTABLES_PRIVATE_ETHERNET_INTERFACE=eth1"
     ]
     inline = [
-      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image.sh"
+      "cd ~/provisioner-files && sudo -u root --preserve-env bash golden-image.sh",
+      "rm -rfv ~/provisioner-files"
     ]
   }
 
