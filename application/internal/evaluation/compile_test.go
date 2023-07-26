@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	tester_package "tde/internal/folders/tester-package"
+	tester_package "tde/internal/folders/testinject"
 
 	"fmt"
 	"os"
@@ -16,7 +16,7 @@ func prepare(t *testing.T) {
 		TestFunctionName:        "TDE_WordReverse",
 	}
 
-	if err := tester_package.Create("../../examples/word-reverse", ti); err != nil {
+	if err := tester_package.Inject("../../examples/word-reverse", ti); err != nil {
 		t.Error(errors.Wrap(err, "returned error"))
 	}
 

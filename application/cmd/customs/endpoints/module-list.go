@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"tde/internal/folders/discovery"
+	"tde/internal/folders/list"
 	"tde/internal/microservices/utilities"
 
 	"github.com/google/uuid"
@@ -18,7 +18,7 @@ type ListRequest struct {
 }
 
 type ListResponse struct {
-	Results *discovery.Packages `json:"package"`
+	Results list.Packages `json:"package"`
 }
 
 func (em EndpointsManager) ListHandler() func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func (em EndpointsManager) ListHandler() func(w http.ResponseWriter, r *http.Req
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			pkgs *discovery.Packages
+			pkgs list.Packages
 			bq   *ListRequest
 			err  error
 		)
@@ -57,7 +57,7 @@ func (em EndpointsManager) ListHandler() func(w http.ResponseWriter, r *http.Req
 		}
 
 		var _, _, extract = em.vm.FindPath(bq.ArchiveId)
-		if pkgs, err = discovery.ListPackages(extract); err != nil {
+		if pkgs, err = list.ListAllPackages(extract); err != nil {
 			log.Println(fmt.Errorf("listing packages in dir %q: %w", extract, err))
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return

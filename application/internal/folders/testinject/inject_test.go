@@ -1,4 +1,4 @@
-package tester_package
+package testinject
 
 import (
 	"os"
@@ -13,7 +13,7 @@ func Test_Inject(t *testing.T) {
 		TestFunctionName:        "TDE_WordReverse",
 	}
 
-	if err := Create("../../../examples/word-reverse", ti); err != nil {
+	if err := Inject("../../../examples/word-reverse", ti); err != nil {
 		t.Error(errors.Wrap(err, "returned error"))
 	}
 

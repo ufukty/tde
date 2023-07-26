@@ -1,9 +1,8 @@
-package preparation
+package preps
 
 import (
 	"fmt"
 	"path/filepath"
-	"tde/internal/folders/types"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -15,12 +14,7 @@ func Test_Preparation(t *testing.T) {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
 
-	dupl, err := Prepare(
-		types.AbsolutePath(abs),
-		types.InModulePath("examples/word-reverse"),
-		"tde/examples/word-reverse",
-		"TDE_WordReverse",
-	)
+	dupl, err := Prepare(abs, "examples/word-reverse", "tde/examples/word-reverse", "TDE_WordReverse")
 
 	if err != nil {
 		t.Error(errors.Wrapf(err, ""))

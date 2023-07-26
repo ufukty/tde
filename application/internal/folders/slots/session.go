@@ -1,7 +1,7 @@
-package slot_manager
+package slots
 
 import (
-	"tde/internal/folders/copy-module"
+	"tde/internal/folders/copymod"
 	"tde/internal/folders/types"
 	"tde/internal/utilities"
 	models "tde/models/program"
@@ -16,25 +16,25 @@ import (
 )
 
 type slots struct {
-	free     []types.SlotPath
-	assigned map[models.CandidateID]types.SlotPath
+	free     []string
+	assigned map[models.CandidateID]string
 }
 
 type Session struct {
-	modulePath  types.AbsolutePath
+	modulePath  string
 	testDetails *types.TestDetails
-	tmp         types.TempPath // reserved in instantiation. all
+	tmp         string // reserved in instantiation. all
 	slots       slots
 }
 
 // returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63
-func (s *Session) genNewSlotPath() (types.SlotPath, error) {
+func (s *Session) genNewSlotPath() (string, error) {
 	uuid, err := uuid.NewUUID()
 	if err != nil {
 		return "", errors.New("can't create a uuid")
 	}
 	basename := strings.Join(utilities.StringFold(strings.ReplaceAll(uuid.String(), "-", ""), 2), "/")
-	return types.SlotPath(basename), nil
+	return basename, nil
 }
 
 func (s *Session) createMainFolder() error {
@@ -42,18 +42,18 @@ func (s *Session) createMainFolder() error {
 	if err != nil {
 		return errors.New("failed to create main folder for slot_manager in temp directory")
 	}
-	s.tmp = types.TempPath(path)
+	s.tmp = path
 	return nil
 }
 
 func (s *Session) createModuleDuplicate() error {
 	newSlotPath, err := s.genNewSlotPath()
 	if err != nil {
-		return errors.Wrap(err, "genNewtypes.SlotPath")
+		return errors.Wrap(err, "genNewstring")
 	}
 
 	// fmt.Println("Original module duplicated:", path)
-	err = copy_module.Module(string(s.modulePath), string(s.tmp.Join(newSlotPath)), true, copy_module.DefaultSkipDirs)
+	err = copymod.Copy(s.modulePath, filepath.Join(s.tmp, newSlotPath), true, copymod.DefaultSkipDirs)
 	if err != nil {
 		return errors.Wrap(err, "copy_module.Module")
 	}
@@ -62,7 +62,7 @@ func (s *Session) createModuleDuplicate() error {
 	return nil
 }
 
-func (s *Session) assignCandidateToASlot(candidateID models.CandidateID) (slot types.SlotPath) {
+func (s *Session) assignCandidateToASlot(candidateID models.CandidateID) (slot string) {
 	s.slots.free, slot = utilities.SlicePop(s.slots.free)
 	s.slots.assigned[candidateID] = slot
 	// fmt.Println("assigning", candidateID, "to folder", choosen)
@@ -71,7 +71,7 @@ func (s *Session) assignCandidateToASlot(candidateID models.CandidateID) (slot t
 
 func (s *Session) printToFile(candidate *models.Candidate) error {
 	slot := s.slots.assigned[candidate.UUID]
-	implementationFile := s.tmp.FindInModulePath(slot, s.testDetails.ImplFuncFile)
+	implementationFile := filepath.Join(s.tmp, slot, s.testDetails.ImplFuncFile)
 	f, err := os.Create(implementationFile)
 	if err != nil {
 		return errors.Wrap(err, "open implementation file to overwrite")
@@ -92,13 +92,13 @@ func (s *Session) placeCandidate(candidate *models.Candidate) {
 	s.printToFile(candidate)
 }
 
-func NewSession(modulePath types.AbsolutePath, testDetails *types.TestDetails) *Session {
+func NewSession(modulePath string, testDetails *types.TestDetails) *Session {
 	s := Session{
 		modulePath:  modulePath,
 		testDetails: testDetails,
 		slots: slots{
-			free:     []types.SlotPath{},
-			assigned: map[models.CandidateID]types.SlotPath{}},
+			free:     []string{},
+			assigned: map[models.CandidateID]string{}},
 	}
 	s.createMainFolder()
 	return &s
@@ -115,5 +115,8 @@ func (s *Session) FreeAllSlots() {
 }
 
 func (s *Session) GetPackagePathForCandidate(candidateID models.CandidateID) string {
-	return filepath.Join(string(s.tmp), string(s.slots.assigned[candidateID]), string(s.testDetails.PackagePath))
+	return filepath.Join(s.tmp,
+		s.slots.assigned[candidateID],
+		s.testDetails.PackagePath,
+	)
 }

@@ -1,4 +1,4 @@
-package copy_module
+package copymod
 
 import (
 	ucopy "tde/internal/utilities/copy"
@@ -12,7 +12,7 @@ import (
 
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
 
-func Module(srcMod string, dstMod string, includeSubfolders bool, skipDirs []string) error {
+func Copy(srcMod string, dstMod string, includeSubfolders bool, skipDirs []string) error {
 	return filepath.Walk(srcMod, func(srcAbs string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			return errors.Wrap(err, "failed to walk directory")

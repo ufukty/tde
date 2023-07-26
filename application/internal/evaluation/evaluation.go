@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"tde/internal/folders/slot-manager"
+	"tde/internal/folders/slots"
 	models "tde/models/program"
 
 	"fmt"
@@ -11,10 +11,10 @@ import (
 )
 
 type Evaluator struct {
-	SlotManagerSession *slot_manager.Session
+	SlotManagerSession *slots.Session
 }
 
-func NewEvaluator(slotManagerSession *slot_manager.Session) *Evaluator {
+func NewEvaluator(slotManagerSession *slots.Session) *Evaluator {
 	return &Evaluator{
 		SlotManagerSession: slotManagerSession,
 	}

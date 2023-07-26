@@ -1,12 +1,12 @@
-package tester_package
+package testinject
 
 import (
-	"path/filepath"
 	"tde/internal/utilities"
 
 	_ "embed"
 	"fmt"
 	"os"
+	"path/filepath"
 	"text/template"
 
 	"github.com/pkg/errors"
@@ -53,7 +53,7 @@ func writeTesterFileContent(testerPkgDir string, content string) error {
 }
 
 // will create the testedPkgDir/tde/main_tde.go
-func Create(testedPkgDir string, testInfo *TestInfo) error {
+func Inject(testedPkgDir string, testInfo *TestInfo) error {
 	testerPkgPath := filepath.Join(testedPkgDir, "tde")
 	testerFilePath := filepath.Join(testedPkgDir, "tde/main_tde.go")
 

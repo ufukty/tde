@@ -12,15 +12,6 @@ var (
 	ModuleNotFound = errors.New("this directory is not part of a Go module")
 )
 
-// Returns the import path for the package inside working directory
-func GetImportPathOfPackage() (string, error) {
-	out, _, err := utilities.RunCommandForOutput("go", "list")
-	if err != nil {
-		return "", errors.Wrap(err, "running 'go list' is failed on the working directory")
-	}
-	return utilities.StripOnlyLineFromCommandOuput(out)
-}
-
 func GetPackagePathInModule(modulePath string) (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {

@@ -1,14 +1,15 @@
 package discovery
 
 import (
-	"path/filepath"
 	"tde/internal/folders/types"
+
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
 
 func ResolveTestDetailsInCurrentDir(testName string) (*types.TestDetails, error) {
-	modPath, pkgPathInMod, importPath, err := WhereAmI()
+	modPath, pkgPathInMod, pkg, err := WhereAmI()
 	if err != nil {
 		return nil, errors.Wrap(err, "WhereAmI")
 	}
@@ -37,14 +38,14 @@ func ResolveTestDetailsInCurrentDir(testName string) (*types.TestDetails, error)
 	}
 
 	testDetails := types.TestDetails{
-		PackagePath:   types.InModulePath(pkgPathInMod),
-		PackageImport: importPath,
-		ImplFuncFile:  types.InModulePath(implFile),
-		ImplFuncName:  implFuncName,
-		ImplFuncLine:  implFuncDetails.Line,
-		TestFuncFile:  types.InModulePath(foundFuncDetails.Path),
-		TestFuncName:  testName,
-		TestFuncLine:  foundFuncDetails.Line,
+		PackagePath:  pkgPathInMod,
+		Package:      pkg,
+		ImplFuncFile: implFile,
+		ImplFuncName: implFuncName,
+		ImplFuncLine: implFuncDetails.Line,
+		TestFuncFile: foundFuncDetails.Path,
+		TestFuncName: testName,
+		TestFuncLine: foundFuncDetails.Line,
 	}
 
 	return &testDetails, nil

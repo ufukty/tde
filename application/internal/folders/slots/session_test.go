@@ -1,7 +1,7 @@
-package slot_manager
+package slots
 
 import (
-	"tde/internal/folders/preparation"
+	"tde/internal/folders/preps"
 	"tde/internal/folders/types"
 	models "tde/models/program"
 
@@ -18,12 +18,7 @@ func Test_SlotManager(t *testing.T) {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
 
-	clone, err := preparation.Prepare(
-		types.AbsolutePath(absPath),
-		types.InModulePath("examples/word-reverse"),
-		"tde/examples/word-reverse",
-		"TDE_WordReverse",
-	)
+	clone, err := preps.Prepare(absPath, "examples/word-reverse", "tde/examples/word-reverse", "TDE_WordReverse")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
@@ -36,13 +31,13 @@ func Test_SlotManager(t *testing.T) {
 	}
 
 	var (
-		modulePath = types.AbsolutePath(clone)
+		modulePath = clone
 		config     = &types.TestDetails{
-			PackagePath:   types.InModulePath("examples/word-reverse"),
-			PackageImport: "tde/examples/word-reverse",
-			ImplFuncFile:  types.InModulePath("examples/word-reverse/word_reverse.go"),
-			TestFuncFile:  types.InModulePath("examples/word-reverse/word_reverse_tde.go"),
-			TestFuncName:  "TDE_WordReverse",
+			PackagePath:  "examples/word-reverse",
+			Package:      "tde/examples/word-reverse",
+			ImplFuncFile: "examples/word-reverse/word_reverse.go",
+			TestFuncFile: "examples/word-reverse/word_reverse_tde.go",
+			TestFuncName: "TDE_WordReverse",
 		}
 	)
 	session := NewSession(modulePath, config)

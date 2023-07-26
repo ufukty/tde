@@ -1,21 +1,21 @@
 package evaluation
 
 import (
-	"tde/internal/folders/slot-manager"
+	"tde/internal/folders/slots"
 	models "tde/models/program"
 
 	"fmt"
 	"os/exec"
 	"path/filepath"
-	
+
 	"github.com/pkg/errors"
 )
 
 type Runner struct {
-	slotManagerSession *slot_manager.Session
+	slotManagerSession *slots.Session
 }
 
-func NewRunner(slotManagerSession *slot_manager.Session) *Runner {
+func NewRunner(slotManagerSession *slots.Session) *Runner {
 	return &Runner{
 		slotManagerSession: slotManagerSession,
 	}

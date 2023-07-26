@@ -1,14 +1,13 @@
 package produce
 
 import (
-	astw_utl "tde/internal/astw/utilities"
+	astwutl "tde/internal/astw/utilities"
 	"tde/internal/command"
 	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
-	"tde/internal/folders/preparation"
-	slot_manager "tde/internal/folders/slot-manager"
-	"tde/internal/folders/types"
+	"tde/internal/folders/preps"
+	slot_manager "tde/internal/folders/slots"
 
 	"fmt"
 	"go/ast"
@@ -33,10 +32,10 @@ type Command struct {
 	TestName   string              `precedence:"0"`
 }
 
-func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModulePath, importPath string, funcName string) (*evolution.Target, error) {
+func NewEvolutionTarget(modulePath, packagePath, importPath string, funcName string) (*evolution.Target, error) {
 	pkgName := filepath.Base(importPath)
 
-	_, pkgs, err := astw_utl.LoadDir(string(modulePath.Join(packagePath)))
+	_, pkgs, err := astwutl.LoadDir(packagePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ast representation for the directory %q: %w", packagePath, err)
 	}
@@ -47,7 +46,7 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 		return nil, fmt.Errorf("directory doesn't contain named package %q. Available packages are %v", pkgName, maps.Keys(pkgs))
 	}
 
-	file, funcDecl, err := astw_utl.FindFuncDeclInPkg(pkg, funcName)
+	file, funcDecl, err := astwutl.FindFuncDeclInPkg(pkg, funcName)
 	if err != nil {
 		return nil, fmt.Errorf("directory doesn't contain named function %q: %w", funcName, err)
 	}
@@ -60,12 +59,12 @@ func NewEvolutionTarget(modulePath types.AbsolutePath, packagePath types.InModul
 }
 
 func (c *Command) Run() {
-	modPath, pkgInMod, importPath, err := discovery.WhereAmI()
+	modPath, pkgInMod, pkg, err := discovery.WhereAmI()
 	if err != nil {
 		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
 	}
 
-	prepPath, err := preparation.Prepare(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, c.TestName)
+	prepPath, err := preps.Prepare(modPath, pkgInMod, pkg, c.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module", err)
 	}
@@ -75,7 +74,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not find test details")
 	}
 
-	evolutionTarget, err := NewEvolutionTarget(types.AbsolutePath(modPath), types.InModulePath(pkgInMod), importPath, testDetails.ImplFuncName)
+	evolutionTarget, err := NewEvolutionTarget(modPath, pkgInMod, pkg, testDetails.ImplFuncName)
 	if err != nil {
 		log.Fatalln("Failed in slot_manager.NewSession()", err)
 	}
