@@ -6,13 +6,12 @@ import (
 	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
+	"tde/internal/folders/list"
 	"tde/internal/folders/preps"
-	slot_manager "tde/internal/folders/slots"
+	"tde/internal/folders/slots"
 
 	"fmt"
-	"go/ast"
 	"log"
-	"path/filepath"
 
 	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/exp/maps"
@@ -32,29 +31,23 @@ type Command struct {
 	TestName   string              `precedence:"0"`
 }
 
-func NewEvolutionTarget(modulePath, packagePath, importPath string, funcName string) (*evolution.Target, error) {
-	pkgName := filepath.Base(importPath)
-
+func NewEvolutionTarget(modulePath string, packagePath string, pkgInfo *list.Package, funcName string) (*evolution.Target, error) {
 	_, pkgs, err := astwutl.LoadDir(packagePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ast representation for the directory %q: %w", packagePath, err)
 	}
-
-	var pkg *ast.Package
-	var ok bool
-	if pkg, ok = pkgs[pkgName]; !ok {
-		return nil, fmt.Errorf("directory doesn't contain named package %q. Available packages are %v", pkgName, maps.Keys(pkgs))
+	var pkgAst, ok = pkgs[pkgInfo.ImportPath]
+	if !ok {
+		return nil, fmt.Errorf("directory doesn't contain named package %q. Available packages are %v", pkgInfo.ImportPath, maps.Keys(pkgs))
 	}
-
-	file, funcDecl, err := astwutl.FindFuncDeclInPkg(pkg, funcName)
+	fileAst, funcDeclAst, err := astwutl.FindFuncDeclInPkg(pkgAst, funcName)
 	if err != nil {
 		return nil, fmt.Errorf("directory doesn't contain named function %q: %w", funcName, err)
 	}
-
 	return &evolution.Target{
-		Package:  pkg,
-		File:     file,
-		FuncDecl: funcDecl,
+		Package:  pkgAst,
+		File:     fileAst,
+		FuncDecl: funcDeclAst,
 	}, nil
 }
 
@@ -79,7 +72,7 @@ func (c *Command) Run() {
 		log.Fatalln("Failed in slot_manager.NewSession()", err)
 	}
 
-	var session = slot_manager.NewSession(prepPath, testDetails)
+	var session = slots.NewSession(prepPath, testDetails)
 	var evaluator = evaluation.NewEvaluator(session)
 	var evolution = evolution.NewManager(evolutionTarget)
 
