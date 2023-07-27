@@ -1,8 +1,8 @@
 package models
 
 import (
+	astw_utl "tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
-	astw_utl "tde/internal/astw/utilities"
 
 	"go/ast"
 	"log"

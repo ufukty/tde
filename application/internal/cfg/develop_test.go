@@ -1,8 +1,8 @@
 package cfg
 
 import (
+	astwutl "tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
-	astwutl "tde/internal/astw/utilities"
 	"tde/internal/folders/evaluation"
 
 	"fmt"

@@ -1,7 +1,7 @@
 package traced
 
 import (
-	ast_utl "tde/internal/astw/utilities"
+	"tde/internal/astw/astwutl"
 
 	"fmt"
 	"go/ast"
@@ -95,7 +95,7 @@ func walkAstTypeFieldsIfSet(parentTrace []ast.Node, childIndexTrace []int, callb
 
 func walkHelper(n ast.Node, parentTrace []ast.Node, childIndexTrace []int, callback WalkCallbackFunction) {
 
-	if ast_utl.IsNodeNil(n) {
+	if astwutl.IsNodeNil(n) {
 		callback(n, parentTrace, childIndexTrace)
 		return
 	} else if !callback(n, parentTrace, childIndexTrace) {

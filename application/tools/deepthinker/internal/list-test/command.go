@@ -2,7 +2,7 @@ package list_test
 
 import (
 	"log"
-	astw_util "tde/internal/astw/utilities"
+	astw_util "tde/internal/astw/astwutl"
 	"tde/internal/folders/discovery"
 	"tde/internal/utilities"
 

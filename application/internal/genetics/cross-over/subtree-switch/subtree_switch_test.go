@@ -1,10 +1,10 @@
 package subtree_switch
 
 import (
-	"fmt"
+	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
-	ast_utl "tde/internal/astw/utilities"
 
+	"fmt"
 	"go/ast"
 	"testing"
 
@@ -12,17 +12,17 @@ import (
 )
 
 func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
-	_, astPkgs, err := ast_utl.LoadDir("../../../test-package")
+	_, astPkgs, err := astwutl.LoadDir("../../../test-package")
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "could not load test package")
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["../../../test-package/walk.go"]
-	funcDeclA, err := ast_utl.FindFuncDecl(astPkg, "walkHelper")
+	funcDeclA, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "walkHelper")
 	}
-	funcDeclB, err := ast_utl.FindFuncDecl(astFile, "walkAstTypeFieldsIfSet")
+	funcDeclB, err := astwutl.FindFuncDecl(astFile, "walkAstTypeFieldsIfSet")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "walkAstTypeFieldsIfSet")
 	}
@@ -41,20 +41,20 @@ func Test_SubtreeSwitch(t *testing.T) {
 		t.Error("false return")
 	}
 
-	if ast_utl.CompareRecursively(modifiedFuncDeclA, funcDeclA) {
+	if astwutl.CompareRecursively(modifiedFuncDeclA, funcDeclA) {
 		t.Error("Comparison")
 	}
-	if ast_utl.CompareRecursively(modifiedFuncDeclB, funcDeclB) {
+	if astwutl.CompareRecursively(modifiedFuncDeclB, funcDeclB) {
 		t.Error("Comparison")
 	}
 
-	if diff, err := ast_utl.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
+	if diff, err := astwutl.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)
 	}
 
-	if diff, err := ast_utl.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
+	if diff, err := astwutl.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)

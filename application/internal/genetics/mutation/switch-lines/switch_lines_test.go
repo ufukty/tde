@@ -1,10 +1,11 @@
 package switch_lines
 
 import (
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
+
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/clone"
-	ast_utl "tde/internal/astw/utilities"
 	"testing"
 
 	"github.com/kylelemons/godebug/diff"
@@ -12,13 +13,13 @@ import (
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := ast_utl.LoadDir("../../../test-package")
+	_, astPkgs, err := astwutl.LoadDir("../../../test-package")
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["../../../test-package/walk.go"]
-	funcDecl, err := ast_utl.FindFuncDecl(astPkg, "walkHelper")
+	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "could not find test function")
 	}
@@ -37,18 +38,18 @@ func Test_SiblingSwap(t *testing.T) {
 		t.Error("return value")
 	}
 
-	codeForOriginal, err := ast_utl.String(originalFuncDecl)
+	codeForOriginal, err := astwutl.String(originalFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := ast_utl.String(modifiedFuncDecl)
+	codeForModified, err := astwutl.String(modifiedFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if ast_utl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation")
 	}
 }
@@ -67,7 +68,7 @@ func Test_SiblingSwapMany(t *testing.T) {
 			t.Error("return value")
 		}
 
-		if ast_utl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Error("validation", i)
 		}
 	}

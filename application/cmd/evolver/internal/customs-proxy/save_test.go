@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"tde/internal/astw/utilities"
+	"tde/internal/astw/astwutl"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -34,11 +34,11 @@ func Test_JSON(t *testing.T) {
 		t.Error(errors.Wrapf(err, "decoding"))
 	}
 
-	if same := utilities.CompareNonNodeFields(fd, fdg); !same {
+	if same := astwutl.CompareNonNodeFields(fd, fdg); !same {
 		t.Error("validate non-node fields only")
 	}
 
-	if same := utilities.CompareRecursively(fd, fdg); !same {
+	if same := astwutl.CompareRecursively(fd, fdg); !same {
 		t.Error("validate all")
 	}
 }

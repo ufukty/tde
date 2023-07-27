@@ -1,7 +1,7 @@
 package discovery
 
 import (
-	astwutl "tde/internal/astw/utilities"
+	astwutl "tde/internal/astw/astwutl"
 	"tde/internal/folders/list"
 	"tde/internal/utilities"
 

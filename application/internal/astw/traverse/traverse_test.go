@@ -1,7 +1,7 @@
 package traverse
 
 import (
-	ast_utl "tde/internal/astw/utilities"
+	"tde/internal/astw/astwutl"
 
 	"fmt"
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 // Pass if no panic
 func Test_Traverse(t *testing.T) {
-	_, astFile, _ := ast_utl.LoadFile("walk.go")
+	_, astFile, _ := astwutl.LoadFile("walk.go")
 
 	appandableNodes := []*TraversableNode{}
 

@@ -1,7 +1,7 @@
 package produce
 
 import (
-	astwutl "tde/internal/astw/utilities"
+	astwutl "tde/internal/astw/astwutl"
 	"tde/internal/command"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"

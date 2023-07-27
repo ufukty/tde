@@ -1,12 +1,12 @@
 package context_resolution
 
 import (
-	"fmt"
-	"go/ast"
-	trav "tde/internal/astw/traverse"
-	ast_utl "tde/internal/astw/utilities"
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/traverse"
 	"tde/internal/utilities"
 
+	"fmt"
+	"go/ast"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -14,18 +14,18 @@ import (
 )
 
 func Test_GetContextForSpot(t *testing.T) {
-	_, astPkgs, err := ast_utl.LoadDir("../../test-package")
+	_, astPkgs, err := astwutl.LoadDir("../../test-package")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on loading package"))
 	}
 	astPkg := astPkgs["test_package"]
-	funcDecl, err := ast_utl.FindFuncDecl(astPkg, "WalkWithNils")
+	funcDecl, err := astwutl.FindFuncDecl(astPkg, "WalkWithNils")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on preparation"))
 	}
 
-	tFuncDecl := trav.GetTraversableNodeForASTNode(funcDecl)
-	funcBody := trav.GetTraversableNodeForASTNode(funcDecl.Body).GetTraversableSubnodes()
+	tFuncDecl := traverse.GetTraversableNodeForASTNode(funcDecl)
+	funcBody := traverse.GetTraversableNodeForASTNode(funcDecl.Body).GetTraversableSubnodes()
 	choosenSpot := funcBody[len(funcBody)-1]
 
 	ctx, err := GetContextForSpot(

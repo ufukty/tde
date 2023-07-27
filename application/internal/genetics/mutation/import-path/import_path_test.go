@@ -1,11 +1,12 @@
 package import_path
 
 import (
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
+
 	"fmt"
 	"go/ast"
 	"strings"
-	"tde/internal/astw/clone"
-	ast_utl "tde/internal/astw/utilities"
 	"testing"
 
 	"github.com/google/uuid"
@@ -14,13 +15,13 @@ import (
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := ast_utl.LoadDir("../../../test-package")
+	_, astPkgs, err := astwutl.LoadDir("../../../test-package")
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["../../../test-package/walk.go"]
-	funcDecl, err := ast_utl.FindFuncDecl(astPkg, "walkHelper")
+	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "could not find test function")
 	}
@@ -38,18 +39,18 @@ func Test_ImportPackage(t *testing.T) {
 	modifiedFile := clone.File(originalFile)
 	ImportPackage(modifiedFile, packageNameToImport)
 
-	codeForOriginal, err := ast_utl.String(originalFile)
+	codeForOriginal, err := astwutl.String(originalFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := ast_utl.String(modifiedFile)
+	codeForModified, err := astwutl.String(modifiedFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if ast_utl.CompareRecursively(originalFile, modifiedFile) {
+	if astwutl.CompareRecursively(originalFile, modifiedFile) {
 		t.Error("validation 1")
 	}
 
@@ -70,12 +71,12 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		modifiedFile := clone.File(originalFile)
 		ImportPackage(modifiedFile, packageNameToImport)
 
-		codeForModified, err := ast_utl.String(modifiedFile)
+		codeForModified, err := astwutl.String(modifiedFile)
 		if err != nil {
 			t.Error("validation prep")
 		}
 
-		if ast_utl.CompareRecursively(originalFile, modifiedFile) {
+		if astwutl.CompareRecursively(originalFile, modifiedFile) {
 			t.Error("validation 1")
 		}
 
