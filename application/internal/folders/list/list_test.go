@@ -12,7 +12,7 @@ func Test_AssertThisPackage(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "act"))
 	}
-	if _, ok := m["tde/internal/folders/discovery"]; !ok {
+	if _, ok := m["tde/internal/folders/list"]; !ok {
 		t.Error(errors.Wrapf(err, "assert"))
 	}
 }
