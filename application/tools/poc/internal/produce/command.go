@@ -8,7 +8,7 @@ import (
 	"tde/internal/folders/discovery"
 	"tde/internal/folders/list"
 	"tde/internal/folders/preps"
-	"tde/internal/folders/slots"
+	"tde/internal/folders/testinject"
 
 	"fmt"
 	"log"
@@ -57,7 +57,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
 	}
 
-	prepPath, err := preps.Prepare(modPath, pkgInMod, pkg, c.TestName)
+	prepPath, err := testinject.PreparePackage(modPath, pkgInMod, pkg, c.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module", err)
 	}

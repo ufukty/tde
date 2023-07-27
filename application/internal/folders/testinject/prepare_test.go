@@ -1,8 +1,9 @@
-package preps
+package testinject
 
 import (
 	"fmt"
 	"path/filepath"
+	"tde/internal/folders/list"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -14,8 +15,10 @@ func Test_Preparation(t *testing.T) {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
 
-	dupl, err := Prepare(abs, "examples/word-reverse", "tde/examples/word-reverse", "TDE_WordReverse")
-
+	var pkgInfo = &list.Package{
+		ImportPath: "tde/examples/word-reverse",
+	}
+	dupl, err := PreparePackage(abs, "examples/word-reverse", pkgInfo, "TDE_WordReverse")
 	if err != nil {
 		t.Error(errors.Wrapf(err, ""))
 	}
