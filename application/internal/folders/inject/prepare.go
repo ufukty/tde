@@ -34,7 +34,7 @@ func mountTesterPackage(pkg string, pkgImportPath string, testName string) error
 }
 
 // creates a dir in temp folder for the module. returns path for the copy
-func PrepareSample(path string, pkgPath string, pkgInfo *list.Package, testName string) (string, error) {
+func WithCreatingSample(path string, pkgPath string, pkgInfo *list.Package, testName string) (string, error) {
 	dupl, err := duplicateInTmp(path)
 	if err != nil {
 		return "", fmt.Errorf("duplicateInTmp: %w", err)

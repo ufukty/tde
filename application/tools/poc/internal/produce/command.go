@@ -56,7 +56,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
 	}
 
-	prepPath, err := inject.PrepareSample(modPath, pkgInMod, pkg, c.TestName)
+	prepPath, err := inject.WithCreatingSample(modPath, pkgInMod, pkg, c.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module", err)
 	}
