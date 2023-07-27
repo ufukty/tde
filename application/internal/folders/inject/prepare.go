@@ -39,7 +39,7 @@ func WithCreatingSample(path string, pkgPath string, pkgInfo *list.Package, test
 	if err != nil {
 		return "", fmt.Errorf("duplicateInTmp: %w", err)
 	}
-	err = mountTesterPackage(filepath.Join(path, pkgPath), pkgInfo.ImportPath, testName)
+	err = mountTesterPackage(filepath.Join(dupl, pkgPath), pkgInfo.ImportPath, testName)
 	if err != nil {
 		return "", fmt.Errorf("mountTesterPackage: %w", err)
 	}
