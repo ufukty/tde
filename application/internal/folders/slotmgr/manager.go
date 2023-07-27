@@ -1,12 +1,12 @@
 package slotmgr
 
 import (
-	"fmt"
 	"tde/internal/folders/copymod"
-	"tde/internal/folders/types"
+	"tde/internal/folders/discovery"
 	"tde/internal/utilities"
 	models "tde/models/program"
 
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,12 +28,12 @@ type slots struct {
 // slot manager is to reuse existing copies of the module for next generation
 type SlotManager struct {
 	modulePath  path
-	testDetails *types.TestDetails
+	testDetails *discovery.TestDetails
 	tmp         path // reserved in instantiation. all
 	slots       slots
 }
 
-func New(modulePath string, testDetails *types.TestDetails) *SlotManager {
+func New(modulePath string, testDetails *discovery.TestDetails) *SlotManager {
 	s := SlotManager{
 		modulePath:  modulePath,
 		testDetails: testDetails,

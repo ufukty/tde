@@ -1,9 +1,9 @@
 package slotmgr
 
 import (
+	"tde/internal/folders/discovery"
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
-	"tde/internal/folders/types"
 	models "tde/models/program"
 
 	"fmt"
@@ -38,7 +38,7 @@ func Test_SlotManager(t *testing.T) {
 
 	var (
 		modulePath = clone
-		config     = &types.TestDetails{
+		config     = &discovery.TestDetails{
 			PackagePath:  "testdata/word-reverse",
 			Package:      pkgInfo,
 			ImplFuncFile: "testdata/word-reverse/word_reverse.go",

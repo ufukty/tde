@@ -1,4 +1,4 @@
-package types
+package discovery
 
 import (
 	"go/ast"

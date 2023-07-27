@@ -61,7 +61,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not prepare the module", err)
 	}
 
-	testDetails, err := discovery.ResolveTestDetailsInCurrentDir(c.TestName)
+	testDetails, err := discovery.FindTest(c.TestName)
 	if err != nil {
 		log.Fatalln("Could not find test details")
 	}

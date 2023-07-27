@@ -3,7 +3,6 @@ package discovery
 import (
 	astwutl "tde/internal/astw/utilities"
 	"tde/internal/folders/list"
-	"tde/internal/folders/types"
 	"tde/internal/utilities"
 
 	"fmt"
@@ -12,20 +11,21 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
 )
 
-func DiscoverImplFileForImplFuncDetails(moduleRoot, implFilePathInMod, implFuncName string) (*types.ImplFuncDetails, error) {
+func DiscoverImplFileForImplFuncDetails(moduleRoot, implFilePathInMod, implFuncName string) (*ImplFuncDetails, error) {
 	fset, astFile, err := astwutl.LoadFile(filepath.Join(moduleRoot, implFilePathInMod))
 	if err != nil {
 		return nil, fmt.Errorf("could not create AST for the file %q: %w", implFilePathInMod, err)
 	}
 
-	var implFuncDetails *types.ImplFuncDetails
+	var implFuncDetails *ImplFuncDetails
 	ast.Inspect(astFile, func(node ast.Node) bool {
 		if node, ok := node.(*ast.FuncDecl); ok {
 			if node.Name.Name == implFuncName {
-				implFuncDetails = &types.ImplFuncDetails{
+				implFuncDetails = &ImplFuncDetails{
 					Name: implFuncName,
 					Path: implFilePathInMod,
 					Line: astwutl.LineNumberOfPosition(fset, node.Pos()),
@@ -61,8 +61,8 @@ func GetExpectedImplFileAndImplFuncName(testFile, testFuncName string) (implFile
 }
 
 // all paths returned will be relative to <moduleRoot>
-func DiscoverTestFileForTestFuncDetails(moduleRoot, testFilePathAbs string) ([]types.TestFuncDetails, error) {
-	testFunctions := []types.TestFuncDetails{}
+func DiscoverTestFileForTestFuncDetails(moduleRoot, testFilePathAbs string) ([]TestFuncDetails, error) {
+	testFunctions := []TestFuncDetails{}
 
 	fset, astFile, err := astwutl.LoadFile(testFilePathAbs)
 	if err != nil {
@@ -78,7 +78,7 @@ func DiscoverTestFileForTestFuncDetails(moduleRoot, testFilePathAbs string) ([]t
 		if funcDecl, ok := node.(*ast.FuncDecl); ok {
 			functionName := funcDecl.Name.Name
 			if strings.Index(functionName, "TDE_") == 0 {
-				testFunctions = append(testFunctions, types.TestFuncDetails{
+				testFunctions = append(testFunctions, TestFuncDetails{
 					Name:  functionName,
 					Path:  relPath,
 					Line:  astwutl.LineNumberOfPosition(fset, node.Pos()),
@@ -94,11 +94,11 @@ func DiscoverTestFileForTestFuncDetails(moduleRoot, testFilePathAbs string) ([]t
 
 // will return any test function in and under <inModPath>
 // all paths returned will be relative to <moduleRoot>
-func DiscoverSubdirsForTestFuncDetails(moduleRoot, dirPathAbs string) ([]types.TestFuncDetails, error) {
+func DiscoverSubdirsForTestFuncDetails(moduleRoot, dirPathAbs string) ([]TestFuncDetails, error) {
 	excludeDirs := []string{".git", "build", "artifacts"}
 	excludePaths := utilities.Map(excludeDirs, func(i int, v string) string { return filepath.Join(dirPathAbs, v) })
 
-	testFunctions := []types.TestFuncDetails{}
+	testFunctions := []TestFuncDetails{}
 	err := filepath.Walk(dirPathAbs, func(filePathAbs string, fileInfo fs.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to walk directory %q: %w", filePathAbs, err)
@@ -145,4 +145,47 @@ func WhereAmI() (modulePath, pkgPathInMod string, pkg *list.Package, err error) 
 	}
 	pkg = pkgs.First()
 	return
+}
+
+func FindTest(testName string) (*TestDetails, error) {
+	modPath, pkgPathInMod, pkg, err := WhereAmI()
+	if err != nil {
+		return nil, errors.Wrap(err, "WhereAmI")
+	}
+
+	funcDetailsInSubdirs, err := DiscoverSubdirsForTestFuncDetails(modPath, filepath.Join(modPath, pkgPathInMod))
+	if err != nil {
+		return nil, errors.Wrap(err, "DiscoverSubdirsForTestFuncDetails")
+	}
+
+	var foundFuncDetails *TestFuncDetails
+	for _, funcDetails := range funcDetailsInSubdirs {
+		if funcDetails.Name == testName {
+			foundFuncDetails = &funcDetails
+			break
+		}
+	}
+	if foundFuncDetails == nil {
+		return nil, errors.New("Given test name is not found in subdirs")
+	}
+
+	implFile, implFuncName := GetExpectedImplFileAndImplFuncName(foundFuncDetails.Path, foundFuncDetails.Name)
+
+	implFuncDetails, err := DiscoverImplFileForImplFuncDetails(modPath, implFile, implFuncName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Could not find implementation file \"%s\" and function \"%s\"", implFile, implFuncName)
+	}
+
+	testDetails := TestDetails{
+		PackagePath:  pkgPathInMod,
+		Package:      pkg,
+		ImplFuncFile: implFile,
+		ImplFuncName: implFuncName,
+		ImplFuncLine: implFuncDetails.Line,
+		TestFuncFile: foundFuncDetails.Path,
+		TestFuncName: testName,
+		TestFuncLine: foundFuncDetails.Line,
+	}
+
+	return &testDetails, nil
 }
