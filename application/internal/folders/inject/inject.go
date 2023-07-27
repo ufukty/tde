@@ -1,4 +1,4 @@
-package testinject
+package inject
 
 import (
 	"tde/internal/utilities"

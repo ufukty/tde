@@ -4,7 +4,7 @@
 package main
 
 import (
-	targetPackage "tde/internal/folders/testinject/demo"
+	targetPackage "tde/internal/folders/inject/demo"
 	models "tde/models/program"
 	"tde/pkg/tde"
 
