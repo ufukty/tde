@@ -2,58 +2,33 @@ package discovery
 
 import (
 	"tde/internal/folders/list"
-	"tde/internal/utilities"
 
 	"fmt"
-	"os"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func Test_FindImportPath(t *testing.T) {
-	var (
-		pkgs list.Packages
-		path string
-		err  error
-	)
-
-	pkgs, err = list.ListPackagesInDir(".")
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed on finding import path"))
-	}
-	if pkgs.First().ImportPath != "tde/internal/folders/discovery" {
-		t.Fatal(fmt.Errorf("got the wrong import path %q: %w", path, err))
+	var testCases = map[string]string{
+		".":                              "tde/internal/folders/discovery",
+		"../../../examples/word-reverse": "tde/examples/word-reverse",
 	}
 
-	fmt.Println("Import path for package:", path)
-
-	initialDir, _ := utilities.CurrentDir()
-	err = os.Chdir("../../../examples/word-reverse")
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "chdir is failed"))
-	}
-	defer func() {
-		err := os.Chdir(initialDir)
+	for input, want := range testCases {
+		var pkgs, err = list.ListPackagesInDir(input)
 		if err != nil {
-			t.Fatal(fmt.Errorf("failed to revert working directory: %q: %w", initialDir, err))
+			t.Fatal(fmt.Errorf("action: %w", err))
 		}
-	}()
-
-	path, err = GetImportPathOfPackage()
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed on finding import path"))
-	} else if path != "tde/examples/word-reverse" {
-		t.Fatal(fmt.Errorf("got the wrong import path %q: %w", path, err))
+		got := pkgs.First().ImportPath
+		if got != want {
+			t.Fatal(fmt.Errorf("assert. want %q got %q", want, got))
+		}
 	}
-
-	fmt.Println("Import path for package:", path)
 }
 
 func Test_DetectTestFunctions(t *testing.T) {
 	fns, err := DiscoverTestFileForTestFuncDetails("../../../", "../../../examples/word-reverse/word_reverse_tde.go")
 	if err != nil {
-		t.Fatal(fmt.Errorf("failed to detect positions and names of test functions that is in the user-provided test file", err))
+		t.Fatal(fmt.Errorf("failed to detect positions and names of test functions that is in the user-provided test file: %q", err))
 	} else if len(fns) != 1 {
 		t.Fatal("Got wrong number of results:", len(fns))
 	} else if fns[0].Name != "TDE_WordReverse" {
@@ -65,12 +40,12 @@ func Test_DetectTestFunctions(t *testing.T) {
 func Test_GetPackagePathInModule(t *testing.T) {
 	mod, err := GetModulePath()
 	if err != nil {
-		t.Fatal(fmt.Errorf("prep", err))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 
 	pkgRelMod, err := GetPackagePathInModule(mod)
 	if err != nil {
-		t.Fatal(fmt.Errorf("return", err))
+		t.Fatal(fmt.Errorf("return: %w", err))
 	}
 
 	fmt.Println(pkgRelMod)
