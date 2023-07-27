@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"tde/internal/folders/slots"
+	"tde/internal/folders/slotmgr"
 	models "tde/models/program"
 
 	"fmt"
@@ -11,12 +11,12 @@ import (
 )
 
 type Evaluator struct {
-	SlotManagerSession *slots.Session
+	Sm *slotmgr.SlotManager
 }
 
-func NewEvaluator(slotManagerSession *slots.Session) *Evaluator {
+func NewEvaluator(sm *slotmgr.SlotManager) *Evaluator {
 	return &Evaluator{
-		SlotManagerSession: slotManagerSession,
+		Sm: sm,
 	}
 }
 
@@ -40,7 +40,7 @@ func syntaxCheckAndProduceCode(candidates []*models.Candidate) {
 // TODO: Return test results
 func (e *Evaluator) Pipeline(candidates []*models.Candidate) {
 	syntaxCheckAndProduceCode(candidates)
-	e.SlotManagerSession.PlaceCandidatesIntoSlots(candidates)
+	e.Sm.PlaceCandidatesIntoSlots(candidates)
 
 	// compile each slot
 	//

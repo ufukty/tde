@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	tester_package "tde/internal/folders/testinject"
+	tester_package "tde/internal/folders/inject"
 
 	"fmt"
 	"os"

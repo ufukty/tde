@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"tde/internal/folders/slots"
+	"tde/internal/folders/slotmgr"
 	models "tde/models/program"
 
 	"fmt"
@@ -12,12 +12,12 @@ import (
 )
 
 type Runner struct {
-	slotManagerSession *slots.Session
+	sm *slotmgr.SlotManager
 }
 
-func NewRunner(slotManagerSession *slots.Session) *Runner {
+func NewRunner(sm *slotmgr.SlotManager) *Runner {
 	return &Runner{
-		slotManagerSession: slotManagerSession,
+		sm: sm,
 	}
 }
 
@@ -33,7 +33,7 @@ func (r *Runner) compile(pkgPath string, candidateID models.CandidateID) (string
 }
 
 func (r *Runner) run(candidate *models.Candidate) error {
-	pkgPath := r.slotManagerSession.GetPackagePathForCandidate(candidate.UUID)
+	pkgPath := r.sm.GetPackagePathForCandidate(candidate.UUID)
 	output, err := r.compile(filepath.Join(pkgPath, "tde"), candidate.UUID)
 	if err != nil {
 		return errors.Wrapf(err, "failed to run testing package for candidate=\"%s\"", candidate.UUID)

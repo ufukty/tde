@@ -6,14 +6,13 @@ import (
 	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
+	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
-	"tde/internal/folders/preps"
-	"tde/internal/folders/testinject"
+	"tde/internal/folders/slotmgr"
 
 	"fmt"
 	"log"
 
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/exp/maps"
 )
 
@@ -57,7 +56,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
 	}
 
-	prepPath, err := testinject.PreparePackage(modPath, pkgInMod, pkg, c.TestName)
+	prepPath, err := inject.PrepareSample(modPath, pkgInMod, pkg, c.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module", err)
 	}
@@ -72,7 +71,7 @@ func (c *Command) Run() {
 		log.Fatalln("Failed in slot_manager.NewSession()", err)
 	}
 
-	var session = slots.NewSession(prepPath, testDetails)
+	var session = slotmgr.New(prepPath, testDetails)
 	var evaluator = evaluation.NewEvaluator(session)
 	var evolution = evolution.NewManager(evolutionTarget)
 
@@ -83,5 +82,5 @@ func (c *Command) Run() {
 		evolution.IterateLoop()
 	}
 
-	spew.Dump(evaluator.SlotManagerSession)
+	evaluator.Sm.Print()
 }
