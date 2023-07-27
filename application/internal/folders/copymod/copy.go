@@ -1,51 +1,70 @@
 package copymod
 
 import (
-	ucopy "tde/internal/utilities/copy"
+	"fmt"
+	"log"
+	"strings"
 
 	"os"
 	"path/filepath"
 
-	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
 )
 
-var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode"}
+var DefaultInclExt = []string{"go", "mod", "sum"}
+var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
 
-func Copy(srcMod string, dstMod string, includeSubfolders bool, skipDirs []string) error {
-	return filepath.Walk(srcMod, func(srcAbs string, fileInfo os.FileInfo, err error) error {
+func Copy(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
+	skipSubdirs = append(skipSubdirs, DefaultSkipDirs...)
+	includeExt = append(includeExt, DefaultInclExt...)
+
+	return filepath.Walk(src, func(file string, info os.FileInfo, err error) error {
 		if err != nil {
-			return errors.Wrap(err, "failed to walk directory")
+			return fmt.Errorf("failed to walk dir %q: %w", file, err)
 		}
-
-		srcRel, err := filepath.Rel(srcMod, srcAbs)
+		srcRel, err := filepath.Rel(src, file)
 		if err != nil {
-			return errors.Wrap(err, "getting relative path from absolute")
+			return fmt.Errorf("could not get the entry's in-module path: %w", err)
 		}
-
-		dstAbs := filepath.Join(dstMod, srcRel)
-
-		switch fileInfo.Mode() & os.ModeType {
+		dstAbs := filepath.Join(dst, srcRel)
+		switch info.Mode() & os.ModeType {
 		case os.ModeDir:
-			if !includeSubfolders || slices.Index(skipDirs, srcRel) != -1 {
-				// log.Println("skip dir:", srcRel)
+			var (
+				isInSkipDirs    = slices.Index(skipDirs, srcRel) != -1
+				isInSkipSubdirs = slices.Index(skipSubdirs, filepath.Base(srcRel)) != -1
+			)
+			if !incSubdirs || isInSkipDirs || isInSkipSubdirs {
+				if enableLogging {
+					log.Println(srcRel, "(skip dir)")
+				}
 				return filepath.SkipDir
 			}
-			// log.Println("copy dir:", srcRel)
-			if err := ucopy.CreateIfNotExists(dstAbs, 0755); err != nil {
-				return errors.Wrap(err, "CreateIfNotExists")
+			if enableLogging {
+				log.Println(srcRel)
 			}
-
+			if err := createDirIfDoesNotExists(dstAbs, 0755); err != nil {
+				return fmt.Errorf("could not create dir %q: %w", srcRel, err)
+			}
 		case os.ModeSymlink:
+			if enableLogging {
+				log.Println(srcRel, "(skip symlink)")
+			}
 			break
-
 		default:
-			// log.Println("copy file:", srcRel)
-			if err := ucopy.File(srcAbs, dstAbs); err != nil {
-				return errors.Wrap(err, "File")
+			ext := strings.TrimPrefix(filepath.Ext(filepath.Base(srcRel)), ".")
+			if slices.Index(includeExt, ext) == -1 {
+				if enableLogging {
+					log.Println(srcRel, "(skip file)")
+				}
+				return nil
+			}
+			if enableLogging {
+				log.Println(srcRel)
+			}
+			if err := copyFile(file, dstAbs); err != nil {
+				return fmt.Errorf("copying %q: %w", srcRel, err)
 			}
 		}
-
 		return nil // keep walk
 	})
 }

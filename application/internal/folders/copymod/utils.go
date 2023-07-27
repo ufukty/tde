@@ -1,4 +1,4 @@
-package copy
+package copymod
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Directory(scrDir, dest string) error {
+func copyDir(scrDir, dest string) error {
 	entries, err := os.ReadDir(scrDir)
 	if err != nil {
 		return err
@@ -25,18 +25,18 @@ func Directory(scrDir, dest string) error {
 
 		switch fileInfo.Mode() & os.ModeType {
 		case os.ModeDir:
-			if err := CreateIfNotExists(destPath, 0755); err != nil {
+			if err := createDirIfDoesNotExists(destPath, 0755); err != nil {
 				return err
 			}
-			if err := Directory(sourcePath, destPath); err != nil {
+			if err := copyDir(sourcePath, destPath); err != nil {
 				return err
 			}
 		case os.ModeSymlink:
-			if err := SymLink(sourcePath, destPath); err != nil {
+			if err := copySymlink(sourcePath, destPath); err != nil {
 				return err
 			}
 		default:
-			if err := File(sourcePath, destPath); err != nil {
+			if err := copyFile(sourcePath, destPath); err != nil {
 				return err
 			}
 		}
@@ -60,7 +60,7 @@ func Directory(scrDir, dest string) error {
 	return nil
 }
 
-func File(srcFile, dstFile string) error {
+func copyFile(srcFile, dstFile string) error {
 	dst, err := os.Create(dstFile)
 	if err != nil {
 		return errors.Wrap(err, "os.Create(dstFile)")
@@ -89,7 +89,7 @@ func exists(filePath string) bool {
 	return true
 }
 
-func CreateIfNotExists(dir string, perm os.FileMode) error {
+func createDirIfDoesNotExists(dir string, perm os.FileMode) error {
 	if exists(dir) {
 		return nil
 	}
@@ -101,7 +101,7 @@ func CreateIfNotExists(dir string, perm os.FileMode) error {
 	return nil
 }
 
-func SymLink(source, dest string) error {
+func copySymlink(source, dest string) error {
 	link, err := os.Readlink(source)
 	if err != nil {
 		return err

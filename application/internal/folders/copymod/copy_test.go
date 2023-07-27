@@ -3,18 +3,17 @@ package copymod
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func TestModule(t *testing.T) {
-	dst := filepath.Join(os.TempDir(), "tde_test_folders_copy_copy_module")
-	fmt.Println("destination:", dst)
-
-	err := Copy("../../../", dst, true, DefaultSkipDirs)
+	var dst, err = os.MkdirTemp(os.TempDir(), "tde_test_folders_copy_copy_module")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "return value"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
+	}
+	fmt.Println("created temp dir:", dst)
+
+	if err = Copy(dst, "../../../", true, []string{}, []string{}, []string{}, true); err != nil {
+		t.Fatal(fmt.Errorf("action: %w", err))
 	}
 }
