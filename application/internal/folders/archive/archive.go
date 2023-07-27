@@ -15,16 +15,16 @@ import (
 var DefaultInclExt = []string{"go", "mod", "sum"}
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
 
-func directory(target io.Writer, relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (err error) {
-	zipWriter := zip.NewWriter(target)
+func directory(dst io.Writer, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (err error) {
+	zipWriter := zip.NewWriter(dst)
 	defer zipWriter.Close()
 
-	err = filepath.Walk(relativePath, func(subPath string, fileInfo os.FileInfo, err error) error {
+	err = filepath.Walk(src, func(subPath string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			return errors.Wrap(err, "failed to walk directory")
 		}
 
-		inZipSubPath, err := filepath.Rel(relativePath, subPath)
+		inZipSubPath, err := filepath.Rel(src, subPath)
 		if err != nil {
 			return errors.Wrap(err, "failed to clean path for a file")
 		}
@@ -34,7 +34,7 @@ func directory(target io.Writer, relativePath string, includeSubfolders bool, sk
 				isInSkipDirs    = slices.Index(skipDirs, inZipSubPath) != -1
 				isInSkipSubdirs = slices.Index(skipSubdirs, filepath.Base(inZipSubPath)) != -1
 			)
-			if !includeSubfolders || isInSkipDirs || isInSkipSubdirs {
+			if !incSubdirs || isInSkipDirs || isInSkipSubdirs {
 				if enableLogging {
 					log.Println("skip dir:", inZipSubPath)
 				}
