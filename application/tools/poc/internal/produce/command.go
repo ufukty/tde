@@ -3,9 +3,9 @@ package produce
 import (
 	astwutl "tde/internal/astw/utilities"
 	"tde/internal/command"
-	"tde/internal/evaluation"
 	"tde/internal/evolution"
 	"tde/internal/folders/discovery"
+	"tde/internal/folders/evaluation"
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
 	"tde/internal/folders/slotmgr"
