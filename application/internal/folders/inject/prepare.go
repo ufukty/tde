@@ -10,7 +10,7 @@ import (
 )
 
 func duplicateInTmp(path string) (string, error) {
-	dst, err := os.MkdirTemp(os.TempDir(), "tde-*")
+	dst, err := os.MkdirTemp(os.TempDir(), "deepthinker-sample-*")
 	if err != nil {
 		return "", fmt.Errorf("MkdirTemp: %w", err)
 	}
