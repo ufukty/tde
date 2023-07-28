@@ -27,16 +27,16 @@ type slots struct {
 
 // slot manager is to reuse existing copies of the module for next generation
 type SlotManager struct {
-	modulePath  path
+	sample      path
 	testDetails *discovery.TestDetails
 	tmp         path // reserved in instantiation. all
 	slots       slots
 }
 
-func New(modulePath string, testDetails *discovery.TestDetails) *SlotManager {
+func New(sample path, td *discovery.TestDetails) *SlotManager {
 	s := SlotManager{
-		modulePath:  modulePath,
-		testDetails: testDetails,
+		sample:      sample,
+		testDetails: td,
 		slots: slots{
 			free:     []Slot{},
 			assigned: map[models.CandidateID]Slot{}},
@@ -47,7 +47,7 @@ func New(modulePath string, testDetails *discovery.TestDetails) *SlotManager {
 
 // returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63
 func (s *SlotManager) genNewSlotPath() (path, error) {
-	uuid, err := uuid.NewUUID()
+	uuid, err := uuid.NewUUID() // UUIDv1 has choosen because the id never leaves the same-device or compared with ids produced in another device
 	if err != nil {
 		return "", errors.New("can't create a uuid")
 	}
@@ -56,7 +56,7 @@ func (s *SlotManager) genNewSlotPath() (path, error) {
 }
 
 func (s *SlotManager) createMainFolder() error {
-	path, err := os.MkdirTemp(os.TempDir(), "tde.runner-folders.*")
+	path, err := os.MkdirTemp(os.TempDir(), "deepthinker-slots-*")
 	if err != nil {
 		return errors.New("failed to create main folder for slot_manager in temp directory")
 	}
@@ -64,18 +64,21 @@ func (s *SlotManager) createMainFolder() error {
 	return nil
 }
 
-func (s *SlotManager) createModuleDuplicate() error {
+// empty slots have the same contents of sample module, it just doesn't have the candidate content
+func (s *SlotManager) createEmptySlot() error {
 	newSlotPath, err := s.genNewSlotPath()
 	if err != nil {
-		return errors.Wrap(err, "genNewstring")
+		return errors.Wrap(err, "generating slot path")
 	}
-
-	// fmt.Println("Original module duplicated:", path)
-	err = copymod.Copy(s.modulePath, filepath.Join(s.tmp, newSlotPath), true, []string{}, []string{}, []string{}, false)
+	var abs = filepath.Join(s.tmp, newSlotPath)
+	err = os.MkdirAll(abs, 0755)
 	if err != nil {
-		return errors.Wrap(err, "copy_module.Module")
+		return fmt.Errorf("creating parent dirs for new slot: %w", err)
 	}
-
+	err = copymod.Copy(abs, s.sample, true, []string{}, []string{}, []string{}, false)
+	if err != nil {
+		return errors.Wrap(err, "copying the contents of sample module into the slot")
+	}
 	s.slots.free = append(s.slots.free, Slot(newSlotPath))
 	return nil
 }
@@ -104,22 +107,30 @@ func (s *SlotManager) printToFile(candidate *models.Candidate) error {
 	return nil
 }
 
-func (s *SlotManager) placeCandidate(candidate *models.Candidate) {
+func (s *SlotManager) placeCandidate(candidate *models.Candidate) error {
 	if len(s.slots.free) == 0 {
-		s.createModuleDuplicate()
+		if err := s.createEmptySlot(); err != nil {
+			return fmt.Errorf("could not create new slot: %w", err)
+		}
 	}
 	s.assignCandidateToASlot(candidate.UUID)
 	s.printToFile(candidate)
+	return nil
 }
 
-func (s *SlotManager) PlaceCandidatesIntoSlots(candidates []*models.Candidate) {
+func (s *SlotManager) PlaceCandidatesIntoSlots(candidates []*models.Candidate) error {
 	for _, candidate := range candidates {
-		s.placeCandidate(candidate)
+		if err := s.placeCandidate(candidate); err != nil {
+			return fmt.Errorf("could not place candidate into a slot: %w", err)
+		}
 	}
+	return nil
 }
 
 func (s *SlotManager) FreeAllSlots() {
-	s.slots.free = append(s.slots.free, maps.Values(s.slots.assigned)...)
+	var slots = maps.Values(s.slots.assigned)
+	s.slots.free = append(s.slots.free, slots...)
+	maps.Clear(s.slots.assigned)
 }
 
 func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID) string {
@@ -130,14 +141,19 @@ func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID)
 }
 
 func (s *SlotManager) Print() {
-	fmt.Println("Free: (slots)")
-	for i, slot := range s.slots.free {
-		fmt.Printf("%03d %s\n", i, string(slot))
+	if len(s.slots.free) > 0 {
+		fmt.Println("Free: (slots)")
+		for i, slot := range s.slots.free {
+			fmt.Printf("%03d %s\n", i, string(slot))
+		}
 	}
-	fmt.Println("----")
-	fmt.Println("Assigned: (candidate-id:slot)")
-	for id, slot := range s.slots.assigned {
-		fmt.Printf("%s %s\n", id, string(slot))
+	if len(s.slots.free) > 0 && len(s.slots.assigned) > 0 {
+		fmt.Println("----")
 	}
-	fmt.Println("----")
+	if len(s.slots.assigned) > 0 {
+		fmt.Println("Assigned: (candidate-id:slot)")
+		for id, slot := range s.slots.assigned {
+			fmt.Printf("%s:%s\n", id, string(slot))
+		}
+	}
 }

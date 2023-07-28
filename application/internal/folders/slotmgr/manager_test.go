@@ -11,20 +11,19 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 )
 
 func Test_SlotManager(t *testing.T) {
 	absPath, err := filepath.Abs("../../../")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	var pkgInfo = &list.Package{
 		ImportPath: "tde/examples/word-reverse",
 	}
-	clone, err := inject.WithCreatingSample(absPath, "examples/word-reverse", pkgInfo, "TDE_WordReverse")
+	sample, err := inject.WithCreatingSample(absPath, "examples/word-reverse", pkgInfo, "TDE_WordReverse")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 
 	var candidates = []*models.Candidate{}
@@ -36,19 +35,36 @@ func Test_SlotManager(t *testing.T) {
 		})
 	}
 
-	var (
-		modulePath = clone
-		config     = &discovery.TestDetails{
-			PackagePath:  "testdata/word-reverse",
-			Package:      pkgInfo,
-			ImplFuncFile: "testdata/word-reverse/word_reverse.go",
-			TestFuncFile: "testdata/word-reverse/word_reverse_tde.go",
-			TestFuncName: "TDE_WordReverse",
-		}
-	)
-	sm := New(modulePath, config)
-	sm.PlaceCandidatesIntoSlots(candidates)
+	var td = &discovery.TestDetails{
+		PackagePath:  "testdata/word-reverse",
+		Package:      pkgInfo,
+		ImplFuncFile: "testdata/word-reverse/word_reverse.go",
+		TestFuncFile: "testdata/word-reverse/word_reverse_tde.go",
+		TestFuncName: "TDE_WordReverse",
+	}
+	var sm = New(sample, td)
+	if err := sm.PlaceCandidatesIntoSlots(candidates); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
+	}
 
-	fmt.Println(sm.tmp)
+	fmt.Println("sample module dir:", sample)
+	fmt.Println("slot manager tmp:", sm.tmp)
 	sm.Print()
+
+	if len(sm.slots.assigned) < 10 {
+		t.Fatal("assert. less then 10 slots assigned")
+	}
+	if len(sm.slots.free) != 0 {
+		t.Fatal("assert. there should be no free slots")
+	}
+
+	sm.FreeAllSlots()
+	sm.Print()
+
+	if len(sm.slots.assigned) != 0 {
+		t.Fatal("assert. there should be no assigned slots")
+	}
+	if len(sm.slots.free) < 10 {
+		t.Fatal("assert. less then 10 slots freed")
+	}
 }
