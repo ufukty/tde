@@ -1,12 +1,12 @@
 package inject
 
 import (
-	"path/filepath"
-	copymod "tde/internal/folders/copymod"
+	"tde/internal/folders/copymod"
 	"tde/internal/folders/list"
 
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func duplicateInTmp(path string) (string, error) {
