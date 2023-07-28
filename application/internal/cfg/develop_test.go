@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	astwutl "tde/internal/astw/astwutl"
+	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
 	"tde/internal/folders/evaluation"
 
