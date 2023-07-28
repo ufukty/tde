@@ -202,8 +202,8 @@ func parsePositionalArguments(f *flag.FlagSet, cmd Command) error {
 			}
 		}
 	}
-	slices.SortStableFunc(positionalFields, func(r, l ArgField) bool {
-		return r.Precedence < l.Precedence
+	slices.SortStableFunc(positionalFields, func(r, l ArgField) int {
+		return l.Precedence - r.Precedence
 	})
 
 	if len(args) > len(positionalFields) {
