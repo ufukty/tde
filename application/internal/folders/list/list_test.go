@@ -18,7 +18,7 @@ func Test_AssertThisPackage(t *testing.T) {
 }
 
 func Test_ListPackages(t *testing.T) {
-	var m, err = ListAllPackages("../../../../../")
+	var m, err = ListAllPackages("../../../")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "act"))
 	}
