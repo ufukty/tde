@@ -22,7 +22,7 @@ func Test_ArchiveDirectory(t *testing.T) {
 }
 
 func Test_findModuleRoot(t *testing.T) {
-	root, err := discovery.GetModulePath()
+	root, err := discovery.ModuleRoot()
 	if err != nil {
 		t.Error(errors.Wrapf(err, "failed"))
 	}

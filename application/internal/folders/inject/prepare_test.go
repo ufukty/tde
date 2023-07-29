@@ -2,25 +2,21 @@ package inject
 
 import (
 	"fmt"
-	"path/filepath"
 	"tde/internal/folders/list"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func Test_Preparation(t *testing.T) {
-	abs, err := filepath.Abs("../../../")
-	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+	var (
+		pkgs list.Packages
+		dupl string
+		err  error
+	)
+	if pkgs, err = list.ListPackagesInDir("../../../examples/word-reverse"); err != nil {
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-
-	var pkgInfo = &list.Package{
-		ImportPath: "tde/examples/word-reverse",
-	}
-	dupl, err := WithCreatingSample(abs, "examples/word-reverse", pkgInfo, "TDE_WordReverse")
-	if err != nil {
-		t.Error(errors.Wrapf(err, ""))
+	if dupl, err = WithCreatingSample(pkgs.First().Module.Dir, pkgs.First(), "TDE_WordReverse"); err != nil {
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 	fmt.Println("dst:", dupl)
 }

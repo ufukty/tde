@@ -1,0 +1,100 @@
+package discovery
+
+import (
+	"tde/internal/astw/astwutl"
+	"tde/internal/utilities"
+
+	"fmt"
+	"go/ast"
+	"path/filepath"
+	"strings"
+)
+
+// all paths returned will be relative to <moduleRoot>
+func TestFunctionsInFile(path string) ([]TestFunction, error) {
+	tests := []TestFunction{}
+
+	fset, astFile, err := astwutl.LoadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load file and parse into AST tree: %w", err)
+	}
+
+	ast.Inspect(astFile, func(node ast.Node) bool {
+		if funcDecl, ok := node.(*ast.FuncDecl); ok {
+			name := funcDecl.Name.Name
+			if strings.Index(name, "TDE_") == 0 {
+				tests = append(tests, TestFunction{
+					Name:  name,
+					Path:  path,
+					Line:  astwutl.LineNumberOfPosition(fset, node.Pos()),
+					Calls: FunctionCalls(funcDecl),
+				})
+			}
+		}
+		return node == astFile
+	})
+
+	return tests, nil
+}
+
+func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
+	tests, err := TestFunctionsInDir(path)
+	if err != nil {
+		return nil, fmt.Errorf("listing all test functions in dir %q: %w", path, err)
+	}
+	matches := utilities.FilteredMap(tests, func(i int, v TestFunction) (TestFunction, bool) { return v, v.Name == funcname })
+	switch len(matches) {
+	case 0:
+		tests := utilities.Map(tests, func(i int, v TestFunction) string { return v.Name })
+		return nil, fmt.Errorf("test function %q has not found amongst: %q", funcname, strings.Join(tests, ", "))
+	case 1:
+		return &matches[0], nil
+	default:
+		return nil, fmt.Errorf("multiple tests have found with name %q", funcname)
+	}
+}
+
+func TestFunctionsInDir(path string) ([]TestFunction, error) {
+	tests := []TestFunction{}
+	files, err := utilities.Files(path)
+	if err != nil {
+		return nil, fmt.Errorf("listing files in dir %q: %w", path, err)
+	}
+	for _, file := range files {
+		if !strings.HasSuffix(file.Name(), "_tde.go") {
+			continue
+		}
+		testsInFile, err := TestFunctionsInFile(filepath.Join(path, file.Name()))
+		if err != nil {
+			return nil, fmt.Errorf("listing test functions in file %q: %w", file.Name(), err)
+		}
+		tests = append(tests, testsInFile...)
+	}
+	return tests, nil
+}
+
+func TestFunctionsInSubdirs(path string) ([]TestFunction, error) {
+	// excludeDirs := copymod.DefaultSkipDirs
+	// excludePaths := utilities.Map(excludeDirs, func(i int, v string) string {
+	// 	return filepath.Join(path, v)
+	// })
+
+	tests, err := TestFunctionsInDir(path)
+	if err != nil {
+		return nil, fmt.Errorf(": %w", err)
+	}
+
+	dirs, err := utilities.Dirs(path)
+	if err != nil {
+		return nil, fmt.Errorf("listing dirs in %q: %w", path, err)
+	}
+	for _, dir := range dirs {
+		testsInSubdirs, err := TestFunctionsInSubdirs(filepath.Join(path, dir.Name()))
+		if err != nil {
+			return nil, fmt.Errorf("(in recursion) listing test functions in subdirs of %q: %w", dir.Name(), err)
+		}
+		tests = append(tests, testsInSubdirs...)
+	}
+
+	return tests, nil
+}

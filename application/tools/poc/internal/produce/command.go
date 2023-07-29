@@ -30,12 +30,12 @@ type Command struct {
 	TestName   string              `precedence:"0"`
 }
 
-func NewEvolutionTarget(modulePath string, packagePath string, pkgInfo *list.Package, funcName string) (*evolution.Target, error) {
-	_, pkgs, err := astwutl.LoadDir(packagePath)
+func newEvolutionTarget(modulePath string, pkgInfo *list.Package, funcName string) (*evolution.Target, error) {
+	_, pkgs, err := astwutl.LoadDir(".")
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ast representation for the directory %q: %w", packagePath, err)
+		return nil, fmt.Errorf("failed on parsing files in current dir: %w", err)
 	}
-	var pkgAst, ok = pkgs[pkgInfo.ImportPath]
+	var pkgAst, ok = pkgs[pkgInfo.Name]
 	if !ok {
 		return nil, fmt.Errorf("directory doesn't contain named package %q. Available packages are %v", pkgInfo.ImportPath, maps.Keys(pkgs))
 	}
@@ -50,30 +50,33 @@ func NewEvolutionTarget(modulePath string, packagePath string, pkgInfo *list.Pac
 	}, nil
 }
 
+func printDetails() {
+	fmt.Println()
+}
+
 func (c *Command) Run() {
-	modPath, pkgInMod, pkg, err := discovery.WhereAmI()
+	mod, pkg, err := discovery.WhereAmI()
 	if err != nil {
-		log.Fatalln("Could not find module root or package import path. Are you in a Go package and in subdir of a Go module?", err)
+		log.Fatalln("Could not get the details about Go module and package in this directory:", err)
+	}
+	testDetails, err := discovery.CombinedForDir(c.TestName)
+	if err != nil {
+		log.Fatalln("Could not find test details:", err)
+	}
+	evolutionTarget, err := newEvolutionTarget(mod, pkg, testDetails.ImplFuncName)
+	if err != nil {
+		log.Fatalln("Could not create evolution target:", err)
+	}
+	prepPath, err := inject.WithCreatingSample(mod, pkg, c.TestName)
+	if err != nil {
+		log.Fatalln("Could not prepare the module:", err)
 	}
 
-	prepPath, err := inject.WithCreatingSample(modPath, pkgInMod, pkg, c.TestName)
-	if err != nil {
-		log.Fatalln("Could not prepare the module", err)
-	}
+	var sm = slotmgr.New(prepPath, testDetails)
+	sm.Print()
 
-	testDetails, err := discovery.FindTest(c.TestName)
-	if err != nil {
-		log.Fatalln("Could not find test details")
-	}
-
-	evolutionTarget, err := NewEvolutionTarget(modPath, pkgInMod, pkg, testDetails.ImplFuncName)
-	if err != nil {
-		log.Fatalln("Failed in slot_manager.NewSession()", err)
-	}
-
-	var session = slotmgr.New(prepPath, testDetails)
-	var evaluator = evaluation.NewEvaluator(session)
-	var evolution = evolution.NewManager(evolutionTarget)
+	var evaluator = evaluation.NewEvaluator(sm)
+	var evolution = evolution.NewManager(evolutionTarget, evaluator)
 
 	evolution.InitPopulation(c.Population)
 
@@ -82,5 +85,4 @@ func (c *Command) Run() {
 		evolution.IterateLoop()
 	}
 
-	evaluator.Sm.Print()
 }

@@ -3,6 +3,7 @@ package astwutl
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 )
 
 func FindFuncDecl(toppest ast.Node, name string) (*ast.FuncDecl, error) {
@@ -58,4 +59,24 @@ func FindFuncDeclInPkg(pkg *ast.Package, name string) (*ast.File, *ast.FuncDecl,
 	} else {
 		return file[0], funcDecl[0], nil
 	}
+}
+
+func FindFunctionInFile(path string, name string) (*ast.FuncDecl, *token.FileSet, error) {
+	fset, astFile, err := LoadFile(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing file %q: %w", path, err)
+	}
+	var found *ast.FuncDecl
+	ast.Inspect(astFile, func(node ast.Node) bool {
+		if node, ok := node.(*ast.FuncDecl); ok {
+			if node.Name.Name == name {
+				found = node
+			}
+		}
+		return found == nil
+	})
+	if found == nil {
+		return nil, nil, fmt.Errorf("not found")
+	}
+	return found, fset, err
 }

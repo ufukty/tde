@@ -1,6 +1,7 @@
 package evolution
 
 import (
+	"tde/internal/folders/evaluation"
 	models "tde/models/program"
 
 	"sort"
@@ -8,18 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Evaluator interface {
-	Pipeline(candidates []*models.Candidate)
-}
-
 type Manager struct {
-	Evaluation Evaluator
+	Evaluator  *evaluation.Evaluator
 	Target     *Target
 	HallOfFame map[int]*models.Candidate
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewManager(target *Target) *Manager {
+func NewManager(target *Target, evaluator *evaluation.Evaluator) *Manager {
 	return &Manager{
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},

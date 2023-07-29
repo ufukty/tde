@@ -20,7 +20,7 @@ type Command struct {
 func (c *Command) validateArgs() {
 	if c.Root == "" {
 		var err error
-		c.Root, err = discovery.GetModulePath()
+		c.Root, err = discovery.ModuleRoot()
 		if err != nil {
 			log.Fatalln("Could not detect module root:", err)
 		}
@@ -93,13 +93,13 @@ func printTestFunc(path string, line int, function string, lastInLevel bool, con
 func (c *Command) Run() {
 	c.validateArgs()
 
-	root, err := discovery.GetModulePath()
+	root, err := discovery.ModuleRoot()
 	if err != nil {
 		log.Fatalln("Failed to detect module root path.")
 	}
 	PrintModule(filepath.Base(root), filepath.Dir(root))
 
-	tests, err := discovery.DiscoverSubdirsForTestFuncDetails(root, root)
+	tests, err := discovery.TestFunctionsInSubdirs(root, root)
 	if err != nil {
 		log.Fatalln("Failed to detect test functions:", err)
 	}
@@ -129,9 +129,9 @@ func (c *Command) Run() {
 				return nil, false
 			}
 
-			implFuncFile, implFuncName := discovery.GetExpectedImplFileAndImplFuncName(test.Path, funcName)
+			implFuncFile, implFuncName := discovery.ExpectedTargetFileAndFuncNameFor(test.Path, funcName)
 
-			implFuncDetails, err := discovery.DiscoverImplFileForImplFuncDetails(root, implFuncFile, implFuncName)
+			implFuncDetails, err := discovery.TargetFunctionInFile(root, implFuncFile, implFuncName)
 			if err != nil {
 				// fmt.Printf("\t%s(...) File not found in \"%s\": %e\n", funcName, targetFuncFile, err)
 				return nil, false

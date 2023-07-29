@@ -1,6 +1,7 @@
 package inject
 
 import (
+	"strings"
 	"tde/internal/folders/copymod"
 	"tde/internal/folders/list"
 
@@ -9,39 +10,41 @@ import (
 	"path/filepath"
 )
 
-func duplicateInTmp(path string) (string, error) {
+func duplicateInTmp(src string) (string, error) {
 	dst, err := os.MkdirTemp(os.TempDir(), "deepthinker-sample-*")
 	if err != nil {
-		return "", fmt.Errorf("MkdirTemp: %w", err)
+		return "", fmt.Errorf("creating empty dir in tmp for future writes: %w", err)
 	}
-	err = copymod.Copy(dst, path, true, []string{}, []string{}, []string{}, false)
+	err = copymod.Copy(dst, src, true, []string{}, []string{}, []string{}, false)
 	if err != nil {
-		return "", fmt.Errorf("copymod.Module: %w", err)
+		return "", fmt.Errorf("copying contents of original module to sample module dir: %w", err)
 	}
 	return dst, nil
 }
 
-func mountTesterPackage(pkg string, pkgImportPath string, testName string) error {
-	testInfo := &TestInfo{
-		TargetPackageImportPath: pkgImportPath,
-		TestFunctionName:        testName,
+func inject(sample string, pkg *list.Package, testname string) error {
+	var pkgRel = strings.TrimPrefix(pkg.Dir, pkg.Module.Dir)
+	var pkgAbs = filepath.Join(sample, pkgRel)
+	var testInfo = &TestInfo{
+		TargetPackageImportPath: pkg.ImportPath,
+		TestFunctionName:        testname,
 	}
-	err := Inject(pkg, testInfo)
-	if err != nil {
-		return fmt.Errorf("mountTesterPackage: %w", err)
+	if err := Inject(pkgAbs, testInfo); err != nil {
+		return fmt.Errorf("callling inject function: %w", err)
 	}
 	return nil
 }
 
 // creates a dir in temp folder for the module. returns path for the copy
-func WithCreatingSample(path string, pkgPath string, pkgInfo *list.Package, testName string) (string, error) {
-	dupl, err := duplicateInTmp(path)
+//   - mod is the path to module root
+//   - pkg is details about target package that contains target and test functions
+func WithCreatingSample(mod string, pkg *list.Package, testname string) (string, error) {
+	sample, err := duplicateInTmp(mod)
 	if err != nil {
-		return "", fmt.Errorf("duplicateInTmp: %w", err)
+		return "", fmt.Errorf("creating sample: %w", err)
 	}
-	err = mountTesterPackage(filepath.Join(dupl, pkgPath), pkgInfo.ImportPath, testName)
-	if err != nil {
-		return "", fmt.Errorf("mountTesterPackage: %w", err)
+	if err := inject(sample, pkg, testname); err != nil {
+		return "", fmt.Errorf("injecting test-runner package: %w", err)
 	}
-	return dupl, nil
+	return sample, nil
 }

@@ -2,18 +2,13 @@ package produce
 
 import (
 	"os"
-	"path"
-	"runtime"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
 )
 
 func init() {
-	_, filename, _, _ := runtime.Caller(0)
-	// The ".." may change depending on you folder structure
-	dir := path.Join(path.Dir(filename), "../../../../examples/word-reverse")
-	err := os.Chdir(dir)
+	err := os.Chdir("../../../../examples/word-reverse")
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +19,7 @@ func Test_Binary(t *testing.T) {
 	c := Command{
 		TestName:   "TDE_WordReverse",
 		Population: 10,
-		Iterate:    1,
+		Iterate:    10,
 	}
 	c.Run()
 }

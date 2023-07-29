@@ -1,30 +1,32 @@
 package slotmgr
 
 import (
+	"go/ast"
 	"tde/internal/folders/discovery"
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
 	models "tde/models/program"
 
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
 )
 
 func Test_SlotManager(t *testing.T) {
-	absPath, err := filepath.Abs("../../../")
-	if err != nil {
+	var (
+		pkgs   list.Packages
+		sample string
+		err    error
+	)
+	if pkgs, err = list.ListPackagesInDir("../../../examples/word-reverse"); err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	var pkgInfo = &list.Package{
-		ImportPath: "tde/examples/word-reverse",
+	var pkg = pkgs.First()
+	if sample, err = inject.WithCreatingSample(pkg.Module.Dir, pkg, "TDE_WordReverse"); err != nil {
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
-	sample, err := inject.WithCreatingSample(absPath, "examples/word-reverse", pkgInfo, "TDE_WordReverse")
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep: %w", err))
-	}
+	fmt.Println("sample module dir:", sample)
 
 	var candidates = []*models.Candidate{}
 	for i := 0; i < 10; i++ {
@@ -35,19 +37,25 @@ func Test_SlotManager(t *testing.T) {
 		})
 	}
 
-	var td = &discovery.TestDetails{
-		PackagePath:  "testdata/word-reverse",
-		Package:      pkgInfo,
-		ImplFuncFile: "testdata/word-reverse/word_reverse.go",
-		TestFuncFile: "testdata/word-reverse/word_reverse_tde.go",
-		TestFuncName: "TDE_WordReverse",
+	var td = &discovery.CombinedDetails{
+		Package: pkg,
+		Target: &discovery.TargetFunction{
+			Name: "",
+			Path: "testdata/word-reverse/word_reverse.go",
+			Line: 0,
+		},
+		Test: &discovery.TestFunction{
+			Name:  "TDE_WordReverse",
+			Path:  "testdata/word-reverse/word_reverse_tde.go",
+			Line:  0,
+			Calls: []*ast.CallExpr{},
+		},
 	}
 	var sm = New(sample, td)
 	if err := sm.PlaceCandidatesIntoSlots(candidates); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
-	fmt.Println("sample module dir:", sample)
 	fmt.Println("slot manager tmp:", sm.tmp)
 	sm.Print()
 

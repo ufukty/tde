@@ -28,12 +28,12 @@ type slots struct {
 // slot manager is to reuse existing copies of the module for next generation
 type SlotManager struct {
 	sample      path
-	testDetails *discovery.TestDetails
+	testDetails *discovery.CombinedDetails
 	tmp         path // reserved in instantiation. all
 	slots       slots
 }
 
-func New(sample path, td *discovery.TestDetails) *SlotManager {
+func New(sample path, td *discovery.CombinedDetails) *SlotManager {
 	s := SlotManager{
 		sample:      sample,
 		testDetails: td,
@@ -93,7 +93,7 @@ func (s *SlotManager) assignCandidateToASlot(candidateID models.CandidateID) (sl
 func (s *SlotManager) printToFile(candidate *models.Candidate) error {
 	implementationFile := filepath.Join(s.tmp,
 		string(s.slots.assigned[candidate.UUID]),
-		s.testDetails.ImplFuncFile,
+		s.testDetails.Target.Path,
 	)
 	f, err := os.Create(implementationFile)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *SlotManager) FreeAllSlots() {
 func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID) string {
 	return filepath.Join(s.tmp,
 		string(s.slots.assigned[candidateID]),
-		s.testDetails.PackagePath,
+		s.testDetails.Package.PathInModule(),
 	)
 }
 

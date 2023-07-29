@@ -1,6 +1,8 @@
 package list
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"golang.org/x/exp/maps"
@@ -103,6 +105,18 @@ type Package struct {
 	Incomplete bool
 	Error      *PackageError
 	DepsErrors []*PackageError
+}
+
+func (p Package) String() string {
+	r := ""
+	r += fmt.Sprintln("Name       :", p.Name)
+	r += fmt.Sprintln("Dir        :", p.Dir)
+	r += fmt.Sprintln("ImportPath :", p.ImportPath)
+	return r
+}
+
+func (p Package) PathInModule() string {
+	return strings.TrimPrefix(p.Dir, p.Module.Dir)
 }
 
 type Packages map[string]*Package

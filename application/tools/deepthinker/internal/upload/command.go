@@ -29,7 +29,7 @@ func (c *Command) Run() {
 		resp        *endpoints.UploadResponse
 		fileHandler *os.File
 	)
-	modulePath, err = discovery.GetModulePath()
+	modulePath, err = discovery.ModuleRoot()
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "Could not find the path of Go module root"))
 	}
