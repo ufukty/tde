@@ -8,6 +8,8 @@ import (
 	"go/ast"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/exp/maps"
 )
 
 // all paths returned will be relative to <moduleRoot>
@@ -16,7 +18,7 @@ func TestFunctionsInFile(path string) ([]TestFunction, error) {
 
 	fset, astFile, err := astwutl.LoadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load file and parse into AST tree: %w", err)
+		return nil, err
 	}
 
 	ast.Inspect(astFile, func(node ast.Node) bool {
@@ -38,7 +40,7 @@ func TestFunctionsInFile(path string) ([]TestFunction, error) {
 }
 
 func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
-	tests, err := TestFunctionsInDir(path)
+	tests, _, err := TestFunctionsInDir(path)
 	if err != nil {
 		return nil, fmt.Errorf("listing all test functions in dir %q: %w", path, err)
 	}
@@ -54,11 +56,13 @@ func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
 	}
 }
 
-func TestFunctionsInDir(path string) ([]TestFunction, error) {
-	tests := []TestFunction{}
+// skipped is for filename:syntax-error
+func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]error, err error) {
+	tests = []TestFunction{}
+	skipped = map[string]error{}
 	files, err := utilities.Files(path)
 	if err != nil {
-		return nil, fmt.Errorf("listing files in dir %q: %w", path, err)
+		return nil, nil, fmt.Errorf("listing files in dir %q: %w", path, err)
 	}
 	for _, file := range files {
 		if !strings.HasSuffix(file.Name(), "_tde.go") {
@@ -66,35 +70,35 @@ func TestFunctionsInDir(path string) ([]TestFunction, error) {
 		}
 		testsInFile, err := TestFunctionsInFile(filepath.Join(path, file.Name()))
 		if err != nil {
-			return nil, fmt.Errorf("listing test functions in file %q: %w", file.Name(), err)
+			skipped[file.Name()] = err
+		} else {
+			tests = append(tests, testsInFile...)
 		}
-		tests = append(tests, testsInFile...)
 	}
-	return tests, nil
+	return
 }
 
-func TestFunctionsInSubdirs(path string) ([]TestFunction, error) {
+// skipped is for filename:syntax-error
+func TestFunctionsInSubdirs(path string) (tests []TestFunction, skipped map[string]error, err error) {
 	// excludeDirs := copymod.DefaultSkipDirs
 	// excludePaths := utilities.Map(excludeDirs, func(i int, v string) string {
 	// 	return filepath.Join(path, v)
 	// })
-
-	tests, err := TestFunctionsInDir(path)
+	tests, skipped, err = TestFunctionsInDir(path)
 	if err != nil {
-		return nil, fmt.Errorf(": %w", err)
+		return nil, nil, fmt.Errorf(": %w", err)
 	}
-
 	dirs, err := utilities.Dirs(path)
 	if err != nil {
-		return nil, fmt.Errorf("listing dirs in %q: %w", path, err)
+		return nil, nil, fmt.Errorf("listing dirs in %q: %w", path, err)
 	}
 	for _, dir := range dirs {
-		testsInSubdirs, err := TestFunctionsInSubdirs(filepath.Join(path, dir.Name()))
+		testsInSubdirs, skippedInSubdirs, err := TestFunctionsInSubdirs(filepath.Join(path, dir.Name()))
 		if err != nil {
-			return nil, fmt.Errorf("(in recursion) listing test functions in subdirs of %q: %w", dir.Name(), err)
+			return nil, nil, fmt.Errorf("(in recursion) listing test functions in subdirs of %q: %w", dir.Name(), err)
 		}
 		tests = append(tests, testsInSubdirs...)
+		maps.Copy(skipped, skippedInSubdirs)
 	}
-
-	return tests, nil
+	return tests, skipped, nil
 }
