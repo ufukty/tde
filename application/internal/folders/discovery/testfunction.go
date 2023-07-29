@@ -6,6 +6,8 @@ import (
 
 	"fmt"
 	"go/ast"
+	"go/parser"
+	"go/token"
 	"path/filepath"
 	"strings"
 
@@ -16,7 +18,8 @@ import (
 func TestFunctionsInFile(path string) ([]TestFunction, error) {
 	tests := []TestFunction{}
 
-	fset, astFile, err := astwutl.LoadFile(path)
+	fset := token.NewFileSet()
+	astFile, err := parser.ParseFile(fset, path, nil, parser.AllErrors)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +73,7 @@ func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]e
 		}
 		testsInFile, err := TestFunctionsInFile(filepath.Join(path, file.Name()))
 		if err != nil {
-			skipped[file.Name()] = err
+			skipped[filepath.Join(path, file.Name())] = err
 		} else {
 			tests = append(tests, testsInFile...)
 		}
