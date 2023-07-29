@@ -9,6 +9,7 @@ import (
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
 	"tde/internal/folders/slotmgr"
+	"tde/internal/utilities"
 
 	"fmt"
 	"log"
@@ -59,11 +60,14 @@ func (c *Command) Run() {
 	if err != nil {
 		log.Fatalln("Could not get the details about Go module and package in this directory:", err)
 	}
-	testDetails, err := discovery.CombinedDetailsForTest(".", c.TestName)
+	combined, err := discovery.CombinedDetailsForTest(".", c.TestName)
 	if err != nil {
 		log.Fatalln("Could not find test details:", err)
 	}
-	evolutionTarget, err := newEvolutionTarget(mod, pkg, testDetails.ImplFuncName)
+	fmt.Println("Detected values:")
+	fmt.Println(utilities.IndentLines(combined.String(), 4))
+
+	evolutionTarget, err := newEvolutionTarget(mod, pkg, combined.Target.Name)
 	if err != nil {
 		log.Fatalln("Could not create evolution target:", err)
 	}
@@ -72,7 +76,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not prepare the module:", err)
 	}
 
-	var sm = slotmgr.New(prepPath, testDetails)
+	var sm = slotmgr.New(prepPath, combined)
 	sm.Print()
 
 	var evaluator = evaluation.NewEvaluator(sm)
