@@ -5,7 +5,7 @@ import (
 	"tde/internal/folders/list"
 )
 
-func CombinedForDir(path string, testname string) (*CombinedDetails, error) {
+func CombinedDetailsForTest(path string, testname string) (*CombinedDetails, error) {
 	pkgs, err := list.ListAllPackages(path)
 	if err != nil {
 		return nil, fmt.Errorf("locating the Go mo0dule and package of current dir: %w", err)

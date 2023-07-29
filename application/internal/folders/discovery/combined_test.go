@@ -6,7 +6,7 @@ import (
 )
 
 func Test_CombinedForDir(t *testing.T) {
-	c, err := CombinedForDir("../../../examples/word-reverse", "TDE_WordReverse")
+	c, err := CombinedDetailsForTest("../../../examples/word-reverse", "TDE_WordReverse")
 	if err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}

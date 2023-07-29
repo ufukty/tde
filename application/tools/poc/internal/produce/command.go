@@ -59,7 +59,7 @@ func (c *Command) Run() {
 	if err != nil {
 		log.Fatalln("Could not get the details about Go module and package in this directory:", err)
 	}
-	testDetails, err := discovery.CombinedForDir(c.TestName)
+	testDetails, err := discovery.CombinedDetailsForTest(".", c.TestName)
 	if err != nil {
 		log.Fatalln("Could not find test details:", err)
 	}
