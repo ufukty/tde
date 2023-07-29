@@ -6,7 +6,7 @@ import (
 )
 
 func Test_TestFunctionsInFile(t *testing.T) {
-	fns, err := TestFunctionsInFile("../../../../examples/word-reverse/word_reverse_tde.go")
+	fns, err := TestFunctionsInFile("../../../examples/word-reverse/word_reverse_tde.go")
 	if err != nil {
 		t.Fatal(fmt.Errorf("failed to detect positions and names of test functions that is in the user-provided test file: %q", err))
 	} else if len(fns) != 1 {
