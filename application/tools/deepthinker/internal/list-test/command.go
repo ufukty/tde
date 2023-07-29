@@ -9,12 +9,14 @@ import (
 	"errors"
 	"fmt"
 	"go/ast"
+	"go/scanner"
 	"path/filepath"
 	"reflect"
 )
 
 type Command struct {
-	Root string `precedence:"0"`
+	Root    string `precedence:"0"`
+	Verbose bool   `short:"v"`
 }
 
 func (c *Command) validateArgs() {
@@ -99,7 +101,7 @@ func (c *Command) Run() {
 	}
 	PrintModule(filepath.Base(root), filepath.Dir(root))
 
-	tests, err := discovery.TestFunctionsInSubdirs(root, root)
+	tests, skipped, err := discovery.TestFunctionsInSubdirs(root)
 	if err != nil {
 		log.Fatalln("Failed to detect test functions:", err)
 	}
@@ -131,7 +133,7 @@ func (c *Command) Run() {
 
 			implFuncFile, implFuncName := discovery.ExpectedTargetFileAndFuncNameFor(test.Path, funcName)
 
-			implFuncDetails, err := discovery.TargetFunctionInFile(root, implFuncFile, implFuncName)
+			implFuncDetails, err := discovery.TargetFunctionInFile(implFuncFile, implFuncName)
 			if err != nil {
 				// fmt.Printf("\t%s(...) File not found in \"%s\": %e\n", funcName, targetFuncFile, err)
 				return nil, false
@@ -151,6 +153,24 @@ func (c *Command) Run() {
 
 		for j, call := range calls {
 			printTestFunc(call.RelativePath, call.LineNumber, call.FunctionPrint, j == len(calls)-1, i < len(tests)-1)
+		}
+	}
+
+	if len(skipped) > 0 {
+		if !c.Verbose {
+			fmt.Println("Could not inspect some of the files because of syntax errors. Run with -v flag to print details.")
+		} else {
+			fmt.Println("Could not inspect some of the files because of syntax errors.")
+			for file, err := range skipped {
+				if err, ok := err.(scanner.ErrorList); ok {
+					fmt.Printf("\033[31m%s:\033[0m\n", file)
+					for _, err := range err {
+						fmt.Println("    ", err)
+					}
+				} else {
+					fmt.Printf("\033[31m%s:\033[0m %s\n", file, err)
+				}
+			}
 		}
 	}
 }
