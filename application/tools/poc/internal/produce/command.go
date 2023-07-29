@@ -80,13 +80,14 @@ func (c *Command) Run() {
 	sm.Print()
 
 	var evaluator = evaluation.NewEvaluator(sm)
-	var evolution = evolution.NewManager(evolutionTarget, evaluator)
+	var evolution = evolution.NewManager(evolutionTarget)
 
 	evolution.InitPopulation(c.Population)
 
 	for i := 0; i < c.Iterate; i++ {
 		fmt.Printf("Iteration: %d\n", i)
 		evolution.IterateLoop()
+		evaluator.Pipeline(maps.Values(evolution.Candidates)) // TODO:
 	}
 
 }

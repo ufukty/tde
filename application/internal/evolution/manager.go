@@ -16,7 +16,7 @@ type Manager struct {
 	Candidates map[models.CandidateID]*models.Candidate
 }
 
-func NewManager(target *Target, evaluator *evaluation.Evaluator) *Manager {
+func NewManager(target *Target) *Manager {
 	return &Manager{
 		Target:     target,
 		HallOfFame: map[int]*models.Candidate{},
