@@ -51,7 +51,7 @@ func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
 	switch len(matches) {
 	case 0:
 		tests := utilities.Map(tests, func(i int, v TestFunction) string { return v.Name })
-		return nil, fmt.Errorf("test function %q has not found amongst: %q", funcname, strings.Join(tests, ", "))
+		return nil, fmt.Errorf("%q not found. Found tests are %s", funcname, strings.Join(tests, ", "))
 	case 1:
 		return &matches[0], nil
 	default:
