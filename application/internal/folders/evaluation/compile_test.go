@@ -1,42 +1,40 @@
 package evaluation
 
 import (
-	tester_package "tde/internal/folders/inject"
+	"os"
+	"path/filepath"
+	"tde/internal/folders/inject"
+	"tde/internal/folders/list"
 
 	"fmt"
-	"os"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
-func prepare(t *testing.T) {
-	ti := &tester_package.TestInfo{
-		TargetPackageImportPath: "tde/examples/word-reverse",
-		TestFunctionName:        "TDE_WordReverse",
-	}
-
-	if err := tester_package.Inject("../../examples/word-reverse", ti); err != nil {
-		t.Error(errors.Wrap(err, "returned error"))
-	}
-
-	if _, err := os.OpenFile("../../examples/word-reverse/tde/main_tde.go", os.O_RDONLY, os.ModeAppend); err != nil {
-		t.Error(errors.Wrap(err, "validation"))
-	}
-}
-
 func Test_Compile(t *testing.T) {
-	prepare(t)
-
-	runner := Runner{}
-	output, err := runner.compile("../../examples/word-reverse/tde", "00000000-0000-0000-0000-000000000000")
+	pkgs, err := list.ListPackagesInDir("../../../examples/word-reverse")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "in testing"))
+		t.Fatal(fmt.Errorf("arrange, listing packages in target dir: %w", err))
 	}
-
-	fmt.Println(output)
-
-	if err := os.RemoveAll("../../examples/word-reverse/tde"); err != nil {
-		t.Error(errors.Wrap(err, "cleanup"))
+	sample, err := inject.WithCreatingSample("../../../", pkgs.First(), "TDE_WordReverse")
+	if err != nil {
+		t.Fatal(fmt.Errorf("arrange, creating sample: %w", err))
 	}
+	fmt.Println("sample dir:", sample)
+	path := filepath.Join(sample, "examples/word-reverse/tde")
+	fmt.Println("test-runner package path:", path)
+	runner := Runner{}
+	output, err := runner.compile(path, "00000000-0000-0000-0000-000000000000")
+	if err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
+	}
+	fmt.Println("Combined output:", output)
+	byteContents, err := os.ReadFile(filepath.Join(path, "results.json"))
+	if err != nil {
+		t.Fatal(fmt.Errorf("assert prep: %w", err))
+	}
+	contents := string(byteContents)
+	if contents == "" {
+		t.Fatal(fmt.Errorf("assert. results.json is empty"))
+	}
+	fmt.Println(contents)
 }

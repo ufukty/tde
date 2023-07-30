@@ -39,9 +39,13 @@ func syntaxCheckAndProduceCode(candidates []*models.Candidate) {
 // TODO: Get test results
 // TODO: Return test results
 func (e *Evaluator) Pipeline(candidates []*models.Candidate) {
+	fmt.Println("printing candidate function bodies")
 	syntaxCheckAndProduceCode(candidates)
-	e.Sm.PlaceCandidatesIntoSlots(candidates)
 
-	// compile each slot
-	//
+	fmt.Println("placing candidates into slots")
+	e.Sm.PlaceCandidatesIntoSlots(candidates)
+	e.Sm.Print()
+
+	fmt.Println("releasing all slots for next generation")
+	e.Sm.FreeAllSlots()
 }
