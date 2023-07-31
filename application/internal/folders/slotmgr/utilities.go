@@ -1,0 +1,99 @@
+package slotmgr
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+)
+
+func CreateSwapFile(path string) (string, error) {
+	ifh, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("opening file to read: %w", err)
+	}
+	defer ifh.Close()
+	ofh, err := os.CreateTemp(os.TempDir(), filepath.Base(path)+".*.swp")
+	if err != nil {
+		return "", fmt.Errorf("creating swap file: %w", err)
+	}
+	defer ofh.Close()
+	_, err = io.Copy(ofh, ifh)
+	if err != nil {
+		return "", fmt.Errorf("copying contents of original file to swap file: %w", err)
+	}
+	return ofh.Name(), nil
+}
+
+var (
+	ErrFromLineIsAfterFileEnds = fmt.Errorf("starting line of replacement section is after document ends")
+	ErrToLineIsAfterFileEnds   = fmt.Errorf("ending line of replacement section is after document ends")
+)
+
+// replaces lines in range ["from", "to") with "content" of file at "path"
+func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) error {
+	dest, err := os.CreateTemp(os.TempDir(), filepath.Base(path)+".*.swp")
+	if err != nil {
+		return fmt.Errorf("creating empty file in tmp: %w", err)
+	}
+	defer dest.Close()
+
+	src, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("opening file to read: %w", err)
+	}
+	defer src.Close()
+	srcScanner := bufio.NewScanner(src)
+
+	for i := 0; i < fromLine-1; i++ {
+		if !srcScanner.Scan() {
+			if err := srcScanner.Err(); err != nil {
+				return fmt.Errorf("scanning lines in the existing part before replacement section: %w", err)
+			}
+			return ErrFromLineIsAfterFileEnds
+		}
+		_, err := dest.Write(srcScanner.Bytes())
+		if err != nil {
+			return fmt.Errorf("copying existing parts before replacement section starts: %w", err)
+		}
+		fmt.Fprintln(dest) // re-adding existing new line
+	}
+
+	_, err = dest.Write(content)
+	if err != nil {
+		return fmt.Errorf("writing contents into specified section: %w", err)
+	}
+	fmt.Fprintln(dest) // re-adding existing new line
+
+	// advancing the scanner to "toLine"
+	for i := fromLine; i < toLine; i++ {
+		if !srcScanner.Scan() {
+			if err := srcScanner.Err(); err != nil {
+				return fmt.Errorf("advancing the replacement section: %w", err)
+			}
+			return ErrToLineIsAfterFileEnds
+		}
+	}
+
+	for true {
+		if !srcScanner.Scan() {
+			if err := srcScanner.Err(); err != nil {
+				return fmt.Errorf("scanning lines in the existing part after replacement section: %w", err)
+			}
+			break // EOF, naturally
+		}
+		_, err := dest.Write(srcScanner.Bytes())
+		if err != nil {
+			return fmt.Errorf("copying existing parts after replacement section ends: %w", err)
+		}
+		fmt.Fprintln(dest) // re-adding existing new line
+	}
+
+	err = os.Rename(dest.Name(), path)
+	if err != nil {
+		return fmt.Errorf("moving swap file to exisiting file's location: %w", err)
+	}
+
+	return nil
+}
