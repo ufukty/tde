@@ -13,7 +13,7 @@ func TestModule(t *testing.T) {
 	}
 	fmt.Println("created temp dir:", dst)
 
-	if err = Copy(dst, "../../../", true, []string{}, []string{}, []string{}, true); err != nil {
+	if err = CopyModule(dst, "../../../", true, []string{}, []string{}, []string{}, true); err != nil {
 		t.Fatal(fmt.Errorf("action: %w", err))
 	}
 }

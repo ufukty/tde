@@ -14,7 +14,7 @@ import (
 var DefaultInclExt = []string{"go", "mod", "sum"}
 var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
 
-func Copy(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
+func CopyModule(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
 	skipSubdirs = append(skipSubdirs, DefaultSkipDirs...)
 	includeExt = append(includeExt, DefaultInclExt...)
 
@@ -61,7 +61,7 @@ func Copy(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, includ
 			if enableLogging {
 				log.Println(srcRel)
 			}
-			if err := copyFile(file, dstAbs); err != nil {
+			if err := CopyFile(file, dstAbs); err != nil {
 				return fmt.Errorf("copying %q: %w", srcRel, err)
 			}
 		}

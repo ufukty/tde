@@ -36,7 +36,7 @@ func copyDir(scrDir, dest string) error {
 				return err
 			}
 		default:
-			if err := copyFile(sourcePath, destPath); err != nil {
+			if err := CopyFile(sourcePath, destPath); err != nil {
 				return err
 			}
 		}
@@ -60,7 +60,7 @@ func copyDir(scrDir, dest string) error {
 	return nil
 }
 
-func copyFile(srcFile, dstFile string) error {
+func CopyFile(srcFile, dstFile string) error {
 	dst, err := os.Create(dstFile)
 	if err != nil {
 		return errors.Wrap(err, "os.Create(dstFile)")
