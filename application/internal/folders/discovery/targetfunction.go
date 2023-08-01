@@ -12,8 +12,9 @@ func TargetFunctionInFile(path string, funcname string) (*TargetFunction, error)
 		return nil, fmt.Errorf("searching ast of file %q for the function %q: %w", path, funcname, err)
 	}
 	return &TargetFunction{
-		Name: funcname,
-		Path: path,
-		Line: astwutl.LineNumberOfPosition(fset, funcDecl.Pos()),
+		Name:      funcname,
+		Path:      path,
+		LineStart: astwutl.LineNumberOfPosition(fset, funcDecl.Pos()),
+		LineEnd:   astwutl.LineNumberOfPosition(fset, funcDecl.End()),
 	}, nil
 }

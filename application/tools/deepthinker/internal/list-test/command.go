@@ -112,7 +112,7 @@ func (c *Command) Run() {
 			rel = test.Path
 		}
 
-		PrintTDEFunction(rel, test.Line, test.Name, i == len(tests)-1)
+		PrintTDEFunction(rel, test.LineStart, test.Name, i == len(tests)-1)
 
 		type Call struct {
 			RelativePath  string
@@ -146,7 +146,7 @@ func (c *Command) Run() {
 
 			return &Call{
 				RelativePath:  rel,
-				LineNumber:    implFuncDetails.Line,
+				LineNumber:    implFuncDetails.LineStart,
 				FunctionPrint: functionPrint,
 			}, true
 		})

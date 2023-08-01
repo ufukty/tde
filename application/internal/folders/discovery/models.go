@@ -8,16 +8,18 @@ import (
 )
 
 type TargetFunction struct {
-	Name string
-	Path string
-	Line int
+	Name      string
+	Path      string
+	LineStart int
+	LineEnd   int
 }
 
 type TestFunction struct {
-	Name  string
-	Path  string
-	Line  int
-	Calls []*ast.CallExpr
+	Name      string
+	Path      string
+	LineStart int
+	LineEnd   int
+	Calls     []*ast.CallExpr
 }
 
 type CombinedDetails struct {
@@ -28,17 +30,19 @@ type CombinedDetails struct {
 
 func (t TestFunction) String() string {
 	r := ""
-	r += fmt.Sprintln("Name :", t.Name)
-	r += fmt.Sprintln("Path :", t.Path)
-	r += fmt.Sprintln("Line :", t.Line)
+	r += fmt.Sprintln("Name      :", t.Name)
+	r += fmt.Sprintln("Path      :", t.Path)
+	r += fmt.Sprintln("LineStart :", t.LineStart)
+	r += fmt.Sprintln("LineEnd   :", t.LineEnd)
 	return r
 }
 
 func (t TargetFunction) String() string {
 	r := ""
-	r += fmt.Sprintln("Name :", t.Name)
-	r += fmt.Sprintln("Path :", t.Path)
-	r += fmt.Sprintln("Line :", t.Line)
+	r += fmt.Sprintln("Name      :", t.Name)
+	r += fmt.Sprintln("Path      :", t.Path)
+	r += fmt.Sprintln("LineStart :", t.LineStart)
+	r += fmt.Sprintln("LineEnd   :", t.LineEnd)
 	return r
 }
 

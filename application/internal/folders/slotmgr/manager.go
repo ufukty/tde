@@ -27,16 +27,16 @@ type slots struct {
 
 // slot manager is to reuse existing copies of the module for next generation
 type SlotManager struct {
-	sample      path
-	testDetails *discovery.CombinedDetails
-	tmp         path // reserved in instantiation. all
-	slots       slots
+	sample   path
+	combined *discovery.CombinedDetails
+	tmp      path // reserved in instantiation. all
+	slots    slots
 }
 
-func New(sample path, td *discovery.CombinedDetails) *SlotManager {
+func New(sample path, combined *discovery.CombinedDetails) *SlotManager {
 	s := SlotManager{
-		sample:      sample,
-		testDetails: td,
+		sample:   sample,
+		combined: combined,
 		slots: slots{
 			free:     []Slot{},
 			assigned: map[models.CandidateID]Slot{}},
@@ -75,7 +75,7 @@ func (s *SlotManager) createEmptySlot() error {
 	if err != nil {
 		return fmt.Errorf("creating parent dirs for new slot: %w", err)
 	}
-	err = copymod.Copy(abs, s.sample, true, []string{}, []string{}, []string{}, false)
+	err = copymod.CopyModule(abs, s.sample, true, []string{}, []string{}, []string{}, false)
 	if err != nil {
 		return errors.Wrap(err, "copying the contents of sample module into the slot")
 	}
@@ -83,60 +83,66 @@ func (s *SlotManager) createEmptySlot() error {
 	return nil
 }
 
-func (s *SlotManager) assignCandidateToASlot(candidateID models.CandidateID) (slot Slot) {
+func (s *SlotManager) assignCandidateToASlot(candidate *models.Candidate) (slot Slot) {
 	s.slots.free, slot = utilities.SlicePop(s.slots.free)
-	s.slots.assigned[candidateID] = slot
-	// fmt.Println("assigning", candidateID, "to folder", choosen)
-	return
+	s.slots.assigned[candidate.UUID] = slot
+	return slot
 }
 
 func (s *SlotManager) printToFile(candidate *models.Candidate) error {
 	implementationFile := filepath.Join(s.tmp,
 		string(s.slots.assigned[candidate.UUID]),
-		s.testDetails.Target.Path,
+		s.combined.Package.PathInModule(),
+		filepath.Base(s.combined.Target.Path),
 	)
-	f, err := os.Create(implementationFile)
+	err := ReplaceSectionInFile(implementationFile, s.combined.Target.LineStart, s.combined.Target.LineEnd + 1, candidate.File)
 	if err != nil {
-		return errors.Wrap(err, "open implementation file to overwrite")
-	}
-	defer f.Close()
-	_, err = f.Write(candidate.File)
-	if err != nil {
-		return errors.Wrap(err, "Write")
+		return fmt.Errorf("overwriting the new part: %w", err)
 	}
 	return nil
 }
 
-func (s *SlotManager) placeCandidate(candidate *models.Candidate) error {
+func (s *SlotManager) placeCandidate(candidate *models.Candidate) (*Slot, error) {
 	if len(s.slots.free) == 0 {
 		if err := s.createEmptySlot(); err != nil {
-			return fmt.Errorf("could not create new slot: %w", err)
+			return nil, fmt.Errorf("could not create new slot: %w", err)
 		}
 	}
-	s.assignCandidateToASlot(candidate.UUID)
-	s.printToFile(candidate)
-	return nil
+	slot := s.assignCandidateToASlot(candidate)
+	if err := s.printToFile(candidate); err != nil {
+		return nil, fmt.Errorf("printing candidate body to file in slot: %w", err)
+	}
+	return &slot, nil
 }
 
 func (s *SlotManager) PlaceCandidatesIntoSlots(candidates []*models.Candidate) error {
 	for _, candidate := range candidates {
-		if err := s.placeCandidate(candidate); err != nil {
-			return fmt.Errorf("could not place candidate into a slot: %w", err)
+		if _, err := s.placeCandidate(candidate); err != nil {
+			return fmt.Errorf("putting candidate into a slot: %w", err)
 		}
 	}
 	return nil
 }
 
-func (s *SlotManager) FreeAllSlots() {
+func (s *SlotManager) FreeAllSlots() error {
 	var slots = maps.Values(s.slots.assigned)
 	s.slots.free = append(s.slots.free, slots...)
 	maps.Clear(s.slots.assigned)
+
+	org := filepath.Join(s.sample, s.combined.Package.PathInModule(), filepath.Base(s.combined.Target.Path))
+	for _, slot := range slots {
+		dst := filepath.Join(s.tmp, string(slot), s.combined.Package.PathInModule(), filepath.Base(s.combined.Target.Path))
+		if err := copymod.CopyFile(org, dst); err != nil {
+			return fmt.Errorf("restoring the target file for the slot %q: %w", slot, err)
+		}
+	}
+	return nil
 }
 
 func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID) string {
 	return filepath.Join(s.tmp,
 		string(s.slots.assigned[candidateID]),
-		s.testDetails.Package.PathInModule(),
+		s.combined.Package.PathInModule(),
 	)
 }
 

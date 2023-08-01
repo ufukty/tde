@@ -29,10 +29,11 @@ func TestFunctionsInFile(path string) ([]TestFunction, error) {
 			name := funcDecl.Name.Name
 			if strings.Index(name, "TDE_") == 0 {
 				tests = append(tests, TestFunction{
-					Name:  name,
-					Path:  path,
-					Line:  astwutl.LineNumberOfPosition(fset, node.Pos()),
-					Calls: FunctionCalls(funcDecl),
+					Name:      name,
+					Path:      path,
+					LineStart: astwutl.LineNumberOfPosition(fset, node.Pos()),
+					LineEnd:   astwutl.LineNumberOfPosition(fset, node.End()),
+					Calls:     FunctionCalls(funcDecl),
 				})
 			}
 		}
