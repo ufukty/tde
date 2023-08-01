@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Test_SlotManager(t *testing.T) {
+func Test_SlotManager_AssignAndFree(t *testing.T) {
 	var (
 		pkgs   list.Packages
 		sample string
