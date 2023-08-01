@@ -15,7 +15,7 @@ func duplicateInTmp(src string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("creating empty dir in tmp for future writes: %w", err)
 	}
-	err = copymod.Copy(dst, src, true, []string{}, []string{}, []string{}, false)
+	err = copymod.CopyModule(dst, src, true, []string{}, []string{}, []string{}, false)
 	if err != nil {
 		return "", fmt.Errorf("copying contents of original module to sample module dir: %w", err)
 	}
