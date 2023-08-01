@@ -2,6 +2,7 @@ package slotmgr
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -31,6 +32,20 @@ var (
 	ErrToLineIsAfterFileEnds   = fmt.Errorf("ending line of replacement section is after document ends")
 )
 
+// replacement of bufio.ScanLines. Difference is that this one returns the "\n" at the end of line
+func scanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	if i := bytes.IndexByte(data, '\n'); i >= 0 {
+		return i + 1, data[0 : i+1], nil
+	}
+	if atEOF {
+		return len(data), data, nil
+	}
+	return 0, nil, nil
+}
+
 // replaces lines in range ["from", "to") with "content" of file at "path"
 func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) error {
 	dest, err := os.CreateTemp(os.TempDir(), filepath.Base(path)+".*.swp")
@@ -45,6 +60,7 @@ func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) err
 	}
 	defer src.Close()
 	srcScanner := bufio.NewScanner(src)
+	srcScanner.Split(scanLines)
 
 	for i := 0; i < fromLine-1; i++ {
 		if !srcScanner.Scan() {
@@ -57,7 +73,6 @@ func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) err
 		if err != nil {
 			return fmt.Errorf("copying existing parts before replacement section starts: %w", err)
 		}
-		fmt.Fprintln(dest) // re-adding existing new line
 	}
 
 	_, err = dest.Write(content)
@@ -87,7 +102,6 @@ func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) err
 		if err != nil {
 			return fmt.Errorf("copying existing parts after replacement section ends: %w", err)
 		}
-		fmt.Fprintln(dest) // re-adding existing new line
 	}
 
 	err = os.Rename(dest.Name(), path)
