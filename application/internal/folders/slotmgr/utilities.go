@@ -62,7 +62,7 @@ func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) err
 	srcScanner := bufio.NewScanner(src)
 	srcScanner.Split(scanLines)
 
-	for i := 0; i < fromLine-1; i++ {
+	for i := 0; i < fromLine; i++ {
 		if !srcScanner.Scan() {
 			if err := srcScanner.Err(); err != nil {
 				return fmt.Errorf("scanning lines in the existing part before replacement section: %w", err)

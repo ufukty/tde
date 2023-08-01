@@ -31,7 +31,7 @@ func Test_ReplaceSectionInFile(t *testing.T) {
 			if err != nil {
 				t.Fatal(fmt.Errorf("%s prep: %w", testcase, err))
 			}
-			err = ReplaceSectionInFile(inputfile, 10, 20, modifications) // lines [10, 20)
+			err = ReplaceSectionInFile(inputfile, 9, 19, modifications) // lines [9, 19)
 			if err != nil {
 				t.Fatal(fmt.Errorf("%s act: %w", testcase, err))
 			}
