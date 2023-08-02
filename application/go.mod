@@ -11,8 +11,8 @@ require (
 	github.com/kr/pretty v0.3.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/pkg/errors v0.9.1
-	golang.org/x/exp v0.0.0-20230725093048-515e97ebf090
-	golang.org/x/tools v0.11.0
+	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
+	golang.org/x/tools v0.11.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
