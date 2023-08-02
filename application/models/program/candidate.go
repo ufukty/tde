@@ -1,14 +1,7 @@
 package models
 
 import (
-	astw_utl "tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-
 	"go/ast"
-	"log"
-
-	"github.com/google/uuid"
-	"github.com/pkg/errors"
 )
 
 type Fitness struct {
@@ -30,7 +23,7 @@ func (f Fitness) Flat() float64 {
 	}
 }
 
-type CandidateASTRepresentation struct {
+type TargetAst struct {
 	Package  *ast.Package  // NOT cloned from original, read access only
 	File     *ast.File     // cloned from original, safe to manipulate
 	FuncDecl *ast.FuncDecl // cloned from original, safe to manipulate
@@ -45,29 +38,7 @@ type Candidate struct {
 	UUID         CandidateID
 	BreedID      BreedID
 	File         []byte // product of AST
-	AST          CandidateASTRepresentation
+	AST          TargetAst
 	Fitness      Fitness
 	ExecTimeInMs int
-}
-
-func NewCandidate(pkg *ast.Package, file *ast.File, funcDecl *ast.FuncDecl) (*Candidate, error) {
-	newUUID, err := uuid.NewUUID()
-	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not create an UUID for new Individual"))
-	}
-
-	cloneFile := clone.File(file)
-	clondeFuncDecl, err := astw_utl.FindFuncDecl(cloneFile, funcDecl.Name.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to find 'funcDecl.Name.Name' in the 'file' after cloned it")
-	}
-
-	return &Candidate{
-		UUID: CandidateID(newUUID.String()),
-		AST: CandidateASTRepresentation{
-			Package:  pkg,
-			File:     cloneFile,
-			FuncDecl: clondeFuncDecl,
-		},
-	}, nil
 }
