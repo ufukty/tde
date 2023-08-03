@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func CreateSwapFile(path string) (string, error) {
+func createSwapFile(path string) (string, error) {
 	ifh, err := os.Open(path)
 	if err != nil {
 		return "", fmt.Errorf("opening file to read: %w", err)
@@ -47,7 +47,7 @@ func scanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
 }
 
 // replaces lines in range ["from", "to") with "content" of file at "path"
-func ReplaceSectionInFile(path string, fromLine, toLine int, content []byte) error {
+func replaceSectionInFile(path string, fromLine, toLine int, content []byte) error {
 	dest, err := os.CreateTemp(os.TempDir(), filepath.Base(path)+".*.swp")
 	if err != nil {
 		return fmt.Errorf("creating empty file in tmp: %w", err)

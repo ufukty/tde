@@ -18,7 +18,7 @@ func Test_ReplaceSectionInFile(t *testing.T) {
 	}
 	for _, testcase := range testcases {
 		t.Run(testcase, func(t *testing.T) {
-			inputfile, err := CreateSwapFile(filepath.Join(testcase, "input.txt"))
+			inputfile, err := createSwapFile(filepath.Join(testcase, "input.txt"))
 			if err != nil {
 				t.Fatal(fmt.Errorf("%s prep: %w", testcase, err))
 			}
@@ -31,7 +31,7 @@ func Test_ReplaceSectionInFile(t *testing.T) {
 			if err != nil {
 				t.Fatal(fmt.Errorf("%s prep: %w", testcase, err))
 			}
-			err = ReplaceSectionInFile(inputfile, 9, 19, modifications) // lines [9, 19)
+			err = replaceSectionInFile(inputfile, 9, 19, modifications) // lines [9, 19)
 			if err != nil {
 				t.Fatal(fmt.Errorf("%s act: %w", testcase, err))
 			}

@@ -95,7 +95,7 @@ func (s *SlotManager) printToFile(candidate *models.Candidate) error {
 		s.combined.Package.PathInModule(),
 		filepath.Base(s.combined.Target.Path),
 	)
-	err := ReplaceSectionInFile(implementationFile, s.combined.Target.LineStart, s.combined.Target.LineEnd + 1, candidate.File)
+	err := replaceSectionInFile(implementationFile, s.combined.Target.LineStart, s.combined.Target.LineEnd+1, candidate.File)
 	if err != nil {
 		return fmt.Errorf("overwriting the new part: %w", err)
 	}
