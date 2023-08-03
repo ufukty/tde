@@ -23,7 +23,6 @@ func NewEvaluator(sm *slotmgr.SlotManager) *Evaluator {
 // FIXME: count errors on code creation
 func syntaxCheckAndProduceCode(candidates []*models.Candidate) {
 	for _, candidate := range candidates {
-		fmt.Println(printer.Fprint(os.Stdout, token.NewFileSet(), candidate.AST.File))
 		buffer, ok, err := ProduceCodeFromASTSafe(candidate.AST.File) // produce code from ast.File to capture changes in import list too
 		if err != nil || !ok {
 			candidate.Fitness.AST = 1.0

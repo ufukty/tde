@@ -13,7 +13,7 @@ import (
 
 func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
 	fset := token.NewFileSet()
-	pkgs, err := parser.ParseDir(fset, dirpath, nil, parser.AllErrors)
+	pkgs, err := parser.ParseDir(fset, dirpath, nil, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
 		return nil, nil, fmt.Errorf("LoadDir: %w", err)
 	}
@@ -22,7 +22,7 @@ func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
 
 func LoadFile(filepath string) (*token.FileSet, *ast.File, error) {
 	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, filepath, nil, parser.AllErrors)
+	astFile, err := parser.ParseFile(fset, filepath, nil, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
 		return nil, nil, fmt.Errorf("LoadFile: %w", err)
 	}
@@ -31,7 +31,7 @@ func LoadFile(filepath string) (*token.FileSet, *ast.File, error) {
 
 func ParseString(content string) (*token.FileSet, ast.Node, error) {
 	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, "", content, parser.AllErrors)
+	astFile, err := parser.ParseFile(fset, "", content, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
 		return nil, nil, fmt.Errorf("ParseString: %w", err)
 	}
