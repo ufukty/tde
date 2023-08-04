@@ -1,6 +1,7 @@
 package tde
 
 import (
+	"fmt"
 	models "tde/models/program"
 
 	"encoding/json"
@@ -107,4 +108,16 @@ func (e *E) Export() {
 		panic(errors.Wrap(err, "Could not create 'result.json' for writing"))
 	}
 	json.NewEncoder(f).Encode(e)
+}
+
+func (e *E) LoadResults(path string) error {
+	fh, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("opening results.json: %w", err)
+	}
+	err = json.NewDecoder(fh).Decode(e)
+	if err != nil {
+		return fmt.Errorf("decoding results.json: %w", err)
+	}
+	return nil
 }

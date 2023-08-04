@@ -86,7 +86,7 @@ func (c *Command) Run() {
 
 	for i := 0; i < c.Iterate; i++ {
 		fmt.Printf("Iteration: %d\n", i)
-		evolution.IterateLoop()
+		evolution.IterateLoop() 
 		evaluator.Pipeline(maps.Values(evolution.Candidates)) // TODO:
 	}
 
