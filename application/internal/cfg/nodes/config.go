@@ -1,3 +1,3 @@
-package node_constructor
+package nodes
 
 var AllowedPackagesToImport = []string{"fmt", "strings", "math"}

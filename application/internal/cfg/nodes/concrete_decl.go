@@ -1,9 +1,9 @@
-package node_constructor
+package nodes
 
 import (
 	"go/ast"
 	"go/token"
-	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/ctxres/context"
 )
 
 func FuncDecl(ctx *context.Context, limit int) *ast.FuncDecl {

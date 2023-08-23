@@ -1,13 +1,11 @@
-package function_examiner
+package examiner
 
 import (
-	"tde/internal/astw/traverse"
-	"tde/internal/astw/types"
-	"tde/internal/cfg/context-resolution/context"
-
 	"fmt"
 	"go/ast"
-	"go/token"
+	"tde/internal/astw/traverse"
+	"tde/internal/astw/types"
+	"tde/internal/cfg/ctxres/context"
 )
 
 // func examineEnteringNode(ctx *context.Context, node ast.Node) {
@@ -74,57 +72,6 @@ import (
 // 	}
 // }
 
-func examineSingularAssignment(ctx *context.Context, lhs, rhs ast.Expr) {
-	if lhs, ok := lhs.(*ast.Ident); ok {
-		ctx.AddVariable(lhs)
-	}
-}
-
-func examineAssignStmt(ctx *context.Context, stmt *ast.AssignStmt) {
-	if stmt.Tok == token.DEFINE {
-		for i := 0; i < len(stmt.Lhs); i++ {
-			examineSingularAssignment(ctx, stmt.Lhs[i], stmt.Rhs[i])
-		}
-	}
-}
-
-func examineImportDeclaration(ctx *context.Context, decl *ast.GenDecl) {
-	for _, spec := range decl.Specs {
-		if spec, ok := spec.(*ast.ImportSpec); ok {
-			ctx.AddImport(spec)
-		}
-	}
-}
-
-func examineVariableDeclaration(ctx *context.Context, decl *ast.GenDecl) {
-	for _, spec := range decl.Specs {
-		if spec, ok := spec.(*ast.ValueSpec); ok {
-			for _, name := range spec.Names {
-				ctx.AddVariable(name)
-			}
-		}
-	}
-}
-
-func examineTypeDeclaration(ctx *context.Context, decl *ast.GenDecl) {
-	for _, spec := range decl.Specs {
-		if spec, ok := spec.(*ast.TypeSpec); ok {
-			ctx.AddType(spec)
-		}
-	}
-}
-
-func examineGenDecl(ctx *context.Context, decl *ast.GenDecl) {
-	switch decl.Tok {
-	case token.IMPORT:
-		examineImportDeclaration(ctx, decl)
-	case token.VAR, token.CONST:
-		examineVariableDeclaration(ctx, decl)
-	case token.TYPE:
-		examineTypeDeclaration(ctx, decl)
-	}
-}
-
 func examineDeclStmt(ctx *context.Context, declStmt *ast.DeclStmt) {
 	switch decl := declStmt.Decl.(type) {
 	case *ast.GenDecl:
@@ -134,7 +81,7 @@ func examineDeclStmt(ctx *context.Context, declStmt *ast.DeclStmt) {
 	}
 }
 
-func Examine(ctx *context.Context, funcDecl, insertionPoint *traverse.TraversableNode) {
+func FuncDecl(ctx *context.Context, funcDecl, insertionPoint *traverse.TraversableNode) {
 	var isCompleted = false
 	traverse.TraverseTwice(funcDecl,
 		func(tNodePtr *traverse.TraversableNode) bool {

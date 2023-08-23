@@ -1,11 +1,25 @@
-package package_examiner
+package examiner
 
 import (
-	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/ctxres/context"
 
 	"go/ast"
 	"go/token"
 )
+
+func examineSingularAssignment(ctx *context.Context, lhs, rhs ast.Expr) {
+	if lhs, ok := lhs.(*ast.Ident); ok {
+		ctx.AddVariable(lhs)
+	}
+}
+
+func examineAssignStmt(ctx *context.Context, stmt *ast.AssignStmt) {
+	if stmt.Tok == token.DEFINE {
+		for i := 0; i < len(stmt.Lhs); i++ {
+			examineSingularAssignment(ctx, stmt.Lhs[i], stmt.Rhs[i])
+		}
+	}
+}
 
 func examineImportDeclaration(ctx *context.Context, decl *ast.GenDecl) {
 	for _, spec := range decl.Specs {
@@ -41,31 +55,5 @@ func examineGenDecl(ctx *context.Context, decl *ast.GenDecl) {
 		examineVariableDeclaration(ctx, decl)
 	case token.TYPE:
 		examineTypeDeclaration(ctx, decl)
-	}
-}
-
-func examineFuncDecl(ctx *context.Context, decl *ast.FuncDecl) {
-	if decl.Recv == nil {
-		ctx.AddFuncDeclaration(decl)
-	} else {
-		ctx.AddMethodDeclaration(decl)
-	}
-}
-
-// Only adds declarations for functions, imports, types, variables and constants. Won't examine function bodies.
-func examineFile(ctx *context.Context, file *ast.File) {
-	for _, decl := range file.Decls {
-		switch decl := decl.(type) {
-		case *ast.GenDecl:
-			examineGenDecl(ctx, decl)
-		case *ast.FuncDecl:
-			examineFuncDecl(ctx, decl)
-		}
-	}
-}
-
-func Examine(ctx *context.Context, pkg *ast.Package) {
-	for _, file := range pkg.Files {
-		examineFile(ctx, file)
 	}
 }

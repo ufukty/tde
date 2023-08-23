@@ -3,9 +3,9 @@ package cfg
 import (
 	trav "tde/internal/astw/traverse"
 	ast_types "tde/internal/astw/types"
-	context_resolution "tde/internal/cfg/context-resolution"
-	"tde/internal/cfg/context-resolution/context"
-	nc "tde/internal/cfg/node-constructor"
+	context_resolution "tde/internal/cfg/ctxres"
+	"tde/internal/cfg/ctxres/context"
+	nc "tde/internal/cfg/nodes"
 	utl "tde/internal/utilities"
 
 	"fmt"

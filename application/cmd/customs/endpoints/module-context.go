@@ -7,8 +7,8 @@ import (
 	astutils "tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/astw/traverse"
-	context_resolution "tde/internal/cfg/context-resolution"
-	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/ctxres"
+	"tde/internal/cfg/ctxres/context"
 	"tde/internal/microservices/utilities"
 
 	"go/ast"
@@ -133,7 +133,7 @@ func (em EndpointsManager) ContextHandler() func(w http.ResponseWriter, r *http.
 		var funcBody = traverse.GetTraversableNodeForASTNode(funcDecl.Body).GetTraversableSubnodes()
 		var funcBodyLastLine = funcBody[len(funcBody)-1]
 
-		ctx, err = context_resolution.GetContextForSpot(pkg, tFuncDecl, funcBodyLastLine)
+		ctx, err = ctxres.GetContextForSpot(pkg, tFuncDecl, funcBodyLastLine)
 		if err != nil {
 			log.Println(errors.Wrap(errors.New("Could not get context for choosen spot"), err.Error()))
 			http.Error(w, "Woops.", http.StatusBadRequest)

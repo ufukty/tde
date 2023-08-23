@@ -1,4 +1,4 @@
-package pattern_constructor
+package patterns
 
 // - TODO: Import a package
 // - TODO: Access to components that are defined in imported packages:

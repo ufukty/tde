@@ -1,4 +1,4 @@
-package node_relations
+package relations
 
 import (
 	"golang.org/x/exp/slices"

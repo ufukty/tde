@@ -1,8 +1,8 @@
-package node_constructor
+package nodes
 
 import (
 	"go/ast"
-	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/ctxres/context"
 )
 
 func Field(ctx *context.Context, limit int) *ast.Field {

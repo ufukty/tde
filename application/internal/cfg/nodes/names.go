@@ -1,4 +1,4 @@
-package node_constructor
+package nodes
 
 import (
 	utl "tde/internal/utilities"

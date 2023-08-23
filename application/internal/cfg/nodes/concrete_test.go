@@ -1,8 +1,8 @@
-package node_constructor
+package nodes
 
 import (
 	"fmt"
-	"tde/internal/cfg/context-resolution/context"
+	"tde/internal/cfg/ctxres/context"
 
 	"testing"
 )

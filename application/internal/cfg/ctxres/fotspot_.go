@@ -1,4 +1,4 @@
-package context_resolution
+package ctxres
 
 import (
 	"tde/internal/astw/astwutl"

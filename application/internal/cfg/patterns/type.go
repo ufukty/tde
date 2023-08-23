@@ -1,4 +1,4 @@
-package pattern_constructor
+package patterns
 
 import "go/ast"
 
