@@ -7,20 +7,6 @@ import (
 	"go/token"
 )
 
-func examineSingularAssignment(ctx *context.Context, lhs, rhs ast.Expr) {
-	if lhs, ok := lhs.(*ast.Ident); ok {
-		ctx.AddVariable(lhs)
-	}
-}
-
-func examineAssignStmt(ctx *context.Context, stmt *ast.AssignStmt) {
-	if stmt.Tok == token.DEFINE {
-		for i := 0; i < len(stmt.Lhs); i++ {
-			examineSingularAssignment(ctx, stmt.Lhs[i], stmt.Rhs[i])
-		}
-	}
-}
-
 func examineImportDeclaration(ctx *context.Context, decl *ast.GenDecl) {
 	for _, spec := range decl.Specs {
 		if spec, ok := spec.(*ast.ImportSpec); ok {

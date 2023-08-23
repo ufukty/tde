@@ -3,6 +3,7 @@ package examiner
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
 	"tde/internal/cfg/ctxres/context"
@@ -71,6 +72,20 @@ import (
 // 		}
 // 	}
 // }
+
+func examineSingularAssignment(ctx *context.Context, lhs, rhs ast.Expr) {
+	if lhs, ok := lhs.(*ast.Ident); ok {
+		ctx.AddVariable(lhs)
+	}
+}
+
+func examineAssignStmt(ctx *context.Context, stmt *ast.AssignStmt) {
+	if stmt.Tok == token.DEFINE {
+		for i := 0; i < len(stmt.Lhs); i++ {
+			examineSingularAssignment(ctx, stmt.Lhs[i], stmt.Rhs[i])
+		}
+	}
+}
 
 func examineDeclStmt(ctx *context.Context, declStmt *ast.DeclStmt) {
 	switch decl := declStmt.Decl.(type) {
