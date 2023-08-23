@@ -3,9 +3,9 @@ package cfg
 import (
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
-	"tde/internal/cfg/ctxres"
-	"tde/internal/cfg/ctxres/context"
-	"tde/internal/cfg/nodes"
+	"tde/internal/genetics/mutation/cfg/ctxres"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/nodes"
 	"tde/internal/utilities"
 
 	"fmt"

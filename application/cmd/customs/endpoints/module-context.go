@@ -7,8 +7,8 @@ import (
 	astutils "tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/astw/traverse"
-	"tde/internal/cfg/ctxres"
-	"tde/internal/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/ctxres"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
 	"tde/internal/microservices/utilities"
 
 	"go/ast"

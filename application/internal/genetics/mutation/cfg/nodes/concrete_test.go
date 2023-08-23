@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"fmt"
-	"tde/internal/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
 
 	"testing"
 )

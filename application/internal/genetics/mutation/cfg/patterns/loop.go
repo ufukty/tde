@@ -1,8 +1,8 @@
 package patterns
 
 import (
-	"tde/internal/cfg/ctxres/context"
-	node_constructor "tde/internal/cfg/nodes"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/nodes"
 
 	"go/ast"
 	"go/token"
@@ -16,7 +16,7 @@ func LoopOverSlice(ctx *context.Context, limit int, slice *ast.Ident) *ast.Range
 		Key:   nil,
 		Value: nil,
 		X:     nil,
-		Body:  node_constructor.BlockStmt(ctx, limit-1),
+		Body:  nodes.BlockStmt(ctx, limit-1),
 	}
 }
 

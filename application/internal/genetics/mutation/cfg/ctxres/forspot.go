@@ -2,8 +2,8 @@ package ctxres
 
 import (
 	"tde/internal/astw/traverse"
-	"tde/internal/cfg/ctxres/context"
-	"tde/internal/cfg/ctxres/examiner"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/ctxres/examiner"
 
 	"go/ast"
 )

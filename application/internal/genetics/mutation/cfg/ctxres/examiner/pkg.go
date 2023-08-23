@@ -2,7 +2,7 @@ package examiner
 
 import (
 	"go/ast"
-	"tde/internal/cfg/ctxres/context"
+	"tde/internal/genetics/mutation/cfg/ctxres/context"
 )
 
 func examineFuncDecl(ctx *context.Context, decl *ast.FuncDecl) {
