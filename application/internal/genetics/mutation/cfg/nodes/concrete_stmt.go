@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"tde/internal/genetics/mutation/cfg/ctxres/context"
-	"tde/internal/tokenw"
+	"tde/internal/genetics/mutation/tokens"
 	utl "tde/internal/utilities"
 
 	"go/ast"
@@ -16,7 +16,7 @@ func AssignStmt(ctx *context.Context, limit int) *ast.AssignStmt {
 		// TokPos: token.NoPos,
 		Lhs: []ast.Expr{Expr(ctx, limit-1)},
 		Rhs: []ast.Expr{Expr(ctx, limit-1)},
-		Tok: *utl.Pick(tokenw.AcceptedByAssignStmt),
+		Tok: *utl.Pick(tokens.AcceptedByAssignStmt),
 	}
 }
 
@@ -41,7 +41,7 @@ func BranchStmt(ctx *context.Context, limit int) *ast.BranchStmt {
 	return &ast.BranchStmt{
 		// TokPos: token.NoPos,
 		Label: *utl.Pick(GeneratedBranchLabels),       // FIXME:
-		Tok:   *utl.Pick(tokenw.AcceptedByBranchStmt), // FIXME:
+		Tok:   *utl.Pick(tokens.AcceptedByBranchStmt), // FIXME:
 	}
 }
 
@@ -157,7 +157,7 @@ func IncDecStmt(ctx *context.Context, limit int) *ast.IncDecStmt {
 	return &ast.IncDecStmt{
 		// TokPos: token.NoPos,
 		X:   Expr(ctx, limit-1),
-		Tok: *utl.Pick(tokenw.AcceptedByIncDecStmt),
+		Tok: *utl.Pick(tokens.AcceptedByIncDecStmt),
 	}
 }
 
@@ -183,7 +183,7 @@ func RangeStmt(ctx *context.Context, limit int) *ast.RangeStmt {
 		Key:   Expr(ctx, limit-1),
 		Value: Expr(ctx, limit-1),
 		Body:  BlockStmt(ctx, limit-1),
-		Tok:   *utl.Pick(tokenw.AcceptedByRangeStmt),
+		Tok:   *utl.Pick(tokens.AcceptedByRangeStmt),
 	}
 }
 

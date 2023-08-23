@@ -1,4 +1,4 @@
-package tokenw
+package tokens
 
 import "go/token"
 

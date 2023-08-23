@@ -1,11 +1,12 @@
 package token_shuffle
 
 import (
+	"tde/internal/genetics/mutation/common"
+	"tde/internal/genetics/mutation/tokens"
+	"tde/internal/utilities"
+
 	"go/ast"
 	"go/token"
-	"tde/internal/genetics/mutation/common"
-	"tde/internal/tokenw"
-	utl "tde/internal/utilities"
 )
 
 func listTokenContainingNodes(n ast.Node) (tokenContainingNodes []ast.Node) {
@@ -30,28 +31,28 @@ func listTokenContainingNodes(n ast.Node) (tokenContainingNodes []ast.Node) {
 func chooseNewTokenAndAssign(n ast.Node) (newToken token.Token) {
 	switch n := n.(type) {
 	case *ast.BasicLit:
-		newToken = *utl.PickExcept(tokenw.AcceptedByBasicLit, []token.Token{n.Kind})
+		newToken = *utilities.PickExcept(tokens.AcceptedByBasicLit, []token.Token{n.Kind})
 		n.Kind = newToken
 	case *ast.UnaryExpr:
-		newToken = *utl.PickExcept(tokenw.AcceptedByUnaryExpr, []token.Token{n.Op})
+		newToken = *utilities.PickExcept(tokens.AcceptedByUnaryExpr, []token.Token{n.Op})
 		n.Op = newToken
 	case *ast.BinaryExpr:
-		newToken = *utl.PickExcept(tokenw.AcceptedByBinaryExpr, []token.Token{n.Op})
+		newToken = *utilities.PickExcept(tokens.AcceptedByBinaryExpr, []token.Token{n.Op})
 		n.Op = newToken
 	case *ast.IncDecStmt:
-		newToken = *utl.PickExcept(tokenw.AcceptedByIncDecStmt, []token.Token{n.Tok})
+		newToken = *utilities.PickExcept(tokens.AcceptedByIncDecStmt, []token.Token{n.Tok})
 		n.Tok = newToken
 	case *ast.AssignStmt:
-		newToken = *utl.PickExcept(tokenw.AcceptedByAssignStmt, []token.Token{n.Tok})
+		newToken = *utilities.PickExcept(tokens.AcceptedByAssignStmt, []token.Token{n.Tok})
 		n.Tok = newToken
 	case *ast.BranchStmt:
-		newToken = *utl.PickExcept(tokenw.AcceptedByBranchStmt, []token.Token{n.Tok})
+		newToken = *utilities.PickExcept(tokens.AcceptedByBranchStmt, []token.Token{n.Tok})
 		n.Tok = newToken
 	case *ast.RangeStmt:
-		newToken = *utl.PickExcept(tokenw.AcceptedByRangeStmt, []token.Token{n.Tok})
+		newToken = *utilities.PickExcept(tokens.AcceptedByRangeStmt, []token.Token{n.Tok})
 		n.Tok = newToken
 	case *ast.GenDecl: // what are the chances for an import statement can work as a type declaration?
-		newToken = *utl.PickExcept(tokenw.AcceptedByGenDecl, []token.Token{n.Tok})
+		newToken = *utilities.PickExcept(tokens.AcceptedByGenDecl, []token.Token{n.Tok})
 		n.Tok = newToken
 	}
 	return
@@ -63,7 +64,7 @@ func Perform(n ast.Node) (changedNode ast.Node, newToken token.Token, ok bool) {
 	if len(tokenContainingNodes) == 0 {
 		return changedNode, newToken, false
 	}
-	changedNode = *utl.Pick(tokenContainingNodes)
+	changedNode = *utilities.Pick(tokenContainingNodes)
 	newToken = chooseNewTokenAndAssign(changedNode)
 	return changedNode, newToken, true
 }

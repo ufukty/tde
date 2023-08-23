@@ -2,8 +2,8 @@ package nodes
 
 import (
 	"tde/internal/genetics/mutation/cfg/ctxres/context"
-	"tde/internal/tokenw"
-	utl "tde/internal/utilities"
+	"tde/internal/genetics/mutation/tokens"
+	"tde/internal/utilities"
 
 	"go/ast"
 )
@@ -19,7 +19,7 @@ func BasicLit(ctx *context.Context, limit int) *ast.BasicLit {
 	if limit == 0 {
 		return nil
 	}
-	return (*utl.Pick(basicLitGenerators))()
+	return (*utilities.Pick(basicLitGenerators))()
 }
 
 func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
@@ -30,7 +30,7 @@ func BinaryExpr(ctx *context.Context, limit int) *ast.BinaryExpr {
 		// OpPos: token.NoPos,
 		X:  Expr(ctx, limit-1),
 		Y:  Expr(ctx, limit-1),
-		Op: *utl.Pick(tokenw.AcceptedByBinaryExpr),
+		Op: *utilities.Pick(tokens.AcceptedByBinaryExpr),
 	}
 }
 
@@ -192,6 +192,6 @@ func UnaryExpr(ctx *context.Context, limit int) *ast.UnaryExpr {
 	return &ast.UnaryExpr{
 		// OpPos: token.NoPos,
 		X:  Expr(ctx, limit-1),
-		Op: *utl.Pick(tokenw.AcceptedByUnaryExpr),
+		Op: *utilities.Pick(tokens.AcceptedByUnaryExpr),
 	}
 }
