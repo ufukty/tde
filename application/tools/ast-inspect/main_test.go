@@ -11,7 +11,7 @@ import (
 
 func TestJSONPrinter(t *testing.T) {
 	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, "../../internal/test-package/walk.go", nil, parser.ParseComments|parser.AllErrors)
+	astFile, err := parser.ParseFile(fset, "testdata/walk.go", nil, parser.ParseComments|parser.AllErrors)
 	if err != nil {
 		log.Fatalln(errors.Wrap(err, "prepare"))
 	}

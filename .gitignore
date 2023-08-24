@@ -154,7 +154,6 @@ service_discovery.json
 platform/local/.mount
 platform/debug/.mount
 
-**/testdata
 **/test-files
 
 .env

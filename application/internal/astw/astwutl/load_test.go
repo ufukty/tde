@@ -14,7 +14,7 @@ func Test_ParseString(t *testing.T) {
 }
 
 func Test_LoadDir(t *testing.T) {
-	_, _, err := LoadDir("../../test-package")
+	_, _, err := LoadDir("testdata")
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on loading dir"))
 	}

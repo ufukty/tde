@@ -1,17 +1,18 @@
 package customs_proxy
 
 import (
+	"tde/internal/astw/astwutl"
+	
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"tde/internal/astw/astwutl"
 	"testing"
 
 	"github.com/pkg/errors"
 )
 
 func Test_JSON(t *testing.T) {
-	f, err := parser.ParseFile(token.NewFileSet(), "../../../../internal/test-package/walk.go", nil, parser.AllErrors)
+	f, err := parser.ParseFile(token.NewFileSet(), "testdata/walk.go", nil, parser.AllErrors)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "prep"))
 	}
