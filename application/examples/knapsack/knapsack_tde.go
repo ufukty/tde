@@ -3,9 +3,9 @@
 
 package knapsack
 
-import "tde/pkg/tde"
+import "tde/pkg/testing"
 
-func TDE_Knapsack(e *tde.E) {
+func TDE_Knapsack(e *testing.T) {
 
 	examples := map[*struct {
 		prices  []float64
@@ -42,6 +42,6 @@ func TDE_Knapsack(e *tde.E) {
 
 	for input, want := range examples {
 		output := Knapsack(input.weights, input.prices)
-		e.AssertEqual(output, want)
+		e.Assert(output, want)
 	}
 }

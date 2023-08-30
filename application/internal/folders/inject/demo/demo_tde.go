@@ -4,10 +4,10 @@
 package demo
 
 import (
-	"tde/pkg/tde"
+	"tde/pkg/testing"
 )
 
-func TDE_WordReverse(e *tde.E) {
+func TDE_WordReverse(t *testing.T) {
 	// e.SetConfig(tde.Config{
 	// 	MaxCompute:           100,
 	// 	MaxMemory:            1000,
@@ -87,6 +87,6 @@ func TDE_WordReverse(e *tde.E) {
 
 	for input, want := range testParameters {
 		output := WordReverse(input)
-		e.AssertEqual(output, want)
+		t.AssertEqual(output, want)
 	}
 }

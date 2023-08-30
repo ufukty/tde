@@ -1,4 +1,4 @@
-package tde
+package testing
 
 import (
 	"math"

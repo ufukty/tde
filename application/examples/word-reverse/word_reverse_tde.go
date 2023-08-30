@@ -4,18 +4,10 @@
 package word_reverse
 
 import (
-	"tde/pkg/tde"
+	"tde/pkg/testing"
 )
 
-func TDE_WordReverse(e *tde.E) {
-	// e.SetConfig(tde.Config{
-	// 	MaxCompute:           100,
-	// 	MaxMemory:            1000,
-	// 	MaxSize:              1000,
-	// 	MaxTime:              10,
-	// 	ComputeToMemoryRatio: 3 / 2,
-	// })
-
+func TDE_WordReverse(t *testing.T) {
 	testParameters := map[string]string{
 		"Hello world":                    "dlrow olleH",
 		"dlrow olleH":                    "Hello world",
@@ -87,6 +79,6 @@ func TDE_WordReverse(e *tde.E) {
 
 	for input, want := range testParameters {
 		output := WordReverse(input)
-		e.AssertEqual(output, want)
+		t.Assert(output, want)
 	}
 }

@@ -1,4 +1,4 @@
-package tde
+package testing
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ type Config struct {
 
 type TargetFunctionType any
 
-type E struct {
+type T struct {
 	UUID                   models.CandidateID `json:"uuid"`
 	AssertionResults       []bool             `json:"assertion_results"`
 	AssertionErrorDistance []float64          `json:"assertion_error_distances"`
@@ -35,18 +35,18 @@ type E struct {
 	Config                 Config             `json:"-"`
 }
 
-func NewE(canditateUUID models.CandidateID) *E {
-	e := E{
+func NewT(canditateUUID models.CandidateID) *T {
+	e := T{
 		UUID: canditateUUID,
 	}
 	return &e
 }
 
-func (e *E) SetConfig(config Config) {
+func (e *T) SetConfig(config Config) {
 	e.Config = config
 }
 
-func (e *E) AssertEqual(output, want any) {
+func (e *T) Assert(output, want any) {
 	result := output == want
 	e.AssertionResults = append(e.AssertionResults, result)
 
@@ -102,7 +102,7 @@ func (e *E) AssertEqual(output, want any) {
 // 	tc.AssertionErrorDistance = append(tc.AssertionErrorDistance, errorDistance)
 // }
 
-func (e *E) Export() {
+func (e *T) Export() {
 	f, err := os.Create("results.json")
 	if err != nil {
 		panic(errors.Wrap(err, "Could not create 'result.json' for writing"))
@@ -110,7 +110,7 @@ func (e *E) Export() {
 	json.NewEncoder(f).Encode(e)
 }
 
-func (e *E) LoadResults(path string) error {
+func (e *T) LoadResults(path string) error {
 	fh, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("opening results.json: %w", err)

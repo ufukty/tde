@@ -6,7 +6,7 @@ package main
 import (
 	targetPackage "tde/internal/folders/inject/demo"
 	models "tde/models/program"
-	"tde/pkg/tde"
+	"tde/pkg/testing"
 
 	"flag"
 )
@@ -27,7 +27,7 @@ func main() {
 	var (
 		testFunction  = targetPackage.TDE_WordReverse
 		candidateUUID = models.CandidateID(candidateUUID)
-		e             = tde.NewE(candidateUUID)
+		e             = testing.NewT(candidateUUID)
 	)
 	testFunction(e)
 	e.Export()
