@@ -1,5 +1,4 @@
 //go:build tde
-// +build tde
 
 package demo
 
