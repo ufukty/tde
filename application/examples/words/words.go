@@ -1,4 +1,4 @@
-package word_reverse
+package words
 
 func WordReverse(w string) string {
 	return ""

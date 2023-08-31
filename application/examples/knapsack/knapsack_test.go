@@ -1,22 +1,6 @@
 package knapsack
 
-import (
-	"testing"
-
-	"github.com/pkg/errors"
-)
-
-func AssertArrays[T int | float64](left, right []T) error {
-	if len(left) != len(right) {
-		return errors.New("Array lengths are different")
-	}
-	for i := 0; i < len(left); i++ {
-		if left[i] != right[i] {
-			return errors.New("Arrays have different items.")
-		}
-	}
-	return nil
-}
+import "testing"
 
 func Test_Knapsack(t *testing.T) {
 
@@ -53,10 +37,18 @@ func Test_Knapsack(t *testing.T) {
 	}
 
 	for input, output := range cases {
-		err := AssertArrays(output.placement, Knapsack(input.weights, input.prices))
-		if err != nil {
-			t.Error(errors.Wrap(err, "Miscalculation"))
-		}
+		AssertArrays(t, output.placement, Knapsack(input.weights, input.prices))
 	}
 
+}
+
+func AssertArrays[T int | float64](t *testing.T, left, right []T) {
+	if len(left) != len(right) {
+		t.Fatalf("Array lengths are different")
+	}
+	for i := 0; i < len(left); i++ {
+		if left[i] != right[i] {
+			t.Fatalf("Arrays have different items.")
+		}
+	}
 }

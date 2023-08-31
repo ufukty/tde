@@ -28,7 +28,7 @@ func Test_StringDistance(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		if output := StringDistance(testCase.a, testCase.b); !areFloatsEqual(output, testCase.dist) {
+		if output := distanceString(testCase.a, testCase.b); !areFloatsEqual(output, testCase.dist) {
 			t.Errorf("StringDistance('%s', '%s') is expected to be '%f', got '%f'", testCase.a, testCase.b, testCase.dist, output)
 		}
 	}

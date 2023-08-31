@@ -24,7 +24,7 @@ func init() {
 func main() {
 	flag.Parse()
 	var (
-		testFunction  = targetPackage.TDE_WordReverse
+		testFunction  = targetPackage.Test_WordReverse
 		candidateUUID = models.CandidateID(candidateUUID)
 		e             = testing.NewT(candidateUUID)
 	)

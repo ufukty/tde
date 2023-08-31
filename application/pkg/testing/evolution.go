@@ -42,80 +42,24 @@ func NewT(canditateUUID models.CandidateID) *T {
 	return &e
 }
 
-func (e *T) SetConfig(config Config) {
-	e.Config = config
+func (t *T) SetConfig(config Config) {
+	t.Config = config
 }
 
-func (e *T) Assert(output, want any) {
-	result := output == want
-	e.AssertionResults = append(e.AssertionResults, result)
-
-	errorDistance := 0.0
-	switch wantCasted := want.(type) {
-	case string:
-		if outputCasted, ok := output.(string); ok {
-			errorDistance = StringDistance(wantCasted, outputCasted)
-		} else {
-			panic("<output> and <want> should be same type and one of string, int, float64")
-		}
-	case int:
-		if outputCasted, ok := output.(int); ok {
-			errorDistance = IntegerDistance(wantCasted, outputCasted)
-		} else {
-			panic("<output> and <want> should be same type and one of string, int, float64")
-		}
-	case float64:
-		if outputCasted, ok := output.(float64); ok {
-			errorDistance = FloatDistance(wantCasted, outputCasted)
-		} else {
-			panic("<output> and <want> should be same type and one of string, int, float64")
-		}
-	}
-	e.AssertionErrorDistance = append(e.AssertionErrorDistance, errorDistance)
-}
-
-// func (tc *C) AssertNotEqual(output, notWant any) {
-// 	result := output != notWant
-// 	tc.AssertionResults = append(tc.AssertionResults, result)
-
-// 	errorDistance := 0.0
-// 	switch wantCasted := notWant.(type) {
-// 	case string:
-// 		if outputCasted, ok := output.(string); ok {
-// 			errorDistance = StringDistance(wantCasted, outputCasted)
-// 		} else {
-// 			panic("<output> and <want> should be same type and one of string, int, float64")
-// 		}
-// 	case int:
-// 		if outputCasted, ok := output.(int); ok {
-// 			errorDistance = IntegerDistance(wantCasted, outputCasted)
-// 		} else {
-// 			panic("<output> and <want> should be same type and one of string, int, float64")
-// 		}
-// 	case float64:
-// 		if outputCasted, ok := output.(float64); ok {
-// 			errorDistance = FloatDistance(wantCasted, outputCasted)
-// 		} else {
-// 			panic("<output> and <want> should be same type and one of string, int, float64")
-// 		}
-// 	}
-// 	tc.AssertionErrorDistance = append(tc.AssertionErrorDistance, errorDistance)
-// }
-
-func (e *T) Export() {
+func (t *T) Export() {
 	f, err := os.Create("results.json")
 	if err != nil {
 		panic(errors.Wrap(err, "Could not create 'result.json' for writing"))
 	}
-	json.NewEncoder(f).Encode(e)
+	json.NewEncoder(f).Encode(t)
 }
 
-func (e *T) LoadResults(path string) error {
+func (t *T) LoadResults(path string) error {
 	fh, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("opening results.json: %w", err)
 	}
-	err = json.NewDecoder(fh).Decode(e)
+	err = json.NewDecoder(fh).Decode(t)
 	if err != nil {
 		return fmt.Errorf("decoding results.json: %w", err)
 	}

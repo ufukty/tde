@@ -2,13 +2,15 @@ package testing
 
 import (
 	"math"
+
+	"golang.org/x/exp/constraints"
 )
 
-func IntegerDistance(a, b int) float64 {
+func distanceInt[T constraints.Signed | constraints.Unsigned](a, b T) float64 {
 	return math.Abs(float64(a) - float64(b))
 }
 
-func FloatDistance(a, b float64) float64 {
+func stringFloat(a, b float64) float64 {
 	return math.Abs(a - b)
 }
 
@@ -16,7 +18,7 @@ func FloatDistance(a, b float64) float64 {
 //   - fast, but not best [like levenshtein which is O(n^2)]
 //   - logic: similarity of two strings is based on the portion of characters
 //     are in same position at two strings
-func StringDistance(a, b string) float64 {
+func distanceString(a, b string) float64 {
 	var (
 		lenA        = float64(len(a))
 		lenB        = float64(len(b))
@@ -34,4 +36,11 @@ func StringDistance(a, b string) float64 {
 		distance   = 1 - similarity
 	)
 	return distance
+}
+
+func distanceBool(a, b bool) float64 {
+	if a == b {
+		return 0.0
+	}
+	return 1.0
 }

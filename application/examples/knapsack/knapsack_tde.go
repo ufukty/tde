@@ -1,11 +1,10 @@
 //go:build tde
-// +build tde
 
 package knapsack
 
 import "tde/pkg/testing"
 
-func TDE_Knapsack(e *testing.T) {
+func TDE_Knapsack(t *testing.T) {
 
 	examples := map[*struct {
 		prices  []float64
@@ -41,7 +40,9 @@ func TDE_Knapsack(e *testing.T) {
 	}
 
 	for input, want := range examples {
-		output := Knapsack(input.weights, input.prices)
-		e.Assert(output, want)
+		got := Knapsack(input.weights, input.prices)
+		if !t.Assert(got, want) {
+			t.Fatalf("Knapsack(%q) = %q (want: %q)", input, got, want)
+		}
 	}
 }

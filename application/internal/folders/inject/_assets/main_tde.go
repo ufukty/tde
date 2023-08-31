@@ -5,7 +5,7 @@ package main
 import (
 	targetPackage "{{ .TargetPackageImportPath }}"
 	models "tde/models/program"
-	"tde/pkg/tde"
+	"testing"
 
 	"flag"
 )
