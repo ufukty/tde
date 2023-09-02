@@ -1,5 +1,5 @@
 test-word-reverse:
-	go run -tags="tde" tde/examples/word-reverse/word_reverse/tde
+	go run -tags="tde" tde/examples/words/tde
 
 initial-environment-setup:
 	brew update && brew install \

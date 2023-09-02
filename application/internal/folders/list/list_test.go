@@ -32,8 +32,8 @@ func Test_ListPackages(t *testing.T) {
 
 func Test_FindImportPath(t *testing.T) {
 	var testCases = map[string]string{
-		".":                              "tde/internal/folders/list",
-		"../../../examples/word-reverse": "tde/examples/word-reverse",
+		".":                       "tde/internal/folders/list",
+		"../../../examples/words": "tde/examples/words",
 	}
 
 	for input, want := range testCases {

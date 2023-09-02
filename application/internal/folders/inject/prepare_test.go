@@ -12,7 +12,7 @@ func Test_Preparation(t *testing.T) {
 		dupl string
 		err  error
 	)
-	if pkgs, err = list.ListPackagesInDir("../../../examples/word-reverse"); err != nil {
+	if pkgs, err = list.ListPackagesInDir("../../../examples/words"); err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	if dupl, err = WithCreatingSample(pkgs.First().Module.Dir, pkgs.First(), "TDE_WordReverse"); err != nil {

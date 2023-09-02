@@ -152,6 +152,10 @@ func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID)
 }
 
 func (s *SlotManager) Print() {
+	fmt.Println("---")
+	fmt.Println("Printing SlotManager details:")
+	fmt.Printf("Sample dir: %s\n", s.sample)
+	fmt.Printf("Temp dir: %s\n", s.tmp)
 	if len(s.slots.free) > 0 {
 		fmt.Println("Free: (slots)")
 		for i, slot := range s.slots.free {
@@ -159,7 +163,7 @@ func (s *SlotManager) Print() {
 		}
 	}
 	if len(s.slots.free) > 0 && len(s.slots.assigned) > 0 {
-		fmt.Println("----")
+		fmt.Println()
 	}
 	if len(s.slots.assigned) > 0 {
 		fmt.Println("Assigned: (candidate-id:slot)")
@@ -167,4 +171,5 @@ func (s *SlotManager) Print() {
 			fmt.Printf("%s:%s\n", id, string(slot))
 		}
 	}
+	fmt.Println("---")
 }

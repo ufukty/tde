@@ -25,7 +25,7 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 		sample string
 		err    error
 	)
-	if pkgs, err = list.ListPackagesInDir("../../../examples/word-reverse"); err != nil {
+	if pkgs, err = list.ListPackagesInDir("../../../examples/words"); err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	var pkg = pkgs.First()
@@ -43,7 +43,7 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 		})
 	}
 
-	combined, err := discovery.CombinedDetailsForTest("../../../examples/word-reverse", "TDE_WordReverse")
+	combined, err := discovery.CombinedDetailsForTest("../../../examples/words", "TDE_WordReverse")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
 	}
@@ -94,7 +94,7 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 		sample string
 		err    error
 	)
-	if pkgs, err = list.ListPackagesInDir("../../../examples/word-reverse"); err != nil {
+	if pkgs, err = list.ListPackagesInDir("../../../examples/words"); err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	var pkg = pkgs.First()
@@ -111,7 +111,7 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 			File:    []byte(""),
 		},
 	}
-	combined, err := discovery.CombinedDetailsForTest("../../../examples/word-reverse", "TDE_WordReverse")
+	combined, err := discovery.CombinedDetailsForTest("../../../examples/words", "TDE_WordReverse")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
 	}

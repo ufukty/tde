@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	err := os.Chdir("../../../../examples/word-reverse")
+	err := os.Chdir("../../../../examples/words")
 	if err != nil {
 		panic(err)
 	}
