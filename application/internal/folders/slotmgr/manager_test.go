@@ -3,16 +3,16 @@ package slotmgr
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"testing"
+
 	"tde/internal/folders/discovery"
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
 	models "tde/models/program"
-
-	"fmt"
-	"testing"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
