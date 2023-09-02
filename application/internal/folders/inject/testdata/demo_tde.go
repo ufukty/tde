@@ -4,7 +4,7 @@ package words
 
 import "tde/pkg/testing"
 
-func Test_WordReverse(t *testing.T) {
+func TDE_WordReverse(t *testing.T) {
 	testParameters := map[string]string{
 		"Hello world": "dlrow olleH",
 		"dlrow olleH": "Hello world",

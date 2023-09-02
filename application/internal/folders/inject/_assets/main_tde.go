@@ -5,7 +5,7 @@ package main
 import (
 	targetPackage "{{ .TargetPackageImportPath }}"
 	models "tde/models/program"
-	"testing"
+	"tde/pkg/testing"
 
 	"flag"
 )
@@ -26,8 +26,8 @@ func main() {
 	var (
 		testFunction  = targetPackage.{{ .TestFunctionName }}
 		candidateUUID = models.CandidateID(candidateUUID)
-		e			  = tde.NewE(candidateUUID)
+		t			  = testing.NewT(candidateUUID)
 	)
-	testFunction(e)
-	e.Export()
+	testFunction(t)
+	t.Export()
 }

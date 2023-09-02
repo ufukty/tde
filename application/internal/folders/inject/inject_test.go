@@ -1,27 +1,23 @@
 package inject
 
 import (
+	"fmt"
 	"os"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func Test_Inject(t *testing.T) {
-	ti := &TestInfo{
-		TargetPackageImportPath: "tde/examples/words",
+	defer os.RemoveAll("testdata/tde") // clean up
+
+	if err := Inject("testdata", &TestInfo{
+		TargetPackageImportPath: "tde/internal/folders/inject/testdata",
 		TestFunctionName:        "TDE_WordReverse",
+	}); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
-	if err := Inject("../../../examples/words", ti); err != nil {
-		t.Error(errors.Wrap(err, "returned error"))
-	}
-
-	if _, err := os.OpenFile("../../../examples/words/tde/main_tde.go", os.O_RDONLY, os.ModeAppend); err != nil {
-		t.Error(errors.Wrap(err, "validation"))
-	}
-
-	if err := os.RemoveAll("../../../examples/words/tde"); err != nil {
-		t.Error(errors.Wrap(err, "cleanup"))
+	_, err := os.Stat("testdata/tde/main_tde.go")
+	if err != nil {
+		t.Fatal(fmt.Errorf("assert: %w", err))
 	}
 }
