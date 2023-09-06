@@ -1,5 +1,5 @@
 {
-    "go.testFlags": ["-v", "-count=1"],
+    "go.testFlags": ["-v", "-count=1"], // "-memprofile=mem.out"
     "gopls": {
         "build.buildFlags": ["-tags=tde"],
         "ui.semanticTokens": true,
