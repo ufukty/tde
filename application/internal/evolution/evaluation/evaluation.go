@@ -3,7 +3,7 @@ package evaluation
 import (
 	"tde/internal/folders/slotmgr"
 	models "tde/models/program"
-	"tde/pkg/tde"
+	"tde/pkg/testing"
 
 	"fmt"
 	"os/exec"
@@ -39,14 +39,21 @@ func (e *Evaluator) run(cid models.CandidateID) error {
 	cmd.Dir = filepath.Join(e.sm.GetPackagePathForCandidate(cid), "tde")
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("command %q returned %q: %w", "go run", string(bytes), err)
+		return fmt.Errorf("command %q in dir: %q returned %q: %w", cmd.String(), cmd.Dir, string(bytes), err)
 	}
 	return nil
 }
 
-func (e *Evaluator) collectResult(cid models.CandidateID) (*tde.E, error) {
+func (e *Evaluator) test(cid models.CandidateID) error {
+	if err := e.run(cid); err != nil {
+		return fmt.Errorf("running the injected package in candidate: %w", err)
+	}
+	return nil
+}
+
+func (e *Evaluator) collectResult(cid models.CandidateID) (*testing.T, error) {
 	path := filepath.Join(e.sm.GetPackagePathForCandidate(cid), "tde", "results.json")
-	results := &tde.E{}
+	results := &testing.T{}
 	if err := results.LoadResults(path); err != nil {
 		return nil, fmt.Errorf("parsing: %w", err)
 	}
@@ -54,7 +61,7 @@ func (e *Evaluator) collectResult(cid models.CandidateID) (*tde.E, error) {
 }
 
 // TODO:
-func (e *Evaluator) populateFitnessWithResults(candidate *models.Candidate, results *tde.E) error {
+func (e *Evaluator) populateFitnessWithResults(candidate *models.Candidate, results *testing.T) error {
 	// candidate.Fitness.Program
 	// results.AssertionResults
 	return nil
@@ -72,13 +79,6 @@ func (e *Evaluator) runCandidates(candidates []*models.Candidate) error {
 		if err := e.populateFitnessWithResults(candidate, results); err != nil {
 			return fmt.Errorf("populating fitness score with results for th candidate %q: %w", candidate.UUID, err)
 		}
-	}
-	return nil
-}
-
-func (e *Evaluator) test(cid models.CandidateID) error {
-	if err := e.run(cid); err != nil {
-		return fmt.Errorf("running the injected package in candidate: %w", err)
 	}
 	return nil
 }

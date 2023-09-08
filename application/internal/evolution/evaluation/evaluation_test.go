@@ -18,8 +18,8 @@ import (
 
 const ( // applies to all test cases in this package
 	MODULEROOT  = "../../../"
-	ORIGINALPKG = "../../../examples/word-reverse"
-	PKGINMOD    = "examples/word-reverse"
+	ORIGINALPKG = "../../../examples/words"
+	PKGINMOD    = "examples/words"
 	TESTNAME    = "TDE_WordReverse"
 	TARGETNAME  = "WordReverse"
 	POPULATION  = 3
@@ -62,17 +62,20 @@ func prepare() (*Evaluator, []*models.Candidate, error) {
 		return nil, nil, fmt.Errorf("retriving combined details: %w", err)
 	}
 	sm := slotmgr.New(sample, combined)
+	if err := sm.PlaceCandidatesIntoSlots(candidates); err != nil {
+		return nil, nil, fmt.Errorf("passing candidates into slot manager: %w", err)
+	}
+	syntaxCheckAndProduceCode(candidates)
 	evaluator := NewEvaluator(sm)
 	return evaluator, candidates, nil
 }
 
 // FIXME: check fitness has populated after syntax errors
-func Test_syntaxCheckAndProduceCode(t *testing.T) {
+func Test_SyntaxCheckAndProduceCode(t *testing.T) {
 	_, candidates, err := prepare()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	syntaxCheckAndProduceCode(candidates)
 	for i, candidate := range candidates {
 		if len(candidate.File) == 0 {
 			t.Fatal(fmt.Errorf("assert, candidates[%d].File is empty: %w", i, err))
@@ -80,7 +83,7 @@ func Test_syntaxCheckAndProduceCode(t *testing.T) {
 	}
 }
 
-func Test_compile(t *testing.T) {
+func Test_Compile(t *testing.T) {
 	evaluator, candidates, err := prepare()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
@@ -91,12 +94,15 @@ func Test_compile(t *testing.T) {
 	}
 }
 
-// func Test_Pipeline(t *testing.T) {
-// 	sm, candidates, err := prepare()
-// 	if err != nil {
-// 		t.Fatal(fmt.Errorf("prep: %w", err))
-// 	}
+func Test_Pipeline(t *testing.T) {
+	evaluator, candidates, err := prepare()
+	if err != nil {
+		t.Fatal(fmt.Errorf("prep: %w", err))
+	}
 
-// 	e := NewEvaluator()
-// 	Pipeline(candidates)
-// }
+	evaluator.sm.Print()
+
+	if err := evaluator.Pipeline(candidates); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
+	}
+}

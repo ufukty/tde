@@ -4,8 +4,8 @@ import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/command"
 	"tde/internal/evolution"
+	"tde/internal/evolution/evaluation"
 	"tde/internal/folders/discovery"
-	"tde/internal/folders/evaluation"
 	"tde/internal/folders/inject"
 	"tde/internal/folders/list"
 	"tde/internal/folders/slotmgr"
@@ -86,7 +86,7 @@ func (c *Command) Run() {
 
 	for i := 0; i < c.Iterate; i++ {
 		fmt.Printf("Iteration: %d\n", i)
-		evolution.IterateLoop() 
+		evolution.IterateLoop()
 		evaluator.Pipeline(maps.Values(evolution.Candidates)) // TODO:
 	}
 

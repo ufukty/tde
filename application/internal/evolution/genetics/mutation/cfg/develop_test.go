@@ -3,7 +3,7 @@ package cfg
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
-	"tde/internal/folders/evaluation"
+	"tde/internal/evolution/evaluation"
 
 	"fmt"
 	"go/ast"

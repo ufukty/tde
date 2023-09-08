@@ -1,7 +1,7 @@
 package evolution
 
 import (
-	"tde/internal/folders/evaluation"
+	"tde/internal/evolution/evaluation"
 	models "tde/models/program"
 
 	"sort"
