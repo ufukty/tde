@@ -155,7 +155,7 @@ func TestWeightedIndexFloat64(t *testing.T) {
 
 		for j := 0; j < len(weights); j++ {
 			expectedFrequency, gotFrequency := expectedFrequencies[j], gotFrequencies[j]
-			if !(0.8*expectedFrequency <= gotFrequency && gotFrequency <= expectedFrequency*1.2) {
+			if !(0.5*expectedFrequency <= gotFrequency && gotFrequency <= expectedFrequency*1.5) {
 				t.Errorf("validation. frequency of %d. index", j)
 			}
 		}

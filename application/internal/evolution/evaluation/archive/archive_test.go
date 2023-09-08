@@ -31,7 +31,7 @@ func Test_findModuleRoot(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrap(err, "failed on running \"pwd -P\" command"))
 	}
-	expected := filepath.Clean(workingDir + "/../../..")
+	expected := filepath.Clean(workingDir + "/../../../..")
 
 	if root != expected {
 		t.Error("failed: got wrong output:", root, "expected:", expected)

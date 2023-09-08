@@ -6,7 +6,7 @@ import (
 )
 
 func Test_TestFunctionsInFile(t *testing.T) {
-	fns, err := TestFunctionsInFile("../../../examples/words/words_tde.go")
+	fns, err := TestFunctionsInFile("testdata/words_tde.go")
 	if err != nil {
 		t.Fatal(fmt.Errorf("failed to detect positions and names of test functions that is in the user-provided test file: %q", err))
 	} else if len(fns) != 1 {
