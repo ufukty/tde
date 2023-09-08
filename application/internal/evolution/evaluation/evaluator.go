@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"tde/internal/folders/slotmgr"
+	"tde/internal/evolution/evaluation/slotmgr"
 	models "tde/models/program"
 	"tde/pkg/testing"
 

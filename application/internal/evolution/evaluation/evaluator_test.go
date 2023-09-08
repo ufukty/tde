@@ -3,10 +3,10 @@ package evaluation
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
-	"tde/internal/folders/discovery"
-	"tde/internal/folders/inject"
-	"tde/internal/folders/list"
-	"tde/internal/folders/slotmgr"
+	"tde/internal/evolution/evaluation/discovery"
+	"tde/internal/evolution/evaluation/inject"
+	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evolution/evaluation/slotmgr"
 	models "tde/models/program"
 
 	"fmt"

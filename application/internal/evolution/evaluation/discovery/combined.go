@@ -2,7 +2,7 @@ package discovery
 
 import (
 	"fmt"
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/list"
 )
 
 func CombinedDetailsForTest(path string, testname string) (*CombinedDetails, error) {

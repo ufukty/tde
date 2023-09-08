@@ -2,7 +2,7 @@ package inject
 
 import (
 	"fmt"
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/list"
 	"testing"
 )
 

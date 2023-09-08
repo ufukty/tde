@@ -10,7 +10,7 @@ func Test_Inject(t *testing.T) {
 	defer os.RemoveAll("testdata/tde") // clean up
 
 	if err := Inject("testdata", &TestInfo{
-		TargetPackageImportPath: "tde/internal/folders/inject/testdata",
+		TargetPackageImportPath: "tde/internal/evolution/evaluation/inject/testdata",
 		TestFunctionName:        "TDE_WordReverse",
 	}); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))

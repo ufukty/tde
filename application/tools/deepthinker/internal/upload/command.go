@@ -3,8 +3,8 @@ package upload
 import (
 	"tde/cmd/customs/endpoints"
 	"tde/internal/command"
-	"tde/internal/folders/archive"
-	"tde/internal/folders/discovery"
+	"tde/internal/evolution/evaluation/archive"
+	"tde/internal/evolution/evaluation/discovery"
 
 	"fmt"
 	"log"

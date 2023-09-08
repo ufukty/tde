@@ -12,7 +12,7 @@ func Test_AssertThisPackage(t *testing.T) {
 	if err != nil {
 		t.Error(errors.Wrapf(err, "act"))
 	}
-	if _, ok := m["tde/internal/folders/list"]; !ok {
+	if _, ok := m["tde/internal/evolution/evaluation/list"]; !ok {
 		t.Error(errors.Wrapf(err, "assert"))
 	}
 }
@@ -32,7 +32,7 @@ func Test_ListPackages(t *testing.T) {
 
 func Test_FindImportPath(t *testing.T) {
 	var testCases = map[string]string{
-		".":                       "tde/internal/folders/list",
+		".":                       "tde/internal/evolution/evaluation/list",
 		"../../../examples/words": "tde/examples/words",
 	}
 

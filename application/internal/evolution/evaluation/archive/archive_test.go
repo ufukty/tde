@@ -1,7 +1,7 @@
 package archive
 
 import (
-	"tde/internal/folders/discovery"
+	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/utilities"
 
 	"fmt"

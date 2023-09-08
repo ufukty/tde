@@ -1,7 +1,7 @@
 package volmng
 
 import (
-	"tde/internal/folders/archive"
+	"tde/internal/evolution/evaluation/archive"
 	"tde/internal/utilities"
 
 	"io"

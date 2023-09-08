@@ -1,8 +1,8 @@
 package slotmgr
 
 import (
-	"tde/internal/folders/copymod"
-	"tde/internal/folders/discovery"
+	"tde/internal/evolution/evaluation/copymod"
+	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/utilities"
 	models "tde/models/program"
 

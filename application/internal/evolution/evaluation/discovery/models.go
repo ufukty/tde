@@ -3,7 +3,7 @@ package discovery
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/list"
 	"tde/internal/utilities"
 )
 

@@ -3,7 +3,7 @@ package endpoints
 import (
 	"tde/cmd/customs/endpoints/utilities"
 	"tde/config"
-	"tde/internal/folders/archive"
+	"tde/internal/evolution/evaluation/archive"
 
 	"bytes"
 	"fmt"

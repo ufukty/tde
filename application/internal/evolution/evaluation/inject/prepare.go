@@ -2,8 +2,8 @@ package inject
 
 import (
 	"strings"
-	"tde/internal/folders/copymod"
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/copymod"
+	"tde/internal/evolution/evaluation/list"
 
 	"fmt"
 	"os"

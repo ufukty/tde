@@ -1,7 +1,7 @@
 package discovery
 
 import (
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/list"
 	"tde/internal/utilities"
 
 	"fmt"

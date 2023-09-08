@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"tde/internal/folders/discovery"
-	"tde/internal/folders/inject"
-	"tde/internal/folders/list"
+	"tde/internal/evolution/evaluation/discovery"
+	"tde/internal/evolution/evaluation/inject"
+	"tde/internal/evolution/evaluation/list"
 	models "tde/models/program"
 
 	"github.com/google/uuid"
