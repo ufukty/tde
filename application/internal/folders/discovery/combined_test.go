@@ -10,8 +10,8 @@ func Test_CombinedForDir(t *testing.T) {
 	if err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
-	if c.Package.Name != "word_reverse" {
-		t.Fatal(fmt.Errorf("assert. got %q. want %q", c.Package.Name, "word-reverse"))
+	if c.Package.Name != "words" {
+		t.Fatal(fmt.Errorf("assert. got %q. want %q", c.Package.Name, "words"))
 	}
 	if c.Package.ImportPath != "tde/examples/words" {
 		t.Fatal(fmt.Errorf("assert. got %q. want %q", c.Package.Name, "tde/examples/words"))
