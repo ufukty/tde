@@ -1,4 +1,4 @@
-package subtree_switch
+package subtreeswitch
 
 import (
 	"tde/internal/astw/astwutl"
