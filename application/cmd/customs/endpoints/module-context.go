@@ -1,7 +1,12 @@
 package endpoints
 
 import (
+	"go/ast"
+	"log"
+	"net/http"
+	"net/url"
 	"path/filepath"
+
 	"tde/config"
 	"tde/i18n"
 	astutils "tde/internal/astw/astwutl"
@@ -10,11 +15,6 @@ import (
 	"tde/internal/evolution/genetics/mutation/cfg/ctxres"
 	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
 	"tde/internal/microservices/utilities"
-
-	"go/ast"
-	"log"
-	"net/http"
-	"net/url"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
