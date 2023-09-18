@@ -37,9 +37,8 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	var candidates = []*models.Candidate{}
 	for i := 0; i < 10; i++ {
 		candidates = append(candidates, &models.Candidate{
-			UUID:    models.CandidateID(uuid.New().String()),
-			BreedID: models.BreedID(uuid.New().String()),
-			File:    []byte(`hello world`),
+			UUID: models.CandidateID(uuid.New().String()),
+			File: []byte(`hello world`),
 		})
 	}
 
@@ -106,9 +105,8 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 
 	var candidates = []*models.Candidate{
 		{
-			UUID:    models.CandidateID(uuid.New().String()),
-			BreedID: models.BreedID(uuid.New().String()),
-			File:    []byte(""),
+			UUID: models.CandidateID(uuid.New().String()),
+			File: []byte(""),
 		},
 	}
 	combined, err := discovery.CombinedDetailsForTest("testdata/words", "TDE_WordReverse")

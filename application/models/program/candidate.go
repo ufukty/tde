@@ -36,7 +36,6 @@ type BreedID string
 
 type Candidate struct {
 	UUID         CandidateID
-	BreedID      BreedID
 	File         []byte // product of AST
 	AST          TargetAst
 	Fitness      Fitness
