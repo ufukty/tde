@@ -82,7 +82,7 @@ func (c *Command) Run() {
 	var evaluator = evaluation.NewEvaluator(sm)
 	var evolution = evolution.NewManager(evolutionTarget)
 
-	evolution.InitPopulation(c.Population)
+	evolution.Init()
 
 	for i := 0; i < c.Iterate; i++ {
 		fmt.Printf("Iteration: %d\n", i)

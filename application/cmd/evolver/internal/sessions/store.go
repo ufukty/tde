@@ -40,7 +40,7 @@ func (s *Store) Iterate(sessionId SessionId) error {
 		return errors.New("")
 	}
 
-	session.Manager.InitPopulation(session.Config.Population)
+	session.Manager.Init() // session.Config.Population
 	// TODO: make request to runner
 	session.Manager.IterateLoop()
 

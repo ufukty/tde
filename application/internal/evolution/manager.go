@@ -24,14 +24,7 @@ func NewManager(target *Target) *Manager {
 	}
 }
 
-func (e *Manager) InitPopulation(n int) error {
-	for i := 0; i < n; i++ {
-		var candidate, err = newCandidate(e.Target.Package, e.Target.File, e.Target.FuncDecl)
-		if err != nil {
-			return errors.Wrap(err, "failed to create new Candidate instance")
-		}
-		e.Candidates[models.CandidateID(candidate.UUID)] = candidate
-	}
+func (e *Manager) Init() error {
 	return nil
 }
 
