@@ -10,56 +10,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func Test_RouletteWheel(t *testing.T) {
-	var candidates = map[models.CandidateID]*models.Candidate{
-		"1":  {UUID: "1", Fitness: models.Fitness{AST: 1.0, Code: 0.0, Program: 0.0, Solution: 0.0}}, // worst
-		"2":  {UUID: "2", Fitness: models.Fitness{AST: 0.22, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"3":  {UUID: "3", Fitness: models.Fitness{AST: 0.20, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"4":  {UUID: "4", Fitness: models.Fitness{AST: 0.28, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"5":  {UUID: "5", Fitness: models.Fitness{AST: 0.18, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"6":  {UUID: "6", Fitness: models.Fitness{AST: 0.35, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"7":  {UUID: "7", Fitness: models.Fitness{AST: 0.93, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"8":  {UUID: "8", Fitness: models.Fitness{AST: 0.21, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"9":  {UUID: "9", Fitness: models.Fitness{AST: 0.12, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"10": {UUID: "10", Fitness: models.Fitness{AST: 0.39, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"11": {UUID: "11", Fitness: models.Fitness{AST: 0.33, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"12": {UUID: "12", Fitness: models.Fitness{AST: 0.0, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"13": {UUID: "13", Fitness: models.Fitness{AST: 0.34, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"14": {UUID: "14", Fitness: models.Fitness{AST: 0.26, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"15": {UUID: "15", Fitness: models.Fitness{AST: 0.28, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"16": {UUID: "16", Fitness: models.Fitness{AST: 0.30, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"17": {UUID: "17", Fitness: models.Fitness{AST: 0.34, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"18": {UUID: "18", Fitness: models.Fitness{AST: 0.22, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"19": {UUID: "19", Fitness: models.Fitness{AST: 0.0, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"20": {UUID: "20", Fitness: models.Fitness{AST: 0.29, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"21": {UUID: "21", Fitness: models.Fitness{AST: 0.21, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"22": {UUID: "22", Fitness: models.Fitness{AST: 0.22, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"23": {UUID: "23", Fitness: models.Fitness{AST: 0.39, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"24": {UUID: "24", Fitness: models.Fitness{AST: 0.39, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"25": {UUID: "25", Fitness: models.Fitness{AST: 0.32, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"26": {UUID: "26", Fitness: models.Fitness{AST: 0.32, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"27": {UUID: "27", Fitness: models.Fitness{AST: 0.15, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"28": {UUID: "28", Fitness: models.Fitness{AST: 0.24, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"29": {UUID: "29", Fitness: models.Fitness{AST: 0.92, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"30": {UUID: "30", Fitness: models.Fitness{AST: 0.28, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"31": {UUID: "31", Fitness: models.Fitness{AST: 0.19, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"32": {UUID: "32", Fitness: models.Fitness{AST: 0.0, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"33": {UUID: "33", Fitness: models.Fitness{AST: 0.74, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"34": {UUID: "34", Fitness: models.Fitness{AST: 0.10, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"35": {UUID: "35", Fitness: models.Fitness{AST: 0.22, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"36": {UUID: "36", Fitness: models.Fitness{AST: 0.30, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"37": {UUID: "37", Fitness: models.Fitness{AST: 0.16, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"38": {UUID: "38", Fitness: models.Fitness{AST: 0.35, Code: 0.0, Program: 0.0, Solution: 0.0}},
-		"39": {UUID: "39", Fitness: models.Fitness{AST: 1.0, Code: 0.0, Program: 0.0, Solution: 0.0}}, // best
-		"40": {UUID: "40", Fitness: models.Fitness{AST: 0.31, Code: 0.0, Program: 0.0, Solution: 0.0}},
-	}
-
-	var picks = RouletteWheel(candidates, models.AST, 10, false)
-	for _, pick := range picks {
-		fmt.Println(pick)
-	}
-}
-
 func Test_RouletteWheelDistribution(t *testing.T) {
 	const (
 		runs    = 1000
