@@ -7,55 +7,51 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func getFitnessArray(individuals []*models.Candidate) []float64 {
+func getFitnesses(candidates []*models.Candidate, layer models.Layer) []float64 {
 	fitnesses := []float64{}
-	for _, individual := range individuals {
-		fitnesses = append(fitnesses, individual.Fitness.Flat())
+	for _, individual := range candidates {
+		fitnesses = append(fitnesses, individual.Fitness.InLayer(layer))
 	}
 	return fitnesses
 }
 
-func reversedFitnesses(fitnesses []float64) []float64 {
-	var reversedFitnesses = []float64{}
-	var maxFitness = slices.Max(fitnesses)
-	for _, v := range fitnesses {
-		reversedFitnesses = append(reversedFitnesses, maxFitness-v)
+// reduces all items of the array into [0, 1] range.
+// or [1, 0] if reverse is true
+func normalizeFitnesses(fitnesses []float64, reverse bool) []float64 {
+	var (
+		reversedFitnesses = []float64{}
+		maxFitness        = slices.Max(fitnesses)
+		minFitness        = slices.Min(fitnesses)
+		deltaF            = maxFitness - minFitness
+	)
+	for _, f := range fitnesses {
+		lerped := (f - minFitness) / deltaF
+		if reverse {
+			lerped = 1.0 - lerped
+		}
+		reversedFitnesses = append(reversedFitnesses, lerped)
 	}
 	return reversedFitnesses
 }
 
-func RouletteWheel(candidates []*models.Candidate, bullets int) []*models.Candidate {
+// Chooses random candidates by chances that are relative to their fitnesses
+// Candidates with higher numerical value for their fitnesses have higher chance to get selected by default.
+// When reverse is True, behaviour gets reversed.
+func RouletteWheel(candidates map[models.CandidateID]*models.Candidate, layer models.Layer, bullets int, reverse bool) []models.CandidateID {
 	var (
-		fitnesses             = getFitnessArray(candidates)
+		ids, cands            = utilities.MapItems(candidates)
+		fitnesses             = normalizeFitnesses(getFitnesses(cands, layer), reverse)
 		cumulativeFitnesses   = utilities.GetCumulative(fitnesses)
 		upperBoundLastFitness = cumulativeFitnesses[len(cumulativeFitnesses)-1]
-		choosenIndividuals    = []*models.Candidate{}
+		choosenIndividuals    = []models.CandidateID{}
 		choosen               int
-		rouletteBullet        float64
+		bullet                float64
 		survivors             = len(fitnesses) - bullets
 	)
 	for i := 0; i < survivors; i++ {
-		rouletteBullet = utilities.URandFloatForCrypto() * upperBoundLastFitness
-		choosen = utilities.BisectRight(cumulativeFitnesses, rouletteBullet)
-		choosenIndividuals = append(choosenIndividuals, candidates[choosen])
-	}
-	return choosenIndividuals
-}
-
-func RouletteWheelReverse(candidates []*models.Candidate, survivors int) []*models.Candidate {
-	var (
-		fitnesses             = getFitnessArray(candidates)
-		reversedFitnesses     = reversedFitnesses(fitnesses)
-		cumulativeFitnesses   = utilities.GetCumulative(reversedFitnesses)
-		upperBoundLastFitness = cumulativeFitnesses[len(cumulativeFitnesses)-1]
-		choosenIndividuals    = []*models.Candidate{}
-		choosen               int
-		rouletteBullet        float64
-	)
-	for i := 0; i < survivors; i++ {
-		rouletteBullet = utilities.URandFloatForCrypto() * upperBoundLastFitness
-		choosen = utilities.BisectRight(cumulativeFitnesses, rouletteBullet)
-		choosenIndividuals = append(choosenIndividuals, candidates[choosen])
+		bullet = utilities.URandFloatForCrypto() * upperBoundLastFitness
+		choosen = utilities.BisectRight(cumulativeFitnesses, bullet)
+		choosenIndividuals = append(choosenIndividuals, ids[choosen])
 	}
 	return choosenIndividuals
 }

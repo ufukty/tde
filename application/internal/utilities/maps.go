@@ -1,6 +1,8 @@
 package utilities
 
-import "golang.org/x/exp/slices"
+import (
+	"golang.org/x/exp/slices"
+)
 
 // A map implementation that doesn't lose ordering. Not performant as builtin map
 
@@ -25,4 +27,15 @@ func (od OrderedDict[K, V]) InsertAt(k K, v V, index int) {}
 
 func (od OrderedDict[K, V]) Keys() []K {
 	return slices.Clone(od.ordering)
+}
+
+// separates the keys and values of a map into two array
+func MapItems[K comparable, V any](in map[K]V) ([]K, []V) {
+	keys := *new([]K)
+	values := *new([]V)
+	for k, v := range in {
+		keys = append(keys, k)
+		values = append(values, v)
+	}
+	return keys, values
 }

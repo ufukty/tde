@@ -9,11 +9,16 @@ func StringFold(str string, partLength int) (splitted []string) {
 	return
 }
 
-func IndentLines(str string, indent int) string {
-	indentation := ""
-	for i := 0; i < indent; i++ {
-		indentation += " "
+func StringFill(c string, repeat int) string {
+	ret := ""
+	for i := 0; i < repeat; i++ {
+		ret += c
 	}
+	return ret
+}
+
+func IndentLines(str string, indent int) string {
+	indentation := StringFill(" ", indent)
 	return strings.Join(Map(strings.Split(str, "\n"), func(i int, line string) string {
 		return indentation + line
 	}), "\n")
