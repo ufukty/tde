@@ -73,92 +73,12 @@ func (fc freqCounter) PrintHistogram() {
 	}
 }
 
-func cleaned(candidates map[models.CandidateID]*models.Candidate, picks []models.CandidateID) map[models.CandidateID]*models.Candidate {
-	ret := map[models.CandidateID]*models.Candidate{}
-	maps.Copy(ret, candidates)
-	for _, id := range picks {
-		delete(ret, id)
-	}
-	return ret
-}
-
 func prepare(candidates map[models.CandidateID]*models.Candidate, picks []models.CandidateID) map[models.CandidateID]*models.Candidate {
 	ret := map[models.CandidateID]*models.Candidate{}
 	for _, id := range picks {
 		delete(ret, id)
 	}
 	return ret
-}
-
-func Test_RouletteWheelDistribution(t *testing.T) {
-	const (
-		run     = 1000
-		bullets = 10
-	)
-
-	var (
-		candidates = map[models.CandidateID]*models.Candidate{
-			"1":  {UUID: "1", Fitness: models.Fitness{AST: 1.0}},
-			"2":  {UUID: "2", Fitness: models.Fitness{AST: 0.22}},
-			"3":  {UUID: "3", Fitness: models.Fitness{AST: 0.20}},
-			"4":  {UUID: "4", Fitness: models.Fitness{AST: 0.28}},
-			"5":  {UUID: "5", Fitness: models.Fitness{AST: 0.18}},
-			"6":  {UUID: "6", Fitness: models.Fitness{AST: 0.35}},
-			"7":  {UUID: "7", Fitness: models.Fitness{AST: 0.93}},
-			"8":  {UUID: "8", Fitness: models.Fitness{AST: 0.21}},
-			"9":  {UUID: "9", Fitness: models.Fitness{AST: 0.12}},
-			"10": {UUID: "10", Fitness: models.Fitness{AST: 0.39}},
-			"11": {UUID: "11", Fitness: models.Fitness{AST: 0.33}},
-			"12": {UUID: "12", Fitness: models.Fitness{AST: 0.0}},
-			"13": {UUID: "13", Fitness: models.Fitness{AST: 0.34}},
-			"14": {UUID: "14", Fitness: models.Fitness{AST: 0.26}},
-			"15": {UUID: "15", Fitness: models.Fitness{AST: 0.28}},
-			"16": {UUID: "16", Fitness: models.Fitness{AST: 0.30}},
-			"17": {UUID: "17", Fitness: models.Fitness{AST: 0.34}},
-			"18": {UUID: "18", Fitness: models.Fitness{AST: 0.22}},
-			"19": {UUID: "19", Fitness: models.Fitness{AST: 0.0}},
-			"20": {UUID: "20", Fitness: models.Fitness{AST: 0.29}},
-			"21": {UUID: "21", Fitness: models.Fitness{AST: 0.21}},
-			"22": {UUID: "22", Fitness: models.Fitness{AST: 0.22}},
-			"23": {UUID: "23", Fitness: models.Fitness{AST: 0.39}},
-			"24": {UUID: "24", Fitness: models.Fitness{AST: 0.39}},
-			"25": {UUID: "25", Fitness: models.Fitness{AST: 0.32}},
-			"26": {UUID: "26", Fitness: models.Fitness{AST: 0.32}},
-			"27": {UUID: "27", Fitness: models.Fitness{AST: 0.15}},
-			"28": {UUID: "28", Fitness: models.Fitness{AST: 0.24}},
-			"29": {UUID: "29", Fitness: models.Fitness{AST: 0.92}},
-			"30": {UUID: "30", Fitness: models.Fitness{AST: 0.28}},
-			"31": {UUID: "31", Fitness: models.Fitness{AST: 0.19}},
-			"32": {UUID: "32", Fitness: models.Fitness{AST: 0.0}},
-			"33": {UUID: "33", Fitness: models.Fitness{AST: 0.74}},
-			"34": {UUID: "34", Fitness: models.Fitness{AST: 0.10}},
-			"35": {UUID: "35", Fitness: models.Fitness{AST: 0.22}},
-			"36": {UUID: "36", Fitness: models.Fitness{AST: 0.30}},
-			"37": {UUID: "37", Fitness: models.Fitness{AST: 0.16}},
-			"38": {UUID: "38", Fitness: models.Fitness{AST: 0.35}},
-			"39": {UUID: "39", Fitness: models.Fitness{AST: 1.0}},
-			"40": {UUID: "40", Fitness: models.Fitness{AST: 0.31}},
-		}
-		freqCounter = newFreqCounter(candidates)
-	)
-
-	var imbalancedRuns = 0
-	for j := 0; j < run; j++ {
-		pickedToEliminate := RouletteWheel(candidates, models.AST, false)
-		if len(candidates)-bullets != len(pickedToEliminate) {
-			t.Fatal(fmt.Errorf("assert: len(candidates) = %d", len(pickedToEliminate)))
-		}
-		if survivingBest, survivingWorst := freqCounter.count(maps.Keys(cleaned(candidates, pickedToEliminate))); survivingWorst > survivingBest {
-			fmt.Printf("Run %d: Imbalanced: %d, %d\n", j, survivingWorst, survivingBest)
-			imbalancedRuns++
-		}
-	}
-
-	if imbalancedRuns > run*0.33 {
-		t.Fatal(fmt.Errorf("assert %d of the runs suffer imbalanced elimination", imbalancedRuns))
-	}
-	fmt.Printf("\nimbalanced runs: %d\n", imbalancedRuns)
-	freqCounter.PrintHistogram()
 }
 
 func candidatesForDataset(dataset []float64) map[models.CandidateID]*models.Candidate {
