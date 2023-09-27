@@ -4,25 +4,6 @@ import (
 	"go/ast"
 )
 
-type Fitness struct {
-	AST      float64 // rel. printing errors (from ast)
-	Code     float64 // rel. syntax errors (compile)
-	Program  float64 // rel. runtime errors
-	Solution float64 // rel. passed tests (user-provided)
-}
-
-func (f Fitness) Flat() float64 {
-	if f.AST != 0.0 {
-		return 3.0 + f.AST
-	} else if f.Code != 0.0 {
-		return 2.0 + f.Code
-	} else if f.Program != 0.0 {
-		return 1.0 + f.Program
-	} else {
-		return f.Program
-	}
-}
-
 type TargetAst struct {
 	Package  *ast.Package  // NOT cloned from original, read access only
 	File     *ast.File     // cloned from original, safe to manipulate
@@ -31,8 +12,6 @@ type TargetAst struct {
 }
 
 type CandidateID string
-
-type BreedID string
 
 type Candidate struct {
 	UUID         CandidateID
