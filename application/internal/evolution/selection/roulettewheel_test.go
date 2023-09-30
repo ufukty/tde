@@ -71,8 +71,11 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 		var imbalancedRuns = 0
 
 		for j := 0; j < runsPerDataset; j++ {
-			var picks = RouletteWheel(candidates, models.AST)
-			var survivingBest, survivingWorst = freqCounter.count(picks)
+			picks, err := RouletteWheel(candidates, models.AST, int(len(candidates)/2))
+			if err != nil {
+				t.Fatal(fmt.Errorf("act: %w", err))
+			}
+			var survivingBest, survivingWorst = freqCounter.count(maps.Keys(picks))
 			if survivingWorst > survivingBest {
 				fmt.Printf("Run %3d: Imbalanced: B:%d / W:%d\n", j, survivingBest, survivingWorst)
 				imbalancedRuns++
@@ -90,7 +93,6 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 
 func Test_RouletteWheelAllFailingCandidates(t *testing.T) {
 	var datasets = [][]float64{
-		{},
 		{1.0},
 		{1.0, 1.0},
 		{1.0, 1.0, 1.0},
@@ -99,9 +101,8 @@ func Test_RouletteWheelAllFailingCandidates(t *testing.T) {
 	for _, dataset := range datasets {
 		fmt.Printf("Running the dataset: %v\n", dataset)
 		var candidates = candidatesForDataset(dataset)
-		var picks = RouletteWheel(maps.Clone(candidates), models.AST)
-		if slices.Compare(maps.Keys(candidates), picks) != 0 {
-			t.Errorf("Items mismatch:\n    Input  : %v\n    Expected: %v\n    Got     : %v", candidates, maps.Keys(candidates), picks)
+		if _, err := RouletteWheel(maps.Clone(candidates), models.AST, int(len(candidates)/2)); err == nil {
+			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 	}
 }

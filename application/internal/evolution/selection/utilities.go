@@ -1,6 +1,8 @@
 package selection
 
-import models "tde/models/program"
+import (
+	models "tde/models/program"
+)
 
 func getFitnesses(candidates []*models.Candidate, layer models.Layer) []float64 {
 	fitnesses := []float64{}

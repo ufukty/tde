@@ -1,18 +1,32 @@
 package selection
 
 import (
+	"fmt"
 	"tde/internal/utilities"
 	models "tde/models/program"
-
-	"golang.org/x/exp/maps"
 )
+
+// O(n) if the key checking is O(1)
+func deleteDuplicates(cids []models.CandidateID) []models.CandidateID {
+	found := map[models.CandidateID]bool{}
+	clean := []models.CandidateID{}
+	for _, cid := range cids {
+		if _, ok := found[cid]; !ok {
+			clean = append(clean, cid)
+		}
+	}
+	return clean
+}
 
 // Successful candidates should have higher fitnesses. Otherwise use reverseFitness.
 // One candidate can get selected multiple times.
 // If there is no candidate with better than worst fitness, the input returned without a difference.
-func RouletteWheel(candidates map[models.CandidateID]*models.Candidate, layer models.Layer) []models.CandidateID {
+func RouletteWheel(candidates models.Candidates, layer models.Layer, pick int) (models.Candidates, error) {
 	if len(candidates) == 0 {
-		return []models.CandidateID{}
+		return candidates, fmt.Errorf("empty population")
+	}
+	if len(candidates) < pick {
+		return candidates, fmt.Errorf("there are less candidates then needs to get pick")
 	}
 	var (
 		ids, cands   = utilities.MapItems(candidates)
@@ -24,12 +38,15 @@ func RouletteWheel(candidates map[models.CandidateID]*models.Candidate, layer mo
 		bullet       float64
 	)
 	if totalFitness == 0.0 {
-		return maps.Keys(candidates)
+		return candidates, fmt.Errorf("all candidates are worst so it's not possible to select better ones.")
 	}
-	for i := 0; i < len(cands); i++ {
-		bullet = utilities.URandFloatForCrypto() * totalFitness
-		choosen = utilities.BisectRight(cumulative, bullet)
-		picks = append(picks, ids[choosen])
+	for len(picks) < pick {
+		for len(picks) < pick { // O(n*logn)
+			bullet = utilities.URandFloatForCrypto() * totalFitness
+			choosen = utilities.BisectRight(cumulative, bullet)
+			picks = append(picks, ids[choosen])
+		}
+		picks = deleteDuplicates(picks)
 	}
-	return picks
+	return filterCandidatesByCids(candidates, picks), nil
 }
