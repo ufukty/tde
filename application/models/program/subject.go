@@ -11,12 +11,18 @@ type TargetAst struct {
 	// AllowedPackages []string
 }
 
-type CandidateID string
+type Sid string // SubjectId
 
-type Candidate struct {
-	UUID         CandidateID
+type Subject struct {
+	Sid          Sid
 	File         []byte // product of AST
 	AST          TargetAst
 	Fitness      Fitness
 	ExecTimeInMs int
+}
+
+type Subjects = map[Sid]*Subject // To make Subjects accessible by CIDs
+
+func (c Subject) IsValidIn(layer Layer) bool {
+	return c.Fitness.Layer() >= layer
 }

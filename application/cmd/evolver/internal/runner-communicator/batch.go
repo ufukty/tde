@@ -8,15 +8,15 @@ import (
 )
 
 type Batch struct {
-	File       *ast.File
-	Candidates []*models.Candidate
+	File     *ast.File
+	Subjects []*models.Subject
 }
 
 func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
-	for _, bucket := range utilities.DivideIntoBuckets(batch.Candidates, noBatches) {
+	for _, bucket := range utilities.DivideIntoBuckets(batch.Subjects, noBatches) {
 		batches = append(batches, &Batch{
-			File:       batch.File,
-			Candidates: bucket,
+			File:     batch.File,
+			Subjects: bucket,
 		})
 	}
 	return
@@ -24,15 +24,15 @@ func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
 
 func (batch *Batch) GetRequestDTO() *batch_post.Request {
 	var req = batch_post.Request{
-		Candidates:   []batch_post.Candidate{},
+		Subjects:     []batch_post.Subject{},
 		ArchiveID:    "", // FIXME:
 		FileTemplate: batch.File,
 	}
 
-	for _, candidate := range batch.Candidates {
-		req.Candidates = append(req.Candidates, batch_post.Candidate{
-			CandidateID: string(candidate.UUID),
-			FuncDecl:    candidate.AST.FuncDecl,
+	for _, subject := range batch.Subjects {
+		req.Subjects = append(req.Subjects, batch_post.Subject{
+			Sid:      string(subject.Sid),
+			FuncDecl: subject.AST.FuncDecl,
 		})
 	}
 

@@ -94,7 +94,7 @@ produce: |
           calculate probabilities of those operations.
 
       -population (Required) (Default=10000)
-          Number of candidates generated at start and tested at each generation.
+          Number of subjects generated at start and tested at each generation.
           Higher values will consume more credits and will help to test more 
           variation of each possibility.
 
@@ -102,7 +102,7 @@ produce: |
           Number of generations to iterate in single run.
       
       -size (Required) (Default=1000)
-          Size limit for any candidate in bytes.
+          Size limit for any subject in bytes.
 
       -p, -package (Optional)
           Allows evolver server to include import statements and type/func usage

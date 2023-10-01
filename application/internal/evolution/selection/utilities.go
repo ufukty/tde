@@ -4,9 +4,9 @@ import (
 	models "tde/models/program"
 )
 
-func getFitnesses(candidates []*models.Candidate, layer models.Layer) []float64 {
+func getFitnesses(subjects []*models.Subject, layer models.Layer) []float64 {
 	fitnesses := []float64{}
-	for _, individual := range candidates {
+	for _, individual := range subjects {
 		fitnesses = append(fitnesses, individual.Fitness.InLayer(layer))
 	}
 	return fitnesses

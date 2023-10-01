@@ -8,7 +8,7 @@ import (
 )
 
 // returns True for valid syntax
-func SyntaxCheckSafe(candidate ast.Node) (bool, any) {
+func SyntaxCheckSafe(subject ast.Node) (bool, any) {
 	var (
 		isValid      = true
 		panicMessage any
@@ -20,7 +20,7 @@ func SyntaxCheckSafe(candidate ast.Node) (bool, any) {
 				isValid = false
 			}
 		}()
-		if printer.Fprint(bytes.NewBuffer([]byte{}), token.NewFileSet(), candidate) == nil {
+		if printer.Fprint(bytes.NewBuffer([]byte{}), token.NewFileSet(), subject) == nil {
 			isValid = true
 		}
 	}()
@@ -29,16 +29,16 @@ func SyntaxCheckSafe(candidate ast.Node) (bool, any) {
 
 // Compared to SyntaxCheck, this one panics
 // returns True for valid syntax.
-func SyntaxCheckUnsafe(candidate ast.Node) bool {
+func SyntaxCheckUnsafe(subject ast.Node) bool {
 	isValid := false
-	if printer.Fprint(bytes.NewBuffer([]byte{}), token.NewFileSet(), candidate) == nil {
+	if printer.Fprint(bytes.NewBuffer([]byte{}), token.NewFileSet(), subject) == nil {
 		isValid = true
 	}
 	return isValid
 }
 
 // TODO: Write right into the target file instead use memory as intermediate
-func ProduceCodeFromASTSafe(candidate ast.Node) (*bytes.Buffer, bool, any) {
+func ProduceCodeFromASTSafe(subject ast.Node) (*bytes.Buffer, bool, any) {
 	var (
 		isValid      = true
 		panicMessage any
@@ -52,7 +52,7 @@ func ProduceCodeFromASTSafe(candidate ast.Node) (*bytes.Buffer, bool, any) {
 			}
 		}()
 
-		if printer.Fprint(buffer, token.NewFileSet(), candidate) == nil {
+		if printer.Fprint(buffer, token.NewFileSet(), subject) == nil {
 			isValid = true
 		}
 	}()

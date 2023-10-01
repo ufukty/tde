@@ -22,7 +22,7 @@ type path = string
 
 type slots struct {
 	free     []Slot
-	assigned map[models.CandidateID]Slot
+	assigned map[models.Sid]Slot
 }
 
 // slot manager is to reuse existing copies of the module for next generation
@@ -39,7 +39,7 @@ func New(sample path, combined *discovery.CombinedDetails) *SlotManager {
 		combined: combined,
 		slots: slots{
 			free:     []Slot{},
-			assigned: map[models.CandidateID]Slot{}},
+			assigned: map[models.Sid]Slot{}},
 	}
 	s.createMainFolder()
 	return &s
@@ -64,7 +64,7 @@ func (s *SlotManager) createMainFolder() error {
 	return nil
 }
 
-// empty slots have the same contents of sample module, it just doesn't have the candidate content
+// empty slots have the same contents of sample module, it just doesn't have the subject content
 func (s *SlotManager) createEmptySlot() error {
 	newSlotPath, err := s.genNewSlotPath()
 	if err != nil {
@@ -83,15 +83,15 @@ func (s *SlotManager) createEmptySlot() error {
 	return nil
 }
 
-func (s *SlotManager) assignCandidateToASlot(candidate *models.Candidate) (slot Slot) {
+func (s *SlotManager) assignSubjectToASlot(subject *models.Subject) (slot Slot) {
 	s.slots.free, slot = utilities.SlicePop(s.slots.free)
-	s.slots.assigned[candidate.UUID] = slot
+	s.slots.assigned[subject.Sid] = slot
 	return slot
 }
 
-func (s *SlotManager) printToFile(candidate *models.Candidate) error {
+func (s *SlotManager) printToFile(subject *models.Subject) error {
 	implementationFile := filepath.Join(s.tmp,
-		string(s.slots.assigned[candidate.UUID]),
+		string(s.slots.assigned[subject.Sid]),
 		s.combined.Package.PathInModule(),
 		filepath.Base(s.combined.Target.Path),
 	)
@@ -100,30 +100,30 @@ func (s *SlotManager) printToFile(candidate *models.Candidate) error {
 		return fmt.Errorf("opening the target file for overwrite: %w", err)
 	}
 	defer f.Close()
-	_, err = f.Write(candidate.File)
+	_, err = f.Write(subject.File)
 	if err != nil {
-		return fmt.Errorf("overwriting the target file with candidate: %w", err)
+		return fmt.Errorf("overwriting the target file with subject: %w", err)
 	}
 	return nil
 }
 
-func (s *SlotManager) placeCandidate(candidate *models.Candidate) (*Slot, error) {
+func (s *SlotManager) placeSubject(subj *models.Subject) (*Slot, error) {
 	if len(s.slots.free) == 0 {
 		if err := s.createEmptySlot(); err != nil {
 			return nil, fmt.Errorf("could not create new slot: %w", err)
 		}
 	}
-	slot := s.assignCandidateToASlot(candidate)
-	if err := s.printToFile(candidate); err != nil {
-		return nil, fmt.Errorf("printing candidate body to file in slot: %w", err)
+	slot := s.assignSubjectToASlot(subj)
+	if err := s.printToFile(subj); err != nil {
+		return nil, fmt.Errorf("printing subject body to file in slot: %w", err)
 	}
 	return &slot, nil
 }
 
-func (s *SlotManager) PlaceCandidatesIntoSlots(candidates []*models.Candidate) error {
-	for _, candidate := range candidates {
-		if _, err := s.placeCandidate(candidate); err != nil {
-			return fmt.Errorf("putting candidate into a slot: %w", err)
+func (s *SlotManager) PlaceSubjectsIntoSlots(subjects []*models.Subject) error {
+	for _, subj := range subjects {
+		if _, err := s.placeSubject(subj); err != nil {
+			return fmt.Errorf("putting subject into a slot: %w", err)
 		}
 	}
 	return nil
@@ -144,9 +144,9 @@ func (s *SlotManager) FreeAllSlots() error {
 	return nil
 }
 
-func (s *SlotManager) GetPackagePathForCandidate(candidateID models.CandidateID) string {
+func (s *SlotManager) GetPackagePathForCandidate(sid models.Sid) string {
 	return filepath.Join(s.tmp,
-		string(s.slots.assigned[candidateID]),
+		string(s.slots.assigned[sid]),
 		s.combined.Package.PathInModule(),
 	)
 }
@@ -165,7 +165,7 @@ func (s *SlotManager) Print() {
 		fmt.Println()
 	}
 	if len(s.slots.assigned) > 0 {
-		fmt.Println("  Assigned  : (candidate-id:slot)")
+		fmt.Println("  Assigned  : (sid:slot)")
 		for id, slot := range s.slots.assigned {
 			fmt.Printf("    %s:%s\n", id, string(slot))
 		}

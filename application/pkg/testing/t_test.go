@@ -16,7 +16,7 @@ func exampleUnitTest(t *T) {
 		"Cras eget nulla diam":         "maid allun tege sarC",
 		"Etiam in diam ligula":         "alugil maid ni maitE",
 		"Aliquam erat volutpat":        "taptulov tare mauqilA",
-		"Integer vel tincidunt erat":   "tare tnudicnit lev regetnI",
+		"Integer vel tinsidunt erat":   "tare tnudicnit lev regetnI",
 		"Phasellus ut commodo neque":   "euqen odommoc tu sullesahP",
 		"Curabitur id elementum augue": "eugua mutnemele di rutibaruC",
 	}

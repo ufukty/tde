@@ -28,7 +28,7 @@ func (f Fitness) Layer() Layer {
 	} else if f.Program != 0.0 {
 		return Program
 	} else {
-		return Solution
+		return Candidate
 	}
 }
 
@@ -40,7 +40,7 @@ func (f Fitness) InLayer(layer Layer) float64 {
 		return f.Code
 	case Program:
 		return f.Program
-	case Solution:
+	case Candidate:
 		return f.Solution
 	}
 	panic("unhandled case")

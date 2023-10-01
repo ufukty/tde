@@ -1,8 +1,6 @@
 package sessions
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 )
 
@@ -32,17 +30,17 @@ func (s *Store) Add(cs *Session) (sessionId SessionId) {
 // TODO: account the usage
 // TODO: timeout with context
 func (s *Store) Iterate(sessionId SessionId) error {
-	var (
-		session *Session
-		ok      bool
-	)
-	if session, ok = s.sessions[sessionId]; !ok {
-		return errors.New("")
-	}
+	// var (
+	// 	session *Session
+	// 	ok      bool
+	// )
+	// if session, ok = s.sessions[sessionId]; !ok {
+	// 	return errors.New("")
+	// }
 
-	session.Manager.Init() // session.Config.Population
-	// TODO: make request to runner
-	session.Manager.IterateLoop()
+	// session.Manager.Init() // session.Config.Population
+	// // TODO: make request to runner
+	// session.Manager.IterateLoop()
 
 	return nil
 }

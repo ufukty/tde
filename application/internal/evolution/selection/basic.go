@@ -7,28 +7,28 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-func filterCandidatesByCids(candidates models.Candidates, cids []models.CandidateID) models.Candidates {
-	cands := models.Candidates{}
-	for _, pick := range cids {
-		cand := candidates[pick]
-		cands[cand.UUID] = cand
+func filterSubjectsByCids(subjects models.Subjects, sids []models.Sid) models.Subjects {
+	cands := models.Subjects{}
+	for _, pick := range sids {
+		cand := subjects[pick]
+		cands[cand.Sid] = cand
 	}
 	return cands
 }
 
-func sortByFitnessInLayer(candidates models.Candidates, layer models.Layer) []models.CandidateID {
-	sorted := maps.Keys(candidates)
-	for _, ind := range candidates {
-		sorted = append(sorted, ind.UUID)
+func sortByFitnessInLayer(subjects models.Subjects, layer models.Layer) []models.Sid {
+	sorted := maps.Keys(subjects)
+	for _, ind := range subjects {
+		sorted = append(sorted, ind.Sid)
 	}
 	sort.Slice(sorted, func(i, j int) bool {
-		return candidates[sorted[i]].Fitness.InLayer(layer) < candidates[sorted[j]].Fitness.InLayer(layer)
+		return subjects[sorted[i]].Fitness.InLayer(layer) < subjects[sorted[j]].Fitness.InLayer(layer)
 	})
 	return sorted
 }
 
 // O(n2)
-func Elitist(candidates models.Candidates, layer models.Layer, pick int) models.Candidates {
-	sorted := sortByFitnessInLayer(candidates, layer)
-	return filterCandidatesByCids(candidates, sorted[:pick])
+func Elitist(subjects models.Subjects, layer models.Layer, pick int) models.Subjects {
+	sorted := sortByFitnessInLayer(subjects, layer)
+	return filterSubjectsByCids(subjects, sorted[:pick])
 }

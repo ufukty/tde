@@ -27,6 +27,6 @@ func decodeFromJson(src []byte) (*ast.FuncDecl, error) {
 	return fd, nil
 }
 
-// func Save(batch map[models.CandidateID]models.Candidate) {
+// func Save(batch map[models.Sid]models.Candidate) {
 
 // }

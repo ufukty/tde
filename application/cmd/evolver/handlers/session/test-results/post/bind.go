@@ -3,9 +3,9 @@ package test_results_post
 //go:generate serdeser bind.go
 
 type TestResult struct {
-	CandidateID string
-	Completed   bool // without run time error
-	Distance    float64
+	Sid       string
+	Completed bool // without run time error
+	Distance  float64
 }
 
 type Request struct {

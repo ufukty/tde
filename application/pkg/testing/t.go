@@ -27,15 +27,15 @@ type Config struct {
 type TargetFunctionType any
 
 type T struct {
-	UUID                   models.CandidateID `json:"uuid"`
-	AssertionResults       []bool             `json:"assertion_results"`
-	AssertionErrorDistance []float64          `json:"assertion_error_distances"`
-	ExecTime               time.Duration      `json:"exec_time"`
-	Panicked               bool               `json:"panicked"`
-	Config                 Config             `json:"-"`
+	UUID                   models.Sid    `json:"uuid"`
+	AssertionResults       []bool        `json:"assertion_results"`
+	AssertionErrorDistance []float64     `json:"assertion_error_distances"`
+	ExecTime               time.Duration `json:"exec_time"`
+	Panicked               bool          `json:"panicked"`
+	Config                 Config        `json:"-"`
 }
 
-func NewT(canditateUUID models.CandidateID) *T {
+func NewT(canditateUUID models.Sid) *T {
 	e := T{
 		UUID: canditateUUID,
 	}

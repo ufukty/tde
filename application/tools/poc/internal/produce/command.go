@@ -1,6 +1,7 @@
 package produce
 
 import (
+	"log"
 	"tde/internal/astw/astwutl"
 	"tde/internal/command"
 	"tde/internal/evolution"
@@ -12,7 +13,6 @@ import (
 	"tde/internal/utilities"
 
 	"fmt"
-	"log"
 
 	"golang.org/x/exp/maps"
 )
@@ -26,6 +26,9 @@ type Command struct {
 	Population int                 `long:"population" default:"1000"`       //
 	Iterate    int                 `long:"iterate" default:"10"`            //
 	Size       int                 `long:"size" default:"1000"`             //
+	Dc         int                 `short:"dc"`                             // depth limit for code search
+	Dp         int                 `short:"dp"`                             // depth limit for program search
+	Ds         int                 `short:"ds"`                             // depth limit for solution search
 	Package    command.MultiString `long:"package" short:"p"`               // packages allowed to import
 	Exclude    command.MultiString `long:"exclude" short:"e"`               // TODO:
 	TestName   string              `precedence:"0"`
@@ -83,11 +86,4 @@ func (c *Command) Run() {
 	var evolution = evolution.NewManager(evolutionTarget)
 
 	evolution.Init()
-
-	for i := 0; i < c.Iterate; i++ {
-		fmt.Printf("Iteration: %d\n", i)
-		evolution.IterateLoop()
-		evaluator.Pipeline(maps.Values(evolution.Candidates)) // TODO:
-	}
-
 }

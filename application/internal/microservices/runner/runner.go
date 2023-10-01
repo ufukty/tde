@@ -8,7 +8,7 @@ import (
 
 // TODO: copy the target module into /tmp/created_dir
 
-// TODO: duplicate the package as many as the number of candidates
+// TODO: duplicate the package as many as the number of subjects
 
 // TODO: embed a test main package
 
@@ -25,10 +25,10 @@ import (
 type Request struct {
 	GoModule           zip.File
 	EvolutionSessionID string
-	Candidates         []models.Candidate
+	Subjects           []models.Subject
 }
 
-func Handle(candidates []*models.Candidate) {
+func Handle(subjects []*models.Subject) {
 
 	// copy whole original module
 	// copy the file contains target function

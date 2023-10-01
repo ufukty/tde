@@ -143,7 +143,7 @@ func Test_DivideIntoBuckets(t *testing.T) {
 				}
 			}
 			if !found {
-				return fmt.Errorf("candidate %v not found in original bucket", c)
+				return fmt.Errorf("subject %v not found in original bucket", c)
 			}
 		}
 		return nil

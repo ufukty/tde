@@ -17,11 +17,11 @@ func Test_Scale(t *testing.T) {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 
-	candidates := []*ast.File{}
+	subjects := []*ast.File{}
 	for i := 0; i < POPULATION; i++ {
-		candidates = append(candidates, clean.File(file))
+		subjects = append(subjects, clean.File(file))
 	}
-	if len(candidates) != POPULATION {
-		t.Fatalf("assert: got: %d", len(candidates))
+	if len(subjects) != POPULATION {
+		t.Fatalf("assert: got: %d", len(subjects))
 	}
 }

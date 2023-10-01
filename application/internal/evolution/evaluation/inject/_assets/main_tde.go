@@ -10,14 +10,14 @@ import (
 	"flag"
 )
 
-var candidateUUID string
+var subjectUUID string
 
 func init() {
 	flag.StringVar(
-		&candidateUUID,
-		"candidate-uuid",
+		&subjectUUID,
+		"subject-uuid",
 		"",
-		"Tested candidate's identifier. The program will use this only for output and it is not essential for program to run.",
+		"Tested subject's identifier. The program will use this only for output and it is not essential for program to run.",
 	)
 }
 
@@ -25,8 +25,8 @@ func main() {
 	flag.Parse()
 	var (
 		testFunction  = targetPackage.{{ .TestFunctionName }}
-		candidateUUID = models.CandidateID(candidateUUID)
-		t			  = testing.NewT(candidateUUID)
+		subjectUUID = models.Sid(subjectUUID)
+		t			  = testing.NewT(subjectUUID)
 	)
 	testFunction(t)
 	t.Export()

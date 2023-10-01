@@ -34,10 +34,10 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	}
 	fmt.Println("sample module dir:", sample)
 
-	var candidates = []*models.Candidate{}
+	var subjects = []*models.Subject{}
 	for i := 0; i < 10; i++ {
-		candidates = append(candidates, &models.Candidate{
-			UUID: models.CandidateID(uuid.New().String()),
+		subjects = append(subjects, &models.Subject{
+			Sid:  models.Sid(uuid.New().String()),
 			File: []byte(`hello world`),
 		})
 	}
@@ -48,7 +48,7 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	}
 
 	var sm = New(sample, combined)
-	if err := sm.PlaceCandidatesIntoSlots(candidates); err != nil {
+	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
@@ -103,9 +103,9 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 
 	fmt.Println("sample module dir:", sample)
 
-	var candidates = []*models.Candidate{
+	var subjects = []*models.Subject{
 		{
-			UUID: models.CandidateID(uuid.New().String()),
+			Sid:  models.Sid(uuid.New().String()),
 			File: []byte(""),
 		},
 	}
@@ -120,7 +120,7 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 	}
 
 	var sm = New(sample, combined)
-	if err := sm.PlaceCandidatesIntoSlots(candidates); err != nil {
+	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act 1: %w", err))
 	}
 

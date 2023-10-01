@@ -90,7 +90,7 @@ func Controller(request *Request) (response *Response, errs *bucket.Bucket) {
 		sessionId = sessionStore.Add(session)
 	)
 
-	// go sessionManager.Iterate(caseId) // async
+	go sessionManager.Iterate(caseId) // async
 	return &Response{
 		SessionId: string(sessionId),
 		Status:    session.Status,

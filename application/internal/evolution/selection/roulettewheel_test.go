@@ -66,12 +66,12 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 	for _, dataset := range datasets {
 		fmt.Printf("\nRunning the dataset: %v\n", dataset)
 
-		var candidates = candidatesForDataset(dataset)
-		var freqCounter = newFreqCounter(candidates)
+		var subjects = subjectsForDataset(dataset)
+		var freqCounter = newFreqCounter(subjects)
 		var imbalancedRuns = 0
 
 		for j := 0; j < runsPerDataset; j++ {
-			picks, err := RouletteWheel(candidates, models.AST, int(len(candidates)/2))
+			picks, err := RouletteWheel(subjects, models.AST, int(len(subjects)/2))
 			if err != nil {
 				t.Fatal(fmt.Errorf("act: %w", err))
 			}
@@ -91,7 +91,7 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 	}
 }
 
-func Test_RouletteWheelAllFailingCandidates(t *testing.T) {
+func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 	var datasets = [][]float64{
 		{1.0},
 		{1.0, 1.0},
@@ -100,8 +100,8 @@ func Test_RouletteWheelAllFailingCandidates(t *testing.T) {
 
 	for _, dataset := range datasets {
 		fmt.Printf("Running the dataset: %v\n", dataset)
-		var candidates = candidatesForDataset(dataset)
-		if _, err := RouletteWheel(maps.Clone(candidates), models.AST, int(len(candidates)/2)); err == nil {
+		var subjects = subjectsForDataset(dataset)
+		if _, err := RouletteWheel(maps.Clone(subjects), models.AST, int(len(subjects)/2)); err == nil {
 			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 	}
@@ -109,46 +109,46 @@ func Test_RouletteWheelAllFailingCandidates(t *testing.T) {
 
 // MARK: test utilities
 
-func filterBestAndWorstIds(candidates map[models.CandidateID]*models.Candidate) (sortedIds []models.CandidateID, bests []models.CandidateID, worsts []models.CandidateID) {
-	_, cands := utilities.MapItems(candidates)
+func filterBestAndWorstIds(subjects map[models.Sid]*models.Subject) (sortedIds []models.Sid, bests []models.Sid, worsts []models.Sid) {
+	_, cands := utilities.MapItems(subjects)
 	sort.Slice(cands, func(i, j int) bool {
 		return cands[i].Fitness.AST < cands[j].Fitness.AST
 	})
 	for _, cand := range cands {
-		sortedIds = append(sortedIds, cand.UUID)
+		sortedIds = append(sortedIds, cand.Sid)
 	}
-	half := int(float64(len(candidates)) * 0.5)
+	half := int(float64(len(subjects)) * 0.5)
 	for i := 0; i < half; i++ {
-		bests = append(bests, cands[i].UUID)
-		worsts = append(worsts, cands[len(candidates)-1-i].UUID)
+		bests = append(bests, cands[i].Sid)
+		worsts = append(worsts, cands[len(subjects)-1-i].Sid)
 	}
 	return
 }
 
 type freqCounter struct {
-	candidates                   map[models.CandidateID]*models.Candidate
-	idFreqs                      map[models.CandidateID]int
-	sortedIds, bestIds, worstIds []models.CandidateID
+	subjects                     map[models.Sid]*models.Subject
+	idFreqs                      map[models.Sid]int
+	sortedIds, bestIds, worstIds []models.Sid
 }
 
-func newFreqCounter(candidates map[models.CandidateID]*models.Candidate) *freqCounter {
-	ids := maps.Keys(candidates)
-	freqs := map[models.CandidateID]int{}
+func newFreqCounter(subjects map[models.Sid]*models.Subject) *freqCounter {
+	ids := maps.Keys(subjects)
+	freqs := map[models.Sid]int{}
 	for _, id := range ids {
 		freqs[id] = 0
 	}
-	sortedIds, bestIds, worstIds := filterBestAndWorstIds(candidates)
+	sortedIds, bestIds, worstIds := filterBestAndWorstIds(subjects)
 	return &freqCounter{
-		candidates: candidates,
-		idFreqs:    freqs,
-		sortedIds:  sortedIds,
-		bestIds:    bestIds,
-		worstIds:   worstIds,
+		subjects:  subjects,
+		idFreqs:   freqs,
+		sortedIds: sortedIds,
+		bestIds:   bestIds,
+		worstIds:  worstIds,
 	}
 }
 
-func (fc *freqCounter) count(candidates []models.CandidateID) (survivingBest int, survivingWorst int) {
-	for _, id := range candidates {
+func (fc *freqCounter) count(subjects []models.Sid) (survivingBest int, survivingWorst int) {
+	for _, id := range subjects {
 		fc.idFreqs[id]++
 		if slices.Contains(fc.bestIds, id) {
 			survivingBest++
@@ -161,30 +161,30 @@ func (fc *freqCounter) count(candidates []models.CandidateID) (survivingBest int
 }
 
 func (fc freqCounter) PrintHistogram() {
-	if len(fc.candidates) == 0 {
+	if len(fc.subjects) == 0 {
 		return
 	}
 	fmt.Println("Histogram of frequencies:")
 	maxFreq := slices.Max(maps.Values(fc.idFreqs))
 	for _, id := range fc.sortedIds {
 		freq := fc.idFreqs[id]
-		fmt.Printf("    %2s %.2f %3d%% %s\n", string(id), fc.candidates[id].Fitness.AST, int(float64(freq)/float64(maxFreq)*100), utilities.StringFill("*", int(float64(freq)/float64(maxFreq)*40)))
+		fmt.Printf("    %2s %.2f %3d%% %s\n", string(id), fc.subjects[id].Fitness.AST, int(float64(freq)/float64(maxFreq)*100), utilities.StringFill("*", int(float64(freq)/float64(maxFreq)*40)))
 	}
 }
 
-func prepare(candidates map[models.CandidateID]*models.Candidate, picks []models.CandidateID) map[models.CandidateID]*models.Candidate {
-	ret := map[models.CandidateID]*models.Candidate{}
+func prepare(subjects map[models.Sid]*models.Subject, picks []models.Sid) map[models.Sid]*models.Subject {
+	ret := map[models.Sid]*models.Subject{}
 	for _, id := range picks {
 		delete(ret, id)
 	}
 	return ret
 }
 
-func candidatesForDataset(dataset []float64) map[models.CandidateID]*models.Candidate {
-	var candidates = map[models.CandidateID]*models.Candidate{}
+func subjectsForDataset(dataset []float64) map[models.Sid]*models.Subject {
+	var subjects = map[models.Sid]*models.Subject{}
 	for i, f := range dataset {
-		id := models.CandidateID(fmt.Sprintf("%d", i))
-		candidates[id] = &models.Candidate{UUID: id, Fitness: models.Fitness{AST: f}}
+		id := models.Sid(fmt.Sprintf("%d", i))
+		subjects[id] = &models.Subject{Sid: id, Fitness: models.Fitness{AST: f}}
 	}
-	return candidates
+	return subjects
 }

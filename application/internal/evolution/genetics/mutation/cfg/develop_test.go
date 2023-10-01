@@ -37,19 +37,19 @@ func Test_Develop(t *testing.T) {
 		t.Error(errors.Wrapf(err, "failed on prep"))
 	}
 
-	candidateFuncDecl := clone.FuncDecl(originalFuncDecl)
-	newNode, err := Develop(astPkg, astFile, candidateFuncDecl, 1)
+	subjectFuncDecl := clone.FuncDecl(originalFuncDecl)
+	newNode, err := Develop(astPkg, astFile, subjectFuncDecl, 1)
 	if err != nil {
 		t.Error(errors.Wrapf(err, "Failed on Develop"))
 	}
 	fmt.Println("typeOf: ", reflect.TypeOf(newNode))
-	if astwutl.CompareRecursivelyWithAddresses(candidateFuncDecl, originalFuncDecl) == true {
+	if astwutl.CompareRecursivelyWithAddresses(subjectFuncDecl, originalFuncDecl) == true {
 		pretty.Println(newNode)
-		pretty.Println(candidateFuncDecl.Body)
-		t.Error("Failed to see change on candidate")
+		pretty.Println(subjectFuncDecl.Body)
+		t.Error("Failed to see change on subject")
 	}
-	if ok, _ := evaluation.SyntaxCheckSafe(candidateFuncDecl); ok {
-		printer.Fprint(os.Stdout, token.NewFileSet(), candidateFuncDecl)
+	if ok, _ := evaluation.SyntaxCheckSafe(subjectFuncDecl); ok {
+		printer.Fprint(os.Stdout, token.NewFileSet(), subjectFuncDecl)
 		fmt.Println("")
 	}
 }
@@ -61,16 +61,16 @@ func Benchmark_Develop(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		candidateFuncDecl := clone.FuncDecl(originalFuncDecl)
-		newNode, err := Develop(astPkg, astFile, candidateFuncDecl, 1)
+		subjectFuncDecl := clone.FuncDecl(originalFuncDecl)
+		newNode, err := Develop(astPkg, astFile, subjectFuncDecl, 1)
 		if err != nil {
 			b.Error(errors.Wrapf(err, "Failed on Develop"))
 		}
-		if astwutl.CompareRecursivelyWithAddresses(candidateFuncDecl, originalFuncDecl) == true {
+		if astwutl.CompareRecursivelyWithAddresses(subjectFuncDecl, originalFuncDecl) == true {
 			if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
 				continue
 			}
-			b.Errorf("Failed to see change on candidate #%d\n", i)
+			b.Errorf("Failed to see change on subject #%d\n", i)
 		}
 	}
 }
@@ -82,8 +82,8 @@ func Test_DevelopProgressively(t *testing.T) {
 	}
 	var best = originalFuncDecl
 	for i := 0; i < 2000; i++ {
-		candidate := clone.FuncDecl(best)
-		newNode, err := Develop(astPkg, astFile, candidate, 20)
+		subject := clone.FuncDecl(best)
+		newNode, err := Develop(astPkg, astFile, subject, 20)
 		if err != nil {
 			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
 		}
@@ -91,7 +91,7 @@ func Test_DevelopProgressively(t *testing.T) {
 			printer.Fprint(os.Stdout, token.NewFileSet(), best)
 			fmt.Println("")
 			fmt.Println("^", i, "---")
-			best = candidate
+			best = subject
 		}
 	}
 }
@@ -104,17 +104,17 @@ func Test_DevelopFindUnbreakingChange(t *testing.T) {
 
 	nonBreakingChangeFound := false
 	for i := 0; i < 200; i++ {
-		candidate := clone.FuncDecl(originalFuncDecl)
-		Develop(astPkg, astFile, candidate, 20)
+		subject := clone.FuncDecl(originalFuncDecl)
+		Develop(astPkg, astFile, subject, 20)
 
-		if ok, _ := evaluation.SyntaxCheckSafe(candidate); ok {
-			printer.Fprint(os.Stdout, token.NewFileSet(), candidate)
+		if ok, _ := evaluation.SyntaxCheckSafe(subject); ok {
+			printer.Fprint(os.Stdout, token.NewFileSet(), subject)
 			fmt.Println("\n---")
 			nonBreakingChangeFound = true
 		}
 	}
 
 	if !nonBreakingChangeFound {
-		t.Error("No non-breaking candidates found.")
+		t.Error("No non-breaking subjects found.")
 	}
 }

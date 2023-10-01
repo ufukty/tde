@@ -1,31 +1,30 @@
 package models
 
+type SearchParameters struct {
+	Cap         int // max. number of individuals in search
+	Generations int // max. number of generations before calling it failure
+	Depth       int // adj. local/global search behaviour. suggestion 1 or 2
+	Evaluations int // max evaluations per generation
+}
+
 type Parameters struct {
 	Population  int
 	Generations int
 	Size        int // max. code size in bytes
 	Packages    []string
 
-	Cc int // cap. for code search
-	Cp int // cap. for program search
-	Cs int // cap. for solution search
-
-	Dc int // max depth for code search
-	Dp int // max depth for program search
-	Ds int // max depth for solution search
-
-	Rc float64 // reproduction rate for code search
-	Rp float64 // reproduction rate for program search
-	Rs float64 // reproduction rate for solution search
+	Code      SearchParameters
+	Program   SearchParameters
+	Candidate SearchParameters
 }
 
 type Layer int
 
-const (
-	AST = Layer(iota)
-	Code
-	Program
-	Solution
+const ( // don't change ordering
+	AST       = Layer(0) // Subject stuck printing
+	Code      = Layer(1) // Subject stuck compilation
+	Program   = Layer(2) // Subject stuck execution
+	Candidate = Layer(3) // Subject stuck on assertions
 )
 
 type SearchId string

@@ -11,9 +11,9 @@ import (
 
 func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 	body := bytes.NewReader([]byte(`{
-		"Candidates": [
+		"Subjects": [
 			{
-				"CandidateID": "1",
+				"Sid": "1",
 				"FuncDeclSerialized": "func() { fmt.Println(\"Hello World\") }"
 			}
 		],
@@ -28,9 +28,9 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 		t.Error(errors.Wrapf(err, "returned error"))
 	}
 
-	if len(req.Candidates) != 1 ||
-		req.Candidates[0].CandidateID != "1" ||
-		// req.Candidates[0].FuncDecl != "func() { fmt.Println(\"Hello World\") }" ||
+	if len(req.Subjects) != 1 ||
+		req.Subjects[0].Sid != "1" ||
+		// req.Subjects[0].FuncDecl != "func() { fmt.Println(\"Hello World\") }" ||
 		req.ArchiveID != "2" {
 		t.Error(errors.Wrapf(err, "validation"))
 	}
@@ -38,8 +38,8 @@ func Test_RunnerService_NewTest_Request_Deserialize(t *testing.T) {
 
 func Test_RunnerService_NewTest_Request_Serialize(t *testing.T) {
 	content1 := Request{
-		Candidates: []Candidate{{
-			CandidateID: "1",
+		Subjects: []Subject{{
+			Sid: "1",
 			FuncDecl: &ast.FuncDecl{
 				Name: &ast.Ident{Name: "blabla"},
 			},

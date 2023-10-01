@@ -14,12 +14,12 @@ func Test_Send(t *testing.T) {
 		}
 		batch = Batch{
 			File: &ast.File{Name: &ast.Ident{Name: "blabla"}},
-			Candidates: []*models.Candidate{
-				{UUID: "MR"}, {UUID: "45"}, {UUID: "LJ"}, {UUID: "1A"}, {UUID: "Nb"}, {UUID: "nP"}, {UUID: "gJ"},
-				{UUID: "WI"}, {UUID: "GS"}, {UUID: "KV"}, {UUID: "Q0"}, {UUID: "et"}, {UUID: "XA"}, {UUID: "Nx"},
-				{UUID: "6n"}, {UUID: "4p"}, {UUID: "N9"}, {UUID: "zH"}, {UUID: "Jy"}, {UUID: "BP"}, {UUID: "Rq"},
-				{UUID: "i8"}, {UUID: "DI"}, {UUID: "Ct"}, {UUID: "tw"}, {UUID: "m7"}, {UUID: "Lw"}, {UUID: "YI"},
-				{UUID: "lm"},
+			Subjects: []*models.Subject{
+				{Sid: "MR"}, {Sid: "45"}, {Sid: "LJ"}, {Sid: "1A"}, {Sid: "Nb"}, {Sid: "nP"}, {Sid: "gJ"},
+				{Sid: "WI"}, {Sid: "GS"}, {Sid: "KV"}, {Sid: "Q0"}, {Sid: "et"}, {Sid: "XA"}, {Sid: "Nx"},
+				{Sid: "6n"}, {Sid: "4p"}, {Sid: "N9"}, {Sid: "zH"}, {Sid: "Jy"}, {Sid: "BP"}, {Sid: "Rq"},
+				{Sid: "i8"}, {Sid: "DI"}, {Sid: "Ct"}, {Sid: "tw"}, {Sid: "m7"}, {Sid: "Lw"}, {Sid: "YI"},
+				{Sid: "lm"},
 			},
 		}
 	)

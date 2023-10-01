@@ -19,7 +19,7 @@ var (
 type Cache struct {
 	config *reader.Config
 	sd     *serviced.ServiceDiscovery
-	store  map[models.CandidateID]*models.Candidate
+	store  map[models.Sid]*models.Subject
 }
 
 func New(config *reader.Config, sd *serviced.ServiceDiscovery) *Cache {
@@ -27,13 +27,13 @@ func New(config *reader.Config, sd *serviced.ServiceDiscovery) *Cache {
 		// lb:    load_balancer.New(sd, services.Customs, config.APIGateway.RouterPrivate, "/customs/"),
 		sd:     sd,
 		config: config,
-		store:  *new(map[models.CandidateID]*models.Candidate),
+		store:  *new(map[models.Sid]*models.Subject),
 	}
 }
 
-func (c *Cache) Get(id models.CandidateID) (*models.Candidate, error) {
-	if candidate, ok := c.store[id]; ok {
-		return candidate, nil
+func (c *Cache) Get(id models.Sid) (*models.Subject, error) {
+	if subject, ok := c.store[id]; ok {
+		return subject, nil
 	}
 
 	// cache miss
@@ -49,9 +49,9 @@ func (c *Cache) Get(id models.CandidateID) (*models.Candidate, error) {
 	return nil, nil
 }
 
-func (c *Cache) GetModuleAST(archiveId string) (*models.Candidate, error) {
-	// if candidate, ok := c.store[id]; ok {
-	// 	return candidate, nil
+func (c *Cache) GetModuleAST(archiveId string) (*models.Subject, error) {
+	// if subject, ok := c.store[id]; ok {
+	// 	return subject, nil
 	// }
 
 	// cache miss
@@ -72,8 +72,8 @@ func (c *Cache) GetModuleAST(archiveId string) (*models.Candidate, error) {
 	return nil, nil
 }
 
-func (c *Cache) Set(id models.CandidateID, candidate *models.Candidate) error {
-	c.store[id] = candidate
+func (c *Cache) Set(id models.Sid, subject *models.Subject) error {
+	c.store[id] = subject
 
 	// update db
 
