@@ -202,7 +202,7 @@ Authorization: Bearer
     "batch_id": "<uuid>",
     "item": [
         {
-            "subject_id": "<uuid>",
+            "sid": "<uuid>",
             "results"
         }
     ]
@@ -224,7 +224,7 @@ Authorization: Bearer
     },
     "subjects": [
         {
-            "subject_id": "<uuid>",
+            "sid": "<uuid>",
             "func_decl": "<ast>",
         }
     ]
