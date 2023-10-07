@@ -12,7 +12,7 @@ import (
 func Test_Scale(t *testing.T) {
 	const POPULATION = 10000
 
-	_, file, err := astwutl.LoadFile("testdata/walk.go")
+	_, file, err := astwutl.LoadFile("testdata/evolution/walk.go")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}

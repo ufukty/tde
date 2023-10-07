@@ -39,3 +39,14 @@ func MapItems[K comparable, V any](in map[K]V) ([]K, []V) {
 	}
 	return keys, values
 }
+
+// returns m / c, with O(n)
+func MapDiff[M map[K]V, K comparable, V any](m, c M) M {
+	d := make(M, len(m))
+	for k := range m {
+		if _, ok := c[k]; !ok {
+			d[k] = m[k]
+		}
+	}
+	return d
+}

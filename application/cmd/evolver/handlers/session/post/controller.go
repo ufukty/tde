@@ -1,11 +1,8 @@
 package session_post
 
 import (
-	sessions "tde/cmd/evolver/internal/sessions"
 	"tde/internal/evolution"
 	"tde/internal/microservices/errors/bucket"
-	"tde/internal/microservices/errors/detailed"
-	"time"
 )
 
 type ArchiveStatus int
@@ -30,69 +27,71 @@ func validateArchiveID(archiveID string) ArchiveStatus {
 }
 
 func Controller(request *Request) (response *Response, errs *bucket.Bucket) {
-	var (
-		err error
-	)
-	{
-		switch validateArchiveID(request.ArchiveID) {
-		case NotFound:
-			errs.Add(detailed.New(MsgEitherDoesNotExistsOrYouDoNotHaveAccessToIt, "archive doesn't exists"))
-		case Unauthorized:
-			errs.Add(detailed.New(MsgEitherDoesNotExistsOrYouDoNotHaveAccessToIt, "archive exists but no auth"))
-		}
+	// var (
+	// 	err error
+	// )
+	// {
+	// 	switch validateArchiveID(request.ArchiveID) {
+	// 	case NotFound:
+	// 		errs.Add(detailed.New(MsgEitherDoesNotExistsOrYouDoNotHaveAccessToIt, "archive doesn't exists"))
+	// 	case Unauthorized:
+	// 		errs.Add(detailed.New(MsgEitherDoesNotExistsOrYouDoNotHaveAccessToIt, "archive exists but no auth"))
+	// 	}
 
-		if errs.IsAny() {
-			return
-		}
-	}
+	// 	if errs.IsAny() {
+	// 		return
+	// 	}
+	// }
 
-	var (
-		timeout time.Duration
-		config  *sessions.Config
-	)
-	{
-		timeout, err = time.ParseDuration(request.Timeout)
-		if err != nil {
-			errs.Add(detailed.AddBase(err, "Bad timeout_seconds value"))
-		}
-		config = &sessions.Config{
-			Runner: sessions.Runner{
-				Address: request.Runner.Address,
-				Token:   request.Runner.Token,
-			},
-			Probabilities: sessions.Probabilities{
-				CrossOver: request.Probabilities.CrossOver,
-				Mutation:  request.Probabilities.Mutation,
-			},
-			Timeout:         timeout,
-			Population:      request.Population,
-			SizeLimit:       request.SizeLimitBytes,
-			AllowedPackages: request.AllowedPackages,
-			Iterate:         request.Iterate,
-			TestName:        request.TestName,
-		}
+	// var (
+	// 	timeout time.Duration
+	// 	config  *sessions.Config
+	// )
+	// {
+	// 	timeout, err = time.ParseDuration(request.Timeout)
+	// 	if err != nil {
+	// 		errs.Add(detailed.AddBase(err, "Bad timeout_seconds value"))
+	// 	}
+	// 	config = &sessions.Config{
+	// 		Runner: sessions.Runner{
+	// 			Address: request.Runner.Address,
+	// 			Token:   request.Runner.Token,
+	// 		},
+	// 		Probabilities: sessions.Probabilities{
+	// 			CrossOver: request.Probabilities.CrossOver,
+	// 			Mutation:  request.Probabilities.Mutation,
+	// 		},
+	// 		Timeout:         timeout,
+	// 		Population:      request.Population,
+	// 		SizeLimit:       request.SizeLimitBytes,
+	// 		AllowedPackages: request.AllowedPackages,
+	// 		Iterate:         request.Iterate,
+	// 		TestName:        request.TestName,
+	// 	}
 
-		if errs.IsAny() {
-			return
-		}
-	}
+	// 	if errs.IsAny() {
+	// 		return
+	// 	}
+	// }
 
-	var target *evolution.Target
-	target, err = downloadAST("", request.ArchiveID)
-	if err != nil {
-		errs.Add(detailed.AddBase(err, "Could not access to archive right now."))
-		return
-	}
+	// var target *evolution.Target
+	// target, err = downloadAST("", request.ArchiveID)
+	// if err != nil {
+	// 	errs.Add(detailed.AddBase(err, "Could not access to archive right now."))
+	// 	return
+	// }
 
-	var (
-		em        = evolution.NewManager(target)
-		session   = sessions.NewSession(em, config)
-		sessionId = sessionStore.Add(session)
-	)
+	// var (
+	// 	em        = evolution.NewManager(&models.Parameters{}, &evaluation.Evaluator{})
+	// 	session   = sessions.NewSession(em, config)
+	// 	sessionId = sessionStore.Add(session)
+	// )
 
-	go sessionManager.Iterate(caseId) // async
-	return &Response{
-		SessionId: string(sessionId),
-		Status:    session.Status,
-	}, nil
+	// go sessionManager.Iterate(caseId) // async
+	// return &Response{
+	// 	SessionId: string(sessionId),
+	// 	Status:    session.Status,
+	// }, nil
+
+	return nil, nil
 }

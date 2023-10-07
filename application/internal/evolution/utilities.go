@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func newCandidate(pkg *ast.Package, file *ast.File, funcDecl *ast.FuncDecl) (*models.Subject, error) {
+func newSubject(pkg *ast.Package, file *ast.File, funcDecl *ast.FuncDecl) (*models.Subject, error) {
 	cloneFile := clone.File(file)
 	clondeFuncDecl, err := astwutl.FindFuncDecl(cloneFile, funcDecl.Name.Name)
 	if err != nil {

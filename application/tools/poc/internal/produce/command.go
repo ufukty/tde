@@ -11,6 +11,7 @@ import (
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/utilities"
+	models "tde/models/program"
 
 	"fmt"
 
@@ -83,7 +84,7 @@ func (c *Command) Run() {
 	sm.Print()
 
 	var evaluator = evaluation.NewEvaluator(sm)
-	var evolution = evolution.NewManager(evolutionTarget)
+	var evolution = evolution.NewManager(&models.Parameters{}, evaluator)
 
-	evolution.Init()
+	evolution.Init(evolutionTarget)
 }

@@ -16,6 +16,7 @@ type Parameters struct {
 	Code      SearchParameters
 	Program   SearchParameters
 	Candidate SearchParameters
+	Solution  SearchParameters
 }
 
 type Layer int
