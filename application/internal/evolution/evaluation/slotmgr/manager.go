@@ -2,7 +2,6 @@ package slotmgr
 
 import (
 	"tde/internal/evolution/evaluation/copymod"
-	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/utilities"
 	models "tde/models/program"
 
@@ -27,16 +26,18 @@ type slots struct {
 
 // slot manager is to reuse existing copies of the module for next generation
 type SlotManager struct {
-	sample   path
-	combined *discovery.CombinedDetails
-	tmp      path // reserved in instantiation. all
-	slots    slots
+	sample         path
+	pkgPathInMod   path
+	targetFilename path
+	tmp            path // reserved in instantiation. all
+	slots          slots
 }
 
-func New(sample path, combined *discovery.CombinedDetails) *SlotManager {
+func New(sample, pkgPathInMod, targetFilename path) *SlotManager {
 	s := SlotManager{
-		sample:   sample,
-		combined: combined,
+		sample:         sample,
+		pkgPathInMod:   pkgPathInMod,
+		targetFilename: targetFilename,
 		slots: slots{
 			free:     []Slot{},
 			assigned: map[models.Sid]Slot{}},
@@ -90,17 +91,18 @@ func (s *SlotManager) assignSubjectToASlot(subject *models.Subject) (slot Slot) 
 }
 
 func (s *SlotManager) printToFile(subject *models.Subject) error {
-	implementationFile := filepath.Join(s.tmp,
+	implementationFile := filepath.Join(
+		s.tmp,
 		string(s.slots.assigned[subject.Sid]),
-		s.combined.Package.PathInModule(),
-		filepath.Base(s.combined.Target.Path),
+		s.pkgPathInMod,
+		s.targetFilename,
 	)
 	f, err := os.Create(implementationFile)
 	if err != nil {
 		return fmt.Errorf("opening the target file for overwrite: %w", err)
 	}
 	defer f.Close()
-	_, err = f.Write(subject.File)
+	_, err = f.Write(subject.Code)
 	if err != nil {
 		return fmt.Errorf("overwriting the target file with subject: %w", err)
 	}
@@ -134,9 +136,13 @@ func (s *SlotManager) FreeAllSlots() error {
 	s.slots.free = append(s.slots.free, slots...)
 	maps.Clear(s.slots.assigned)
 
-	org := filepath.Join(s.sample, s.combined.Package.PathInModule(), filepath.Base(s.combined.Target.Path))
+	org := filepath.Join(
+		s.sample,
+		s.pkgPathInMod,
+		s.targetFilename,
+	)
 	for _, slot := range slots {
-		dst := filepath.Join(s.tmp, string(slot), s.combined.Package.PathInModule(), filepath.Base(s.combined.Target.Path))
+		dst := filepath.Join(s.tmp, string(slot), s.pkgPathInMod, s.targetFilename)
 		if err := copymod.CopyFile(org, dst); err != nil {
 			return fmt.Errorf("restoring the target file for the slot %q: %w", slot, err)
 		}
@@ -145,9 +151,10 @@ func (s *SlotManager) FreeAllSlots() error {
 }
 
 func (s *SlotManager) GetPackagePathForCandidate(sid models.Sid) string {
-	return filepath.Join(s.tmp,
+	return filepath.Join(
+		s.tmp,
 		string(s.slots.assigned[sid]),
-		s.combined.Package.PathInModule(),
+		s.pkgPathInMod,
 	)
 }
 

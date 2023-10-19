@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
 	models "tde/models/program"
@@ -38,16 +37,16 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		subjects = append(subjects, &models.Subject{
 			Sid:  models.Sid(uuid.New().String()),
-			File: []byte(`hello world`),
+			Code: []byte(`hello world`),
 		})
 	}
 
-	combined, err := discovery.CombinedDetailsForTest("testdata/words", "TDE_WordReverse")
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
-	}
+	// combined, err := discovery.CombinedDetailsForTest("testdata/words", "TDE_WordReverse")
+	// if err != nil {
+	// 	t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
+	// }
 
-	var sm = New(sample, combined)
+	var sm = New(sample, pkg.PathInModule(), "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
@@ -106,26 +105,22 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 	var subjects = []*models.Subject{
 		{
 			Sid:  models.Sid(uuid.New().String()),
-			File: []byte(""),
+			Code: []byte(""),
 		},
 	}
-	combined, err := discovery.CombinedDetailsForTest("testdata/words", "TDE_WordReverse")
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
-	}
 
-	originalHash, err := checksum(filepath.Join(sample, combined.Package.PathInModule(), filepath.Base(combined.Target.Path)))
+	originalHash, err := checksum(filepath.Join(sample, pkg.PathInModule(), "words.go"))
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep, hash original target file: %w", err))
 	}
 
-	var sm = New(sample, combined)
+	var sm = New(sample, pkg.PathInModule(), "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act 1: %w", err))
 	}
 
 	var assignedSlot = string(maps.Values(sm.slots.assigned)[0])
-	var targetFileInSlot = filepath.Join(sm.tmp, assignedSlot, combined.Package.PathInModule(), filepath.Base(combined.Target.Path))
+	var targetFileInSlot = filepath.Join(sm.tmp, assignedSlot, pkg.PathInModule(), "words.go")
 	fmt.Println("target file path in slot:", targetFileInSlot)
 	modifiedHash, err := checksum(targetFileInSlot)
 	if err != nil {
