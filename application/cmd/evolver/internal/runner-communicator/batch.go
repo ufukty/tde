@@ -32,7 +32,7 @@ func (batch *Batch) GetRequestDTO() *batch_post.Request {
 	for _, subject := range batch.Subjects {
 		req.Subjects = append(req.Subjects, batch_post.Subject{
 			Sid:      string(subject.Sid),
-			FuncDecl: subject.AST.FuncDecl,
+			FuncDecl: subject.AST,
 		})
 	}
 

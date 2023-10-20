@@ -122,7 +122,7 @@ func (s *SlotManager) placeSubject(subj *models.Subject) (*Slot, error) {
 	return &slot, nil
 }
 
-func (s *SlotManager) PlaceSubjectsIntoSlots(subjects []*models.Subject) error {
+func (s *SlotManager) PlaceSubjectsIntoSlots(subjects models.Subjects) error {
 	for _, subj := range subjects {
 		if _, err := s.placeSubject(subj); err != nil {
 			return fmt.Errorf("putting subject into a slot: %w", err)

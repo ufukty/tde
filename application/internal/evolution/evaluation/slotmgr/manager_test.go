@@ -33,9 +33,9 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	}
 	fmt.Println("sample module dir:", sample)
 
-	var subjects = []*models.Subject{}
+	var subjects = models.Subjects{}
 	for i := 0; i < 10; i++ {
-		subjects = append(subjects, &models.Subject{
+		subjects.Add(&models.Subject{
 			Sid:  models.Sid(uuid.New().String()),
 			Code: []byte(`hello world`),
 		})
@@ -102,12 +102,12 @@ func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
 
 	fmt.Println("sample module dir:", sample)
 
-	var subjects = []*models.Subject{
+	var subjects = models.SubjectsFrom([]*models.Subject{
 		{
 			Sid:  models.Sid(uuid.New().String()),
 			Code: []byte(""),
 		},
-	}
+	})
 
 	originalHash, err := checksum(filepath.Join(sample, pkg.PathInModule(), "words.go"))
 	if err != nil {
