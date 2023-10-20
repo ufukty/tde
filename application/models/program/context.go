@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"go/ast"
 	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone/clean"
+
+	"github.com/google/uuid"
 )
 
 type Context struct {
@@ -26,7 +29,7 @@ func LoadContext(module, pkgpath, funcname string) (*Context, error) {
 		return nil, fmt.Errorf("searching %q in the package: %w", funcname, err)
 	}
 	ctx := &Context{
-		Module:   map[string]*ast.Package{}, // TODO:
+		Module:   map[string]*ast.Package{}, // TODO: context for module
 		Package:  pkg,
 		File:     file,
 		FuncDecl: funcdecl,
@@ -50,4 +53,22 @@ func (ctx *Context) Swap(funcDecl *ast.FuncDecl) {
 // needed after printing
 func (ctx *Context) Restore() {
 	ctx.File.Decls[ctx.funcDeclIndex] = ctx.orgFuncDecl
+}
+
+func (ctx *Context) NewSubject() *Subject {
+	return &Subject{
+		Sid:          Sid(uuid.New().String()), // UUID v4,
+		Parent:       "-1",
+		AST:          clean.FuncDecl(ctx.orgFuncDecl),
+		Imports:      []*ast.ImportSpec{},
+		Code:         []byte{},
+		Fitness:      Fitness{
+			AST:       0,
+			Code:      0,
+			Program:   0,
+			Solution:  0,
+			Evaluated: false,
+		},
+		ExecTimeInMs: 0,
+	}
 }

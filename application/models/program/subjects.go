@@ -28,3 +28,7 @@ func SubjectsFrom(s []*Subject) Subjects {
 	}
 	return ss
 }
+
+func (s Subjects) Values() []*Subject {
+	return maps.Values(s)
+}
