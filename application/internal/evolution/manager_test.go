@@ -29,7 +29,7 @@ func prepare(parameters *models.Parameters) (*SolutionSearch, error) {
 	return em, nil
 }
 
-func Test_Manager(t *testing.T) {
+func Test_SolutionSearch(t *testing.T) {
 	parameters := &models.Parameters{
 		Population:  0,
 		Generations: 0,
@@ -54,11 +54,9 @@ func Test_Manager(t *testing.T) {
 			Evaluations: 0,
 		},
 	}
-
 	em, err := prepare(parameters)
 	if err != nil {
 		t.Fatalf("prep: %w", err)
 	}
-
-	em.Init()
+	em.Loop()
 }

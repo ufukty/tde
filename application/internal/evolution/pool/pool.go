@@ -13,6 +13,12 @@ func (p *Pool) Set(subj *models.Subject) {
 	p.Depths[subj.Sid] = p.Depths[subj.Parent]
 }
 
+func (p *Pool) Join(subjects models.Subjects) {
+	for sid, subj := range subjects {
+		p.p[sid] = subj
+	}
+}
+
 func (p *Pool) Delete(sid models.Sid) {
 	delete(p.p, sid)
 }
