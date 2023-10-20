@@ -3,9 +3,9 @@ package pool
 import models "tde/models/program"
 
 type Pool struct {
+	Depths map[models.Sid]int
 	p      models.Subjects
 	subs   []*Pool
-	Depths map[models.Sid]int
 }
 
 func (p *Pool) Set(subj *models.Subject) {
@@ -31,8 +31,8 @@ func (p *Pool) FilterValidIn(layer models.Layer) models.Subjects {
 	return results
 }
 
-func (p *Pool) Sub() *Pool {
-	sub := &Pool{}
+func (p *Pool) Sub(root *models.Subject) *Pool {
+	sub := New(root)
 	p.subs = append(p.subs, sub)
 	return sub
 }
@@ -47,9 +47,14 @@ func (p *Pool) FilterByDepth(le int) models.Subjects {
 	return results
 }
 
-func New(root models.Sid) *Pool {
+func New(root *models.Subject) *Pool {
 	return &Pool{
-		p:      make(models.Subjects),
-		Depths: map[models.Sid]int{root: 0},
+		p: models.Subjects{
+			root.Sid: root,
+		},
+		Depths: map[models.Sid]int{
+			root.Sid: 0,
+		},
+		subs: []*Pool{},
 	}
 }

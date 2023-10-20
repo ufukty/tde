@@ -3,76 +3,127 @@ package evolution
 import (
 	"fmt"
 	"tde/internal/evolution/evaluation"
+	"tde/internal/evolution/genetics/crossover/subtreeswitch"
+	"tde/internal/evolution/genetics/mutation"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/search"
 	"tde/internal/evolution/selection"
+	"tde/internal/utilities"
 	models "tde/models/program"
 
 	"golang.org/x/exp/maps"
 )
 
-type Manager struct {
+type SolutionSearch struct {
 	Evaluator *evaluation.Evaluator
 	Params    *models.Parameters
 	Pool      *pool.Pool
 	Searches  search.CandidateSearches
-	Balances  BalanceBook
+	Context   *models.Context
 }
 
-func NewManager(parameters *models.Parameters, evaluator *evaluation.Evaluator) *Manager {
-	return &Manager{
-		Evaluator: evaluator,
-		Params:    parameters,
+func NewSolutionSearch(e *evaluation.Evaluator, params *models.Parameters, context *models.Context) *SolutionSearch {
+	return &SolutionSearch{
+		Evaluator: e,
+		Params:    params,
+		Context:   context,
 	}
 }
 
 // Pick parents for genetic operations
-func PickParents(params models.SearchParameters, s models.Subjects) (co models.Subjects, mu models.Subjects, err error) {
-	parents, err := selection.RouletteWheel(s, models.Candidate, params.Evaluations)
+func (m *SolutionSearch) PickParents(candidates models.Subjects) (co []*[2]*models.Subject, mu models.Subjects, err error) {
+	n := m.Params.Solution.Evaluations
+	parents, err := selection.RouletteWheel(candidates, models.Candidate, n)
+	if err != nil {
+		return nil, nil, fmt.Errorf("running RouletteWheel: %w", err)
+	}
+	nCo := int((float64(n)) / 20)
+	coA, err := selection.RouletteWheel(parents, models.Candidate, nCo)
+	if err != nil {
+		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
+	}
+	coB, err := selection.RouletteWheel(parents, models.Candidate, nCo)
+	if err != nil {
+		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
+	}
+	co = utilities.SliceZipToSlice(maps.Values(coA), maps.Values(coB))
+	nMu := n - 2*nCo
+	mu, err = selection.RouletteWheel(parents, models.Candidate, nMu)
+	if err != nil {
+		return nil, nil, fmt.Errorf("picking mutation parents from picked parents: %w", err)
+	}
 	return
 }
 
-func (m *Manager) Init(start *models.Subject) error {
-	m.Pool = pool.New(start.Sid)
+func (m *SolutionSearch) diversify() error {
+	candidates := m.Pool.FilterValidIn(models.Candidate)
 
-	for i := 0; i < m.Params.Generations; i++ {
-		m.Balances.NewGen()
-		candidates := m.Pool.FilterValidIn(models.Candidate)
+	co, mu, err := m.PickParents(candidates)
+	if err != nil {
+		return fmt.Errorf("picking parents: %w", err)
+	}
 
-		for _, search := range m.Searches {
-			products, err := search.Iterate()
-			if err != nil {
-				return fmt.Errorf("iterating a candidate search (sid: %s): %w", search.Src, err)
+	offsprings := models.Subjects{}
+
+	// cross overs
+	if len(co) > 0 {
+		for _, pair := range co {
+			oA, oB := pair[0].Clone(), pair[1].Clone()
+			if ok := subtreeswitch.SubtreeSwitch(oA.AST, oB.AST); !ok {
+				return fmt.Errorf("failed at subtree switch")
 			}
-			if products != nil && len(products) > 0 {
-				candidates.Join(products)
+			offsprings.Add(oA)
+			offsprings.Add(oB)
+		}
+	}
+
+	// mutations
+	if len(mu) > 0 {
+		for _, subj := range mu {
+			offspring := subj.Clone()
+			if err := mutation.Mutate(*m.Context, offspring, m.Params.Packages); err != nil {
+				return fmt.Errorf("failed at mutation")
 			}
+			offsprings.Add(offspring)
 		}
+	}
 
-		if err := m.Searches.Prune(); err != nil {
-			return fmt.Errorf("pruning failed searches: %w", err)
-		}
+	if len(offsprings) > 0 {
 
-		offsprings := models.Subjects{}
-
-		if err != nil {
-			return fmt.Errorf("picking parents with RouletteWheel: %w", err)
-		}
-
-		// TODO: mutations
-
-		// TODO: crossovers
-
-		err := m.Evaluator.Pipeline(maps.Values(offsprings))
-		if err != nil {
-			return fmt.Errorf("evaluating point-0: %w", err)
+		if err := m.Evaluator.Pipeline(offsprings); err != nil {
+			return fmt.Errorf("evaluating offsprings: %w", err)
 		}
 
 		// span candidate searches for subjects that doesn't finish the unit test
 		for _, o := range offsprings {
 			if !o.IsValidIn(models.Candidate) {
-				cs := search.NewCandidateSearch(m.Evaluator, m.Pool, m.Params, start.Sid)
+				m.Searches.Append(
+					search.NewCandidateSearch(m.Evaluator, m.Pool, m.Params, m.Context, o.Sid),
+				)
 			}
+		}
+	}
+
+	return nil
+}
+
+func (m *SolutionSearch) Init() error {
+	m.Pool = pool.New(m.Context.NewSubject())
+
+	for i := 0; i < m.Params.Generations; i++ {
+		candidates := m.Pool.FilterValidIn(models.Candidate)
+
+		if products, err := m.Searches.Iterate(); err != nil {
+			return fmt.Errorf("pruning failed searches: %w", err)
+		} else {
+			candidates.Join(products)
+		}
+
+		if err := m.Searches.Prune(); err != nil {
+			return fmt.Errorf("pruning failed searches: %w", err)
+		}
+		if err := m.diversify(); err != nil {
+			return fmt.Errorf("diversifying: %w", err)
 		}
 	}
 
