@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
+	models "tde/models/program"
 )
 
 // returns True for valid syntax
@@ -38,12 +39,14 @@ func SyntaxCheckUnsafe(subject ast.Node) bool {
 }
 
 // TODO: Write right into the target file instead use memory as intermediate
-func ProduceCodeFromASTSafe(subject ast.Node) (*bytes.Buffer, bool, any) {
+func ProduceCodeFromASTSafe(context *models.Context, subject *ast.FuncDecl) (*bytes.Buffer, bool, any) {
 	var (
 		isValid      = true
 		panicMessage any
 		buffer       = bytes.NewBuffer([]byte{})
 	)
+	context.Swap(subject)
+	defer context.Restore()
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -52,7 +55,7 @@ func ProduceCodeFromASTSafe(subject ast.Node) (*bytes.Buffer, bool, any) {
 			}
 		}()
 
-		if printer.Fprint(buffer, token.NewFileSet(), subject) == nil {
+		if printer.Fprint(buffer, token.NewFileSet(), context.File) == nil {
 			isValid = true
 		}
 	}()

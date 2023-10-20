@@ -1,94 +1,62 @@
 package evaluation
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone/clean"
-	"tde/internal/evolution/evaluation/discovery"
+	"fmt"
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
 	models "tde/models/program"
-
-	"fmt"
-	"path/filepath"
 	"testing"
-
-	"github.com/google/uuid"
 )
 
 const ( // applies to all test cases in this package
-	MODULEROOT  = "../../../"
-	ORIGINALPKG = "../../../examples/words"
-	PKGINMOD    = "examples/words"
-	TESTNAME    = "TDE_WordReverse"
-	TARGETNAME  = "WordReverse"
-	POPULATION  = 3
+	POPULATION = 3
 )
 
-func prepare() (*Evaluator, []*models.Subject, error) {
-	orgPkgAst, err := astwutl.LoadPackageFromDir(ORIGINALPKG)
+func prepare() (*Evaluator, models.Subjects, error) {
+	ctx, err := models.LoadContext("../../..", "testdata", "TDE_WordReverse")
 	if err != nil {
-		return nil, nil, fmt.Errorf("prep: %w", err)
+		return nil, nil, fmt.Errorf("finding the context for package: %w", err)
 	}
-
-	var subjects = []*models.Subject{}
+	subjects := models.Subjects{}
 	for i := 0; i < POPULATION; i++ { //
-		pkgWorkingCopy := clean.Package(orgPkgAst)
-		file, funcdecl, err := astwutl.FindFuncDeclInPkg(pkgWorkingCopy, TARGETNAME)
-		if err != nil {
-			return nil, nil, fmt.Errorf("locating the func in the working-copy of original target package: %w", err)
-		}
-		var subject = &models.Subject{
-			Sid: models.Sid(uuid.New().String()),
-			AST: models.TargetAst{
-				Package:  pkgWorkingCopy,
-				File:     file,
-				FuncDecl: funcdecl,
-			},
-		}
-		subjects = append(subjects, subject)
+		subjects.Add(ctx.NewSubject())
 	}
-
-	pkgs, err := list.ListPackagesInDir(ORIGINALPKG)
+	pkgs, err := list.ListPackagesInDir("testdata")
 	if err != nil {
 		return nil, nil, fmt.Errorf("listing packages in target dir: %w", err)
 	}
-	sample, err := inject.WithCreatingSample(MODULEROOT, pkgs.First(), TESTNAME)
+	sample, err := inject.WithCreatingSample("../../..", pkgs.First(), "TDE_WordReverse")
 	if err != nil {
 		return nil, nil, fmt.Errorf("creating sample: %w", err)
 	}
-	combined, err := discovery.CombinedDetailsForTest(filepath.Join(sample, PKGINMOD), TESTNAME)
-	if err != nil {
-		return nil, nil, fmt.Errorf("retriving combined details: %w", err)
-	}
-	sm := slotmgr.New(sample, combined)
+	sm := slotmgr.New(sample, "internal/evolution/evaluation/testdata", "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		return nil, nil, fmt.Errorf("passing subjects into slot manager: %w", err)
 	}
-	syntaxCheckAndProduceCode(subjects)
-	evaluator := NewEvaluator(sm)
+	syntaxCheckAndProduceCode(ctx, subjects)
+	evaluator := NewEvaluator(sm, ctx)
 	return evaluator, subjects, nil
 }
 
 // FIXME: check fitness has populated after syntax errors
-func Test_SyntaxCheckAndProduceCode(t *testing.T) {
+func Test_Print(t *testing.T) {
 	_, subjects, err := prepare()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	for i, subject := range subjects {
-		if len(subject.File) == 0 {
-			t.Fatal(fmt.Errorf("assert, subjects[%d].File is empty: %w", i, err))
+		if len(subject.Code) == 0 {
+			t.Fatal(fmt.Errorf("assert, subjects[%s].File is empty: %w", i, err))
 		}
 	}
 }
 
-func Test_Compile(t *testing.T) {
+func Test_PrintAndCompile(t *testing.T) {
 	evaluator, subjects, err := prepare()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-
 	if err := evaluator.runSubjects(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}

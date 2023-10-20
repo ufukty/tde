@@ -1,35 +1,37 @@
 package evaluation
 
 import (
-	"tde/internal/evolution/evaluation/slotmgr"
-	models "tde/models/program"
-	"tde/pkg/testing"
-
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"tde/internal/evolution/evaluation/slotmgr"
+	models "tde/models/program"
+	"tde/pkg/testing"
 )
 
 type Evaluator struct {
-	sm *slotmgr.SlotManager
+	sm  *slotmgr.SlotManager
+	ctx *models.Context
 }
 
-func NewEvaluator(sm *slotmgr.SlotManager) *Evaluator {
+func NewEvaluator(sm *slotmgr.SlotManager, ctx *models.Context) *Evaluator {
 	return &Evaluator{
-		sm: sm,
+		sm:  sm,
+		ctx: ctx,
 	}
 }
 
 // FIXME: count errors on code creation
 // TODO: ...and populate fitness component for it
-func syntaxCheckAndProduceCode(subjects []*models.Subject) {
+func syntaxCheckAndProduceCode(context *models.Context, subjects models.Subjects) {
 	for _, subject := range subjects {
-		buffer, ok, err := ProduceCodeFromASTSafe(subject.AST.File) // produce code from ast.File to capture changes in import list too
+		buffer, ok, err := ProduceCodeFromASTSafe(context, subject.AST) // produce code from ast.File to capture changes in import list too
+		// FIXME:
 		if err != nil || !ok {
 			subject.Fitness.AST = 1.0
 			continue
 		}
-		subject.File = buffer.Bytes()
+		subject.Code = buffer.Bytes()
 	}
 }
 
@@ -67,7 +69,7 @@ func (e *Evaluator) populateFitnessWithResults(subject *models.Subject, results 
 	return nil
 }
 
-func (e *Evaluator) runSubjects(subjects []*models.Subject) error {
+func (e *Evaluator) runSubjects(subjects models.Subjects) error {
 	for _, subject := range subjects {
 		if err := e.test(subject.Sid); err != nil {
 			return fmt.Errorf("testing the subject %q: %w", subject.Sid, err)
@@ -89,8 +91,8 @@ func (e *Evaluator) runSubjects(subjects []*models.Subject) error {
 // TODO: Get test results
 // TODO: Return test results
 // TODO: skip subjects its fitness already set
-func (e *Evaluator) Pipeline(subjects []*models.Subject) error {
-	syntaxCheckAndProduceCode(subjects)
+func (e *Evaluator) Pipeline(subjects models.Subjects) error {
+	syntaxCheckAndProduceCode(e.ctx, subjects)
 	if err := e.sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		return fmt.Errorf("placing subjects into slots: %w", err)
 	}
