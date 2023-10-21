@@ -56,7 +56,7 @@ func Test_SolutionSearch(t *testing.T) {
 	}
 	em, err := prepare(parameters)
 	if err != nil {
-		t.Fatalf("prep: %w", err)
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	em.Loop()
 }

@@ -1,6 +1,7 @@
 package mutation
 
 import (
+	"fmt"
 	"tde/internal/evolution/genetics/mutation/common"
 	import_path "tde/internal/evolution/genetics/mutation/import-path"
 	"tde/internal/evolution/genetics/mutation/literals"
@@ -8,6 +9,7 @@ import (
 	switch_lines "tde/internal/evolution/genetics/mutation/switch-lines"
 	token_shuffle "tde/internal/evolution/genetics/mutation/token-shuffle"
 	"tde/internal/utilities"
+	models "tde/models/program"
 )
 
 // TODO: RegenerateSubtree (cfg/node_constructor)
@@ -23,4 +25,18 @@ var availableOperations = []common.GeneticOperation{
 
 func Pick() common.GeneticOperation {
 	return *utilities.Pick(availableOperations)
+}
+
+func Mutate(ctx models.Context, subj *models.Subject, packages []string) error {
+	op := Pick()
+	opctx := &common.GeneticOperationContext{
+		Package:         ctx.Package,
+		File:            ctx.File,
+		FuncDecl:        subj.AST,
+		AllowedPackages: packages,
+	}
+	if ok := op(opctx); !ok {
+		return fmt.Errorf("failed at applying mutation")
+	}
+	return nil
 }

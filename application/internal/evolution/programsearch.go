@@ -2,36 +2,32 @@ package evolution
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/pool"
 	models "tde/models/program"
 )
 
 // Searches for a AST that compile & run
-type ProgramSearch struct {
-	Evaluator *evaluation.Evaluator
-	Pool      *pool.Pool
-	Subpool   *pool.Pool
-	Params    *models.Parameters
-	Src       models.Sid
-	Counter   int
-
-	SubSearch *CodeSearch
-	Dests     models.Sid
+type programSearch struct {
+	*commons
+	Subpool *pool.Pool
+	Src     models.Sid
+	Counter int
+	Search  *codeSearch
+	Dests   models.Sid
 }
 
-func (s *ProgramSearch) IsEnded() bool {
-	return s.Counter == s.Params.Program.Generations
+func (ps *programSearch) IsEnded() bool {
+	return ps.Counter == ps.Params.Program.Generations
 }
 
-func (s *ProgramSearch) Iterate() (models.Subjects, error) {
+func (ps *programSearch) Iterate() (models.Subjects, error) {
 	// collect findings
 
-	if s.SubSearch == nil {
-		s.SubSearch = NewCodeSearch(s.Evaluator, s.Pool)
+	if ps.Search == nil {
+		// ps.Search = newCodeSearch(ps.commons, root)
 	}
 
-	products, err := s.SubSearch.Iterate()
+	products, err := ps.Search.Iterate()
 	if err != nil {
 		return nil, fmt.Errorf("iterating program search: %w", err)
 	}
@@ -40,26 +36,24 @@ func (s *ProgramSearch) Iterate() (models.Subjects, error) {
 		return products, nil
 	}
 
-	if s.SubSearch.IsEnded() {
-		s.Counter++
+	if ps.Search.IsEnded() {
+		ps.Counter++
 	}
 
 	return models.Subjects{}, nil
 }
 
-func (s *ProgramSearch) Terminate() {
-	
+func (ps *programSearch) Terminate() {
+
 }
 
-func NewProgramSearch(evaluator *evaluation.Evaluator, pool *pool.Pool, parameters *models.Parameters, sid models.Sid) *ProgramSearch {
-	return &ProgramSearch{
-		Evaluator: evaluator,
-		Pool:      pool,
-		Subpool:   pool.Sub(),
-		Params:    parameters,
-		Src:       sid,
-		Counter:   0,
-		SubSearch: nil,
-		Dests:     "",
+func newProgramSearch(commons *commons, root *models.Subject) *programSearch {
+	return &programSearch{
+		commons: commons,
+		Subpool: commons.Pool.Sub(root),
+		Src:     root.Sid,
+		Counter: 0,
+		Search:  nil,
+		Dests:   "",
 	}
 }

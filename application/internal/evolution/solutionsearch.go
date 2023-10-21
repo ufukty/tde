@@ -6,7 +6,6 @@ import (
 	"tde/internal/evolution/genetics/crossover/subtreeswitch"
 	"tde/internal/evolution/genetics/mutation"
 	"tde/internal/evolution/pool"
-	"tde/internal/evolution/search"
 	"tde/internal/evolution/selection"
 	"tde/internal/utilities"
 	models "tde/models/program"
@@ -15,25 +14,25 @@ import (
 )
 
 type SolutionSearch struct {
-	Evaluator  *evaluation.Evaluator
-	Params     *models.Parameters
-	Pool       *pool.Pool
-	Searches   []*search.CandidateSearch
-	Context    *models.Context
+	commons    *commons
+	Searches   []*candidateSearch
 	offsprings models.Subjects
 }
 
 func NewSolutionSearch(e *evaluation.Evaluator, params *models.Parameters, context *models.Context) *SolutionSearch {
 	return &SolutionSearch{
-		Evaluator: e,
-		Params:    params,
-		Context:   context,
+		commons: &commons{
+			Evaluator: e,
+			Params:    params,
+			Context:   context,
+			Pool:      nil,
+		},
 	}
 }
 
 // Pick parents for genetic operations
 func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*models.Subject, mu models.Subjects, err error) {
-	n := ss.Params.Solution.Evaluations
+	n := ss.commons.Params.Solution.Evaluations
 	parents, err := selection.RouletteWheel(candidates, models.Candidate, n)
 	if err != nil {
 		return nil, nil, fmt.Errorf("running RouletteWheel: %w", err)
@@ -56,9 +55,24 @@ func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*mod
 	return
 }
 
+func (ss *SolutionSearch) iterateSearches() error {
+	allProducts := models.Subjects{}
+	for _, search := range ss.Searches {
+		products, err := search.Iterate()
+		if err != nil {
+			return fmt.Errorf("iterating a candidate search (sid: %s): %w", search.Src, err)
+		}
+		if products != nil && len(products) > 0 {
+			allProducts.Join(products)
+		}
+	}
+	ss.commons.Pool.Join(allProducts)
+	return nil
+}
+
 func (ss *SolutionSearch) pruneSearches() error {
-	continuing := make([]*search.CandidateSearch, 0, len(ss.Searches))
-	ended := make([]*search.CandidateSearch, 0, len(ss.Searches))
+	continuing := make([]*candidateSearch, 0, len(ss.Searches))
+	ended := make([]*candidateSearch, 0, len(ss.Searches))
 	for _, i := range ss.Searches {
 		if i.IsEnded() {
 			ended = append(ended, i)
@@ -75,23 +89,8 @@ func (ss *SolutionSearch) pruneSearches() error {
 	return nil
 }
 
-func (ss *SolutionSearch) iterateSearches() error {
-	allProducts := models.Subjects{}
-	for _, search := range ss.Searches {
-		products, err := search.Iterate()
-		if err != nil {
-			return fmt.Errorf("iterating a candidate search (sid: %s): %w", search.Src, err)
-		}
-		if products != nil && len(products) > 0 {
-			allProducts.Join(products)
-		}
-	}
-	ss.Pool.Join(allProducts)
-	return nil
-}
-
 func (ss *SolutionSearch) diversify() error {
-	candidates := ss.Pool.FilterValidIn(models.Candidate)
+	candidates := ss.commons.Pool.FilterValidIn(models.Candidate)
 
 	co, mu, err := ss.pickParents(candidates)
 	if err != nil {
@@ -116,7 +115,7 @@ func (ss *SolutionSearch) diversify() error {
 	if len(mu) > 0 {
 		for _, subj := range mu {
 			offspring := subj.Clone()
-			if err := mutation.Mutate(*ss.Context, offspring, ss.Params.Packages); err != nil {
+			if err := mutation.Mutate(*ss.commons.Context, offspring, ss.commons.Params.Packages); err != nil {
 				return fmt.Errorf("failed at mutation")
 			}
 			ss.offsprings.Add(offspring)
@@ -127,7 +126,7 @@ func (ss *SolutionSearch) diversify() error {
 
 func (ss *SolutionSearch) evaluate() error {
 	if len(ss.offsprings) > 0 {
-		if err := ss.Evaluator.Pipeline(ss.offsprings); err != nil {
+		if err := ss.commons.Evaluator.Pipeline(ss.offsprings); err != nil {
 			return fmt.Errorf("evaluating offsprings: %w", err)
 		}
 	}
@@ -138,15 +137,15 @@ func (ss *SolutionSearch) evaluate() error {
 func (ss *SolutionSearch) startSearches() {
 	for _, o := range ss.offsprings {
 		if !o.IsValidIn(models.Candidate) {
-			cs := search.NewCandidateSearch(ss.Evaluator, ss.Pool, ss.Params, ss.Context, o.Sid)
+			cs := newCandidateSearch(ss.commons, o)
 			ss.Searches = append(ss.Searches, cs)
 		}
 	}
 }
 
 func (ss *SolutionSearch) Loop() error {
-	ss.Pool = pool.New(ss.Context.NewSubject())
-	for i := 0; i < ss.Params.Generations; i++ {
+	ss.commons.Pool = pool.New(ss.commons.Context.NewSubject())
+	for i := 0; i < ss.commons.Params.Generations; i++ {
 		if err := ss.iterateSearches(); err != nil {
 			return fmt.Errorf("iterating candidate searches: %w", err)
 		}

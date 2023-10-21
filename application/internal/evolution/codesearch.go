@@ -2,14 +2,11 @@ package evolution
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/genetics/mutation"
 	"tde/internal/evolution/genetics/mutation/common"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
 	models "tde/models/program"
-
-	"golang.org/x/exp/maps"
 )
 
 // 1. merkezlerin sonuca ortalama uzaklığı derinlikle azalır.
@@ -19,24 +16,22 @@ import (
 //
 
 // Searches for a AST that compile
-type CodeSearch struct {
-	Evaluator *evaluation.Evaluator
-	Pool      *pool.Pool
-	Subpool   *pool.Pool
-	Params    *models.Parameters
-	Src       models.Sid
-	Counter   int
+type codeSearch struct {
+	*commons
+	Subpool *pool.Pool
+	Src     models.Sid
+	Counter int
 }
 
-func (s *CodeSearch) CollectProducts() models.Subjects {
+func (s *codeSearch) CollectProducts() models.Subjects {
 	return s.Subpool.FilterValidIn(models.Code)
 }
 
-func (s *CodeSearch) IsEnded() bool {
+func (s *codeSearch) IsEnded() bool {
 	return s.Counter == s.Params.Code.Generations
 }
 
-func (s *CodeSearch) Iterate() (models.Subjects, error) {
+func (s *codeSearch) Iterate() (models.Subjects, error) {
 	var (
 		subjects            = s.Subpool.All()
 		pop                 = len(subjects)
@@ -70,9 +65,9 @@ func (s *CodeSearch) Iterate() (models.Subjects, error) {
 			offsprings.Add(offspring)
 			op := mutation.Pick()
 			opctx := &common.GeneticOperationContext{
-				Package:         offspring.AST.Package,
-				File:            offspring.AST.File,
-				FuncDecl:        offspring.AST.FuncDecl,
+				Package:         s.Context.Package,
+				File:            s.Context.File,
+				FuncDecl:        subj.AST,
 				AllowedPackages: s.Params.Packages,
 			}
 			if ok := op(opctx); !ok {
@@ -82,7 +77,7 @@ func (s *CodeSearch) Iterate() (models.Subjects, error) {
 	}
 
 	// evaluate
-	s.Evaluator.Pipeline(maps.Values(offsprings))
+	s.Evaluator.Pipeline(offsprings)
 
 	// check results
 
@@ -93,13 +88,11 @@ func (s *CodeSearch) Iterate() (models.Subjects, error) {
 	return products, nil
 }
 
-func NewCodeSearch(evaluator *evaluation.Evaluator, pool *pool.Pool, parameters *models.Parameters, sid models.Sid) *CodeSearch {
-	return &CodeSearch{
-		Evaluator: evaluator,
-		Pool:      pool,
-		Subpool:   pool.Sub(),
-		Params:    parameters,
-		Src:       sid,
-		Counter:   0,
+func newCodeSearch(commons *commons, root *models.Subject) *codeSearch {
+	return &codeSearch{
+		commons: commons,
+		Subpool: commons.Pool.Sub(root),
+		Src:     root.Sid,
+		Counter: 0,
 	}
 }
