@@ -39,19 +39,6 @@ func prepare() (*Evaluator, models.Subjects, error) {
 	return evaluator, subjects, nil
 }
 
-// FIXME: check fitness has populated after syntax errors
-func Test_Print(t *testing.T) {
-	_, subjects, err := prepare()
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep: %w", err))
-	}
-	for i, subject := range subjects {
-		if len(subject.Code) == 0 {
-			t.Fatal(fmt.Errorf("assert, subjects[%s].File is empty: %w", i, err))
-		}
-	}
-}
-
 func Test_PrintAndCompile(t *testing.T) {
 	evaluator, subjects, err := prepare()
 	if err != nil {
@@ -62,6 +49,7 @@ func Test_PrintAndCompile(t *testing.T) {
 	}
 }
 
+// FIXME: check fitness has populated after syntax errors
 func Test_Pipeline(t *testing.T) {
 	evaluator, subjects, err := prepare()
 	if err != nil {

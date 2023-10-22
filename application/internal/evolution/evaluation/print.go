@@ -9,11 +9,13 @@ import (
 )
 
 // returns True for valid syntax
-func SyntaxCheckSafe(subject ast.Node) (bool, any) {
+func SyntaxCheckSafe(context *models.Context, subject *ast.FuncDecl) (bool, any) {
 	var (
 		isValid      = true
 		panicMessage any
 	)
+	context.Swap(subject)
+	defer context.Restore()
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
