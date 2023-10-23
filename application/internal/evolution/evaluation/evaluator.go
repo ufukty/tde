@@ -38,7 +38,7 @@ func syntaxCheckAndProduceCode(context *models.Context, subjects models.Subjects
 // FIXME: recover when process fails
 func (e *Evaluator) run(sid models.Sid) error {
 	cmd := exec.Command("go", "run", "-tags=tde", ".", "-subject-uuid", string(sid))
-	cmd.Dir = filepath.Join(e.sm.GetPackagePathForCandidate(sid), "tde")
+	cmd.Dir = filepath.Join(e.sm.GetPackagePathForSubject(sid), "tde")
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("command %q in dir: %q returned %q: %w", cmd.String(), cmd.Dir, string(bytes), err)
@@ -54,7 +54,7 @@ func (e *Evaluator) test(sid models.Sid) error {
 }
 
 func (e *Evaluator) collectResult(sid models.Sid) (*testing.T, error) {
-	path := filepath.Join(e.sm.GetPackagePathForCandidate(sid), "tde", "results.json")
+	path := filepath.Join(e.sm.GetPackagePathForSubject(sid), "tde", "results.json")
 	results := &testing.T{}
 	if err := results.LoadResults(path); err != nil {
 		return nil, fmt.Errorf("parsing: %w", err)

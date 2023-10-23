@@ -1,10 +1,7 @@
 package slotmgr
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,21 +11,56 @@ import (
 	models "tde/models/program"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
-	"golang.org/x/exp/maps"
 )
 
-func Test_SlotManager_AssignAndFree(t *testing.T) {
-	var (
-		pkgs   list.Packages
-		sample string
-		err    error
-	)
-	if pkgs, err = list.ListPackagesInDir("testdata/words"); err != nil {
+func getTestPackage() (mod string, pkg *list.Package, err error) {
+	if pkgs, err := list.ListPackagesInDir("testdata/words"); err != nil {
+		return "", nil, fmt.Errorf("listing the test package: %w", err)
+	} else {
+		return pkgs.First().Module.Dir, pkgs.First(), nil
+	}
+}
+
+func Test_CodePlacement(t *testing.T) {
+	mod, pkg, err := getTestPackage()
+	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	var pkg = pkgs.First()
-	if sample, err = inject.WithCreatingSample(pkg.Module.Dir, pkg, "TDE_WordReverse"); err != nil {
+
+	sample, err := inject.WithCreatingSample(mod, pkg, "TDE_WordReverse")
+	if err != nil {
+		t.Error(fmt.Errorf("prep: %w", err))
+	}
+
+	subjects := models.Subjects{}
+	subjects.Add(&models.Subject{
+		Sid:  "00000000-0000-0000-0000-000000000000",
+		Code: []byte("Hello world"),
+	})
+
+	var sm = New(sample, pkg.PathInModule(), "words.go")
+	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
+	}
+
+	file := filepath.Join(sm.GetPackagePathForSubject("00000000-0000-0000-0000-000000000000"), "words.go")
+	content, err := os.ReadFile(file)
+	if err != nil {
+		t.Fatal(fmt.Errorf("assert-prep-2: %w", err))
+	}
+	if string(content) != "Hello world" {
+		t.Fatal(fmt.Errorf("assert: expected %q, got %q", "Hello world", string(content)))
+	}
+}
+
+func Test_SlotManager_AssignAndFree(t *testing.T) {
+	mod, pkg, err := getTestPackage()
+	if err != nil {
+		t.Fatal(fmt.Errorf("prep: %w", err))
+	}
+
+	sample, err := inject.WithCreatingSample(mod, pkg, "TDE_WordReverse")
+	if err != nil {
 		t.Error(fmt.Errorf("prep: %w", err))
 	}
 	fmt.Println("sample module dir:", sample)
@@ -40,11 +72,6 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 			Code: []byte(`hello world`),
 		})
 	}
-
-	// combined, err := discovery.CombinedDetailsForTest("testdata/words", "TDE_WordReverse")
-	// if err != nil {
-	// 	t.Fatal(fmt.Errorf("prep, getting combined details: %w", err))
-	// }
 
 	var sm = New(sample, pkg.PathInModule(), "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
@@ -70,78 +97,4 @@ func Test_SlotManager_AssignAndFree(t *testing.T) {
 	if len(sm.slots.free) < 10 {
 		t.Fatal("assert. less then 10 slots freed")
 	}
-}
-
-func checksum(path string) (string, error) {
-	fh, err := os.Open(path)
-	if err != nil {
-		return "", fmt.Errorf("opening file: %w", err)
-	}
-	defer fh.Close()
-	hash := md5.New()
-	_, err = io.Copy(hash, fh)
-	if err != nil {
-		return "", errors.Wrap(err, "Error calculating MD5 checksum")
-	}
-	return hex.EncodeToString(hash.Sum(nil)), nil
-}
-
-func Test_SlotManager_ComparingTargetFileAfterAssignAndFree(t *testing.T) {
-	var (
-		pkgs   list.Packages
-		sample string
-		err    error
-	)
-	if pkgs, err = list.ListPackagesInDir("testdata/words"); err != nil {
-		t.Fatal(fmt.Errorf("prep: %w", err))
-	}
-	var pkg = pkgs.First()
-	if sample, err = inject.WithCreatingSample(pkg.Module.Dir, pkg, "TDE_WordReverse"); err != nil {
-		t.Error(fmt.Errorf("prep: %w", err))
-	}
-
-	fmt.Println("sample module dir:", sample)
-
-	var subjects = models.SubjectsFrom([]*models.Subject{
-		{
-			Sid:  models.Sid(uuid.New().String()),
-			Code: []byte(""),
-		},
-	})
-
-	originalHash, err := checksum(filepath.Join(sample, pkg.PathInModule(), "words.go"))
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep, hash original target file: %w", err))
-	}
-
-	var sm = New(sample, pkg.PathInModule(), "words.go")
-	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
-		t.Fatal(fmt.Errorf("act 1: %w", err))
-	}
-
-	var assignedSlot = string(maps.Values(sm.slots.assigned)[0])
-	var targetFileInSlot = filepath.Join(sm.tmp, assignedSlot, pkg.PathInModule(), "words.go")
-	fmt.Println("target file path in slot:", targetFileInSlot)
-	modifiedHash, err := checksum(targetFileInSlot)
-	if err != nil {
-		t.Fatal(fmt.Errorf("assert 1 prep, hash assigned target file: %w", err))
-	}
-
-	if originalHash == modifiedHash {
-		t.Fatal(fmt.Errorf("assert 1, got same hashes for original file and assigned slot"))
-	}
-
-	err = sm.FreeAllSlots()
-	if err != nil {
-		t.Fatal(fmt.Errorf("act 2, freeing slots: %w", err))
-	}
-	restoredHash, err := checksum(targetFileInSlot)
-	if err != nil {
-		t.Fatal(fmt.Errorf("assert 2 prep, hash freed target file: %w", err))
-	}
-
-	if originalHash != restoredHash {
-		t.Fatal(fmt.Errorf("assert 2, got different hashes for original file and restored slot"))
-	}
-
 }

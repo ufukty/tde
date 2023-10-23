@@ -150,7 +150,7 @@ func (s *SlotManager) FreeAllSlots() error {
 	return nil
 }
 
-func (s *SlotManager) GetPackagePathForCandidate(sid models.Sid) string {
+func (s *SlotManager) GetPackagePathForSubject(sid models.Sid) string {
 	return filepath.Join(
 		s.tmp,
 		string(s.slots.assigned[sid]),
