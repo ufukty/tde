@@ -53,7 +53,7 @@ func Test_CodePlacement(t *testing.T) {
 	}
 }
 
-func Test_SlotManager_AssignAndFree(t *testing.T) {
+func Test_AssignAndFree(t *testing.T) {
 	mod, pkg, err := getTestPackage()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
