@@ -94,14 +94,19 @@ func SliceExceptItems[T comparable](s []T, e []T) []T {
 	return s
 }
 
+func SliceTotal[N Number](s []N) N {
+	total := N(0)
+	for _, item := range s {
+		total += item
+	}
+	return total
+}
+
 // example input -> output:
 //
 //	[0, 4, 6, 10] -> [0, 0.2, 0.3, 0.5]
 func ProportionItemsToTotal[N Number](slice []N) (proportions []float64) {
-	total := N(0)
-	for _, item := range slice {
-		total += item
-	}
+	total := SliceTotal(slice)
 	for _, item := range slice {
 		proportions = append(proportions, float64(item)/float64(total))
 	}
