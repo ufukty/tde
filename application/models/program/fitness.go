@@ -4,8 +4,7 @@ type Fitness struct {
 	AST       float64 // rel. printing errors (from ast)
 	Code      float64 // rel. syntax errors (compile)
 	Program   float64 // rel. runtime errors
-	Solution  float64 // rel. passed tests (user-provided)
-	Evaluated bool    // become false after a genetic operation gets applied
+	Candidate float64 // rel. passed tests (user-provided)
 }
 
 func (f Fitness) Flat() float64 {
@@ -16,7 +15,7 @@ func (f Fitness) Flat() float64 {
 	} else if f.Program != 0.0 {
 		return 1.0 + f.Program
 	} else {
-		return f.Program
+		return f.Candidate
 	}
 }
 
@@ -27,8 +26,10 @@ func (f Fitness) Layer() Layer {
 		return Code
 	} else if f.Program != 0.0 {
 		return Program
-	} else {
+	} else if f.Candidate != 0.0 {
 		return Candidate
+	} else {
+		return Solution
 	}
 }
 
@@ -41,7 +42,7 @@ func (f Fitness) InLayer(layer Layer) float64 {
 	case Program:
 		return f.Program
 	case Candidate:
-		return f.Solution
+		return f.Candidate
 	}
 	panic("unhandled case")
 }

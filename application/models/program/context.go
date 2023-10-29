@@ -57,17 +57,16 @@ func (ctx *Context) Restore() {
 
 func (ctx *Context) NewSubject() *Subject {
 	return &Subject{
-		Sid:          Sid(uuid.New().String()), // UUID v4,
-		Parent:       "-1",
-		AST:          clean.FuncDecl(ctx.orgFuncDecl),
-		Imports:      []*ast.ImportSpec{},
-		Code:         []byte{},
-		Fitness:      Fitness{
-			AST:       0,
-			Code:      0,
-			Program:   0,
-			Solution:  0,
-			Evaluated: false,
+		Sid:     Sid(uuid.New().String()), // UUID v4,
+		Parent:  "-1",
+		AST:     clean.FuncDecl(ctx.orgFuncDecl),
+		Imports: []*ast.ImportSpec{},
+		Code:    []byte{},
+		Fitness: Fitness{
+			AST:       1.0,
+			Code:      1.0,
+			Program:   1.0,
+			Candidate: 1.0,
 		},
 		ExecTimeInMs: 0,
 	}
