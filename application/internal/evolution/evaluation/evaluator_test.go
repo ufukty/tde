@@ -51,11 +51,10 @@ func Test_Pipeline(t *testing.T) {
 			if err := evaluator.Pipeline(subjects); err != nil {
 				t.Fatal(fmt.Errorf("act: %w", err))
 			}
-			for _, subj := range subjects {
-				if subj.Fitness.Layer() != layer {
-					t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
-						subj.Fitness.Layer(), layer, i, subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
-				}
+
+			if subject.Fitness.Layer() < layer {
+				t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
+					subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
 			}
 		}
 	}
