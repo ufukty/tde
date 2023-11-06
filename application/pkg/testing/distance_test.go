@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"fmt"
 	"math"
 	"testing"
 )
@@ -98,6 +99,8 @@ func Test_DistanceRules(t *testing.T) {
 			tde.Assert(tcase.More.lhs, tcase.More.rhs)
 			l := tde.AssertionErrorDistance[0]
 			r := tde.AssertionErrorDistance[1]
+			fmt.Println("l", l)
+			fmt.Println("r", r)
 			if l >= r {
 				t.Errorf("Δ(%v, %v)=%.3f >= Δ(%v, %v)=%.3f",
 					tcase.Less.lhs, tcase.Less.rhs, l, tcase.More.lhs, tcase.More.rhs, r)

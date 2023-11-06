@@ -153,11 +153,15 @@ func distance(a, b any) (eq bool, d float64) {
 	}
 }
 
-func abs(a, b int) int {
-	if a < b {
-		return b - a
+func sigmoid(x float64) float64 {
+	return 1.0 / (1.0 + math.Pow(math.E, -1*x))
+}
+
+func abs(n int) int {
+	if n < 0 {
+		return -n
 	} else {
-		return a - b
+		return n
 	}
 }
 
@@ -172,13 +176,11 @@ func distanceArrays[T any](a, b []T) (eq bool, d float64) {
 	d = 0.0
 	for i := 0; i < len(a) && i < len(b); i++ {
 		if _, d_i := distance(a[i], b[i]); d_i != 0.0 {
-			d += d_i
+			d += sigmoid(d_i)
 		}
 	}
-	for i := abs(len(a), len(b)); i > 0; i-- {
-		d += 1.0
-	}
-	return true, d / float64(max(len(a), len(b)))
+	d += float64(abs(len(a)-len(b))) * 1.0
+	return true, d / float64(min(len(a), len(b)))
 }
 
 func maxSizesForSubsets[T any](l, r []T) (union, intersects, differences int) {
