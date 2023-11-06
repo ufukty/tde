@@ -1,12 +1,5 @@
 package testing
 
-import (
-	"log"
-	"math"
-	"os"
-	"reflect"
-)
-
 func convert[T any](a, b any) (T, T, bool) {
 	if a, ok := a.(T); ok {
 		if b, ok := b.(T); ok {
@@ -16,127 +9,11 @@ func convert[T any](a, b any) (T, T, bool) {
 	return *new(T), *new(T), false
 }
 
-func distance(a, b any) float64 {
-	if ax, bx, ok := convert[int](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[int8](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[int16](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[int32](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[int64](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[uint8](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[uint16](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[uint32](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[uint64](a, b); ok {
-		return distanceInt(ax, bx)
-
-	} else if ax, bx, ok := convert[float32](a, b); ok {
-		return math.Abs(float64(ax) - float64(bx))
-
-	} else if ax, bx, ok := convert[float64](a, b); ok {
-		return math.Abs(ax - bx)
-
-	} else if ax, bx, ok := convert[bool](a, b); ok {
-		return distanceBool(ax, bx)
-
-	} else if ax, bx, ok := convert[string](a, b); ok {
-		return distanceString(ax, bx)
-
-	} else if ax, bx, ok := convert[error](a, b); ok {
-		return distanceString(ax.Error(), bx.Error())
-
-	} else {
-		log.Fatalf("Can not calculate the distance for types %q and %q", reflect.TypeOf(a), reflect.TypeOf(b))
-		os.Exit(1)
-		return -1.0
-	}
-
-}
-
-// FIXME: Multi-Objective GP
-func distanceArrays[T any](a, b []T) float64 {
-	d_m := 0.0
-	if len(a) != len(b) {
-		return 0.0 // FIXME:
-	}
-	for i := 0; i < len(a); i++ {
-		if d_i := distance(a[i], b[i]); d_i != 0.0 {
-			d_m += d_i
-		}
-	}
-	return 0
-}
-
 func (t *T) Assert(a, b any) bool {
-	comparison := a == b
-	t.AssertionResults = append(t.AssertionResults, comparison)
-
-	var d float64
-	if ax, bx, ok := convert[[]int](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]int8](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]int16](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]int32](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]int64](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]uint8](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]uint16](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]uint32](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]uint64](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]float32](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]float64](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]bool](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]string](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]error](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else if ax, bx, ok := convert[[]any](a, b); ok {
-		d = distanceArrays(ax, bx)
-
-	} else {
-		d = distance(a, b)
-	}
-
+	eq, d := distance(a, b)
+	t.AssertionResults = append(t.AssertionResults, eq)
 	t.AssertionErrorDistance = append(t.AssertionErrorDistance, d)
-	return comparison
+	return eq
 }
 
 // TODO:
