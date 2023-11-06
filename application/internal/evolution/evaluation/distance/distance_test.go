@@ -1,4 +1,4 @@
-package testing
+package distance
 
 import (
 	"fmt"
@@ -94,11 +94,9 @@ func Test_DistanceRules(t *testing.T) {
 
 	for tname, tcase := range tcases {
 		t.Run(tname, func(t *testing.T) {
-			tde := &T{}
-			tde.Assert(tcase.Less.lhs, tcase.Less.rhs)
-			tde.Assert(tcase.More.lhs, tcase.More.rhs)
-			l := tde.AssertionErrorDistance[0]
-			r := tde.AssertionErrorDistance[1]
+			_, l := Distance(tcase.Less.lhs, tcase.Less.rhs)
+			_, r := Distance(tcase.More.lhs, tcase.More.rhs)
+
 			fmt.Println("l", l)
 			fmt.Println("r", r)
 			if l >= r {

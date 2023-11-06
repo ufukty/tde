@@ -1,4 +1,4 @@
-package testing
+package distance
 
 import (
 	"log"
@@ -52,7 +52,7 @@ func distanceBool(a, b bool) (eq bool, d float64) {
 	return false, 1.0
 }
 
-func distance(a, b any) (eq bool, d float64) {
+func Distance(a, b any) (eq bool, d float64) {
 	if ax, bx, ok := convert[[]byte](a, b); ok {
 		return distanceArrays(ax, bx)
 
@@ -153,18 +153,6 @@ func distance(a, b any) (eq bool, d float64) {
 	}
 }
 
-func sigmoid(x float64) float64 {
-	return 1.0 / (1.0 + math.Pow(math.E, -1*x))
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	} else {
-		return n
-	}
-}
-
 // FIXME: Multi-Objective GP TODO: how to incorporate execution path
 // things to consider for measuring the distance:
 // - diff. array lengths
@@ -175,7 +163,7 @@ func abs(n int) int {
 func distanceArrays[T any](a, b []T) (eq bool, d float64) {
 	d = 0.0
 	for i := 0; i < len(a) && i < len(b); i++ {
-		if _, d_i := distance(a[i], b[i]); d_i != 0.0 {
+		if _, d_i := Distance(a[i], b[i]); d_i != 0.0 {
 			d += sigmoid(d_i)
 		}
 	}
@@ -229,7 +217,7 @@ func distanceUnorderedArrays[T comparable](l, r []T) (eq bool, d float64) {
 func countOrderedCommonItems[T any](l, r []T, li, ri int) int {
 	commons := 0
 	for li+commons < len(l) && ri+commons < len(r) {
-		if eq, _ := distance(l[li+commons], r[ri+commons]); eq {
+		if eq, _ := Distance(l[li+commons], r[ri+commons]); eq {
 			commons++
 		} else {
 			cl := countOrderedCommonItems(l, r, li+commons+1, ri+commons)

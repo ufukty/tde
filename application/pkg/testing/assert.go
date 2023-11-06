@@ -1,48 +1,13 @@
 package testing
 
-func convert[T any](a, b any) (T, T, bool) {
-	if a, ok := a.(T); ok {
-		if b, ok := b.(T); ok {
-			return a, b, true
-		}
-	}
-	return *new(T), *new(T), false
-}
+import "tde/internal/evolution/evaluation/distance"
 
 func (t *T) Assert(a, b any) bool {
-	eq, d := distance(a, b)
+	eq, d := distance.Distance(a, b)
 	t.AssertionResults = append(t.AssertionResults, eq)
 	t.AssertionErrorDistance = append(t.AssertionErrorDistance, d)
 	return eq
 }
-
-// TODO:
-// func assertArrays[C comparable](a, b []C) int {
-// 	errorRate := 0.0
-// 	if len(a) != len(b) {
-// 		return
-// 	}
-// 	for i := 0; i < len(a); i++ {
-// 		if a[i] != b[i] {
-// 			return 1
-// 		}
-// 	}
-// 	return 0
-// }
-
-// func (t *T) AssertArrays(left, right []any) {
-// 	abs(len(left) - len(right))
-// 	for i := 0; i < len(left); i++ {
-
-// 	}
-
-// 	}
-// 	assertArrays(left, right)
-// }
-
-// func (t *T) AssertStructs(a, b any) {
-
-// }
 
 // func (tc *C) AssertNotEqual(output, notWant any) {
 // 	result := output != notWant
