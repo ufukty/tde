@@ -53,7 +53,7 @@ func distanceBool(a, b bool) (eq bool, d float64) {
 }
 
 func distance(a, b any) (eq bool, d float64) {
-	if ax, bx, ok := convert[[]int](a, b); ok {
+	if ax, bx, ok := convert[[]byte](a, b); ok {
 		return distanceArrays(ax, bx)
 
 	} else if ax, bx, ok := convert[[]int](a, b); ok {
