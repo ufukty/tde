@@ -1,8 +1,8 @@
 package session_post
 
 import (
-	"tde/internal/evolution"
 	"tde/internal/microservices/errors/bucket"
+	models "tde/models/program"
 )
 
 type ArchiveStatus int
@@ -18,8 +18,8 @@ const (
 	MsgEitherDoesNotExistsOrYouDoNotHaveAccessToIt = "You don't have such archive"
 )
 
-func downloadAST(accessToken, archiveId string) (*evolution.Target, error) {
-	return &evolution.Target{}, nil
+func downloadAST(accessToken, archiveId string) (*models.Subject, error) { // TODO: adopt models.Context and models.Subject
+	return &models.Subject{}, nil
 }
 
 func validateArchiveID(archiveID string) ArchiveStatus {

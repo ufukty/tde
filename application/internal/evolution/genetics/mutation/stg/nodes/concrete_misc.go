@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
 )
 
 func Field(ctx *context.Context, limit int) *ast.Field {

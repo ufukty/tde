@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
 	utl "tde/internal/utilities"
 
 	"go/ast"

@@ -3,7 +3,7 @@ package nodes
 import (
 	"go/ast"
 	"go/token"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
 )
 
 func FuncDecl(ctx *context.Context, limit int) *ast.FuncDecl {

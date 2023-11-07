@@ -5,12 +5,12 @@ import (
 )
 
 type Session struct {
-	Manager *evolution.Manager
+	Manager *evolution.SolutionSearch
 	Config  *Config
 	Status  Status
 }
 
-func NewSession(em *evolution.Manager, config *Config) *Session {
+func NewSession(em *evolution.SolutionSearch, config *Config) *Session {
 	return &Session{
 		Manager: em,
 		Config:  config,

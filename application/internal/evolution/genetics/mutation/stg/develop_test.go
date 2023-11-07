@@ -1,4 +1,4 @@
-package cfg
+package stg
 
 import (
 	"tde/internal/astw/astwutl"

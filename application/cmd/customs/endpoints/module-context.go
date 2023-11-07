@@ -12,8 +12,8 @@ import (
 	astutils "tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/astw/traverse"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
 	"tde/internal/microservices/utilities"
 
 	"github.com/google/uuid"

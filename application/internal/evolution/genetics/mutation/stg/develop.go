@@ -1,11 +1,11 @@
-package cfg
+package stg
 
 import (
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres"
-	"tde/internal/evolution/genetics/mutation/cfg/ctxres/context"
-	"tde/internal/evolution/genetics/mutation/cfg/nodes"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres"
+	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/stg/nodes"
 	"tde/internal/utilities"
 
 	"fmt"
