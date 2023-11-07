@@ -1,15 +1,15 @@
 package stg
 
 import (
+	"bytes"
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
-	"tde/internal/evolution/evaluation"
+	"tde/internal/utilities"
 
 	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
-	"os"
 	"reflect"
 	"testing"
 
@@ -31,6 +31,20 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 	return astPkg, astFile, funcDecl, nil
 }
 
+func fprintSafe(fdecl *ast.FuncDecl) (code []byte, err error) {
+	code = []byte{}
+	buffer := bytes.NewBuffer([]byte{})
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("recovered: %q", r)
+		}
+	}()
+	if printer.Fprint(buffer, token.NewFileSet(), fdecl) != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
 func Test_Develop(t *testing.T) {
 	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
@@ -47,10 +61,6 @@ func Test_Develop(t *testing.T) {
 		pretty.Println(newNode)
 		pretty.Println(subjectFuncDecl.Body)
 		t.Error("Failed to see change on subject")
-	}
-	if ok, _ := evaluation.SyntaxCheckSafe(subjectFuncDecl); ok {
-		printer.Fprint(os.Stdout, token.NewFileSet(), subjectFuncDecl)
-		fmt.Println("")
 	}
 }
 
@@ -87,10 +97,8 @@ func Test_DevelopProgressively(t *testing.T) {
 		if err != nil {
 			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
 		}
-		if ok, _ := evaluation.SyntaxCheckSafe(best); ok {
-			printer.Fprint(os.Stdout, token.NewFileSet(), best)
-			fmt.Println("")
-			fmt.Println("^", i, "---")
+		if code, err := fprintSafe(best); err == nil {
+			fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
 			best = subject
 		}
 	}
@@ -107,9 +115,8 @@ func Test_DevelopFindUnbreakingChange(t *testing.T) {
 		subject := clone.FuncDecl(originalFuncDecl)
 		Develop(astPkg, astFile, subject, 20)
 
-		if ok, _ := evaluation.SyntaxCheckSafe(subject); ok {
-			printer.Fprint(os.Stdout, token.NewFileSet(), subject)
-			fmt.Println("\n---")
+		if code, err := fprintSafe(subject); err == nil {
+			fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
 			nonBreakingChangeFound = true
 		}
 	}
