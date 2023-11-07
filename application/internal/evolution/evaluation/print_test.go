@@ -16,31 +16,32 @@ func Test_Print(t *testing.T) {
 
 	for _, expectedLayer := range []models.Layer{models.AST, models.Code, models.Program, models.Candidate, models.Solution} {
 		for i, example := range examples[expectedLayer] {
-			fmt.Println("testing", expectedLayer, i)
+			t.Run(fmt.Sprintf("%s-%d", expectedLayer, i), func(t *testing.T) {
 
-			subj := ctx.NewSubject()
-			subj.AST = example
-			e.print(subj)
+				subj := ctx.NewSubject()
+				subj.AST = example
+				e.print(subj)
 
-			if expectedLayer == models.AST {
-				if subj.Fitness.Layer() != models.AST {
-					t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-						expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
+				if expectedLayer == models.AST {
+					if subj.Fitness.Layer() != models.AST {
+						t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)\n%s",
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
+					}
+					if len(subj.Code) != 0 {
+						t.Errorf("assert, unexpectedly populated (expected layer=%s, got=%s, fitness=%.3f)\n%s",
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
+					}
+				} else {
+					if subj.Fitness.Layer() != models.Code {
+						t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)",
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat())
+					}
+					if len(subj.Code) == 0 {
+						t.Errorf("assert, unexpectedly empty (expected layer=%s, got=%s, fitness=%.3f)",
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat())
+					}
 				}
-				if len(subj.Code) != 0 {
-					t.Errorf("assert, unexpectedly populated (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-						expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
-				}
-			} else {
-				if subj.Fitness.Layer() != models.Code {
-					t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)",
-						expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat())
-				}
-				if len(subj.Code) == 0 {
-					t.Errorf("assert, unexpectedly empty (expected layer=%s, got=%s, fitness=%.3f)",
-						expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat())
-				}
-			}
+			})
 		}
 	}
 

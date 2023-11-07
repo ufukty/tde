@@ -43,19 +43,21 @@ func Test_Pipeline(t *testing.T) {
 	}
 	for _, layer := range []models.Layer{models.AST, models.Code, models.Program, models.Candidate, models.Solution} {
 		for i, ast := range examples[layer] {
-			fmt.Println(">>> testing the example", layer, i)
-			subjects := models.Subjects{}
-			subject := ctx.NewSubject()
-			subject.AST = ast
-			subjects.Add(subject)
-			if err := evaluator.Pipeline(subjects); err != nil {
-				t.Fatal(fmt.Errorf("act: %w", err))
-			}
+			t.Run(fmt.Sprintf("%s-%d", layer, i), func(t *testing.T) {
+				subjects := models.Subjects{}
+				subject := ctx.NewSubject()
+				subject.AST = ast
+				subjects.Add(subject)
 
-			if subject.Fitness.Layer() < layer {
-				t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
-					subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
-			}
+				if err := evaluator.Pipeline(subjects); err != nil {
+					t.Fatal(fmt.Errorf("act: %w", err))
+				}
+
+				if subject.Fitness.Layer() != layer {
+					t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
+				}
+			})
 		}
 	}
 }

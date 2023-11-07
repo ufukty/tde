@@ -83,6 +83,7 @@ func (e *Evaluator) test(subject *models.Subject) error {
 		if err := t.LoadResults(path); err != nil {
 			return fmt.Errorf("loading test results: %w", err)
 		}
+		subject.Fitness.Program = 0 // it's a "program"
 		subject.Fitness.Candidate = utilities.SliceTotal(t.AssertionErrorDistance) / float64(max(len(t.AssertionResults), 1))
 	}
 
