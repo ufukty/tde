@@ -2,6 +2,7 @@ package evaluation
 
 import (
 	"fmt"
+	"sort"
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
@@ -41,6 +42,7 @@ func Test_Pipeline(t *testing.T) {
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
+	sorted := []*models.Subject{}
 	for _, layer := range []models.Layer{models.AST, models.Code, models.Program, models.Candidate, models.Solution} {
 		for i, ast := range examples[layer] {
 			t.Run(fmt.Sprintf("%s-%d", layer, i), func(t *testing.T) {
@@ -57,7 +59,17 @@ func Test_Pipeline(t *testing.T) {
 					t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
 						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
 				}
+
+				sorted = append(sorted, subject)
 			})
 		}
+	}
+
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].Fitness.Flat() < sorted[j].Fitness.Flat()
+	})
+	fmt.Println("sorted by fitnesses:")
+	for _, subj := range sorted {
+		fmt.Printf("%s %10s %.10f\n", subj.Sid, subj.Fitness.Layer(), subj.Fitness.Flat())
 	}
 }
