@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func prepare(parameters *models.Parameters) (*SolutionSearch, error) {
+func prepareSolutionSearch(parameters *models.Parameters) (*SolutionSearch, error) {
 	pkgs, err := list.ListPackagesInDir("testdata/words")
 	if err != nil {
 		return nil, fmt.Errorf("listing packages in the testdata package: %w", err)
@@ -54,7 +54,7 @@ func Test_SolutionSearch(t *testing.T) {
 			Evaluations: 0,
 		},
 	}
-	em, err := prepare(parameters)
+	em, err := prepareSolutionSearch(parameters)
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
