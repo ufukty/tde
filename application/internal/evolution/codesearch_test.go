@@ -6,11 +6,12 @@ import (
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
+	"tde/internal/evolution/pool"
 	models "tde/models/program"
 	"testing"
 )
 
-func prepareSolutionSearch() (*SolutionSearch, error) {
+func prepareCodeSearch() (*codeSearch, error) {
 	pkgs, err := list.ListPackagesInDir("testdata/words")
 	if err != nil {
 		return nil, fmt.Errorf("listing packages in the testdata package: %w", err)
@@ -25,14 +26,36 @@ func prepareSolutionSearch() (*SolutionSearch, error) {
 		return nil, fmt.Errorf("loading the context: %w", err)
 	}
 	ev := evaluation.NewEvaluator(sm, ctx)
-	em := NewSolutionSearch(ev, defaults, ctx)
+	subj := ctx.NewSubject()
+	subj.AST = examples[models.AST][0]
+	cmns := &commons{
+		Evaluator: ev,
+		Params:    defaults,
+		Context:   ctx,
+		Pool:      pool.New(subj),
+	}
+	em := newCodeSearch(cmns, subj)
 	return em, nil
 }
 
-func Test_SolutionSearch(t *testing.T) {
-	em, err := prepareSolutionSearch()
+func Test_CodeSearch(t *testing.T) {
+	cs, err := prepareCodeSearch()
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	em.Loop()
+
+	for !cs.IsEnded() {
+		products, err := cs.Iterate()
+		if err != nil {
+			t.Fatal(fmt.Errorf("act: %w", err))
+		}
+
+		for _, subj := range products {
+			fmt.Println(subj.Code)
+		}
+	}
+}
+
+func Test_CodeSearch_Probabilistic(t *testing.T) {
+
 }

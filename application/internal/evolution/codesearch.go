@@ -55,7 +55,7 @@ func (s *codeSearch) Iterate() (models.Subjects, error) {
 
 	// reproduction
 	if noGenerations > 0 {
-		parents, err := selection.RouletteWheel(s.Pool.FilterByDepth(s.Params.Code.Depth), models.AST, noGenerations)
+		parents, err := selection.RouletteWheelToEliminate(s.Pool.FilterByDepth(s.Params.Code.Depth), models.AST, noGenerations)
 		if err != nil {
 			return models.Subjects{}, fmt.Errorf("picking parents with roulette wheel: %w", err)
 		}

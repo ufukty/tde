@@ -33,22 +33,22 @@ func NewSolutionSearch(e *evaluation.Evaluator, params *models.Parameters, conte
 // Pick parents for genetic operations
 func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*models.Subject, mu models.Subjects, err error) {
 	n := ss.commons.Params.Solution.Evaluations
-	parents, err := selection.RouletteWheel(candidates, models.Candidate, n)
+	parents, err := selection.RouletteWheelToReproduce(candidates, models.Candidate, n)
 	if err != nil {
 		return nil, nil, fmt.Errorf("running RouletteWheel: %w", err)
 	}
 	nCo := int((float64(n)) / 20)
-	coA, err := selection.RouletteWheel(parents, models.Candidate, nCo)
+	coA, err := selection.RouletteWheelToReproduce(parents, models.Candidate, nCo)
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
 	}
-	coB, err := selection.RouletteWheel(parents, models.Candidate, nCo)
+	coB, err := selection.RouletteWheelToReproduce(parents, models.Candidate, nCo)
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
 	}
 	co = utilities.SliceZipToSlice(maps.Values(coA), maps.Values(coB))
 	nMu := n - 2*nCo
-	mu, err = selection.RouletteWheel(parents, models.Candidate, nMu)
+	mu, err = selection.RouletteWheelToReproduce(parents, models.Candidate, nMu)
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking mutation parents from picked parents: %w", err)
 	}

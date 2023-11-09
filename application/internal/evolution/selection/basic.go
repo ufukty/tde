@@ -2,6 +2,7 @@ package selection
 
 import (
 	"sort"
+	"tde/internal/utilities"
 	models "tde/models/program"
 
 	"golang.org/x/exp/maps"
@@ -31,4 +32,13 @@ func sortByFitnessInLayer(subjects models.Subjects, layer models.Layer) []models
 func Elitist(subjects models.Subjects, layer models.Layer, pick int) models.Subjects {
 	sorted := sortByFitnessInLayer(subjects, layer)
 	return filterSubjectsByCids(subjects, sorted[:pick])
+}
+
+func Random(subjects models.Subjects, pick int) models.Subjects {
+	picks := models.Subjects{}
+	sids := subjects.Keys()
+	for len(picks) == pick {
+		picks.Add(subjects[sids[utilities.URandIntN(len(sids))]])
+	}
+	return picks
 }

@@ -71,7 +71,7 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 		var imbalancedRuns = 0
 
 		for j := 0; j < runsPerDataset; j++ {
-			picks, err := RouletteWheel(subjects, models.AST, int(len(subjects)/2))
+			picks, err := RouletteWheelToEliminate(subjects, models.AST, int(len(subjects)/2))
 			if err != nil {
 				t.Fatal(fmt.Errorf("act: %w", err))
 			}
@@ -101,7 +101,7 @@ func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 	for _, dataset := range datasets {
 		fmt.Printf("Running the dataset: %v\n", dataset)
 		var subjects = subjectsForDataset(dataset)
-		if _, err := RouletteWheel(maps.Clone(subjects), models.AST, int(len(subjects)/2)); err == nil {
+		if _, err := RouletteWheelToEliminate(maps.Clone(subjects), models.AST, int(len(subjects)/2)); err == nil {
 			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 	}

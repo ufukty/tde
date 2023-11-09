@@ -32,3 +32,7 @@ func SubjectsFrom(s []*Subject) Subjects {
 func (s Subjects) Values() []*Subject {
 	return maps.Values(s)
 }
+
+func (s Subjects) Keys() []Sid {
+	return maps.Keys(s)
+}
