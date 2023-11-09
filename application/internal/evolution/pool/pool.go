@@ -1,6 +1,6 @@
 package pool
 
-import models "tde/models/program"
+import "tde/internal/evolution/models"
 
 type Pool struct {
 	Depths map[models.Sid]int

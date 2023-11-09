@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 	"tde/pkg/testing"
 	"time"
 )

@@ -3,9 +3,9 @@ package customs_proxy
 import (
 	"tde/cmd/customs/endpoints"
 	"tde/config/reader"
+	"tde/internal/evolution/models"
 	"tde/internal/microservices/serviced"
 	"tde/internal/microservices/serviced/models/services"
-	models "tde/models/program"
 
 	"fmt"
 

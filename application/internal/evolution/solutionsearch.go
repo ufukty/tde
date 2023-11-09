@@ -5,10 +5,10 @@ import (
 	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/genetics/crossover/subtreeswitch"
 	"tde/internal/evolution/genetics/mutation"
+	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
 	"tde/internal/utilities"
-	models "tde/models/program"
 
 	"golang.org/x/exp/maps"
 )

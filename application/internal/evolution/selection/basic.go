@@ -2,8 +2,8 @@ package selection
 
 import (
 	"sort"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 
 	"golang.org/x/exp/maps"
 )

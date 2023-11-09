@@ -8,8 +8,8 @@ import (
 	remove_line "tde/internal/evolution/genetics/mutation/remove-line"
 	switch_lines "tde/internal/evolution/genetics/mutation/switch-lines"
 	token_shuffle "tde/internal/evolution/genetics/mutation/token-shuffle"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 )
 
 // TODO: RegenerateSubtree (cfg/node_constructor)

@@ -6,7 +6,7 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 	"time"
 )
 

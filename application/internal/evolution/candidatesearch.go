@@ -2,8 +2,8 @@ package evolution
 
 import (
 	"fmt"
+	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
-	models "tde/models/program"
 )
 
 // Searches for a AST that compile, run & solve some user problems

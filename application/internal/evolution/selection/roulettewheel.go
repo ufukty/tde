@@ -2,8 +2,8 @@ package selection
 
 import (
 	"fmt"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 )
 
 // O(n) if the key checking is O(1)

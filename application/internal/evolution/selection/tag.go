@@ -1,7 +1,7 @@
 package selection
 
 import (
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 )
 
 func isIn(sid models.Sid, collection []*models.Subject) bool {

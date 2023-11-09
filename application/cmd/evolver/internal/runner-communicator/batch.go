@@ -3,8 +3,8 @@ package runner_communicator
 import (
 	"go/ast"
 	"tde/cmd/runner/endpoints/batch/batch_post"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 )
 
 type Batch struct {

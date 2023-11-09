@@ -9,8 +9,8 @@ import (
 	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/slotmgr"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 
 	"fmt"
 )

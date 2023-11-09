@@ -6,7 +6,7 @@ import (
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 	"testing"
 )
 

@@ -3,7 +3,7 @@ package evolution
 import (
 	"go/ast"
 	"go/token"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 )
 
 var defaults = &models.Parameters{

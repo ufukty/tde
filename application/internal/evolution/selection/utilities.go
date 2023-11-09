@@ -1,7 +1,7 @@
 package selection
 
 import (
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 )
 
 func getFitnesses(subjects []*models.Subject, layer models.Layer) []float64 {

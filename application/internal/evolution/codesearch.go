@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"tde/internal/evolution/genetics/mutation"
 	"tde/internal/evolution/genetics/mutation/common"
+	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
-	models "tde/models/program"
 )
 
 // 1. merkezlerin sonuca ortalama uzaklığı derinlikle azalır.

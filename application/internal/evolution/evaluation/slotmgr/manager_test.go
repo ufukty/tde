@@ -8,7 +8,7 @@ import (
 
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/list"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 
 	"github.com/google/uuid"
 )

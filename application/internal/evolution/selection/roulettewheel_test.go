@@ -3,8 +3,8 @@ package selection
 import (
 	"fmt"
 	"sort"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 	"testing"
 
 	"golang.org/x/exp/maps"

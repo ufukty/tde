@@ -3,7 +3,7 @@ package evaluation
 import (
 	"fmt"
 	"tde/internal/evolution/evaluation/slotmgr"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 )
 
 type Evaluator struct {

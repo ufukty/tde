@@ -2,7 +2,7 @@ package testing
 
 import (
 	"fmt"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 
 	"encoding/json"
 	"os"

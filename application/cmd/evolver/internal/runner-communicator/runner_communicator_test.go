@@ -2,7 +2,7 @@ package runner_communicator
 
 import (
 	"go/ast"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 
 	"testing"
 )

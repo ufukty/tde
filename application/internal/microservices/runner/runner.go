@@ -1,7 +1,7 @@
 package runner
 
 import (
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 
 	"archive/zip"
 )

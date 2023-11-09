@@ -3,7 +3,7 @@ package evaluation
 import (
 	"go/ast"
 	"go/token"
-	models "tde/models/program"
+	"tde/internal/evolution/models"
 )
 
 var examples = map[models.Layer][]*ast.FuncDecl{

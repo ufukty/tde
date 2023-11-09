@@ -1,8 +1,8 @@
 package session_post
 
 import (
+	"tde/internal/evolution/models"
 	"tde/internal/microservices/errors/bucket"
-	models "tde/models/program"
 )
 
 type ArchiveStatus int

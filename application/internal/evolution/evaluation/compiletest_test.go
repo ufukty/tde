@@ -2,8 +2,8 @@ package evaluation
 
 import (
 	"fmt"
+	"tde/internal/evolution/models"
 	"tde/internal/utilities"
-	models "tde/models/program"
 	"testing"
 )
 
