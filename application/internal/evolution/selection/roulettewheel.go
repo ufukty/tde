@@ -1,3 +1,5 @@
+// NOTE: all selection algorithms in this package, assume fitness=0 is for the best subject.
+
 package selection
 
 import (
@@ -18,12 +20,13 @@ func deleteDuplicates(sids []models.Sid) []models.Sid {
 	return clean
 }
 
-// Successful subjects should have higher fitnesses. Otherwise use reverseFitness.
-
-// FIXME: If there is no subject with better than worst fitness, the input returned without a difference.
-func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick int) (models.Subjects, error) {
-	if len(subjects) == 0 || len(subjects) < pick {
-		return models.Subjects{}, nil
+// returns no duplicates.
+func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick int) models.Subjects {
+	if pick == 0 {
+		return models.Subjects{}
+	}
+	if len(subjects) <= pick {
+		return subjects
 	}
 	var (
 		ids, cands   = utilities.MapItems(subjects)
@@ -35,7 +38,7 @@ func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick
 		bullet       float64
 	)
 	if totalFitness == 0.0 {
-		return Random(subjects, pick), nil
+		return Random(subjects, pick)
 	}
 	for len(picks) < pick {
 		for len(picks) < pick { // O(n*logn)
@@ -45,7 +48,7 @@ func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick
 		}
 		picks = deleteDuplicates(picks)
 	}
-	return filterSubjectsByCids(subjects, picks), nil
+	return filterSubjectsBySids(subjects, picks[:pick])
 }
 
 // allows duplicate selections
@@ -74,5 +77,5 @@ func RouletteWheelToReproduce(subjects models.Subjects, layer models.Layer, pick
 		choosen = utilities.BisectRight(cumulative, bullet)
 		picks = append(picks, ids[choosen])
 	}
-	return filterSubjectsByCids(subjects, picks), nil
+	return filterSubjectsBySids(subjects, picks), nil
 }

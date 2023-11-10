@@ -64,30 +64,28 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 	}
 
 	for _, dataset := range datasets {
-		fmt.Printf("\nRunning the dataset: %v\n", dataset)
+		t.Run(fmt.Sprintf("%v", dataset), func(t *testing.T) {
 
-		var subjects = subjectsForDataset(dataset)
-		var freqCounter = newFreqCounter(subjects)
-		var imbalancedRuns = 0
+			var subjects = subjectsForDataset(dataset)
+			var freqCounter = newFreqCounter(subjects)
+			var imbalancedRuns = 0
 
-		for j := 0; j < runsPerDataset; j++ {
-			picks, err := RouletteWheelToEliminate(subjects, models.AST, int(len(subjects)/2))
-			if err != nil {
-				t.Fatal(fmt.Errorf("act: %w", err))
+			for j := 0; j < runsPerDataset; j++ {
+				picks := RouletteWheelToEliminate(subjects, models.AST, int(len(subjects)/2))
+				survivingBest, survivingWorst := freqCounter.count(maps.Keys(picks))
+				if survivingWorst > survivingBest {
+					fmt.Printf("Run %3d: Imbalanced: B:%d / W:%d\n", j, survivingBest, survivingWorst)
+					imbalancedRuns++
+				}
 			}
-			var survivingBest, survivingWorst = freqCounter.count(maps.Keys(picks))
-			if survivingWorst > survivingBest {
-				fmt.Printf("Run %3d: Imbalanced: B:%d / W:%d\n", j, survivingBest, survivingWorst)
-				imbalancedRuns++
+
+			if imbalancedRuns > runsPerDataset*0.50 {
+				t.Fatal(fmt.Errorf("assert %d runs suffer imbalanced elimination", imbalancedRuns))
 			}
-		}
 
-		if imbalancedRuns > runsPerDataset*0.50 {
-			t.Fatal(fmt.Errorf("assert %d runs suffer imbalanced elimination", imbalancedRuns))
-		}
-
-		fmt.Printf("imbalanced runs: %d\n", imbalancedRuns)
-		freqCounter.PrintHistogram()
+			fmt.Printf("imbalanced runs: %d\n", imbalancedRuns)
+			freqCounter.PrintHistogram()
+		})
 	}
 }
 
@@ -99,10 +97,15 @@ func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 	}
 
 	for _, dataset := range datasets {
-		fmt.Printf("Running the dataset: %v\n", dataset)
-		var subjects = subjectsForDataset(dataset)
-		if _, err := RouletteWheelToEliminate(maps.Clone(subjects), models.AST, int(len(subjects)/2)); err == nil {
-			t.Fatal(fmt.Errorf("act: %w", err))
+		subjects := subjectsForDataset(dataset)
+		for pick := 0; pick <= len(dataset); pick++ {
+			t.Run(fmt.Sprintf("%v>%d", dataset, pick), func(t *testing.T) {
+				fmt.Printf("%v>%d\n", dataset, pick)
+				selection := RouletteWheelToEliminate(subjects, models.AST, pick)
+				if len(selection) != pick {
+					t.Fatal(fmt.Errorf("assert, selection length: expected %d, got %d items", pick, len(selection)))
+				}
+			})
 		}
 	}
 }
