@@ -34,5 +34,7 @@ func Test_SolutionSearch(t *testing.T) {
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	em.Loop()
+	if err := em.Loop(); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
+	}
 }

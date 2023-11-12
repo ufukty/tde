@@ -1,8 +1,8 @@
-package remove_line
+package switch_lines
 
 import (
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/common"
+	"tde/internal/evolution/genetics/mutation/v1/common"
 	"tde/internal/utilities"
 )
 
@@ -10,15 +10,15 @@ func list(n ast.Node) (stmtSliceContainingSubnodes []ast.Node) {
 	ast.Inspect(n, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.BlockStmt:
-			if len(n.List) > 0 {
+			if len(n.List) > 1 {
 				stmtSliceContainingSubnodes = append(stmtSliceContainingSubnodes, n)
 			}
 		case *ast.CommClause:
-			if len(n.Body) > 0 {
+			if len(n.Body) > 1 {
 				stmtSliceContainingSubnodes = append(stmtSliceContainingSubnodes, n)
 			}
 		case *ast.CaseClause:
-			if len(n.Body) > 0 {
+			if len(n.Body) > 1 {
 				stmtSliceContainingSubnodes = append(stmtSliceContainingSubnodes, n)
 			}
 		}
@@ -28,30 +28,30 @@ func list(n ast.Node) (stmtSliceContainingSubnodes []ast.Node) {
 	return
 }
 
-func removeOneLine(n ast.Node) {
+func swap(n ast.Node) {
 	switch n := n.(type) {
 	case *ast.BlockStmt:
-		cutPoint := utilities.URandIntN(len(n.List))
-		n.List = append(n.List[:cutPoint], n.List[cutPoint+1:]...)
+		cutPoint := utilities.URandIntN(len(n.List) - 1)
+		n.List[cutPoint], n.List[cutPoint+1] = n.List[cutPoint+1], n.List[cutPoint]
 	case *ast.CommClause:
-		cutPoint := utilities.URandIntN(len(n.Body))
-		n.Body = append(n.Body[:cutPoint], n.Body[cutPoint+1:]...)
+		cutPoint := utilities.URandIntN(len(n.Body) - 1)
+		n.Body[cutPoint], n.Body[cutPoint+1] = n.Body[cutPoint+1], n.Body[cutPoint]
 	case *ast.CaseClause:
-		cutPoint := utilities.URandIntN(len(n.Body))
-		n.Body = append(n.Body[:cutPoint], n.Body[cutPoint+1:]...)
+		cutPoint := utilities.URandIntN(len(n.Body) - 1)
+		n.Body[cutPoint], n.Body[cutPoint+1] = n.Body[cutPoint+1], n.Body[cutPoint]
 	}
 }
 
-func RemoveLine(n ast.Node) (ok bool) {
+func SiblingSwap(n ast.Node) (ok bool) {
 	stmtSliceContainingSubnodes := list(n)
 	if len(stmtSliceContainingSubnodes) == 0 {
 		return false
 	}
 	choosenNode := *utilities.Pick(stmtSliceContainingSubnodes)
-	removeOneLine(choosenNode)
+	swap(choosenNode)
 	return true
 }
 
 func GeneticOperation(ctx *common.GeneticOperationContext) bool {
-	return RemoveLine(ctx.FuncDecl.Body)
+	return SiblingSwap(ctx.FuncDecl.Body)
 }

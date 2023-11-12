@@ -1,8 +1,8 @@
 package token_shuffle
 
 import (
-	"tde/internal/evolution/genetics/mutation/common"
-	"tde/internal/evolution/genetics/mutation/tokens"
+	"tde/internal/evolution/genetics/mutation/v1/common"
+	"tde/internal/evolution/genetics/mutation/v1/tokens"
 	"tde/internal/utilities"
 
 	"go/ast"

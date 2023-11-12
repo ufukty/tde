@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
-	"tde/internal/evolution/genetics/mutation/common"
+	"tde/internal/evolution/genetics/mutation/v1/common"
 	"tde/internal/utilities"
 )
 

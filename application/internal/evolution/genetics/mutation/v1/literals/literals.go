@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
-	"tde/internal/evolution/genetics/mutation/common"
+	"tde/internal/evolution/genetics/mutation/v1/common"
 	"tde/internal/utilities"
 )
 

@@ -2,12 +2,12 @@ package mutation
 
 import (
 	"fmt"
-	"tde/internal/evolution/genetics/mutation/common"
-	import_path "tde/internal/evolution/genetics/mutation/import-path"
-	"tde/internal/evolution/genetics/mutation/literals"
-	remove_line "tde/internal/evolution/genetics/mutation/remove-line"
-	switch_lines "tde/internal/evolution/genetics/mutation/switch-lines"
-	token_shuffle "tde/internal/evolution/genetics/mutation/token-shuffle"
+	"tde/internal/evolution/genetics/mutation/v1/common"
+	import_path "tde/internal/evolution/genetics/mutation/v1/import-path"
+	"tde/internal/evolution/genetics/mutation/v1/literals"
+	remove_line "tde/internal/evolution/genetics/mutation/v1/remove-line"
+	switch_lines "tde/internal/evolution/genetics/mutation/v1/switch-lines"
+	token_shuffle "tde/internal/evolution/genetics/mutation/v1/token-shuffle"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities"
 )

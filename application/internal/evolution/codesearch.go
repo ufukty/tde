@@ -2,8 +2,8 @@ package evolution
 
 import (
 	"fmt"
-	"tde/internal/evolution/genetics/mutation"
-	"tde/internal/evolution/genetics/mutation/common"
+	"tde/internal/evolution/genetics/mutation/v1"
+	"tde/internal/evolution/genetics/mutation/v1/common"
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
