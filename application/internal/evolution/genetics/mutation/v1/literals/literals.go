@@ -101,7 +101,7 @@ func perform(choosenNode ast.Node) {
 	}
 }
 
-func GeneticOperation(ctx *models.GeneticOperationContext) bool {
+func GeneticOperation(ctx *models.MutationParameters) bool {
 	applicableNodes := listApplicableNodes(ctx.FuncDecl.Body)
 	choosenNode := *utilities.Pick(applicableNodes)
 	perform(choosenNode)

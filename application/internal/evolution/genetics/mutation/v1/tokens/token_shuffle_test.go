@@ -1,4 +1,4 @@
-package token_shuffle
+package tokens
 
 import (
 	"tde/internal/astw/astwutl"

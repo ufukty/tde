@@ -1,8 +1,9 @@
-package switch_lines
+package lines
 
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"fmt"
 	"go/ast"
@@ -33,7 +34,10 @@ func Test_SiblingSwap(t *testing.T) {
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-	ok := SiblingSwap(modifiedFuncDecl.Body)
+	ctx := &models.MutationParameters{
+		FuncDecl: modifiedFuncDecl,
+	}
+	ok := SwapLines(ctx)
 	if !ok {
 		t.Error("return value")
 	}
@@ -62,8 +66,11 @@ func Test_SiblingSwapMany(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
+		ctx := &models.MutationParameters{
+			FuncDecl: modifiedFuncDecl,
+		}
 
-		ok := SiblingSwap(modifiedFuncDecl.Body)
+		ok := SwapLines(ctx)
 		if !ok {
 			t.Error("return value")
 		}

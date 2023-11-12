@@ -1,7 +1,7 @@
 package patterns
 
 import (
-	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/utilities"
 
 	"go/ast"

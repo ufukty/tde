@@ -2,11 +2,11 @@ package models
 
 import "go/ast"
 
-type GeneticOperationContext struct {
+type MutationParameters struct {
 	Package         *ast.Package
 	File            *ast.File
 	FuncDecl        *ast.FuncDecl
 	AllowedPackages []string
 }
 
-type GeneticOperation func(*GeneticOperationContext) bool
+type GeneticOperation func(*MutationParameters) bool

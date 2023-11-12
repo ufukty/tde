@@ -1,4 +1,4 @@
-package import_path
+package imports
 
 import (
 	"tde/internal/astw/astwutl"

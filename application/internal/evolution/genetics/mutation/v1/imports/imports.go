@@ -1,4 +1,4 @@
-package import_path
+package imports
 
 import (
 	"fmt"
@@ -67,6 +67,6 @@ func ImportPackage(f *ast.File, importPath string) (modified bool) {
 	return true
 }
 
-func GeneticOperation(ctx *models.GeneticOperationContext) bool {
+func GeneticOperation(ctx *models.MutationParameters) bool {
 	return ImportPackage(ctx.File, *utilities.Pick(ctx.AllowedPackages))
 }

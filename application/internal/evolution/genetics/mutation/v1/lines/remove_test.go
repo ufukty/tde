@@ -1,30 +1,16 @@
-package remove_line
+package lines
 
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"fmt"
-	"go/ast"
 	"testing"
 
 	"github.com/kylelemons/godebug/diff"
 	"github.com/pkg/errors"
 )
-
-func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
-	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
-	}
-	astPkg := astPkgs["test_package"]
-	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
-	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
-	}
-	return astPkg, astFile, funcDecl, nil
-}
 
 func Test_RemoveLine(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
@@ -33,7 +19,10 @@ func Test_RemoveLine(t *testing.T) {
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-	ok := RemoveLine(modifiedFuncDecl.Body)
+	ctx := &models.MutationParameters{
+		FuncDecl: modifiedFuncDecl,
+	}
+	ok := RemoveLine(ctx)
 	if !ok {
 		t.Error("return value")
 	}
@@ -62,8 +51,10 @@ func Test_RemoveLineMany(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-
-		ok := RemoveLine(modifiedFuncDecl.Body)
+		ctx := &models.MutationParameters{
+			FuncDecl: modifiedFuncDecl,
+		}
+		ok := RemoveLine(ctx)
 		if !ok {
 			t.Error("return value")
 		}
