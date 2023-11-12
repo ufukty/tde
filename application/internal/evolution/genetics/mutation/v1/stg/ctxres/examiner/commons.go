@@ -1,7 +1,7 @@
 package examiner
 
 import (
-	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 
 	"go/ast"
 	"go/token"
