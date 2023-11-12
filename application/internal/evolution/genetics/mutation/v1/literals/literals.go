@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
-	"tde/internal/evolution/genetics/mutation/v1/common"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/utilities"
 )
 
@@ -101,7 +101,7 @@ func perform(choosenNode ast.Node) {
 	}
 }
 
-func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+func GeneticOperation(ctx *models.GeneticOperationContext) bool {
 	applicableNodes := listApplicableNodes(ctx.FuncDecl.Body)
 	choosenNode := *utilities.Pick(applicableNodes)
 	perform(choosenNode)

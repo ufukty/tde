@@ -3,7 +3,7 @@ package evolution
 import (
 	"fmt"
 	"tde/internal/evolution/genetics/mutation/v1"
-	"tde/internal/evolution/genetics/mutation/v1/common"
+	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
@@ -60,15 +60,15 @@ func (s *codeSearch) Iterate() (models.Subjects, error) {
 		for _, subj := range parents {
 			offspring := subj.Clone()
 			offsprings.Add(offspring)
-			op := mutation.Pick()
-			opctx := &common.GeneticOperationContext{
+
+			opctx := &models1.GeneticOperationContext{
 				Package:         s.Context.Package,
 				File:            s.Context.File,
 				FuncDecl:        subj.AST,
 				AllowedPackages: s.Params.Packages,
 			}
-			if ok := op(opctx); !ok {
-				return models.Subjects{}, fmt.Errorf("applying mutation on offspring")
+			if err := mutation.Mutate(opctx); err != nil {
+				return models.Subjects{}, fmt.Errorf("applying mutation on offspring: %w", err)
 			}
 		}
 	}

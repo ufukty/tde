@@ -1,7 +1,7 @@
 package token_shuffle
 
 import (
-	"tde/internal/evolution/genetics/mutation/v1/common"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/tokens"
 	"tde/internal/utilities"
 
@@ -69,7 +69,7 @@ func Perform(n ast.Node) (changedNode ast.Node, newToken token.Token, ok bool) {
 	return changedNode, newToken, true
 }
 
-func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+func GeneticOperation(ctx *models.GeneticOperationContext) bool {
 	_, _, ok := Perform(ctx.FuncDecl.Body)
 	return ok
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
-	"tde/internal/evolution/genetics/mutation/v1/common"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/utilities"
 )
 
@@ -67,6 +67,6 @@ func ImportPackage(f *ast.File, importPath string) (modified bool) {
 	return true
 }
 
-func GeneticOperation(ctx *common.GeneticOperationContext) bool {
+func GeneticOperation(ctx *models.GeneticOperationContext) bool {
 	return ImportPackage(ctx.File, *utilities.Pick(ctx.AllowedPackages))
 }
