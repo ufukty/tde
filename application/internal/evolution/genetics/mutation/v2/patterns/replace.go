@@ -1,10 +1,9 @@
 package patterns
 
 import (
-	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
-	"tde/internal/utilities"
-
 	"go/ast"
+	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
+	"tde/internal/utilities"
 
 	"golang.org/x/tools/go/ast/astutil"
 )

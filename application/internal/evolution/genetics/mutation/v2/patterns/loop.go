@@ -1,11 +1,10 @@
 package patterns
 
 import (
-	"tde/internal/evolution/genetics/mutation/stg/ctxres/context"
-	"tde/internal/evolution/genetics/mutation/stg/nodes"
-
 	"go/ast"
 	"go/token"
+	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
+	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
 )
 
 func LoopOverSlice(ctx *context.Context, limit int, slice *ast.Ident) *ast.RangeStmt {
