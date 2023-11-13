@@ -2,33 +2,54 @@ package stg
 
 import (
 	"bytes"
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/utilities"
-
 	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
-	"reflect"
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
+	models1 "tde/internal/evolution/genetics/mutation/v1/models"
+	"tde/internal/evolution/models"
+	"tde/internal/utilities"
 	"testing"
-
-	"github.com/kr/pretty"
-	"github.com/pkg/errors"
 )
 
-func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
-	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
+// NOTE: empty branch statement always leads fail in ast->code convertion
+
+type tcase struct {
+	ctx    *models.Context
+	params *models1.MutationParameters
+}
+
+func loadTestCases() (map[string]tcase, error) {
+	tcases := map[string]tcase{}
+	if ctx, err := models.LoadContext("", "testdata/evolution", "WalkWithNils"); err != nil {
+		return nil, fmt.Errorf("loading context for testdata/evolution: %w", err)
+	} else {
+		subj := ctx.NewSubject()
+		tcases["evolution"] = tcase{
+			ctx: ctx,
+			params: &models1.MutationParameters{
+				Package:  ctx.Package,
+				File:     ctx.File,
+				FuncDecl: subj.AST,
+			},
+		}
 	}
-	astPkg := astPkgs["test_package"]
-	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "WalkWithNils")
-	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
+	if ctx, err := models.LoadContext("", "testdata/words", "WordReverse"); err != nil {
+		return nil, fmt.Errorf("loading context for testdata/words: %w", err)
+	} else {
+		subj := ctx.NewSubject()
+		tcases["words"] = tcase{
+			ctx: ctx,
+			params: &models1.MutationParameters{
+				Package:  ctx.Package,
+				File:     ctx.File,
+				FuncDecl: subj.AST,
+			},
+		}
 	}
-	return astPkg, astFile, funcDecl, nil
+	return tcases, nil
 }
 
 func fprintSafe(fdecl *ast.FuncDecl) (code []byte, err error) {
@@ -46,82 +67,63 @@ func fprintSafe(fdecl *ast.FuncDecl) (code []byte, err error) {
 }
 
 func Test_Develop(t *testing.T) {
-	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
+	tcases, err := loadTestCases()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "failed on prep"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-
-	subjectFuncDecl := clone.FuncDecl(originalFuncDecl)
-	newNode, err := Develop(astPkg, astFile, subjectFuncDecl, 1)
-	if err != nil {
-		t.Error(errors.Wrapf(err, "Failed on Develop"))
-	}
-	fmt.Println("typeOf: ", reflect.TypeOf(newNode))
-	if astwutl.CompareRecursivelyWithAddresses(subjectFuncDecl, originalFuncDecl) == true {
-		pretty.Println(newNode)
-		pretty.Println(subjectFuncDecl.Body)
-		t.Error("Failed to see change on subject")
+	for tname, tcase := range tcases {
+		t.Run(tname, func(t *testing.T) {
+			err := Develop(tcase.params)
+			if err != nil {
+				t.Fatal(fmt.Errorf("act: %w", err))
+			}
+			if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+				t.Error("Failed to see change on subject")
+			}
+		})
 	}
 }
 
 func Benchmark_Develop(b *testing.B) {
-	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
+	tcases, err := loadTestCases()
 	if err != nil {
-		b.Error(errors.Wrapf(err, "failed on prep"))
+		b.Fatal(fmt.Errorf("prep: %w", err))
+	}
+	for tname, tcase := range tcases {
+		b.Run(tname, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				err := Develop(tcase.params)
+				if err != nil {
+					b.Fatal(fmt.Errorf("act: %w", err))
+				}
+				if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+					b.Error("Failed to see change on subject")
+				}
+			}
+		})
 	}
 
-	for i := 0; i < b.N; i++ {
-		subjectFuncDecl := clone.FuncDecl(originalFuncDecl)
-		newNode, err := Develop(astPkg, astFile, subjectFuncDecl, 1)
-		if err != nil {
-			b.Error(errors.Wrapf(err, "Failed on Develop"))
-		}
-		if astwutl.CompareRecursivelyWithAddresses(subjectFuncDecl, originalFuncDecl) == true {
-			if _, ok := newNode.(*ast.BranchStmt); ok { // empty branch statement always leads fail in ast->code convertion
-				continue
-			}
-			b.Errorf("Failed to see change on subject #%d\n", i)
-		}
-	}
 }
 
 func Test_DevelopProgressively(t *testing.T) {
-	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
+	tcases, err := loadTestCases()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "failed on prep"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
-	var best = originalFuncDecl
-	for i := 0; i < 2000; i++ {
-		subject := clone.FuncDecl(best)
-		newNode, err := Develop(astPkg, astFile, subject, 20)
-		if err != nil {
-			t.Error(errors.Wrapf(err, "Failed on Develop i = %d, typeOf = %v", i, reflect.TypeOf(newNode)))
-		}
-		if code, err := fprintSafe(best); err == nil {
-			fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
-			best = subject
-		}
-	}
-}
-
-func Test_DevelopFindUnbreakingChange(t *testing.T) {
-	astPkg, astFile, originalFuncDecl, err := loadTestPackage()
-	if err != nil {
-		t.Error(errors.Wrapf(err, "failed on prep"))
-	}
-
-	nonBreakingChangeFound := false
-	for i := 0; i < 200; i++ {
-		subject := clone.FuncDecl(originalFuncDecl)
-		Develop(astPkg, astFile, subject, 20)
-
-		if code, err := fprintSafe(subject); err == nil {
-			fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
-			nonBreakingChangeFound = true
-		}
-	}
-
-	if !nonBreakingChangeFound {
-		t.Error("No non-breaking subjects found.")
+	for tname, tcase := range tcases {
+		t.Run(tname, func(t *testing.T) {
+			var best *ast.FuncDecl
+			for i := 0; i < 2000; i++ {
+				subject := clone.FuncDecl(best)
+				err := Develop(tcase.params)
+				if err != nil {
+					t.Error(fmt.Errorf("act, i=%d: %w", i, err))
+				}
+				if code, err := fprintSafe(best); err == nil {
+					fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
+					best = subject
+				}
+			}
+		})
 	}
 }

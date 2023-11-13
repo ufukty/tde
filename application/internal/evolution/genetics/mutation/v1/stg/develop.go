@@ -3,6 +3,7 @@ package stg
 import (
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
@@ -196,7 +197,7 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 
 // Picks an appandable spot randomly (either a nil field or end of a slice type field)
 // Creates just one node and appends to choosen spot
-func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, depthLimit int) (appended any, err error) {
+func develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, depthLimit int) (appended any, err error) {
 	availableSpots := listAppendableSpots(astFuncDecl.Body)
 	if len(availableSpots) == 0 {
 		return nil, errors.New("No available spots found in AST to place new node")
@@ -215,4 +216,14 @@ func Develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, 
 		return nil, errors.Wrap(err, "Failed to append a random node into choosen spot")
 	}
 	return newNode, nil
+}
+
+func Develop(params *models.MutationParameters) error {
+	for attempts := 0; attempts < 50; attempts++ {
+		_, err := develop(params.Package, params.File, params.FuncDecl, 1)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("limit reached")
 }
