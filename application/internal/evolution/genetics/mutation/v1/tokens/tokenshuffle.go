@@ -57,18 +57,18 @@ func chooseNewTokenAndAssign(n ast.Node) (newToken token.Token) {
 	return
 }
 
-func Perform(n ast.Node) (changedNode ast.Node, newToken token.Token, ok bool) {
+func tokenShuffle(n ast.Node) (changedNode ast.Node, newToken token.Token, err error) {
 	// list available
 	tokenContainingNodes := listTokenContainingNodes(n)
 	if len(tokenContainingNodes) == 0 {
-		return changedNode, newToken, false
+		return changedNode, newToken, models.ErrUnsupportedMutation
 	}
 	changedNode = *utilities.Pick(tokenContainingNodes)
 	newToken = chooseNewTokenAndAssign(changedNode)
-	return changedNode, newToken, true
+	return changedNode, newToken, nil
 }
 
-func GeneticOperation(ctx *models.MutationParameters) bool {
-	_, _, ok := Perform(ctx.FuncDecl.Body)
-	return ok
+func TokenShuffle(ctx *models.MutationParameters) error {
+	_, _, err := tokenShuffle(ctx.FuncDecl.Body)
+	return err
 }

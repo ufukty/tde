@@ -28,10 +28,10 @@ func listBlockStmts(n ast.Node, subnodes int) (blockStmts []ast.Node) {
 	return
 }
 
-func RemoveLine(ctx *models.MutationParameters) (ok bool) {
+func RemoveLine(ctx *models.MutationParameters) error {
 	blockstmts := listBlockStmts(ctx.FuncDecl.Body, 1)
 	if len(blockstmts) == 0 {
-		return false
+		return models.ErrUnsupportedMutation
 	}
 	choosenNode := *utilities.Pick(blockstmts)
 	switch choosenNode := choosenNode.(type) {
@@ -45,5 +45,5 @@ func RemoveLine(ctx *models.MutationParameters) (ok bool) {
 		cutPoint := utilities.URandIntN(len(choosenNode.Body))
 		choosenNode.Body = append(choosenNode.Body[:cutPoint], choosenNode.Body[cutPoint+1:]...)
 	}
-	return true
+	return nil
 }

@@ -22,9 +22,8 @@ func Test_RemoveLine(t *testing.T) {
 	ctx := &models.MutationParameters{
 		FuncDecl: modifiedFuncDecl,
 	}
-	ok := RemoveLine(ctx)
-	if !ok {
-		t.Error("return value")
+	if err := RemoveLine(ctx); err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
 	codeForOriginal, err := astwutl.String(originalFuncDecl)
@@ -54,9 +53,8 @@ func Test_RemoveLineMany(t *testing.T) {
 		ctx := &models.MutationParameters{
 			FuncDecl: modifiedFuncDecl,
 		}
-		ok := RemoveLine(ctx)
-		if !ok {
-			t.Error("return value")
+		if err := RemoveLine(ctx); err != nil {
+			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 
 		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {

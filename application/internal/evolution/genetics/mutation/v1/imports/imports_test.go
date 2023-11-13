@@ -3,6 +3,7 @@ package imports
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"fmt"
 	"go/ast"
@@ -37,7 +38,11 @@ func Test_ImportPackage(t *testing.T) {
 	packageNameToImport := "4e1c8b43-300e-549e-a7d8-2ddb6b803915"
 
 	modifiedFile := clone.File(originalFile)
-	ImportPackage(modifiedFile, packageNameToImport)
+	params := &models.MutationParameters{
+		File:            modifiedFile,
+		AllowedPackages: []string{packageNameToImport},
+	}
+	ImportPackage(params)
 
 	codeForOriginal, err := astwutl.String(originalFile)
 	if err != nil {
@@ -69,7 +74,11 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		packageNameToImport := uuid.New().String()
 
 		modifiedFile := clone.File(originalFile)
-		ImportPackage(modifiedFile, packageNameToImport)
+		params := &models.MutationParameters{
+			File:            modifiedFile,
+			AllowedPackages: []string{packageNameToImport},
+		}
+		ImportPackage(params)
 
 		codeForModified, err := astwutl.String(modifiedFile)
 		if err != nil {

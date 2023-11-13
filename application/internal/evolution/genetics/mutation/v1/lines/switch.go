@@ -6,10 +6,10 @@ import (
 	"tde/internal/utilities"
 )
 
-func SwapLines(ctx *models.MutationParameters) (ok bool) {
+func SwapLines(ctx *models.MutationParameters) error {
 	blockStmts := listBlockStmts(ctx.FuncDecl.Body, 2)
 	if len(blockStmts) == 0 {
-		return false
+		return models.ErrUnsupportedMutation
 	}
 	choosenNode := *utilities.Pick(blockStmts)
 
@@ -24,5 +24,5 @@ func SwapLines(ctx *models.MutationParameters) (ok bool) {
 		cutPoint := utilities.URandIntN(len(choosenNode.Body) - 1)
 		choosenNode.Body[cutPoint], choosenNode.Body[cutPoint+1] = choosenNode.Body[cutPoint+1], choosenNode.Body[cutPoint]
 	}
-	return true
+	return nil
 }

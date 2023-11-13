@@ -2,50 +2,74 @@ package mutation
 
 import (
 	"fmt"
+	"log"
 	"tde/internal/evolution/genetics/mutation/v1/imports"
 	"tde/internal/evolution/genetics/mutation/v1/lines"
 	"tde/internal/evolution/genetics/mutation/v1/literals"
 	"tde/internal/evolution/genetics/mutation/v1/models"
+	"tde/internal/evolution/genetics/mutation/v1/stg"
 	"tde/internal/evolution/genetics/mutation/v1/tokens"
 	"tde/internal/utilities"
+
+	"golang.org/x/exp/maps"
 )
 
 // TODO: RegenerateSubtree (cfg/node_constructor)
 // TODO: Merge declared variables
 
-var availableOperations = []models.GeneticOperation{
-	imports.GeneticOperation,
-	literals.GeneticOperation,
-	lines.RemoveLine,
-	lines.SwapLines,
-	tokens.GeneticOperation,
+// var availableOperations = []models.GeneticOperation{
+// 	imports.GeneticOperation,
+// 	literals.GeneticOperation,
+// 	lines.RemoveLine,
+// 	lines.SwapLines,
+// 	tokens.GeneticOperation,
+// }
+
+//go:generate stringer -type MutationOperation
+
+type MutationOperation int
+
+const (
+	MOImportPackage = MutationOperation(iota)
+	MOLiteralValueAlter
+	MORemoveLine
+	MOSwapLines
+	MOTokenShuffle
+	MOSTG
+)
+
+var mutators = map[MutationOperation]models.GeneticOperation{
+	MOImportPackage:     imports.ImportPackage,
+	MOLiteralValueAlter: literals.LiteralValueAlter,
+	MORemoveLine:        lines.RemoveLine,
+	MOSwapLines:         lines.SwapLines,
+	MOTokenShuffle:      tokens.TokenShuffle,
+	MOSTG:               stg.Develop,
 }
 
-func Pick() models.GeneticOperation {
-	return *utilities.Pick(availableOperations)
-}
-
-func mutate(ctx *models.MutationParameters) (err error) {
+func runMutator(mutator models.GeneticOperation, params *models.MutationParameters) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("recovered: %v", r)
+			err = fmt.Errorf("%v", r)
 		}
 	}()
-	op := Pick()
-	if ok := op(ctx); !ok {
-		err = fmt.Errorf("operation (%v) returned false", op)
-	}
-	return
+	return mutator(params)
 }
 
-func Mutate(ctx *models.MutationParameters) error {
-	for attempts := 0; true; attempts++ {
-		if attempts == 10 {
-			return fmt.Errorf("Limit to try is reached.")
+func Mutate(params *models.MutationParameters) error {
+	for attempts := 0; attempts < 50; attempts++ {
+		MO := *utilities.Pick(maps.Keys(mutators))
+		mutator, ok := mutators[MO]
+		if !ok {
+			return fmt.Errorf("unkown mutation operation %s", MO)
 		}
-		if err := mutate(ctx); err != nil {
-			return fmt.Errorf("mutating: %w", err)
+		err := runMutator(mutator, params)
+		if err == nil {
+			log.Println("applied", MO)
+			return nil
+		} else {
+			log.Println(fmt.Errorf("applying %s: %w", MO, err))
 		}
 	}
-	return nil
+	return fmt.Errorf("Limit to try is reached.")
 }

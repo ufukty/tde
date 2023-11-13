@@ -34,9 +34,9 @@ func Test_Operator(t *testing.T) {
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-	choosenNode, newToken, ok := Perform(modifiedFuncDecl.Body)
-	if !ok {
-		t.Error("return value")
+	choosenNode, newToken, err := tokenShuffle(modifiedFuncDecl.Body)
+	if err != nil {
+		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
 	codeForOriginal, err := astwutl.String(originalFuncDecl)
@@ -64,9 +64,9 @@ func Test_Bulk(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
-		choosenNode, newToken, ok := Perform(modifiedFuncDecl.Body)
-		if !ok {
-			t.Error("return value")
+		choosenNode, newToken, err := tokenShuffle(modifiedFuncDecl.Body)
+		if err != nil {
+			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Errorf("validation i='%d' typeOf->choosenNode='%v' address->choosenNode='%p' newToken='%v'", i, reflect.TypeOf(choosenNode), choosenNode, newToken)

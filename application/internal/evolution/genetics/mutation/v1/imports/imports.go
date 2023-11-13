@@ -43,30 +43,26 @@ func checkExitingImports(importDecls []*ast.GenDecl, importPath string) (found b
 }
 
 // Always returns with desired result. But don't modify, if the package is already imported
-func ImportPackage(f *ast.File, importPath string) (modified bool) {
-	if f == nil {
-		panic("value for the parameter f is nil")
+func ImportPackage(ctx *models.MutationParameters) error {
+	if ctx.File == nil {
+		return fmt.Errorf("value for the parameter f is nil")
 	}
 
-	importDecls := listImportDecls(f)
-	importSpec := createImportSpecFromImportPath(importPath)
+	importDecls := listImportDecls(ctx.File)
+	importSpec := createImportSpecFromImportPath(*utilities.Pick(ctx.AllowedPackages))
 
 	if len(importDecls) == 0 {
-		newGenDecl := ast.GenDecl{
+		newGenDecl := &ast.GenDecl{
 			Tok:   token.IMPORT,
 			Specs: []ast.Spec{importSpec},
 		}
-		f.Decls = append([]ast.Decl{&newGenDecl}, f.Decls...)
+		ctx.File.Decls = append(ctx.File.Decls, newGenDecl)
 	} else {
-		if checkExitingImports(importDecls, importPath) {
-			return false
+		if checkExitingImports(importDecls, *utilities.Pick(ctx.AllowedPackages)) {
+			return models.ErrNoChangeNeeded
 		}
 		importDecls[0].Specs = append(importDecls[0].Specs, importSpec)
 	}
 
-	return true
-}
-
-func GeneticOperation(ctx *models.MutationParameters) bool {
-	return ImportPackage(ctx.File, *utilities.Pick(ctx.AllowedPackages))
+	return nil
 }

@@ -1,6 +1,9 @@
 package models
 
-import "go/ast"
+import (
+	"fmt"
+	"go/ast"
+)
 
 type MutationParameters struct {
 	Package         *ast.Package
@@ -9,4 +12,9 @@ type MutationParameters struct {
 	AllowedPackages []string
 }
 
-type GeneticOperation func(*MutationParameters) bool
+type GeneticOperation func(*MutationParameters) error
+
+var (
+	ErrUnsupportedMutation = fmt.Errorf("operation has returned false")
+	ErrNoChangeNeeded      = fmt.Errorf("no change is needed")
+)
