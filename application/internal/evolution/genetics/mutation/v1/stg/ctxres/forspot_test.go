@@ -14,9 +14,9 @@ import (
 )
 
 func Test_GetContextForSpot(t *testing.T) {
-	_, astPkgs, err := astwutl.LoadDir("../../test-package")
+	_, astPkgs, err := astwutl.LoadDir("testdata")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "Failed on loading package"))
+		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	astPkg := astPkgs["test_package"]
 	funcDecl, err := astwutl.FindFuncDecl(astPkg, "WalkWithNils")
