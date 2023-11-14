@@ -134,7 +134,7 @@ func (ctx *Context) ExamineFuncDecl(funcdecl, insertionPoint *traverse.Traversab
 			ctx.ScopeIn()
 
 		case *ast.FuncDecl: // function name itself should be examined earlier with other in-package declarations
-			if node.Type != nil && node.Type.Params != nil && node.Type.TypeParams.List != nil { // BECAUSE: invalid ASTs may lack any node
+			if node.Type != nil && node.Type.Params != nil && node.Type.Params.List != nil { // BECAUSE: invalid ASTs may lack any node
 				for _, param := range node.Type.Params.List {
 					if param.Names != nil {
 						for _, name := range param.Names {
