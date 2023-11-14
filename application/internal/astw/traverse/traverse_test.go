@@ -9,7 +9,10 @@ import (
 
 // Pass if no panic
 func Test_Traverse(t *testing.T) {
-	_, astFile, _ := astwutl.LoadFile("walk.go")
+	_, astFile, err := astwutl.LoadFile("testdata/walk.go")
+	if err != nil {
+		t.Fatal(fmt.Errorf("prep: %w", err))
+	}
 
 	appandableNodes := []*TraversableNode{}
 
