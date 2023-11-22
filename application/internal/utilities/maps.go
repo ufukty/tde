@@ -31,8 +31,7 @@ func (od OrderedDict[K, V]) Keys() []K {
 
 // separates the keys and values of a map into two array
 func MapItems[K comparable, V any](in map[K]V) ([]K, []V) {
-	keys := *new([]K)
-	values := *new([]V)
+	keys, values := make([]K, len(in)), make([]V, len(in))
 	for k, v := range in {
 		keys = append(keys, k)
 		values = append(values, v)
