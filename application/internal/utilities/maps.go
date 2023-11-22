@@ -50,3 +50,12 @@ func MapDiff[M map[K]V, K comparable, V any](m, c M) M {
 	}
 	return d
 }
+
+func MapSearchKey[K, V comparable](m map[K]V, v V) (K, bool) {
+	for k, v1 := range m {
+		if v1 == v {
+			return k, true
+		}
+	}
+	return *new(K), false
+}
