@@ -1,11 +1,13 @@
 package words
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func Reverse(in string) string {
 	return fmt.Sprintf("reversed: %s", "")
 }
 
 func Indent(in string) string {
-	return fmt.Sprintf("  %s", in)
+	return fmt.Sprintf("%s%s", "  ", in)
 }

@@ -12,27 +12,6 @@ import (
 	"testing"
 )
 
-var tcases = map[string]string{
-	"basic":     "testdata/words",
-	"populated": "testdata/evolution",
-}
-
-func Test_SymbolsManager(t *testing.T) {
-	for tname, tcase := range tcases {
-		t.Run(tname, func(t *testing.T) {
-			sm, err := NewSymbolsManager(tcase)
-			if err != nil {
-				t.Fatal(fmt.Errorf("prep: %w", err))
-			}
-
-			fmt.Println("package:")
-			for idt, typ := range sm.Context.Package {
-				fmt.Printf("  %s: %s\n", idt.Name, typ.String())
-			}
-		})
-	}
-}
-
 var testdatafolders = [][]string{
 	{"testdata/evolution/walk.go", "WalkWithNils"},
 	{"testdata/words/words.go", "Reverse"},
@@ -70,13 +49,14 @@ func prepare() (*ast.File, *ast.FuncDecl, ast.Node, *types.Info, *types.Package,
 	return file, funcdecl, spot, info, pkg, nil
 }
 
-func Example_FindFuncScope() {
+func ExampleFindFuncScope() {
 	_, funcdecl, _, info, _, err := prepare()
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
 	funcscope := info.Defs[funcdecl.Name].Parent()
-	fmt.Println("funcscope", funcscope)
+	fmt.Println(funcscope.Names())
+	// Output: [WalkCallbackFunction WalkWithNils increaseLastChildIndex isNodeNil walkAstTypeFieldsIfSet walkHelper]
 }
 
 func Test_ConvertScopesMap(t *testing.T) {
