@@ -95,6 +95,5 @@ func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 
 	return sm, nil
 }
-	}
-	return sm, nil
+
 }
