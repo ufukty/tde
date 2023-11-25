@@ -66,6 +66,12 @@ func (sm *SymbolsMngr) prepareContext() error {
 	return nil
 }
 
+func (sm *SymbolsMngr) prepareScopes() {
+	for idt, scp := range sm.info.Scopes {
+		sm.scopes[idt] = scp
+	}
+}
+
 func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 	sm := &SymbolsMngr{
 		fset:   token.NewFileSet(),
@@ -85,8 +91,10 @@ func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 	if err := sm.prepareContext(); err != nil {
 		return nil, fmt.Errorf("prepareContext: %w", err)
 	}
-	for idt, scp := range sm.info.Scopes {
-		sm.scopes[idt] = scp
+	sm.prepareScopes()
+
+	return sm, nil
+}
 	}
 	return sm, nil
 }
