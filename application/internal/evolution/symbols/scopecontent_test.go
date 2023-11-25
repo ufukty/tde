@@ -2,8 +2,10 @@ package symbols
 
 import (
 	"fmt"
-	"go/types"
+	"go/ast"
+	"io"
 	"os"
+	"reflect"
 )
 
 func ExampleScopeContent_Markdown() {
