@@ -7,7 +7,6 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
-	"reflect"
 	"slices"
 	"tde/internal/astw/traced"
 
@@ -17,11 +16,11 @@ import (
 // Use it to get list of symbols defined at the package and in imports.
 // Excludes the symbols defined inside a function (because the info is not available at initialization)
 type SymbolsMngr struct {
-	pkg     *types.Package
-	ast     *ast.Package
-	info    *types.Info
-	fset    *token.FileSet
-	scopes  map[ast.Node]*types.Scope
+	pkg  *types.Package
+	ast  *ast.Package
+	info *types.Info
+	fset *token.FileSet
+	// scopes  map[ast.Node]*types.Scope
 	Context *Context
 }
 
@@ -56,11 +55,11 @@ func (sm *SymbolsMngr) analyze(path string) error {
 	return nil
 }
 
-func (sm *SymbolsMngr) prepareScopes() {
-	for idt, scp := range sm.info.Scopes {
-		sm.scopes[idt] = scp
-	}
-}
+// func (sm *SymbolsMngr) prepareScopes() {
+// 	for idt, scp := range sm.info.Scopes {
+// 		sm.scopes[idt] = scp
+// 	}
+// }
 
 func (sm *SymbolsMngr) prepareContext() error {
 	parents := traced.Parents(sm.ast, nil)
@@ -68,23 +67,15 @@ func (sm *SymbolsMngr) prepareContext() error {
 		return fmt.Errorf("no trace found")
 	}
 
-	pkg := NewScopeContent(sm.pkg.Scope())
+	// the "universe"
+	sm.Context.ReviewScopeContent(NewScopeContent(types.Universe), nil)
 
-	for _, n := range parents {
-		// find the scope related with n and its custom children (eg. FuncDecl->FuncType)
-		fmt.Println(reflect.TypeOf(n))
-		switch n := n.(type) {
-		case *ast.Package:
-			fmt.Println(n)
+	// the package
+	sm.Context.ReviewScopeContent(NewScopeContent(sm.pkg.Scope()), nil)
 
-		case *ast.File:
-			fmt.Println(n)
-
-		case *ast.FuncDecl:
-			fmt.Println(n)
-			// TODO: n.Type -> scope
-
-		}
+	// imports
+	for _, pkg := range sm.pkg.Imports() {
+		sm.Context.ReviewScopeContent(NewScopeContent(pkg.Scope()), pkg)
 	}
 
 	return nil
@@ -92,8 +83,8 @@ func (sm *SymbolsMngr) prepareContext() error {
 
 func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 	sm := &SymbolsMngr{
-		fset:   token.NewFileSet(),
-		scopes: map[ast.Node]*types.Scope{},
+		fset: token.NewFileSet(),
+		// scopes: map[ast.Node]*types.Scope{},
 		Context: &Context{
 			Symbols: []*Symbol{},
 			ByType:  map[types.Type][]*Symbol{},
@@ -102,7 +93,7 @@ func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 	if err := sm.analyze(path); err != nil {
 		return nil, fmt.Errorf("analyze: %w", err)
 	}
-	sm.prepareScopes()
+	// sm.prepareScopes()
 	if err := sm.prepareContext(); err != nil {
 		return nil, fmt.Errorf("prepareContext: %w", err)
 	}

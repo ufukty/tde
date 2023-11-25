@@ -3,7 +3,9 @@ package symbols
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
 	"go/types"
+	"reflect"
 )
 
 var basicKinds = map[types.BasicKind]string{
@@ -409,4 +411,23 @@ func (cs ScopeContent) String() string {
 	}
 
 	return buf.String()
+}
+
+func LocalScope() *ScopeContent {
+	for _, n := range parents {
+		// find the scope related with n and its custom children (eg. FuncDecl->FuncType)
+		fmt.Println(reflect.TypeOf(n))
+		switch n := n.(type) {
+		case *ast.Package:
+			fmt.Println(n)
+
+		case *ast.File:
+			fmt.Println(n)
+
+		case *ast.FuncDecl:
+			fmt.Println(n)
+			// TODO: n.Type -> scope
+
+		}
+	}
 }
