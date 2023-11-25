@@ -8,7 +8,6 @@ import (
 	"go/token"
 	"go/types"
 	"slices"
-	"tde/internal/astw/traced"
 
 	"golang.org/x/exp/maps"
 )
@@ -62,11 +61,6 @@ func (sm *SymbolsMngr) analyze(path string) error {
 // }
 
 func (sm *SymbolsMngr) prepareContext() error {
-	parents := traced.Parents(sm.ast, nil)
-	if len(parents) == 0 {
-		return fmt.Errorf("no trace found")
-	}
-
 	// the "universe"
 	sm.Context.ReviewScopeContent(NewScopeContent(types.Universe), nil)
 

@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/types"
 	"reflect"
+	"tde/internal/astw/traced"
 )
 
 var basicKinds = map[types.BasicKind]string{
@@ -413,7 +414,14 @@ func (cs ScopeContent) String() string {
 	return buf.String()
 }
 
-func LocalScope() *ScopeContent {
+func LocalScope(fd *ast.FuncDecl, spot ast.Node) (*ScopeContent, error) {
+	parents := traced.Parents(fd, spot)
+	if len(parents) == 0 {
+		return nil, fmt.Errorf("no trace found")
+	}
+
+	var sc *ScopeContent
+
 	for _, n := range parents {
 		// find the scope related with n and its custom children (eg. FuncDecl->FuncType)
 		fmt.Println(reflect.TypeOf(n))
@@ -430,4 +438,6 @@ func LocalScope() *ScopeContent {
 
 		}
 	}
+
+	return sc, nil
 }
