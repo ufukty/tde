@@ -123,6 +123,111 @@ func NewScopeContent(scope *types.Scope) *ScopeContent {
 	return sc
 }
 
+func (cs ScopeContent) Brief() string {
+	ret := ""
+	if len(cs.TypeNamesBasic) > 0 {
+		ret = fmt.Sprintf("%s TypeNamesBasic: [", ret)
+		for i, obj := range cs.TypeNamesBasic {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.TypeNamesNamed) > 0 {
+		ret = fmt.Sprintf("%s TypeNamesNamed: [", ret)
+		for i, obj := range cs.TypeNamesNamed {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.TypeNamesInterface) > 0 {
+		ret = fmt.Sprintf("%s TypeNamesInterface: [", ret)
+		for i, obj := range cs.TypeNamesInterface {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Consts) > 0 {
+		ret = fmt.Sprintf("%s Consts: [", ret)
+		for i, obj := range cs.Consts {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Funcs) > 0 {
+		ret = fmt.Sprintf("%s Funcs: [", ret)
+		for i, obj := range cs.Funcs {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.PkgNames) > 0 {
+		ret = fmt.Sprintf("%s PkgNames: [", ret)
+		for i, obj := range cs.PkgNames {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Vars) > 0 {
+		ret = fmt.Sprintf("%s Vars: [", ret)
+		for i, obj := range cs.Vars {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Labels) > 0 {
+		ret = fmt.Sprintf("%s Labels: [", ret)
+		for i, obj := range cs.Labels {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Builtins) > 0 {
+		ret = fmt.Sprintf("%s Builtins: [", ret)
+		for i, obj := range cs.Builtins {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	if len(cs.Nils) > 0 {
+		ret = fmt.Sprintf("%s Nils: [", ret)
+		for i, obj := range cs.Nils {
+			if i != 0 {
+				ret = fmt.Sprintf("%s, ", ret)
+			}
+			ret = fmt.Sprintf("%s%s", ret, obj.Name())
+		}
+		ret = fmt.Sprintf("%s] ", ret)
+	}
+	return ret
+}
+
 func (cs ScopeContent) Markdown() string {
 	buf := bytes.NewBuffer([]byte{})
 
