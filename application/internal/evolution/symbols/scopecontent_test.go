@@ -18,7 +18,7 @@ func ExampleScopeContent_Markdown() {
 	}
 	defer f.Close()
 
-	io.Copy(f, MarkdownPackage(pkg, 3))
+	io.Copy(f, PrintPackageAsMarkdown(pkg, 3))
 	// Output:
 }
 
