@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"go/types"
+	"io"
+	"strings"
 )
 
 var basicKinds = map[types.BasicKind]string{
