@@ -23,8 +23,11 @@ func Test_SymbolsManager(t *testing.T) {
 			}
 
 			fmt.Println("package:")
-			for idt, typ := range sm.Context.Package {
-				fmt.Printf("    %s: %s\n", idt.Name, typ.String())
+			for typ, symbols := range sm.Context.ByType {
+				fmt.Println(typ)
+				for _, symbol := range symbols {
+					fmt.Printf("  %s", symbol)
+				}
 			}
 		})
 	}

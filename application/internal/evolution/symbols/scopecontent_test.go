@@ -3,26 +3,9 @@ package symbols
 import (
 	"fmt"
 	"go/ast"
-	"io"
 	"os"
 	"reflect"
 )
-
-func ExampleScopeContent_Markdown() {
-	_, _, _, _, pkg, err := prepare()
-	if err != nil {
-		panic(fmt.Errorf("prep: %w", err))
-	}
-
-	f, err := os.Create("output.md")
-	if err != nil {
-		panic(fmt.Errorf("prep, file: %w", err))
-	}
-	defer f.Close()
-
-	io.Copy(f, PrintPackageAsMarkdown(pkg, 3))
-	// Output:
-}
 
 func ExampleAstToScope() {
 	f, _, _, info, _, err := prepare()
@@ -41,5 +24,15 @@ func ExampleAstToScope() {
 
 		return true
 	})
+	// Output:
+}
+
+func ExamplePackageScopeWriteTo() {
+	_, _, _, _, pkg, err := prepare()
+	if err != nil {
+		panic(fmt.Errorf("prep: %w", err))
+	}
+
+	pkg.Scope().WriteTo(os.Stdout, 0, true)
 	// Output:
 }

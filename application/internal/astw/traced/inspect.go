@@ -171,3 +171,15 @@ func InspectChildrenTwice(node ast.Node, pre func(node ast.Node, indices int), p
 		},
 	)
 }
+
+func Parents(r, n ast.Node) (parents []ast.Node) {
+	found := false
+	InspectWithTrace(r, func(node ast.Node, p []ast.Node, _ []int) bool {
+		if node == n {
+			parents = append(p, node)
+			found = true
+		}
+		return !found
+	})
+	return
+}

@@ -7,18 +7,22 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
+	"reflect"
 	"slices"
-	"tde/internal/utilities"
+	"tde/internal/astw/traced"
 
 	"golang.org/x/exp/maps"
 )
 
+// Use it to get list of symbols defined at the package and in imports.
+// Excludes the symbols defined inside a function (because the info is not available at initialization)
 type SymbolsMngr struct {
 	pkg     *types.Package
+	ast     *ast.Package
 	info    *types.Info
 	fset    *token.FileSet
-	Context *Context
 	scopes  map[ast.Node]*types.Scope
+	Context *Context
 }
 
 func (sm *SymbolsMngr) analyze(path string) error {
@@ -52,24 +56,38 @@ func (sm *SymbolsMngr) analyze(path string) error {
 	return nil
 }
 
-func (sm *SymbolsMngr) prepareContext() error {
-	pkgscope := sm.pkg.Scope()
-	for _, name := range pkgscope.Names() {
-		obj := pkgscope.Lookup(name)
-		idt, ok := utilities.MapSearchKey(sm.info.Defs, obj)
-		if !ok {
-			return fmt.Errorf("info.Uses doesn't have %q", name)
-		}
-		sm.Context.Package.Append(idt, obj.Type())
-	}
-
-	return nil
-}
-
 func (sm *SymbolsMngr) prepareScopes() {
 	for idt, scp := range sm.info.Scopes {
 		sm.scopes[idt] = scp
 	}
+}
+
+func (sm *SymbolsMngr) prepareContext() error {
+	parents := traced.Parents(sm.ast, nil)
+	if len(parents) == 0 {
+		return fmt.Errorf("no trace found")
+	}
+
+	pkg := NewScopeContent(sm.pkg.Scope())
+
+	for _, n := range parents {
+		// find the scope related with n and its custom children (eg. FuncDecl->FuncType)
+		fmt.Println(reflect.TypeOf(n))
+		switch n := n.(type) {
+		case *ast.Package:
+			fmt.Println(n)
+
+		case *ast.File:
+			fmt.Println(n)
+
+		case *ast.FuncDecl:
+			fmt.Println(n)
+			// TODO: n.Type -> scope
+
+		}
+	}
+
+	return nil
 }
 
 func NewSymbolsManager(path string) (*SymbolsMngr, error) {
@@ -77,23 +95,16 @@ func NewSymbolsManager(path string) (*SymbolsMngr, error) {
 		fset:   token.NewFileSet(),
 		scopes: map[ast.Node]*types.Scope{},
 		Context: &Context{
-			Imported:   map[*ast.Ident]IdentsAndTypes{},
-			Importable: map[*ast.Ident]IdentsAndTypes{},
-			Package:    map[*ast.Ident]types.Type{},
-			File:       map[*ast.Ident]types.Type{},
-			Function:   map[*ast.Ident]types.Type{},
-			InFunction: map[*ast.Ident]types.Type{},
+			Symbols: []*Symbol{},
+			ByType:  map[types.Type][]*Symbol{},
 		},
 	}
 	if err := sm.analyze(path); err != nil {
 		return nil, fmt.Errorf("analyze: %w", err)
 	}
+	sm.prepareScopes()
 	if err := sm.prepareContext(); err != nil {
 		return nil, fmt.Errorf("prepareContext: %w", err)
 	}
-	sm.prepareScopes()
-
 	return sm, nil
-}
-
 }

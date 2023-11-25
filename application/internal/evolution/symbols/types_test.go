@@ -131,13 +131,45 @@ func ExampleFindingIdentsDefinedInImports() {
 	for _, ipkg := range pkg.Imports() {
 		// fmt.Println(ipkg.Name(), ipkg.Scope().Names())
 		qual := types.RelativeTo(pkg)
-		for _, symbolname := range ipkg.Scope().Names() {
-			symbol := ipkg.Scope().Lookup(symbolname)
-			str := types.ObjectString(symbol, qual)
-			fmt.Println(str)
+		if ipkg.Name() == "fmt" {
+			for _, symbolname := range ipkg.Scope().Names() {
+				symbol := ipkg.Scope().Lookup(symbolname)
+				str := types.ObjectString(symbol, qual)
+				fmt.Println(str)
+			}
 		}
 	}
-	// Output: [Append Appendf Appendln Errorf FormatString Formatter Fprint Fprintf Fprintln Fscan Fscanf Fscanln GoStringer Print Printf Println Scan ScanState Scanf Scanln Scanner Sprint Sprintf Sprintln Sscan Sscanf Sscanln State Stringer stringReader]
+	// Output:
+	// func fmt.Append(b []byte, a ...any) []byte
+	// func fmt.Appendf(b []byte, format string, a ...any) []byte
+	// func fmt.Appendln(b []byte, a ...any) []byte
+	// func fmt.Errorf(format string, a ...any) error
+	// func fmt.FormatString(state fmt.State, verb rune) string
+	// type fmt.Formatter interface{Format(f fmt.State, verb rune)}
+	// func fmt.Fprint(w io.Writer, a ...any) (n int, err error)
+	// func fmt.Fprintf(w io.Writer, format string, a ...any) (n int, err error)
+	// func fmt.Fprintln(w io.Writer, a ...any) (n int, err error)
+	// func fmt.Fscan(r io.Reader, a ...any) (n int, err error)
+	// func fmt.Fscanf(r io.Reader, format string, a ...any) (n int, err error)
+	// func fmt.Fscanln(r io.Reader, a ...any) (n int, err error)
+	// type fmt.GoStringer interface{GoString() string}
+	// func fmt.Print(a ...any) (n int, err error)
+	// func fmt.Printf(format string, a ...any) (n int, err error)
+	// func fmt.Println(a ...any) (n int, err error)
+	// func fmt.Scan(a ...any) (n int, err error)
+	// type fmt.ScanState interface{Read(buf []byte) (n int, err error); ReadRune() (r rune, size int, err error); SkipSpace(); Token(skipSpace bool, f func(rune) bool) (token []byte, err error); UnreadRune() error; Width() (wid int, ok bool)}
+	// func fmt.Scanf(format string, a ...any) (n int, err error)
+	// func fmt.Scanln(a ...any) (n int, err error)
+	// type fmt.Scanner interface{Scan(state fmt.ScanState, verb rune) error}
+	// func fmt.Sprint(a ...any) string
+	// func fmt.Sprintf(format string, a ...any) string
+	// func fmt.Sprintln(a ...any) string
+	// func fmt.Sscan(str string, a ...any) (n int, err error)
+	// func fmt.Sscanf(str string, format string, a ...any) (n int, err error)
+	// func fmt.Sscanln(str string, a ...any) (n int, err error)
+	// type fmt.State interface{Flag(c int) bool; Precision() (prec int, ok bool); Width() (wid int, ok bool); Write(b []byte) (n int, err error)}
+	// type fmt.Stringer interface{String() string}
+	// type fmt.stringReader string
 }
 
 func FilterCompatibleTypes(target types.Type, set []types.Type) (comptbl []types.Type) {
