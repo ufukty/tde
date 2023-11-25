@@ -126,12 +126,8 @@ func NewScopeContent(scope *types.Scope) *ScopeContent {
 func (cs ScopeContent) Markdown() string {
 	buf := bytes.NewBuffer([]byte{})
 
-	if len(cs.TypeNamesBasic) > 0 || len(cs.TypeNamesNamed) > 0 || len(cs.TypeNamesInterface) > 0 {
-		fmt.Fprintln(buf, "### TypeName")
-	}
-
 	if len(cs.TypeNamesBasic) > 0 {
-		fmt.Fprintln(buf, "#### Basic")
+		fmt.Fprintln(buf, "**TypeName / Basic**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type | Kind | Info | Name |")
 		fmt.Fprintln(buf, "|---|")
@@ -147,7 +143,7 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.TypeNamesNamed) > 0 {
-		fmt.Fprintln(buf, "#### Named")
+		fmt.Fprintln(buf, "**TypeName / Named**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
@@ -158,7 +154,7 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.TypeNamesInterface) > 0 {
-		fmt.Fprintln(buf, "#### Interface")
+		fmt.Fprintln(buf, "**TypeName / Interface**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
@@ -169,7 +165,7 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.Consts) > 0 {
-		fmt.Fprintln(buf, "### Const")
+		fmt.Fprintln(buf, "**Const**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type | Val |")
 		fmt.Fprintln(buf, "|---|")
@@ -180,7 +176,7 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.Funcs) > 0 {
-		fmt.Fprintln(buf, "### Func")
+		fmt.Fprintln(buf, "**Func**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | FullName |")
 		fmt.Fprintln(buf, "|---|")
@@ -191,7 +187,7 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.PkgNames) > 0 {
-		fmt.Fprintln(buf, "### PkgName")
+		fmt.Fprintln(buf, "**PkgName**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
@@ -202,18 +198,18 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.Vars) > 0 {
-		fmt.Fprintln(buf, "### Var")
+		fmt.Fprintln(buf, "**Var**")
 		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type | Anonymous | Embedded | IsField |")
 		fmt.Fprintln(buf, "|---|")
 		for _, obj := range cs.Vars {
-			fmt.Fprintf(buf, "%s | %s | %s | %t | %t | %t\n", obj.String(), obj.Name(), obj.Type(), obj.Anonymous(), obj.Embedded(), obj.IsField())
+			fmt.Fprintf(buf, "| `%s` | %s | %s | %t | %t | %t |\n", obj.String(), obj.Name(), obj.Type(), obj.Anonymous(), obj.Embedded(), obj.IsField())
 		}
 		fmt.Fprintln(buf)
 	}
 
 	if len(cs.Labels) > 0 {
-		fmt.Fprintln(buf, "### Label")
+		fmt.Fprintln(buf, "**Label**")
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
 		for _, obj := range cs.Labels {
@@ -223,7 +219,8 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.Builtins) > 0 {
-		fmt.Fprintln(buf, "### Builtin")
+		fmt.Fprintln(buf, "**Builtin**")
+		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
 		for _, obj := range cs.Builtins {
@@ -233,7 +230,8 @@ func (cs ScopeContent) Markdown() string {
 	}
 
 	if len(cs.Nils) > 0 {
-		fmt.Fprintln(buf, "### Nil")
+		fmt.Fprintln(buf, "**Nil**")
+		fmt.Fprintln(buf)
 		fmt.Fprintln(buf, "| String | Name | Type |")
 		fmt.Fprintln(buf, "|---|")
 		for _, obj := range cs.Nils {
@@ -306,4 +304,28 @@ func (cs ScopeContent) String() string {
 	}
 
 	return buf.String()
+}
+
+func markdownPackageRecHelper(scope *types.Scope, name string, d int, limit int) *bytes.Buffer {
+	h := strings.Repeat("#", d+2)
+	f := bytes.NewBuffer([]byte{})
+	fmt.Fprintf(f, "%s %s\n\n", h, name)
+	fmt.Fprintln(f, NewScopeContent(scope).Markdown())
+	if limit != d {
+		for i := 0; i < scope.NumChildren(); i++ {
+			firstline := strings.Split(scope.String(), "\n")[0]
+			title := strings.Join(strings.Split(firstline, " ")[0:2], " ")
+			io.Copy(f, markdownPackageRecHelper(scope.Child(i), title, d+1, limit))
+		}
+	}
+	return f
+}
+
+// use limit to restrain what depth/level of nested-scopes will be visited
+func PrintPackageAsMarkdown(pkg *types.Package, limit int) *bytes.Buffer {
+	f := bytes.NewBuffer([]byte{})
+	fmt.Fprintf(f, "\n# Universe\n\n")
+	fmt.Fprintln(f, NewScopeContent(types.Universe).Markdown())
+	io.Copy(f, markdownPackageRecHelper(pkg.Scope(), "The Package", 0, limit))
+	return f
 }

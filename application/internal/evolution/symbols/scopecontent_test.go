@@ -18,19 +18,7 @@ func ExampleScopeContent_Markdown() {
 	}
 	defer f.Close()
 
-	fmt.Fprintln(f, "# Scope Contents")
-
-	fmt.Fprintln(f, "## Universe")
-	fmt.Fprintln(f, NewScopeContent(types.Universe).Markdown())
-
-	fmt.Fprintln(f, "## The Package")
-	fmt.Fprintln(f, NewScopeContent(pkg.Scope()).Markdown())
-
-	for i := 0; i < pkg.Scope().NumChildren(); i++ {
-		fmt.Fprintf(f, "## %d. Sub scope\n", i)
-		fmt.Fprintln(f, NewScopeContent(pkg.Scope().Child(i)).Markdown())
-	}
-
+	io.Copy(f, MarkdownPackage(pkg, 3))
 	// Output:
 }
 
