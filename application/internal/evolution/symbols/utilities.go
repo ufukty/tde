@@ -3,6 +3,11 @@ package symbols
 import (
 	"fmt"
 	"go/ast"
+	"go/types"
+	"reflect"
+	"strings"
+	"tde/internal/astw/traced"
+	"tde/internal/utilities"
 )
 
 func findFuncTypeParent(r ast.Node, ft *ast.FuncType) *ast.FuncDecl {
@@ -38,4 +43,32 @@ func findFuncTypeParent(r ast.Node, ft *ast.FuncType) *ast.FuncDecl {
 	})
 
 	return fd
+}
+
+func crumb(in string) string {
+	return fmt.Sprintf("`%s`", in)
+}
+
+func findMeaningfulPathToScope(info *types.Info, r ast.Node, s *types.Scope) string {
+	sn, ok := utilities.MapSearchKey(info.Scopes, s)
+	if !ok {
+		return ""
+	}
+	path := ""
+	for i, n := range traced.Parents(r, sn) {
+		if i != 0 {
+			path += "/"
+		}
+		switch a := n.(type) {
+		case *ast.File:
+			path += a.Name.Name
+		case *ast.TypeSpec:
+			path += a.Name.Name
+		case *ast.FuncDecl:
+			path += a.Name.Name
+		default:
+			path += crumb(strings.Split(reflect.TypeOf(a).String(), ".")[1])
+		}
+	}
+	return path
 }

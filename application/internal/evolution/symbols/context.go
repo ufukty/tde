@@ -20,13 +20,7 @@ func (c *Context) CreateSymbol(ident, belongs *ast.Ident, typ types.Type) {
 }
 
 func (c *Context) ReviewScopeContent(sc *ScopeContent, of *types.Package) {
-	for _, typ := range sc.TypeNamesBasic {
-		c.CreateSymbol(ast.NewIdent(typ.Name()), ast.NewIdent(of.Name()), typ.Type())
-	}
-	for _, typ := range sc.TypeNamesNamed {
-		c.CreateSymbol(ast.NewIdent(typ.Name()), ast.NewIdent(of.Name()), typ.Type())
-	}
-	for _, typ := range sc.TypeNamesInterface {
+	for _, typ := range sc.TypeNames {
 		c.CreateSymbol(ast.NewIdent(typ.Name()), ast.NewIdent(of.Name()), typ.Type())
 	}
 	for _, typ := range sc.Consts {

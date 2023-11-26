@@ -10,22 +10,25 @@ import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/traced"
 	"testing"
+
+	"golang.org/x/exp/maps"
 )
 
 var testdatafolders = [][]string{
-	{"testdata/evolution/walk.go", "WalkWithNils"},
-	{"testdata/words/words.go", "Reverse"},
+	{"testdata/evolution", "WalkWithNils"},
+	{"testdata/words", "Reverse"},
 }
 
 var testcase int64 = 0
 
-func prepare() (*ast.File, *ast.FuncDecl, ast.Node, *types.Info, *types.Package, error) {
+func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Package, error) {
 	path, funcname := testdatafolders[testcase][0], testdatafolders[testcase][1]
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, path, nil, 0)
+	pkgs, err := parser.ParseDir(fset, path, nil, 0)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("parser: %w", err)
 	}
+	astpkg := maps.Values(pkgs)[0] // there should be exactly 1 package at tested dir
 	conf := types.Config{Importer: importer.Default()}
 	info := &types.Info{
 		Defs:       map[*ast.Ident]types.Object{},
@@ -37,16 +40,16 @@ func prepare() (*ast.File, *ast.FuncDecl, ast.Node, *types.Info, *types.Package,
 		Types:      map[ast.Expr]types.TypeAndValue{},
 		Uses:       map[*ast.Ident]types.Object{},
 	}
-	pkg, err := conf.Check("main", fset, []*ast.File{file}, info)
+	pkg, err := conf.Check("main", fset, maps.Values(astpkg.Files), info)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("check: %w", err)
 	}
-	funcdecl, err := astwutl.FindFuncDecl(file, funcname)
+	funcdecl, err := astwutl.FindFuncDecl(astpkg, funcname)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("find func decl: %w", err)
 	}
 	spot := funcdecl.Body.List[0]
-	return file, funcdecl, spot, info, pkg, nil
+	return astpkg, funcdecl, spot, info, pkg, nil
 }
 
 func ExampleFindFuncScope() {
