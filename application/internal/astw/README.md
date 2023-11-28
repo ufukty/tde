@@ -6,7 +6,7 @@
     -   traced
         -   Contains: InspectWithTrace() and WalkWithNil()
     -   traverse
-        -   Contains: Traverse() and TraversableNode{}, suits the need accessing, storing nodes on AST including nil valued struct fields
+        -   Contains: Once(), Twice() and Node{}, suits the need accessing, storing nodes on AST including nil valued struct fields and slice items
     -   types:
         -   Contains: Enums for structs defined in standard library ast, used by both, exported.
         -   Used by first two package above and from outside packages

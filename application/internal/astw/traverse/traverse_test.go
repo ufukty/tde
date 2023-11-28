@@ -14,17 +14,16 @@ func Test_Traverse(t *testing.T) {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 
-	appandableNodes := []*TraversableNode{}
-
-	Traverse(GetTraversableNodeForASTNode(astFile), func(tNodePtr *TraversableNode) bool {
-		if tNodePtr.PointsToNilSpot {
-			fmt.Printf("%-20s nil\n", tNodePtr.ExpectedType)
+	appandableNodes := []*Node{}
+	Once(NewNode(astFile), func(n *Node) bool {
+		if n.IsNil {
+			fmt.Printf("%-20s nil\n", n.Expected)
 		} else {
-			fmt.Printf("%-20s %v\n", tNodePtr.ExpectedType, tNodePtr.Value)
+			fmt.Printf("%-20s %v %s\n", n.Expected, n.ref.Get(), n.Constraints)
 		}
 
-		if tNodePtr.PointsToNilSpot || tNodePtr.ExpectedType.IsSliceType() {
-			appandableNodes = append(appandableNodes, tNodePtr)
+		if n.IsNil || n.Expected.IsSliceType() {
+			appandableNodes = append(appandableNodes, n)
 		}
 
 		return true
