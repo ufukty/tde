@@ -2,6 +2,7 @@ package utilities
 
 import (
 	crand "crypto/rand"
+	"fmt"
 	"log"
 	"math"
 	"math/big"
@@ -52,6 +53,13 @@ func Pick[T any](s []T) *T {
 		panic("Cannot Pick from empty slice")
 	}
 	return &s[URandIntN(len(s))]
+}
+
+func PickSafe[T any](s []T) (T, error) {
+	if len(s) == 0 {
+		return *new(T), fmt.Errorf("empty slice")
+	}
+	return s[URandIntN(len(s))], nil
 }
 
 func PickExcept[T comparable](s []T, e []T) *T {
