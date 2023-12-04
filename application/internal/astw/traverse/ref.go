@@ -1,117 +1,121 @@
 package traverse
 
-import "slices"
+import (
+	"golang.org/x/exp/slices"
+)
 
-type ref interface {
+type Ref interface {
 	Set(value any) bool
-	Get() any
 }
 
-// TODO: Get
-type sliceItemBefore[T any] struct {
-	slice             slice[T]
+type SliceItemInsertBeforeRef[T any] struct {
+	sliceRef          SliceRef[T]
 	insertBeforeIndex int
 }
 
-func (ref *sliceItemBefore[T]) Set(valuePtr any) bool {
+func (ref *SliceItemInsertBeforeRef[T]) Set(valuePtr any) bool {
 	if value, ok := valuePtr.(T); ok {
-		newSlice := slices.Insert(*ref.slice.Get(), ref.insertBeforeIndex, value)
-		ok := ref.slice.Set(&newSlice)
+		// fmt.Println("SliceItemInsertBeforeRef>", *ref.sliceRef.Get(), value)
+		newSlice := slices.Insert(*ref.sliceRef.Get(), ref.insertBeforeIndex, value)
+		ok := ref.sliceRef.Set(&newSlice)
+		// fmt.Println("SliceItemInsertBeforeRef>>", *ref.sliceRef.Get())
 		return ok
 	}
 	return false
 }
 
-func newSliceItemBefore[T any](sr slice[T], insertBeforeIndex int) *sliceItemBefore[T] {
-	return &sliceItemBefore[T]{
-		slice:             sr,
+func NewSliceItemInsertBeforeRef[T any](sliceRef SliceRef[T], insertBeforeIndex int) *SliceItemInsertBeforeRef[T] {
+	return &SliceItemInsertBeforeRef[T]{
+		sliceRef:          sliceRef,
 		insertBeforeIndex: insertBeforeIndex,
 	}
 }
 
-type sliceEnding[T any] struct {
-	slice slice[T]
+type SliceEndingRef[T any] struct {
+	sliceRef SliceRef[T]
 }
 
-func (ref *sliceEnding[T]) Set(valuePtr any) bool {
+func (ref *SliceEndingRef[T]) Set(valuePtr any) bool {
 	if value, ok := valuePtr.(T); ok {
-		newSlice := append(*ref.slice.Get(), value)
-		ok := ref.slice.Set(&newSlice)
+		// fmt.Println("SliceEndingRef>", ref.sliceRef, value)
+		newSlice := append(*ref.sliceRef.Get(), value)
+		ok := ref.sliceRef.Set(&newSlice)
+		// fmt.Println("SliceEndingRef>>", ref.sliceRef)
 		return ok
 	}
 	return false
 }
 
-func newSliceEndingRef[T any](sr slice[T]) *sliceEnding[T] {
-	return &sliceEnding[T]{
-		slice: sr,
+func NewSliceEndingRef[T any](sliceRef SliceRef[T]) *SliceEndingRef[T] {
+	return &SliceEndingRef[T]{
+		sliceRef: sliceRef,
 	}
 }
 
-type sliceitem[T any] struct {
+type SliceItemRef[T any] struct {
 	sliceAddr *[]T
 	index     int
 }
 
-func (ref *sliceitem[T]) Set(valuePtr any) bool {
+func (ref *SliceItemRef[T]) Set(valuePtr any) bool {
 	if value, ok := valuePtr.(T); ok {
+		// fmt.Println("SliceItemRef>", *ref.sliceAddr, value)
 		(*ref.sliceAddr)[ref.index] = value
+		// fmt.Println("SliceItemRef>", *ref.sliceAddr)
 		return true
 	}
 	return false
 }
 
-func (ref *sliceitem[T]) Get() any {
-	return (*ref.sliceAddr)[ref.index]
-}
-
-func newSliceItemRef[T any](slicePtr *[]T, index int) *sliceitem[T] {
-	return &sliceitem[T]{
+func NewSliceItemRef[T any](slicePtr *[]T, index int) *SliceItemRef[T] {
+	return &SliceItemRef[T]{
 		sliceAddr: slicePtr,
 		index:     index,
 	}
 }
 
-type slice[T any] struct {
+type SliceRef[T any] struct {
 	addr *[]T
 }
 
-func (ref *slice[T]) Set(valuePtr any) bool {
+func (ref *SliceRef[T]) Set(valuePtr any) bool {
 	if valuePtr, ok := valuePtr.(*[]T); ok {
+		// fmt.Printf("SliceRef+ %p, %p\n", *ref.addr, ref.addr)
+		// fmt.Println("SliceRef>", *ref.addr, ref.addr, reflect.TypeOf(*ref.addr), reflect.ValueOf(*ref.addr), reflect.ValueOf(ref.addr), valuePtr)
 		*ref.addr = *valuePtr
+		// fmt.Printf("SliceRef++ %p, %p\n", *ref.addr, ref.addr)
+		// fmt.Println("SliceRef>>", *ref.addr, ref.addr, reflect.TypeOf(*ref.addr), reflect.ValueOf(*ref.addr), reflect.ValueOf(ref.addr))
 		return true
 	}
 	return false
 }
 
-func (ref *slice[T]) Get() *[]T {
+func (ref *SliceRef[T]) Get() *[]T {
 	return ref.addr
 }
 
-func newSliceRef[T any](addr *[]T) *slice[T] {
-	return &slice[T]{
+func NewSliceRef[T any](addr *[]T) *SliceRef[T] {
+	return &SliceRef[T]{
 		addr: addr,
 	}
 }
 
-type field[T any] struct {
+type DirectRef[T any] struct {
 	addr *T
 }
 
-func (ref *field[T]) Set(valuePtr any) bool {
+func (ref *DirectRef[T]) Set(valuePtr any) bool {
 	if value, ok := valuePtr.(T); ok {
+		// fmt.Println("DirectRef>", *ref.addr, value)
 		*ref.addr = value
+		// fmt.Println("DirectRef>>", *ref.addr)
 		return true
 	}
 	return false
 }
 
-func (ref *field[T]) Get() any {
-	return *ref.addr
-}
-
-func newFieldRef[T any](addr *T) *field[T] {
-	return &field[T]{
+func NewDirectRef[T any](addr *T) *DirectRef[T] {
+	return &DirectRef[T]{
 		addr: addr,
 	}
 }

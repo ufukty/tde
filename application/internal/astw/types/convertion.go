@@ -2,7 +2,7 @@ package types
 
 import "go/ast"
 
-func TypeFor(n ast.Node) NodeType {
+func GetNodeTypeForASTNode(n ast.Node) NodeType {
 	switch n.(type) {
 	case *ast.ArrayType:
 		return ArrayType

@@ -1,38 +1,56 @@
 package traverse
 
-func onceHelper(n *Node, callback func(n *Node) bool) {
-	if cont := callback(n); !cont {
+// One TraversableNode's TraversableSubnodes are
+//  1. If the TraversableNode is Node-Slice: Items of the slice
+//  2. If the TraversableNode is Node-like: Fields of the struct that are either Node-like or Node-slice
+func (tNode *TraversableNode) GetTraversableSubnodes() []*TraversableNode {
+	if tNode.ExpectedType.IsInterfaceType() {
+		return TraversableNodesFromInterfaceTypeNode(tNode) // Use TraversableNodesFromConcreteTypeNode after checking actually assigned node's type
+
+	} else if tNode.ExpectedType.IsSliceType() {
+		return TraversableNodesFromSliceTypeNode(tNode)
+
+	} else if tNode.ExpectedType.IsConcreteType() {
+		return TraversableNodesFromConcreteTypeNode(tNode)
+
+	}
+	panic("Failed on GetTraversableSubnodes. There should be any ExpectedTypes don't fall into any of above cases")
+	// return []TraversableNode{}
+}
+
+func traverseHelper(tNodePtr *TraversableNode, callback func(tNodePtr *TraversableNode) bool) {
+	if cont := callback(tNodePtr); !cont {
 		return
 	}
-	for _, s := range n.Subnodes() {
-		onceHelper(s, callback)
+	for _, field := range tNodePtr.GetTraversableSubnodes() {
+		traverseHelper(field, callback)
 	}
 }
 
 // There are 2 differences compared to WalkWithNil:
 //  1. Sends the information of expected type for nil values
 //  2. Threats slices are individual nodes, their items will have isolated indices from sibling nodes.
-func Once(n *Node, callback func(n *Node) bool) {
-	onceHelper(n, callback)
+func Traverse(tNode *TraversableNode, callback func(tNodePtr *TraversableNode) bool) {
+	traverseHelper(tNode, callback)
 }
 
-func twiceHelper(n *Node, pre func(n *Node) bool, post func(n *Node)) {
+func traverseTwiceHelper(tNodePtr *TraversableNode, pre func(tNodePtr *TraversableNode) bool, post func(tNodePtr *TraversableNode)) {
 	if pre != nil {
-		if cont := pre(n); !cont {
+		if cont := pre(tNodePtr); !cont {
 			return
 		}
 	}
-	for _, s := range n.Subnodes() {
-		twiceHelper(s, pre, post)
+	for _, field := range tNodePtr.GetTraversableSubnodes() {
+		traverseTwiceHelper(field, pre, post)
 	}
 	if post != nil {
-		post(n)
+		post(tNodePtr)
 	}
 }
 
 // There are 2 differences compared to WalkWithNil:
 //  1. Sends the information of expected type for nil values
 //  2. Threats slices are individual nodes, their items will have isolated indices from sibling nodes.
-func Twice(n *Node, pre func(n *Node) bool, post func(n *Node)) {
-	twiceHelper(n, pre, post)
+func TraverseTwice(tNode *TraversableNode, pre func(tNodePtr *TraversableNode) bool, post func(tNodePtr *TraversableNode)) {
+	traverseTwiceHelper(tNode, pre, post)
 }
