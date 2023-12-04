@@ -145,3 +145,22 @@ func Spec(src ast.Spec) ast.Spec {
 
 	return nil
 }
+
+func Node(src ast.Node) ast.Node {
+	if src == nil {
+		return nil
+	}
+
+	switch src := src.(type) {
+	case ast.Expr:
+		return Expr(src)
+	case ast.Stmt:
+		return Stmt(src)
+	case ast.Decl:
+		return Decl(src)
+	case ast.Spec:
+		return Spec(src)
+	}
+
+	return nil
+}
