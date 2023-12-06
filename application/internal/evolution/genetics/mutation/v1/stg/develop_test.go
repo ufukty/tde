@@ -10,7 +10,7 @@ import (
 	"tde/internal/astw/clone"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 	"testing"
 )
 
@@ -120,7 +120,7 @@ func Test_DevelopProgressively(t *testing.T) {
 					t.Error(fmt.Errorf("act, i=%d: %w", i, err))
 				}
 				if code, err := fprintSafe(best); err == nil {
-					fmt.Printf("Code:\n%s\n", utilities.IndentLines(string(code), 4))
+					fmt.Printf("Code:\n%s\n", strw.IndentLines(string(code), 4))
 					best = subject
 				}
 			}

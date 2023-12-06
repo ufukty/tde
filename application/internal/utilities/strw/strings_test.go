@@ -1,4 +1,4 @@
-package utilities
+package strw
 
 import (
 	"testing"
@@ -21,7 +21,7 @@ func Test_StringFold(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		if got := StringFold(testCase.str, testCase.length); slices.Compare(testCase.want, got) != 0 {
+		if got := Fold(testCase.str, testCase.length); slices.Compare(testCase.want, got) != 0 {
 			t.Error("validation", testCase.want, got)
 		}
 	}

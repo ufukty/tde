@@ -1,7 +1,7 @@
 package models
 
 import (
-	"tde/internal/utilities"
+	"tde/internal/utilities/mapw"
 
 	"golang.org/x/exp/maps"
 )
@@ -17,7 +17,7 @@ func (s Subjects) Join(s2 Subjects) {
 }
 
 func (s Subjects) Diff(subtract Subjects) Subjects {
-	diff := utilities.MapDiff(map[Sid]*Subject(s), map[Sid]*Subject(subtract))
+	diff := mapw.Diff(map[Sid]*Subject(s), map[Sid]*Subject(subtract))
 	return (Subjects)(diff)
 }
 

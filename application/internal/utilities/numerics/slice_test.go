@@ -1,7 +1,8 @@
-package utilities
+package numerics
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -95,7 +96,7 @@ func TestBisect(t *testing.T) {
 
 func TestBinaryRangeSearchProbabilities(t *testing.T) {
 	weights := []int64{4, 5, 2, 7, 8, 9, 6, 3, 1, 2}
-	cumulativeWeights := GetCumulative(weights) // [4,9,11,18,26,35,41,44,45,47]
+	cumulativeWeights := Cumulate(weights) // [4,9,11,18,26,35,41,44,45,47]
 
 	var (
 		totalCumulation = cumulativeWeights[len(cumulativeWeights)-1]
@@ -104,7 +105,7 @@ func TestBinaryRangeSearchProbabilities(t *testing.T) {
 	)
 
 	for i := 0; i < totalRun; i++ {
-		key := int64(URandIntN(int(totalCumulation)))
+		key := int64(rand.Intn(int(totalCumulation)))
 		index := BisectRight(cumulativeWeights, key)
 		freq[index]++
 	}

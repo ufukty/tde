@@ -5,7 +5,9 @@ package selection
 import (
 	"fmt"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/mapw"
+	"tde/internal/utilities/numerics"
+	"tde/internal/utilities/randoms"
 )
 
 // O(n) if the key checking is O(1)
@@ -29,9 +31,9 @@ func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick
 		return subjects
 	}
 	var (
-		ids, cands   = utilities.MapItems(subjects)
+		ids, cands   = mapw.Items(subjects)
 		fitnesses    = reverse(getFitnesses(cands, layer))
-		cumulative   = utilities.GetCumulative(fitnesses)
+		cumulative   = numerics.Cumulate(fitnesses)
 		totalFitness = cumulative[len(cumulative)-1]
 		picks        = []models.Sid{}
 		choosen      int
@@ -42,8 +44,8 @@ func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick
 	}
 	for len(picks) < pick {
 		for len(picks) < pick { // O(n*logn)
-			bullet = utilities.URandFloatForCrypto() * totalFitness
-			choosen = utilities.BisectRight(cumulative, bullet)
+			bullet = randoms.UniformCryptoFloat() * totalFitness
+			choosen = numerics.BisectRight(cumulative, bullet)
 			picks = append(picks, ids[choosen])
 		}
 		picks = deleteDuplicates(picks)
@@ -61,9 +63,9 @@ func RouletteWheelToReproduce(subjects models.Subjects, layer models.Layer, pick
 		}
 	}
 	var (
-		ids, cands   = utilities.MapItems(subjects)
+		ids, cands   = mapw.Items(subjects)
 		fitnesses    = reverse(getFitnesses(cands, layer))
-		cumulative   = utilities.GetCumulative(fitnesses)
+		cumulative   = numerics.Cumulate(fitnesses)
 		totalFitness = cumulative[len(cumulative)-1]
 		picks        = []models.Sid{}
 		choosen      int
@@ -73,8 +75,8 @@ func RouletteWheelToReproduce(subjects models.Subjects, layer models.Layer, pick
 		return Random(subjects, pick), nil
 	}
 	for len(picks) < pick {
-		bullet = utilities.URandFloatForCrypto() * totalFitness
-		choosen = utilities.BisectRight(cumulative, bullet)
+		bullet = randoms.UniformCryptoFloat() * totalFitness
+		choosen = numerics.BisectRight(cumulative, bullet)
 		picks = append(picks, ids[choosen])
 	}
 	return filterSubjectsBySids(subjects, picks), nil

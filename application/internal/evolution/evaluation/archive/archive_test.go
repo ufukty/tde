@@ -2,7 +2,7 @@ package archive
 
 import (
 	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/utilities"
+	"tde/internal/utilities/osw"
 
 	"fmt"
 	"path/filepath"
@@ -27,7 +27,7 @@ func Test_findModuleRoot(t *testing.T) {
 		t.Error(errors.Wrapf(err, "failed"))
 	}
 
-	workingDir, err := utilities.WorkingDir()
+	workingDir, err := osw.WorkingDir()
 	if err != nil {
 		t.Error(errors.Wrap(err, "failed on running \"pwd -P\" command"))
 	}

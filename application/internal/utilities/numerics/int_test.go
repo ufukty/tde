@@ -1,4 +1,4 @@
-package utilities
+package numerics
 
 import (
 	"testing"
@@ -63,7 +63,7 @@ func Test_GetPrimeFactors(t *testing.T) {
 			{49, []int{7, 7}},
 		}
 		for _, testCase := range testCases {
-			if got := GetPrimeFactors(testCase.input); slices.Compare(testCase.want, got) != 0 {
+			if got := PrimeFactors(testCase.input); slices.Compare(testCase.want, got) != 0 {
 				t.Error("validation. input:", testCase.input, "want:", testCase.want, "got:", got)
 			}
 
@@ -72,7 +72,7 @@ func Test_GetPrimeFactors(t *testing.T) {
 
 	t.Run("fast test", func(t *testing.T) {
 		for i := 50; i < 100000; i++ {
-			factors := GetPrimeFactors(i)
+			factors := PrimeFactors(i)
 			multiplication := 1
 			for _, factor := range factors {
 				multiplication *= factor

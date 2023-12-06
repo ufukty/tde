@@ -1,18 +1,15 @@
 package stg
 
 import (
+	"fmt"
+	"go/ast"
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
-	"tde/internal/utilities"
-
-	"fmt"
-	"go/ast"
-
-	"github.com/pkg/errors"
+	"tde/internal/utilities/pick"
 )
 
 func listAppendableSpots(node ast.Node) (appandableNodes []*traverse.TraversableNode) {
@@ -44,7 +41,7 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		case []ast.Expr:
 			appended = &[]ast.Expr{}
 		default:
-			return nil, errors.New("Unhandled case for slice type node creation")
+			return nil, fmt.Errorf("Unhandled case for slice type node creation")
 		}
 
 	} else if dst.ExpectedType.IsInterfaceType() {
@@ -60,7 +57,7 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		case types.TypeExpr:
 			appended = nodes.Type(ctx, depthLimit)
 		default:
-			return nil, errors.New("Unhandled case for interface type node creation")
+			return nil, fmt.Errorf("Unhandled case for interface type node creation")
 		}
 
 	} else if dst.ExpectedType.IsConcreteType() {
@@ -180,17 +177,17 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		case types.ValueSpec:
 			appended = nodes.ValueSpec(ctx, depthLimit)
 		default:
-			return nil, errors.New("Unhandled case for concrete type node creation")
+			return nil, fmt.Errorf("Unhandled case for concrete type node creation")
 		}
 
 	}
 	if appended == nil {
-		return nil, errors.New("Could not create an instance of ast.Node")
+		return nil, fmt.Errorf("Could not create an instance of ast.Node")
 	}
 	if ok := dst.Ref.Set(appended); !ok {
 
 		fmt.Println("dst:", dst.ExpectedType, "appended:", appended)
-		return appended, errors.New("Could not append created ast.Node instance to its place")
+		return appended, fmt.Errorf("Could not append created ast.Node instance to its place")
 	}
 	return appended, nil
 }
@@ -200,20 +197,23 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 func develop(astPkg *ast.Package, astFile *ast.File, astFuncDecl *ast.FuncDecl, depthLimit int) (appended any, err error) {
 	availableSpots := listAppendableSpots(astFuncDecl.Body)
 	if len(availableSpots) == 0 {
-		return nil, errors.New("No available spots found in AST to place new node")
+		return nil, fmt.Errorf("No available spots found in AST to place new node")
 	}
-	choosenSpot := *utilities.Pick(availableSpots)
+	choosenSpot, err := pick.Pick(availableSpots)
+	if err != nil {
+		return nil, fmt.Errorf("picking one out of many available spots: %w", err)
+	}
 	ctx, err := ctxres.GetContextForSpot(
 		astPkg,
 		traverse.GetTraversableNodeForASTNode(astFuncDecl),
 		choosenSpot,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to resolve context for choosen spot.")
+		return nil, fmt.Errorf("Failed to resolve context for choosen spot: %w", err)
 	}
 	newNode, err := appendRandomly(choosenSpot, ctx, depthLimit)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to append a random node into choosen spot")
+		return nil, fmt.Errorf("Failed to append a random node into choosen spot: %w", err)
 	}
 	return newNode, nil
 }

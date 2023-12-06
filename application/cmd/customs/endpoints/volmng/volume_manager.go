@@ -2,7 +2,7 @@ package volmng
 
 import (
 	"tde/internal/evolution/evaluation/archive"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 
 	"io"
 	"log"
@@ -29,7 +29,7 @@ func (vm *VolumeManager) CreateUniqueFilename() string {
 }
 
 func pathSlice(uuid string) string {
-	return strings.Join(utilities.StringFold(strings.ReplaceAll(uuid, "-", ""), 2), "/")
+	return strings.Join(strw.Fold(strings.ReplaceAll(uuid, "-", ""), 2), "/")
 }
 
 // non-NotExists kind errors resolve to false too

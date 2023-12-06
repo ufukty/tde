@@ -1,7 +1,7 @@
 package astwutl
 
 import (
-	utl "tde/internal/utilities"
+	"tde/internal/utilities/slicew"
 
 	"go/ast"
 )
@@ -489,7 +489,7 @@ func CompareRecursivelyWithAddresses(a, b ast.Node) bool {
 			return false
 		}
 
-		pairs = append(pairs, utl.SliceZipToSlice(childrenA, childrenB)...)
+		pairs = append(pairs, slicew.Zip(childrenA, childrenB)...)
 	}
 
 	return true
@@ -895,7 +895,7 @@ func CompareRecursively(a, b ast.Node) bool {
 			return false
 		}
 
-		pairs = append(pairs, utl.SliceZipToSlice(childrenA, childrenB)...)
+		pairs = append(pairs, slicew.Zip(childrenA, childrenB)...)
 	}
 
 	return true

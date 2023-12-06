@@ -4,7 +4,7 @@ import (
 	"log"
 	astw_util "tde/internal/astw/astwutl"
 	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/utilities"
+	"tde/internal/utilities/functional"
 
 	"errors"
 	"fmt"
@@ -119,7 +119,7 @@ func (c *Command) Run() {
 			LineNumber    int
 			FunctionPrint string
 		}
-		calls := utilities.FilteredMap(test.Calls, func(i int, value *ast.CallExpr) (*Call, bool) {
+		calls := functional.Mapf(test.Calls, func(i int, value *ast.CallExpr) (*Call, bool) {
 			functionPrint, err := astw_util.String(value.Fun)
 			if err != nil {
 				return nil, false

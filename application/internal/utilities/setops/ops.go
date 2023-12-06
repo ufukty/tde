@@ -44,10 +44,10 @@ func Combined[T comparable](l, r []T) (isect, diffl, diffr []T) {
 
 func Intersect[T comparable](l, r []T) []T {
 	ml := prepLookupMap(l)
-	i := make([]T, min(len(l), len(r)))
+	i := make([]T, 0, min(len(l), len(r)))
 	for _, v := range r {
 		if _, found := ml[v]; found {
-			i[len(i)] = v
+			i = append(i, v)
 		}
 	}
 	return i
@@ -56,24 +56,24 @@ func Intersect[T comparable](l, r []T) []T {
 // returns L/R (L - R)
 func Diff[T comparable](l, r []T) []T {
 	mr := prepLookupMap(r)
-	d := make([]T, len(l))
+	d := make([]T, 0, len(l))
 	for _, v := range l {
 		if _, found := mr[v]; !found {
-			d[len(d)] = v
+			d = append(d, v)
 		}
 	}
 	return d
 }
 
 func Union[T comparable](l, r []T) []T {
-	u := make([]T, max(len(l), len(r)))
+	u := make([]T, 0, max(len(l), len(r)))
 	for _, v := range l {
 		u[len(u)] = v
 	}
 	m := prepLookupMap(u)
 	for _, v := range r {
 		if _, found := m[v]; !found {
-			u[len(u)] = v
+			u = append(u, v)
 		}
 	}
 	return u

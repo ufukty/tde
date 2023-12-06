@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"tde/internal/astw/traced"
-	"tde/internal/utilities"
+	"tde/internal/utilities/mapw"
 )
 
 func findFuncTypeParent(r ast.Node, ft *ast.FuncType) *ast.FuncDecl {
@@ -50,7 +50,7 @@ func crumb(in string) string {
 }
 
 func findMeaningfulPathToScope(info *types.Info, r ast.Node, s *types.Scope) string {
-	sn, ok := utilities.MapSearchKey(info.Scopes, s)
+	sn, ok := mapw.FindKey(info.Scopes, s)
 	if !ok {
 		return ""
 	}

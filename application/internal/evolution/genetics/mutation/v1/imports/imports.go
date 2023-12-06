@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"tde/internal/evolution/genetics/mutation/v1/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
 )
 
 func listImportDecls(f *ast.File) (importDecls []*ast.GenDecl) {
@@ -49,7 +49,11 @@ func ImportPackage(ctx *models.MutationParameters) error {
 	}
 
 	importDecls := listImportDecls(ctx.File)
-	importSpec := createImportSpecFromImportPath(*utilities.Pick(ctx.AllowedPackages))
+	p, err := pick.Pick(ctx.AllowedPackages)
+	if err != nil {
+		return fmt.Errorf("picking one out of allowed packages %w", err)
+	}
+	importSpec := createImportSpecFromImportPath(p)
 
 	if len(importDecls) == 0 {
 		newGenDecl := &ast.GenDecl{
@@ -58,7 +62,11 @@ func ImportPackage(ctx *models.MutationParameters) error {
 		}
 		ctx.File.Decls = append(ctx.File.Decls, newGenDecl)
 	} else {
-		if checkExitingImports(importDecls, *utilities.Pick(ctx.AllowedPackages)) {
+		p, err := pick.Pick(ctx.AllowedPackages)
+		if err != nil {
+			return fmt.Errorf("picking one out of allowed packages %w", err)
+		}
+		if checkExitingImports(importDecls, p) {
 			return models.ErrNoChangeNeeded
 		}
 		importDecls[0].Specs = append(importDecls[0].Specs, importSpec)

@@ -1,14 +1,14 @@
 package slotmgr
 
 import (
-	"tde/internal/evolution/evaluation/copymod"
-	"tde/internal/evolution/models"
-	"tde/internal/utilities"
-
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"tde/internal/evolution/evaluation/copymod"
+	"tde/internal/evolution/models"
+	"tde/internal/utilities/slicew"
+	"tde/internal/utilities/strw"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -52,7 +52,7 @@ func (s *SlotManager) genNewSlotPath() (path, error) {
 	if err != nil {
 		return "", errors.New("can't create a uuid")
 	}
-	basename := strings.Join(utilities.StringFold(strings.ReplaceAll(uuid.String(), "-", ""), 2), "/")
+	basename := strings.Join(strw.Fold(strings.ReplaceAll(uuid.String(), "-", ""), 2), "/")
 	return basename, nil
 }
 
@@ -85,7 +85,7 @@ func (s *SlotManager) createEmptySlot() error {
 }
 
 func (s *SlotManager) assignSubjectToASlot(subject *models.Subject) (slot Slot) {
-	s.slots.free, slot = utilities.SlicePop(s.slots.free)
+	s.slots.free, slot = slicew.Pop(s.slots.free)
 	s.slots.assigned[subject.Sid] = slot
 	return slot
 }

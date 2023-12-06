@@ -2,7 +2,7 @@ package selection
 
 import (
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/randoms"
 )
 
 // O(n2)
@@ -15,7 +15,7 @@ func Random(subjects models.Subjects, pick int) models.Subjects {
 	picks := models.Subjects{}
 	sids := subjects.Keys()
 	for len(picks) < pick {
-		picks.Add(subjects[sids[utilities.URandIntN(len(sids))]])
+		picks.Add(subjects[sids[randoms.UniformIntN(len(sids))]])
 	}
 	return picks
 }

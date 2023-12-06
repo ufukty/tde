@@ -1,11 +1,11 @@
 package astwutl
 
 import (
+	"bytes"
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"strings"
-	"tde/internal/utilities"
 
 	"github.com/kylelemons/godebug/diff"
 	"github.com/pkg/errors"
@@ -13,12 +13,12 @@ import (
 
 func String(node ast.Node) (string, error) {
 	fset := token.NewFileSet()
-	sw := utilities.NewStringWriter()
-	err := printer.Fprint(sw, fset, node)
+	buf := bytes.NewBuffer([]byte{})
+	err := printer.Fprint(buf, fset, node)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed print")
 	}
-	return sw.String(), nil
+	return buf.String(), nil
 }
 
 func Diff(current, new ast.Node) (string, error) {

@@ -1,6 +1,7 @@
 package produce
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"tde/internal/command"
@@ -10,9 +11,7 @@ import (
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
-
-	"fmt"
+	"tde/internal/utilities/strw"
 )
 
 type Command struct {
@@ -42,7 +41,7 @@ func (c *Command) Run() {
 		log.Fatalln("Could not find test details:", err)
 	}
 	fmt.Println("Detected values:")
-	fmt.Println(utilities.IndentLines(combined.String(), 4))
+	fmt.Println(strw.IndentLines(combined.String(), 4))
 	prepPath, err := inject.WithCreatingSample(mod, pkg, c.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module:", err)

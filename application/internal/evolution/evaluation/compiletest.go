@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/numerics"
 	"tde/pkg/testing"
 	"time"
 )
@@ -84,7 +84,7 @@ func (e *Evaluator) test(subject *models.Subject) error {
 			return fmt.Errorf("loading test results: %w", err)
 		}
 		subject.Fitness.Program = 0 // it's a "program"
-		subject.Fitness.Candidate = utilities.SliceTotal(t.AssertionErrorDistance) / float64(max(len(t.AssertionResults), 1))
+		subject.Fitness.Candidate = numerics.Sum(t.AssertionErrorDistance) / float64(max(len(t.AssertionResults), 1))
 	}
 
 	return nil

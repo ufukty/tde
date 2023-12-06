@@ -4,7 +4,7 @@ import (
 	"tde/internal/microservices/logger"
 	"tde/internal/microservices/serviced"
 	"tde/internal/microservices/serviced/models/services"
-	"tde/internal/utilities"
+	"tde/internal/utilities/randoms"
 
 	"errors"
 )
@@ -38,7 +38,7 @@ func (lb *LoadBalancer) Next() (string, error) {
 		return "", ErrNoHostAvailable
 	}
 	if len(hosts) <= lb.index {
-		lb.index = utilities.URandIntN(len(hosts))
+		lb.index = randoms.UniformIntN(len(hosts))
 	}
 	var next = hosts[lb.index]
 	lb.index = (lb.index + 1) % len(hosts)

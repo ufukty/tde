@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 )
 
 type TargetFunction struct {
@@ -49,10 +49,10 @@ func (t TargetFunction) String() string {
 func (c CombinedDetails) String() string {
 	r := ""
 	r += fmt.Sprintln("Package:")
-	r += fmt.Sprintln(utilities.IndentLines(c.Package.String(), 4))
+	r += fmt.Sprintln(strw.IndentLines(c.Package.String(), 4))
 	r += fmt.Sprintln("Test:")
-	r += fmt.Sprintln(utilities.IndentLines(c.Test.String(), 4))
+	r += fmt.Sprintln(strw.IndentLines(c.Test.String(), 4))
 	r += fmt.Sprintln("Target:")
-	r += fmt.Sprintln(utilities.IndentLines(c.Target.String(), 4))
+	r += fmt.Sprintln(strw.IndentLines(c.Target.String(), 4))
 	return r
 }

@@ -1,11 +1,10 @@
 package discovery
 
 import (
-	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities"
-
 	"fmt"
 	"path/filepath"
+	"tde/internal/evolution/evaluation/list"
+	"tde/internal/utilities/osw"
 
 	"github.com/pkg/errors"
 )
@@ -16,11 +15,11 @@ var (
 
 // Returns the absolute path of the module that working directory is in it
 func ModuleRoot() (string, error) {
-	path, _, err := utilities.RunCommandForOutput("go", "env", "GOMOD")
+	path, _, err := osw.RunCommandForOutput("go", "env", "GOMOD")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
 	}
-	path, err = utilities.StripOnlyLineFromCommandOuput(path)
+	path, err = osw.StripOnlyLineFromCommandOuput(path)
 	if err != nil {
 		return "", errors.Wrap(err, "could not strip GOMOD path from the output of 'go env GOMOD'")
 	}

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"sort"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/mapw"
+	"tde/internal/utilities/strw"
 	"testing"
 
 	"golang.org/x/exp/maps"
@@ -113,7 +114,7 @@ func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 // MARK: test utilities
 
 func filterBestAndWorstIds(subjects map[models.Sid]*models.Subject) (sortedIds []models.Sid, bests []models.Sid, worsts []models.Sid) {
-	_, cands := utilities.MapItems(subjects)
+	_, cands := mapw.Items(subjects)
 	sort.Slice(cands, func(i, j int) bool {
 		return cands[i].Fitness.AST < cands[j].Fitness.AST
 	})
@@ -171,7 +172,12 @@ func (fc freqCounter) PrintHistogram() {
 	maxFreq := slices.Max(maps.Values(fc.idFreqs))
 	for _, id := range fc.sortedIds {
 		freq := fc.idFreqs[id]
-		fmt.Printf("    %2s %.2f %3d%% %s\n", string(id), fc.subjects[id].Fitness.AST, int(float64(freq)/float64(maxFreq)*100), utilities.StringFill("*", int(float64(freq)/float64(maxFreq)*40)))
+		fmt.Printf("    %2s %.2f %3d%% %s\n",
+			string(id),
+			fc.subjects[id].Fitness.AST,
+			int(float64(freq)/float64(maxFreq)*100),
+			strw.Fill("*", int(float64(freq)/float64(maxFreq)*40)),
+		)
 	}
 }
 

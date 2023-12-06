@@ -1,8 +1,7 @@
 package inject
 
 import (
-	"tde/internal/utilities"
-
+	"bytes"
 	_ "embed"
 	"fmt"
 	"os"
@@ -29,13 +28,13 @@ func createTesterDir(testerPkgPath string) error {
 }
 
 func prepareTemplateForTesterFile(testInfo *TestInfo) (string, error) {
-	sw := utilities.NewStringWriter()
+	buf := bytes.NewBuffer([]byte{})
 	templ := template.Must(template.New("").Parse(mainFileContent))
-	err := templ.Execute(sw, testInfo)
+	err := templ.Execute(buf, testInfo)
 	if err != nil {
 		return "", errors.Wrap(err, "execute template")
 	}
-	return sw.String(), nil
+	return buf.String(), nil
 }
 
 func writeTesterFileContent(testerPkgDir string, content string) error {

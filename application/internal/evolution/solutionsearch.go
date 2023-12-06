@@ -8,7 +8,7 @@ import (
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
-	"tde/internal/utilities"
+	"tde/internal/utilities/slicew"
 
 	"golang.org/x/exp/maps"
 )
@@ -46,7 +46,7 @@ func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*mod
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
 	}
-	co = utilities.SliceZipToSlice(maps.Values(coA), maps.Values(coB))
+	co = slicew.Zip(maps.Values(coA), maps.Values(coB))
 	nMu := n - 2*nCo
 	mu, err = selection.RouletteWheelToReproduce(parents, models.Candidate, nMu)
 	if err != nil {

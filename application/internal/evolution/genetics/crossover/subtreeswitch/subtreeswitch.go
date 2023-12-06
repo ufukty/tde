@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"tde/internal/astw/traced"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -44,7 +44,7 @@ const (
 	ctpExpr
 )
 
-func pickCutPoints(offspring1, offspring2 *ast.FuncDecl) (cutPoint1, cutPoint2 reverseTreeNode) {
+func pickCutPoints(offspring1, offspring2 *ast.FuncDecl) (cutPoint1, cutPoint2 *reverseTreeNode, err error) {
 	subtree1stmts, subtree1exprs := listSubtreeWithParents(offspring1.Body)
 	subtree2stmts, subtree2exprs := listSubtreeWithParents(offspring2.Body)
 
@@ -56,21 +56,42 @@ func pickCutPoints(offspring1, offspring2 *ast.FuncDecl) (cutPoint1, cutPoint2 r
 		availableCutPointTypes = append(availableCutPointTypes, ctpExpr)
 	}
 
-	choosenCutPointType := *utilities.Pick(availableCutPointTypes)
-
-	switch choosenCutPointType {
-	case ctpStmt:
-		cutPoint1, cutPoint2 = *utilities.Pick(subtree1stmts), *utilities.Pick(subtree2stmts)
-
-	case ctpExpr:
-		cutPoint1, cutPoint2 = *utilities.Pick(subtree1exprs), *utilities.Pick(subtree2exprs)
+	choosenCutPointType, err := pick.Pick(availableCutPointTypes)
+	if err != nil {
+		return nil, nil, fmt.Errorf("choosing cut point type: %w", err)
 	}
 
-	return
+	var cp1, cp2 reverseTreeNode
+	switch choosenCutPointType {
+	case ctpStmt:
+		cp1, err = pick.Pick(subtree1stmts)
+		if err != nil {
+			return nil, nil, fmt.Errorf("picking cut point 1: %w", err)
+		}
+		cp2, err = pick.Pick(subtree2stmts)
+		if err != nil {
+			return nil, nil, fmt.Errorf("picking cut point 2: %w", err)
+		}
+
+	case ctpExpr:
+		cp1, err := pick.Pick(subtree1exprs)
+		if err != nil {
+			return nil, nil, fmt.Errorf("picking cut point 1: %w", err)
+		}
+		cutPoint1 = &cp1
+		cp2, err = pick.Pick(subtree2exprs)
+		if err != nil {
+			return nil, nil, fmt.Errorf("picking cut point 2: %w", err)
+		}
+	}
+	return &cp1, &cp2, nil
 }
 
-func attempt(offspring1, offspring2 *ast.FuncDecl) {
-	cutPoint1, cutPoint2 := pickCutPoints(offspring1, offspring2)
+func attempt(offspring1, offspring2 *ast.FuncDecl) (err error) {
+	cutPoint1, cutPoint2, err := pickCutPoints(offspring1, offspring2)
+	if err != nil {
+		return fmt.Errorf("picking cut points: %w", err)
+	}
 
 	ok1 := false
 	cutPoint1.Parent = astutil.Apply(cutPoint1.Parent, func(c *astutil.Cursor) bool {
@@ -90,6 +111,8 @@ func attempt(offspring1, offspring2 *ast.FuncDecl) {
 		}
 		return !ok2
 	}, nil)
+
+	return nil
 }
 
 func SubtreeSwitch(offspring1, offspring2 *ast.FuncDecl) (ok bool) {

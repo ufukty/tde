@@ -7,7 +7,7 @@ import (
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 	"testing"
 )
 
@@ -57,7 +57,7 @@ func Test_Pipeline(t *testing.T) {
 
 				if subject.Fitness.Layer() != layer {
 					t.Errorf("assert, layer mistmatch: got=%q (%s/%d, fitness=%.3f)\n%s",
-						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), strw.IndentLines(string(subject.Code), 4))
 				}
 
 				sorted = append(sorted, subject)

@@ -3,7 +3,7 @@ package evaluation
 import (
 	"fmt"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 	"testing"
 )
 
@@ -25,11 +25,11 @@ func Test_Print(t *testing.T) {
 				if expectedLayer == models.AST {
 					if subj.Fitness.Layer() != models.AST {
 						t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), strw.IndentLines(string(subj.Code), 4))
 					}
 					if len(subj.Code) != 0 {
 						t.Errorf("assert, unexpectedly populated (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), utilities.IndentLines(string(subj.Code), 4))
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), strw.IndentLines(string(subj.Code), 4))
 					}
 				} else {
 					if subj.Fitness.Layer() != models.Code {

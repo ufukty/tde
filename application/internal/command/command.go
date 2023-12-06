@@ -1,11 +1,9 @@
 package command
 
 import (
-	"log"
-	"tde/internal/utilities"
-
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"reflect"
@@ -211,7 +209,7 @@ func parsePositionalArguments(f *flag.FlagSet, cmd Command) error {
 			len(positionalFields), len(args)))
 	}
 
-	for i := 0; i < utilities.Min(len(args), len(positionalFields)); i++ {
+	for i := 0; i < min(len(args), len(positionalFields)); i++ {
 		var (
 			positionalField = positionalFields[i]
 			arg             = args[i]

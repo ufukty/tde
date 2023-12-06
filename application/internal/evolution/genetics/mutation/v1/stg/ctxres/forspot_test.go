@@ -3,7 +3,7 @@ package ctxres
 import (
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/traverse"
-	"tde/internal/utilities"
+	"tde/internal/utilities/functional"
 
 	"fmt"
 	"go/ast"
@@ -37,7 +37,7 @@ func Test_GetContextForSpot(t *testing.T) {
 		t.Error(errors.Wrapf(err, ""))
 	}
 
-	vars := utilities.Map(ctx.Scopes[1].Variables, func(i int, n *ast.Ident) string {
+	vars := functional.Map(ctx.Scopes[1].Variables, func(i int, n *ast.Ident) string {
 		return n.Name
 	})
 	if !slices.Contains(vars, "root") {

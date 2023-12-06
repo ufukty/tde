@@ -1,49 +1,18 @@
-package utilities
+package pick
 
 import (
 	"fmt"
-	"log"
-	"math"
+	"slices"
+	"tde/internal/utilities/numerics"
 	"testing"
-
-	"golang.org/x/exp/slices"
 )
-
-func IndexOfMax(values []int) int {
-	indexOfMax := 0
-	for i := 1; i < len(values); i++ {
-		if values[indexOfMax] > values[i] {
-			indexOfMax = i
-		}
-	}
-	return indexOfMax
-}
-
-func Test_URandFloatForCrypto(t *testing.T) {
-	totalNumberPerRun := 10000
-	totalRun := 10
-	mostFrequentRangePerRun := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for run := 0; run < totalRun; run++ {
-		frequencies := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-		for i := 0; i < totalNumberPerRun; i++ {
-			number := URandFloatForCrypto()
-			if number < 0.0 || number > 1.0 {
-				t.Error("Out of bounds random number")
-			}
-			frequencies[int(math.Floor(number*10))]++
-
-		}
-		log.Println(frequencies)
-		mostFrequentRangePerRun[IndexOfMax(frequencies)]++
-	}
-	log.Println("mostFrequentRangePerRun:", mostFrequentRangePerRun)
-}
 
 func Test_Pick(t *testing.T) {
 	array := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	freq := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for i := 0; i < 10000; i++ {
-		freq[*Pick(array)]++
+		p, _ := Pick(array)
+		freq[p]++
 	}
 	for i, fr := range freq {
 		if fr == 0 {
@@ -67,9 +36,12 @@ func Test_PickExceptInt(t *testing.T) {
 
 	for i, example := range examples {
 		for j := 0; j < 200; j++ {
-			pick := *PickExcept(example.Slice, example.Except)
-			if slices.Contains(example.Except, pick) {
-				t.Errorf("validation i='%d', exception='%d'", i, pick)
+			p, err := Except(example.Slice, example.Except)
+			if err != nil {
+				t.Fatal(fmt.Errorf("act %d/%d: %w", i, j, err))
+			}
+			if slices.Contains(example.Except, p) {
+				t.Errorf("validation i='%d', exception='%d'", i, p)
 			}
 
 		}
@@ -93,12 +65,12 @@ func TestWeightedIndex(t *testing.T) {
 		counters := make([]int64, len(weights))
 
 		for j := 0; j < totalRunPerCase; j++ {
-			index := PickWeightedIndex(weights)
-			counters[index]++
+			i, _ := WeightedIndex(weights)
+			counters[i]++
 		}
 
-		expectedFrequencies := ProportionItemsToTotal(weights)
-		gotFrequencies := ProportionItemsToTotal(counters)
+		expectedFrequencies := numerics.DivideBySum(weights)
+		gotFrequencies := numerics.DivideBySum(counters)
 
 		fmt.Printf("i=%d, weights=%v, counters=%v, frequencies:\n\texpected : ", i, weights, counters)
 		for j := 0; j < len(weights); j++ {
@@ -136,12 +108,12 @@ func TestWeightedIndexFloat64(t *testing.T) {
 		counters := make([]int64, len(weights))
 
 		for j := 0; j < totalRunPerCase; j++ {
-			index := PickWeightedIndex(weights)
-			counters[index]++
+			i, _ := WeightedIndex(weights)
+			counters[i]++
 		}
 
-		expectedFrequencies := ProportionItemsToTotal(weights)
-		gotFrequencies := ProportionItemsToTotal(counters)
+		expectedFrequencies := numerics.DivideBySum(weights)
+		gotFrequencies := numerics.DivideBySum(counters)
 
 		fmt.Printf("i=%d, weights=%v, counters=%v, frequencies:\n\texpected : ", i, weights, counters)
 		for j := 0; j < len(weights); j++ {

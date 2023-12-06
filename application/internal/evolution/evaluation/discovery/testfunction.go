@@ -1,15 +1,15 @@
 package discovery
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/utilities"
-
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"path/filepath"
 	"strings"
+	"tde/internal/astw/astwutl"
+	"tde/internal/utilities/functional"
+	"tde/internal/utilities/osw"
 
 	"golang.org/x/exp/maps"
 )
@@ -48,10 +48,10 @@ func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
 	if err != nil {
 		return nil, fmt.Errorf("listing all test functions in dir %q: %w", path, err)
 	}
-	matches := utilities.FilteredMap(tests, func(i int, v TestFunction) (TestFunction, bool) { return v, v.Name == funcname })
+	matches := functional.Mapf(tests, func(i int, v TestFunction) (TestFunction, bool) { return v, v.Name == funcname })
 	switch len(matches) {
 	case 0:
-		tests := utilities.Map(tests, func(i int, v TestFunction) string { return v.Name })
+		tests := functional.Map(tests, func(i int, v TestFunction) string { return v.Name })
 		return nil, fmt.Errorf("%q not found. Found tests are %s", funcname, strings.Join(tests, ", "))
 	case 1:
 		return &matches[0], nil
@@ -64,7 +64,7 @@ func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
 func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]error, err error) {
 	tests = []TestFunction{}
 	skipped = map[string]error{}
-	files, err := utilities.Files(path)
+	files, err := osw.Files(path)
 	if err != nil {
 		return nil, nil, fmt.Errorf("listing files in dir %q: %w", path, err)
 	}
@@ -85,14 +85,14 @@ func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]e
 // skipped is for filename:syntax-error
 func TestFunctionsInSubdirs(path string) (tests []TestFunction, skipped map[string]error, err error) {
 	// excludeDirs := copymod.DefaultSkipDirs
-	// excludePaths := utilities.Map(excludeDirs, func(i int, v string) string {
+	// excludePaths := functional.Map(excludeDirs, func(i int, v string) string {
 	// 	return filepath.Join(path, v)
 	// })
 	tests, skipped, err = TestFunctionsInDir(path)
 	if err != nil {
 		return nil, nil, fmt.Errorf(": %w", err)
 	}
-	dirs, err := utilities.Dirs(path)
+	dirs, err := osw.Dirs(path)
 	if err != nil {
 		return nil, nil, fmt.Errorf("listing dirs in %q: %w", path, err)
 	}

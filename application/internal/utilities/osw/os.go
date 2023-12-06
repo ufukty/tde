@@ -1,9 +1,10 @@
-package utilities
+package osw
 
 import (
 	"fmt"
 	"io/fs"
 	"os"
+	"tde/internal/utilities/functional"
 
 	"github.com/pkg/errors"
 )
@@ -21,7 +22,7 @@ func Dirs(path string) ([]fs.DirEntry, error) {
 	if err != nil {
 		return nil, fmt.Errorf("listing dir entries: %w", err)
 	}
-	return FilteredMap(entries, func(i int, entry fs.DirEntry) (fs.DirEntry, bool) { return entry, entry.IsDir() }), nil
+	return functional.Mapf(entries, func(i int, entry fs.DirEntry) (fs.DirEntry, bool) { return entry, entry.IsDir() }), nil
 }
 
 func Files(path string) ([]fs.DirEntry, error) {
@@ -29,5 +30,5 @@ func Files(path string) ([]fs.DirEntry, error) {
 	if err != nil {
 		return nil, fmt.Errorf("listing dir entries: %w", err)
 	}
-	return FilteredMap(entries, func(i int, entry fs.DirEntry) (fs.DirEntry, bool) { return entry, !entry.IsDir() }), nil
+	return functional.Mapf(entries, func(i int, entry fs.DirEntry) (fs.DirEntry, bool) { return entry, !entry.IsDir() }), nil
 }

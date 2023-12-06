@@ -1,9 +1,11 @@
 package mutation
 
 import (
+	"fmt"
 	"go/ast"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
+	"tde/internal/utilities/randoms"
 
 	"golang.org/x/exp/slices"
 )
@@ -35,17 +37,20 @@ func RemoveALine(params models.Parameters, context models.Context, subj models.S
 	if len(nodes) == 0 {
 		return ErrUnavailable
 	}
-	choosen := *utilities.Pick(nodes)
+	choosen, err := pick.Pick(nodes)
+	if err != nil {
+		return fmt.Errorf("picking the block statement: %w", err)
+	}
 
 	switch choosen := choosen.(type) {
 	case *ast.BlockStmt:
-		cut := utilities.URandIntN(len(choosen.List))
+		cut := randoms.UniformIntN(len(choosen.List))
 		choosen.List = slices.Delete(slices.Clone(choosen.List), cut, cut)
 	case *ast.CommClause:
-		cut := utilities.URandIntN(len(choosen.Body))
+		cut := randoms.UniformIntN(len(choosen.Body))
 		choosen.Body = slices.Delete(slices.Clone(choosen.Body), cut, cut)
 	case *ast.CaseClause:
-		cut := utilities.URandIntN(len(choosen.Body))
+		cut := randoms.UniformIntN(len(choosen.Body))
 		choosen.Body = slices.Delete(slices.Clone(choosen.Body), cut, cut)
 	}
 
@@ -57,17 +62,20 @@ func SwapTwoLines(params models.Parameters, context models.Context, subj models.
 	if len(nodes) == 0 {
 		return ErrUnavailable
 	}
-	choosen := *utilities.Pick(nodes)
+	choosen, err := pick.Pick(nodes)
+	if err != nil {
+		return fmt.Errorf("picking the block statement: %w", err)
+	}
 
 	switch choosen := choosen.(type) {
 	case *ast.BlockStmt:
-		cut := utilities.URandIntN(len(choosen.List) - 1)
+		cut := randoms.UniformIntN(len(choosen.List) - 1)
 		choosen.List[cut], choosen.List[cut+1] = choosen.List[cut+1], choosen.List[cut]
 	case *ast.CommClause:
-		cut := utilities.URandIntN(len(choosen.Body) - 1)
+		cut := randoms.UniformIntN(len(choosen.Body) - 1)
 		choosen.Body[cut], choosen.Body[cut+1] = choosen.Body[cut+1], choosen.Body[cut]
 	case *ast.CaseClause:
-		cut := utilities.URandIntN(len(choosen.Body) - 1)
+		cut := randoms.UniformIntN(len(choosen.Body) - 1)
 		choosen.Body[cut], choosen.Body[cut+1] = choosen.Body[cut+1], choosen.Body[cut]
 	}
 

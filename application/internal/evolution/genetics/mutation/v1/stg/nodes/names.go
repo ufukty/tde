@@ -2,6 +2,7 @@ package nodes
 
 import (
 	utl "tde/internal/utilities"
+	"tde/internal/utilities/randoms"
 
 	"fmt"
 	"go/ast"
@@ -42,7 +43,7 @@ func basicIntegerLiteral() *ast.BasicLit {
 }
 
 func basicFloatLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(utl.URandFloatForCrypto()), ValuePos: token.NoPos}
+	return &ast.BasicLit{Kind: token.FLOAT, Value: fmt.Sprint(randoms.UniformCrypto()), ValuePos: token.NoPos}
 }
 
 func basicStringLiteral() *ast.BasicLit {

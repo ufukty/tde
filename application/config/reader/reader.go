@@ -1,13 +1,11 @@
 package reader
 
 import (
-	"tde/internal/microservices/logger"
-	"tde/internal/utilities"
-
 	"flag"
 	"os"
 	"reflect"
 	"strings"
+	"tde/internal/microservices/logger"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -22,7 +20,7 @@ type flags struct {
 
 func checkZeroValuedFieldsHelper(typeOf reflect.Type, valueOf reflect.Value) {
 	var nFields = typeOf.NumField()
-	for i := range utilities.Range(nFields) {
+	for i := 0; i < nFields; i++ {
 		var fieldValue = valueOf.Field(i)
 		var fieldType = typeOf.Field(i)
 
@@ -71,7 +69,7 @@ func GetConfig() *Config {
 
 func printConfigHelper(typeOf reflect.Type, valueOf reflect.Value, scopeStack []string) {
 	var nFields = typeOf.NumField()
-	for i := range utilities.Range(nFields) {
+	for i := 0; i < nFields; i++ {
 		var fieldValue = valueOf.Field(i)
 		var fieldType = typeOf.Field(i)
 		if fieldType.Type.Kind() == reflect.Struct {

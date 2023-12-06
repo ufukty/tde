@@ -1,7 +1,7 @@
 package traced
 
 import (
-	utl "tde/internal/utilities"
+	"tde/internal/utilities/slicew"
 
 	"go/ast"
 )
@@ -22,14 +22,14 @@ func InspectWithTrace(node ast.Node, callback func(node ast.Node, parents []ast.
 			if n != nil {
 				parents = append(parents, n)
 			} else {
-				parents = utl.SliceRemoveLast(parents)
+				parents = slicew.WithoutLast(parents)
 			}
 		}
 		updateIndices = func(n ast.Node) {
 			if n != nil {
 				indices = append(indices, 0)
 			} else {
-				indices = utl.SliceRemoveLast(indices)
+				indices = slicew.WithoutLast(indices)
 			}
 		}
 		updateLastIndex = func() {
@@ -79,14 +79,14 @@ func InspectTwiceWithTrace(
 			if n != nil {
 				parents = append(parents, n)
 			} else {
-				parents = utl.SliceRemoveLast(parents)
+				parents = slicew.WithoutLast(parents)
 			}
 		}
 		updateIndices = func(n ast.Node) {
 			if n != nil {
 				indices = append(indices, 0)
 			} else {
-				indices = utl.SliceRemoveLast(indices)
+				indices = slicew.WithoutLast(indices)
 			}
 		}
 		updateLastIndex = func() {
@@ -108,7 +108,7 @@ func InspectTwiceWithTrace(
 				updateLastIndex()
 			}
 		} else {
-			ntemp := utl.SliceLast(parents)
+			ntemp := slicew.Last(parents)
 			updateParents(currentNode)
 			updateIndices(currentNode)
 			if post != nil {

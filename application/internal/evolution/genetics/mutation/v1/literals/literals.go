@@ -6,7 +6,8 @@ import (
 	"go/token"
 	"strconv"
 	"tde/internal/evolution/genetics/mutation/v1/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
+	"tde/internal/utilities/randoms"
 )
 
 func listApplicableNodes(n ast.Node) (applicableNodes []ast.Node) {
@@ -38,13 +39,14 @@ var allowedCharacters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV
 
 func mutateLiteralString(s string) string {
 	r := []rune(s)
-	rnd := utilities.URandIntN(len(r))
-	r[rnd] = *utilities.Pick(allowedCharacters)
+	rnd := randoms.UniformIntN(len(r))
+	r[rnd], _ = pick.Pick(allowedCharacters)
 	return string(r)
 }
 
 func mutateLiteralChar() string {
-	return string(*utilities.Pick(allowedCharacters))
+	p, _ := pick.Pick(allowedCharacters)
+	return string(p)
 }
 
 func mutateLiteralInteger(str string) string {
@@ -52,7 +54,7 @@ func mutateLiteralInteger(str string) string {
 	if err != nil {
 		return str
 	}
-	if utilities.Coin() {
+	if pick.Coin() {
 		integer++
 	} else {
 		integer--
@@ -65,7 +67,7 @@ func mutateLiteralFloat(str string) string {
 	if err != nil {
 		return str
 	}
-	if utilities.Coin() {
+	if pick.Coin() {
 		float *= 1.1
 	} else {
 		float *= 0.9
@@ -103,7 +105,10 @@ func literalValueAlter(choosenNode ast.Node) {
 
 func LiteralValueAlter(ctx *models.MutationParameters) error {
 	applicableNodes := listApplicableNodes(ctx.FuncDecl.Body)
-	choosenNode := *utilities.Pick(applicableNodes)
+	choosenNode, err := pick.Pick(applicableNodes)
+	if err != nil {
+		return fmt.Errorf("picking one ouf of many applicable nodes: %w", err)
+	}
 	literalValueAlter(choosenNode)
 	return nil
 }

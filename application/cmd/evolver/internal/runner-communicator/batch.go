@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"tde/cmd/runner/endpoints/batch/batch_post"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/slicew"
 )
 
 type Batch struct {
@@ -13,7 +13,7 @@ type Batch struct {
 }
 
 func (batch *Batch) Divide(noBatches int) (batches []*Batch) {
-	for _, bucket := range utilities.DivideIntoBuckets(batch.Subjects, noBatches) {
+	for _, bucket := range slicew.Subs(batch.Subjects, noBatches) {
 		batches = append(batches, &Batch{
 			File:     batch.File,
 			Subjects: bucket,

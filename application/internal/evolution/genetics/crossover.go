@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"slices"
 	"tde/internal/astw/types"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
 )
 
 func pickInTypes(fd *ast.FuncDecl, ts []types.NodeType) (cursor, error) {
@@ -21,8 +21,8 @@ func pickInTypes(fd *ast.FuncDecl, ts []types.NodeType) (cursor, error) {
 		return true
 	})
 
-	if c, err := utilities.PickSafe(cs); err != nil {
-		return c, fmt.Errorf("pick one amongst cursors: %w", err)
+	if c, err := pick.Pick(cs); err != nil {
+		return c, fmt.Errorf("picking the cursor: %w", err)
 	} else {
 		return c, nil
 	}

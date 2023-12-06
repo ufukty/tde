@@ -1,9 +1,11 @@
 package lines
 
 import (
+	"fmt"
 	"go/ast"
 	"tde/internal/evolution/genetics/mutation/v1/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
+	"tde/internal/utilities/randoms"
 )
 
 func SwapLines(ctx *models.MutationParameters) error {
@@ -11,17 +13,20 @@ func SwapLines(ctx *models.MutationParameters) error {
 	if len(blockStmts) == 0 {
 		return models.ErrUnsupportedMutation
 	}
-	choosenNode := *utilities.Pick(blockStmts)
+	choosenNode, err := pick.Pick(blockStmts)
+	if err != nil {
+		return fmt.Errorf("picking one out of many block statements: %w", err)
+	}
 
 	switch choosenNode := choosenNode.(type) {
 	case *ast.BlockStmt:
-		cutPoint := utilities.URandIntN(len(choosenNode.List) - 1)
+		cutPoint := randoms.UniformIntN(len(choosenNode.List) - 1)
 		choosenNode.List[cutPoint], choosenNode.List[cutPoint+1] = choosenNode.List[cutPoint+1], choosenNode.List[cutPoint]
 	case *ast.CommClause:
-		cutPoint := utilities.URandIntN(len(choosenNode.Body) - 1)
+		cutPoint := randoms.UniformIntN(len(choosenNode.Body) - 1)
 		choosenNode.Body[cutPoint], choosenNode.Body[cutPoint+1] = choosenNode.Body[cutPoint+1], choosenNode.Body[cutPoint]
 	case *ast.CaseClause:
-		cutPoint := utilities.URandIntN(len(choosenNode.Body) - 1)
+		cutPoint := randoms.UniformIntN(len(choosenNode.Body) - 1)
 		choosenNode.Body[cutPoint], choosenNode.Body[cutPoint+1] = choosenNode.Body[cutPoint+1], choosenNode.Body[cutPoint]
 	}
 	return nil

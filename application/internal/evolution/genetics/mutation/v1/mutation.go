@@ -3,13 +3,9 @@ package mutation
 import (
 	"fmt"
 	"log"
-	"tde/internal/evolution/genetics/mutation/v1/imports"
-	"tde/internal/evolution/genetics/mutation/v1/lines"
-	"tde/internal/evolution/genetics/mutation/v1/literals"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg"
-	"tde/internal/evolution/genetics/mutation/v1/tokens"
-	"tde/internal/utilities"
+	"tde/internal/utilities/pick"
 
 	"golang.org/x/exp/maps"
 )
@@ -58,12 +54,15 @@ func runMutator(mutator models.GeneticOperation, params *models.MutationParamete
 
 func Mutate(params *models.MutationParameters) error {
 	for attempts := 0; attempts < 50; attempts++ {
-		MO := *utilities.Pick(maps.Keys(mutators))
+		MO, err := pick.Pick(maps.Keys(mutators))
+		if err != nil {
+			return fmt.Errorf("picking the mutation: %w", err)
+		}
 		mutator, ok := mutators[MO]
 		if !ok {
 			return fmt.Errorf("unkown mutation operation %s", MO)
 		}
-		err := runMutator(mutator, params)
+		err = runMutator(mutator, params)
 		if err == nil {
 			log.Println("applied", MO)
 			return nil

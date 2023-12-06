@@ -3,7 +3,7 @@ package evaluation
 import (
 	"fmt"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities"
+	"tde/internal/utilities/strw"
 	"testing"
 )
 
@@ -34,7 +34,7 @@ func Test_Compile(t *testing.T) {
 
 				if subject.Fitness.Layer() < models.Code {
 					t.Errorf("assert, got=%q expected=Code (%s/%d, fitness=%.3f)\n%s",
-						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), strw.IndentLines(string(subject.Code), 4))
 				}
 			})
 		}
@@ -71,7 +71,7 @@ func Test_Test(t *testing.T) {
 
 				if subject.Fitness.Layer() < models.Program {
 					t.Errorf("assert, got=%q expected=Code (%s/%d, fitness=%.3f)\n%s",
-						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), utilities.IndentLines(string(subject.Code), 4))
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), strw.IndentLines(string(subject.Code), 4))
 				}
 			})
 		}
