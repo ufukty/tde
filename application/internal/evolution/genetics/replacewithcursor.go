@@ -25,7 +25,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	// 	*ast.BadDecl:
 
 	case *ast.CommentGroup:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]*ast.Comment); ok {
 				p.List = n
@@ -35,7 +35,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.Field:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -69,7 +69,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.FieldList:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]*ast.Field); ok {
 				p.List = n
@@ -81,7 +81,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	// Expressions
 
 	case *ast.Ellipsis:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Elt = n
@@ -91,7 +91,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.FuncLit:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.FuncType); ok {
 				p.Type = n
@@ -107,7 +107,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.CompositeLit:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
@@ -123,7 +123,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ParenExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -133,7 +133,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.SelectorExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -149,7 +149,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.IndexExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -165,7 +165,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.IndexListExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -181,7 +181,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.SliceExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -209,7 +209,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.TypeAssertExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -225,7 +225,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.CallExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Fun = n
@@ -241,7 +241,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.StarExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -251,7 +251,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.UnaryExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -261,7 +261,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.BinaryExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -277,7 +277,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.KeyValueExpr:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Key = n
@@ -293,7 +293,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 	// Types
 	case *ast.ArrayType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Len = n
@@ -309,7 +309,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.StructType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.Fields = n
@@ -319,7 +319,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.FuncType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.TypeParams = n
@@ -341,7 +341,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.InterfaceType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.Methods = n
@@ -351,7 +351,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.MapType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Key = n
@@ -367,7 +367,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ChanType:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Value = n
@@ -379,7 +379,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	// Statements
 
 	case *ast.DeclStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Decl); ok {
 				p.Decl = n
@@ -389,7 +389,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.LabeledStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Label = n
@@ -405,7 +405,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ExprStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -415,7 +415,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.SendStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Chan = n
@@ -431,7 +431,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.IncDecStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
@@ -441,7 +441,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.AssignStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Lhs = n
@@ -457,7 +457,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.GoStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CallExpr); ok {
 				p.Call = n
@@ -467,7 +467,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.DeferStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CallExpr); ok {
 				p.Call = n
@@ -477,7 +477,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ReturnStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Results = n
@@ -487,7 +487,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.BranchStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Label = n
@@ -497,7 +497,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.BlockStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]ast.Stmt); ok {
 				p.List = n
@@ -507,7 +507,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.IfStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Init = n
@@ -535,7 +535,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.CaseClause:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.([]ast.Expr); ok {
 				p.List = n
@@ -551,7 +551,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.SwitchStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Init = n
@@ -573,7 +573,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.TypeSwitchStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Init = n
@@ -595,7 +595,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.CommClause:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Comm = n
@@ -611,7 +611,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.SelectStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
@@ -621,7 +621,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ForStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Init = n
@@ -649,7 +649,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.RangeStmt:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(ast.Expr); ok {
 				p.Key = n
@@ -679,7 +679,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	// Declarations
 
 	case *ast.ImportSpec:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -707,7 +707,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.ValueSpec:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -741,7 +741,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.TypeSpec:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -775,7 +775,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.GenDecl:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -791,7 +791,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 		}
 
 	case *ast.FuncDecl:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n
@@ -827,7 +827,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	// Files and packages
 
 	case *ast.File:
-		switch c.field {
+		switch c.fi {
 		case 0:
 			if n, ok := n.(*ast.CommentGroup); ok {
 				p.Doc = n

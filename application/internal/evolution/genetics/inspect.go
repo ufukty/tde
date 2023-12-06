@@ -3,15 +3,15 @@ package genetics
 import "go/ast"
 
 type cursor struct {
-	node   field // always a pointer. could be a ast.Node or a slice them.
+	field  field // always a pointer. could be a ast.Node or a slice them.
 	parent ast.Node
-	field  int // field index in parent
+	fi     int // field index in parent
 }
 
 func inspectrec(n ast.Node, csr *cursor, c func(*cursor) bool) {
 	for i, child := range children(n) {
-		csr.node = child
-		csr.field = i
+		csr.field = child
+		csr.fi = i
 		csr.parent = n
 		if c(csr) {
 			if child, ok := child.ptr.(ast.Node); ok {
@@ -22,5 +22,14 @@ func inspectrec(n ast.Node, csr *cursor, c func(*cursor) bool) {
 }
 
 func inspect(n ast.Node, c func(c *cursor) bool) {
-	inspectrec(n, &cursor{}, c)
+	csr := &cursor{
+		field: field{
+			ptr:      n,
+			expected: typeOf(n),
+		},
+		parent: nil,
+		fi:     -1,
+	}
+	c(csr)
+	inspectrec(n, csr, c)
 }

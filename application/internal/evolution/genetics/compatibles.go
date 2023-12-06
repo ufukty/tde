@@ -28,8 +28,8 @@ func marktypes(fd *ast.FuncDecl) []types.NodeType {
 		types.Stmt:         false,
 	}
 	inspect(fd, func(c *cursor) bool {
-		if !flags[c.node.expected] {
-			flags[c.node.expected] = true
+		if !flags[c.field.expected] {
+			flags[c.field.expected] = true
 		}
 		return true
 	})

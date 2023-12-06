@@ -11,11 +11,11 @@ import (
 func pickInTypes(fd *ast.FuncDecl, ts []types.NodeType) (cursor, error) {
 	cs := []cursor{}
 	inspect(fd.Body, func(c *cursor) bool {
-		if slices.Index(ts, c.node.expected) != -1 {
+		if slices.Index(ts, c.field.expected) != -1 {
 			cs = append(cs, cursor{
-				node:   c.node,
-				parent: c.parent,
 				field:  c.field,
+				parent: c.parent,
+				fi:     c.fi,
 			})
 		}
 		return true
@@ -45,8 +45,8 @@ func Crossover(fd1, fd2 *ast.FuncDecl) error {
 	}
 
 	// swap
-	replaceOnParent(c1.parent, c1.node.ptr, c2.node.ptr)
-	replaceOnParent(c2.parent, c2.node.ptr, c1.node.ptr)
+	replaceOnParent(c1.parent, c1.field.ptr, c2.field.ptr)
+	replaceOnParent(c2.parent, c2.field.ptr, c1.field.ptr)
 
 	return nil
 }
