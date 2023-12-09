@@ -187,8 +187,8 @@ func FilterCompatibleTypes(target types.Type, set []types.Type) (comptbl []types
 func ExampleFindExpressionOfCommons() {
 	var content = `package main
 	
-	var boolean = true
-	var integer = 0
+var boolean = true
+var integer = 0
 `
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", content, parser.AllErrors)
@@ -202,16 +202,14 @@ func ExampleFindExpressionOfCommons() {
 		panic(fmt.Errorf("check: %w", err))
 	}
 
-	fmt.Println(pkg.Scope().Names())
 	for _, name := range pkg.Scope().Names() {
 		obj := pkg.Scope().Lookup(name)
 		typ := obj.Type()
-		fmt.Println(typ)
-
+		fmt.Printf("%s => (%T) %s\n", name, typ, typ)
 	}
-	// Output: [boolean integer]
-	// bool
-	// int
+	// Output:
+	// boolean => (*types.Basic) bool
+	// integer => (*types.Basic) int
 }
 
 func ExampleFindingPkgScopeInInfo() {
