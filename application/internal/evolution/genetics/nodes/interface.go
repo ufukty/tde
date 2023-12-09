@@ -1,107 +1,106 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/utilities/pick"
 )
-
-type typeInterfaceComplyingNodeConstructors struct {
-	Type []func(*context.Context, int) ast.Expr // type definiting expressions
-	Expr []func(*context.Context, int) ast.Expr // non-type expressions
-	Stmt []func(*context.Context, int) ast.Stmt
-	Spec []func(*context.Context, int) ast.Spec
-	Decl []func(*context.Context, int) ast.Decl
-}
-
-var InterfaceComplyingNodeConstructors typeInterfaceComplyingNodeConstructors
-
-func init() {
-	InterfaceComplyingNodeConstructors = typeInterfaceComplyingNodeConstructors{
-		Type: []func(*context.Context, int) ast.Expr{
-			func(ctx *context.Context, limit int) ast.Expr { return ArrayType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return ChanType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return FuncType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return InterfaceType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return MapType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return StructType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return IdentType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return ParenExprForType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return SelectorExprForType(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return StarExprForType(ctx, limit) },
-		},
-		Expr: []func(*context.Context, int) ast.Expr{
-			func(ctx *context.Context, limit int) ast.Expr { return BasicLit(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return BinaryExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return CallExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return CompositeLit(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return Ellipsis(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return FuncLit(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return Ident(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return IndexExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return IndexListExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return KeyValueExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return ParenExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return SelectorExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return SliceExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return StarExpr(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Expr { return UnaryExpr(ctx, limit) },
-		},
-		Stmt: []func(*context.Context, int) ast.Stmt{
-			func(ctx *context.Context, limit int) ast.Stmt { return AssignStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return BlockStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return BranchStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return CaseClause(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return CommClause(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return DeclStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return DeferStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return EmptyStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return ExprStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return ForStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return GoStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return IfStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return IncDecStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return LabeledStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return RangeStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return ReturnStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return SelectStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return SendStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return SwitchStmt(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Stmt { return TypeSwitchStmt(ctx, limit) },
-		},
-		Spec: []func(*context.Context, int) ast.Spec{
-			func(ctx *context.Context, limit int) ast.Spec { return ImportSpec(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Spec { return TypeSpec(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Spec { return ValueSpec(ctx, limit) },
-		},
-		Decl: []func(*context.Context, int) ast.Decl{
-			func(ctx *context.Context, limit int) ast.Decl { return FuncDecl(ctx, limit) },
-			func(ctx *context.Context, limit int) ast.Decl { return GenDecl(ctx, limit) },
-		},
-	}
-}
 
 // About those constructors:
 //
 // Chooses a node type that confirms ast.Spec, ast.Decl, ast.Expr, ast.Stmt
 // interface or is an expression that defines a type; initializes and returns.
 
-func Spec(ctx *context.Context, limit int) ast.Spec {
-	return (*pick.Pick(InterfaceComplyingNodeConstructors.Spec))(ctx, limit)
+func (c *Creator) Spec(l int) (ast.Spec, error) {
+	generator, err := pick.Pick([]func(int) (ast.Spec, error){
+		func(l int) (ast.Spec, error) { return c.ImportSpec(l) },
+		func(l int) (ast.Spec, error) { return c.TypeSpec(l) },
+		func(l int) (ast.Spec, error) { return c.ValueSpec(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for Spec: %w", err)
+	}
+	return generator(l)
 }
 
-func Decl(ctx *context.Context, limit int) ast.Decl {
-	return (*pick.Pick(InterfaceComplyingNodeConstructors.Decl))(ctx, limit)
+func (c *Creator) Decl(l int) (ast.Decl, error) {
+	generator, err := pick.Pick([]func(int) (ast.Decl, error){
+		func(l int) (ast.Decl, error) { return c.FuncDecl(l) },
+		func(l int) (ast.Decl, error) { return c.GenDecl(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for Decl: %w", err)
+	}
+	return generator(l)
 }
 
-func Expr(ctx *context.Context, limit int) ast.Expr {
-	return (*pick.Pick(InterfaceComplyingNodeConstructors.Expr))(ctx, limit)
+func (c *Creator) Expr(l int) (ast.Expr, error) {
+	generator, err := pick.Pick([]func(int) (ast.Expr, error){
+		func(l int) (ast.Expr, error) { return c.BasicLit(l) },
+		func(l int) (ast.Expr, error) { return c.BinaryExpr(l) },
+		func(l int) (ast.Expr, error) { return c.CallExpr(l) },
+		func(l int) (ast.Expr, error) { return c.CompositeLit(l) },
+		func(l int) (ast.Expr, error) { return c.Ellipsis(l) },
+		func(l int) (ast.Expr, error) { return c.FuncLit(l) },
+		func(l int) (ast.Expr, error) { return c.Ident(l) },
+		func(l int) (ast.Expr, error) { return c.IndexExpr(l) },
+		func(l int) (ast.Expr, error) { return c.IndexListExpr(l) },
+		func(l int) (ast.Expr, error) { return c.KeyValueExpr(l) },
+		func(l int) (ast.Expr, error) { return c.ParenExpr(l) },
+		func(l int) (ast.Expr, error) { return c.SelectorExpr(l) },
+		func(l int) (ast.Expr, error) { return c.SliceExpr(l) },
+		func(l int) (ast.Expr, error) { return c.StarExpr(l) },
+		func(l int) (ast.Expr, error) { return c.UnaryExpr(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for Expr: %w", err)
+	}
+	return generator(l)
 }
 
-func Stmt(ctx *context.Context, limit int) ast.Stmt {
-	return (*pick.Pick(InterfaceComplyingNodeConstructors.Stmt))(ctx, limit)
+func (c *Creator) Stmt(l int) (ast.Stmt, error) {
+	generator, err := pick.Pick([]func(int) (ast.Stmt, error){
+		func(l int) (ast.Stmt, error) { return c.AssignStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.BlockStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.BranchStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.CaseClause(l) },
+		func(l int) (ast.Stmt, error) { return c.CommClause(l) },
+		func(l int) (ast.Stmt, error) { return c.DeclStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.DeferStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.ExprStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.ForStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.GoStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.IfStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.IncDecStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.LabeledStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.RangeStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.ReturnStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.SelectStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.SendStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.SwitchStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.TypeSwitchStmt(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for Stmt: %w", err)
+	}
+	return generator(l)
 }
 
-func Type(ctx *context.Context, limit int) ast.Expr {
-	return (*pick.Pick(InterfaceComplyingNodeConstructors.Type))(ctx, limit)
+func (c *Creator) Type(l int) (ast.Expr, error) {
+	generator, err := pick.Pick([]func(int) (ast.Expr, error){
+		func(l int) (ast.Expr, error) { return c.ArrayType(l) },
+		func(l int) (ast.Expr, error) { return c.ChanType(l) },
+		func(l int) (ast.Expr, error) { return c.FuncType(l) },
+		func(l int) (ast.Expr, error) { return c.InterfaceType(l) },
+		func(l int) (ast.Expr, error) { return c.MapType(l) },
+		func(l int) (ast.Expr, error) { return c.StructType(l) },
+		func(l int) (ast.Expr, error) { return c.IdentType(l) },
+		func(l int) (ast.Expr, error) { return c.ParenExprForType(l) },
+		func(l int) (ast.Expr, error) { return c.SelectorExprForType(l) },
+		func(l int) (ast.Expr, error) { return c.StarExprForType(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for Type: %w", err)
+	}
+	return generator(l)
 }

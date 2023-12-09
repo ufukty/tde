@@ -1,32 +1,38 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 )
 
-func Field(ctx *context.Context, limit int) (*ast.Field, error) {
-	if limit == 0 {
+func (c *Creator) Field(l int) (*ast.Field, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	n, err := c.Ident(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating Ident for Field.Names: %w", err)
+	}
+	t, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating Field.Type: %w", err)
+	}
 	return &ast.Field{
-		Names: []*ast.Ident{
-			Ident(ctx, limit-1),
-		},
-		Type: Type(ctx, limit-1),
-		Tag:  nil,
+		Names: []*ast.Ident{n},
+		Type:  t,
+		Tag:   nil,
 	}, nil
 }
 
-func FieldList(ctx *context.Context, limit int) (*ast.FieldList, error) {
-	if limit == 0 {
+func (c *Creator) FieldList(l int) (*ast.FieldList, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	f, err := c.Field(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating Field for FieldList.List: %w", err)
+	}
 	return &ast.FieldList{
-		// Opening: token.NoPos,
-		// Closing: token.NoPos,
-		List: []*ast.Field{
-			Field(ctx, limit-1),
-		},
+		List: []*ast.Field{f},
 	}, nil
 }

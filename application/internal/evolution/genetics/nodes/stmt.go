@@ -1,243 +1,382 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
-	"tde/internal/evolution/genetics/mutation/v1/tokens"
+	"tde/internal/evolution/genetics/nodes/tokens"
 	"tde/internal/utilities/pick"
 )
 
-func AssignStmt(ctx *context.Context, limit int) (*ast.AssignStmt, error) {
-	if limit == 0 {
+func (c *Creator) AssignStmt(l int) (*ast.AssignStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Lhs, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating AssignStmt.Lhs: %w", err)
+	}
+	Rhs, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating AssignStmt.Rhs: %w", err)
+	}
+	Tok, err := pick.Pick(tokens.AcceptedByAssignStmt)
+	if err != nil {
+		return nil, fmt.Errorf("generating AssignStmt.Tok: %w", err)
+	}
+
 	return &ast.AssignStmt{
-		// TokPos: token.NoPos,
-		Lhs: []ast.Expr{Expr(ctx, limit-1)},
-		Rhs: []ast.Expr{Expr(ctx, limit-1)},
-		Tok: *pick.Pick(tokens.AcceptedByAssignStmt),
+		Lhs: []ast.Expr{Lhs},
+		Rhs: []ast.Expr{Rhs},
+		Tok: Tok,
 	}, nil
 }
 
-func BlockStmt(ctx *context.Context, limit int) (*ast.BlockStmt, error) {
-	if limit == 0 {
+func (c *Creator) BlockStmt(l int) (*ast.BlockStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Stmt, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating BlockStmt.List: %w", err)
+	}
+
 	return &ast.BlockStmt{
-		// Lbrace: token.NoPos,
-		// Rbrace: token.NoPos,
-		List: []ast.Stmt{Stmt(ctx, limit-1)},
+		List: []ast.Stmt{Stmt},
 	}, nil
 }
 
-func BranchStmt(ctx *context.Context, limit int) (*ast.BranchStmt, error) {
-	if limit == 0 {
+// FIXME: branches
+func (c *Creator) BranchStmt(l int) (*ast.BranchStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
 	if (len(GeneratedBranchLabels)) == 0 {
 		return nil, ErrNoAvailableValues
 	}
+	Label, err := pick.Pick(GeneratedBranchLabels)
+	if err != nil {
+		return nil, fmt.Errorf("generating BranchStmt.Label: %w", err)
+	}
+	Tok, err := pick.Pick(tokens.AcceptedByBranchStmt)
+	if err != nil {
+		return nil, fmt.Errorf("generating BranchStmt.Tok: %w", err)
+	}
+
 	return &ast.BranchStmt{
-		// TokPos: token.NoPos,
-		Label: *pick.Pick(GeneratedBranchLabels),       // FIXME:
-		Tok:   *pick.Pick(tokens.AcceptedByBranchStmt), // FIXME:
+		Label: Label,
+		Tok:   Tok,
 	}, nil
 }
 
-func CaseClause(ctx *context.Context, limit int) (*ast.CaseClause, error) {
-	if limit == 0 {
+func (c *Creator) CaseClause(l int) (*ast.CaseClause, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	List, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CaseClause.List: %w", err)
+	}
+	Body, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CaseClause.Body: %w", err)
+	}
+
 	return &ast.CaseClause{
-		// Case:  token.NoPos,
-		// Colon: token.NoPos,
-		List: []ast.Expr{Expr(ctx, limit-1)},
-		Body: []ast.Stmt{Stmt(ctx, limit-1)},
+		List: []ast.Expr{List},
+		Body: []ast.Stmt{Body},
 	}, nil
 }
 
-var commClauseCommGenerators = []func(*context.Context, int) (ast.Stmt, error){
-	func(ctx *context.Context, limit int) ast.Stmt { return nil, error },
-	func(ctx *context.Context, limit int) ast.Stmt { return SendStmt(ctx, limit), error },
-	func(ctx *context.Context, limit int) ast.Stmt { return ReturnStmt(ctx, limit), error },
-}
-
-func CommClause(ctx *context.Context, limit int) (*ast.CommClause, error) {
-	if limit == 0 {
+func (c *Creator) CommClause(l int) (*ast.CommClause, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Stmt, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CommClause.Body: %w", err)
+	}
+	generator, err := pick.Pick([]func(int) (ast.Stmt, error){
+		func(l int) (ast.Stmt, error) { return nil, nil },
+		func(l int) (ast.Stmt, error) { return c.SendStmt(l) },
+		func(l int) (ast.Stmt, error) { return c.ReturnStmt(l) },
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking generator for CommClause.Comm: %w", err)
+	}
+	Comm, err := generator(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CommCaluse.Comm: %w", err)
+	}
+
 	return &ast.CommClause{
-		// Case:  token.NoPos,
-		// Colon: token.NoPos,
-		Body: []ast.Stmt{Stmt(ctx, limit-1)},
-		Comm: (*pick.Pick(commClauseCommGenerators))(ctx, limit-1),
+		Body: []ast.Stmt{Stmt},
+		Comm: Comm,
 	}, nil
 }
 
-func DeclStmt(ctx *context.Context, limit int) (*ast.DeclStmt, error) {
-	// either with initial value assignment or declaration only
-	if limit == 0 {
+// either with initial value assignment or declaration only
+func (c *Creator) DeclStmt(l int) (*ast.DeclStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Decl, err := c.GenDecl(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating DeclStmt.Decl: %w", err)
+	}
+
 	return &ast.DeclStmt{
-		Decl: GenDecl(ctx, limit-1),
+		Decl: Decl,
 	}, nil
 }
 
-func DeferStmt(ctx *context.Context, limit int) (*ast.DeferStmt, error) {
-	if limit == 0 {
+func (c *Creator) DeferStmt(l int) (*ast.DeferStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Call, err := c.CallExpr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating DeferStmt.CallExpr: %w", err)
+	}
+
 	return &ast.DeferStmt{
-		// Defer: token.NoPos,
-		Call: CallExpr(ctx, limit-1),
+		Call: Call,
 	}, nil
 }
 
-func EmptyStmt(ctx *context.Context, limit int) (*ast.EmptyStmt, error) {
-	if limit == 0 {
+func (c *Creator) ExprStmt(l int) (*ast.ExprStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
-	return &ast.EmptyStmt{
-		// Semicolon: token.NoPos,
-		Implicit: false,
-	}, nil
-}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ExprStmt.X: %w", err)
+	}
 
-func ExprStmt(ctx *context.Context, limit int) (*ast.ExprStmt, error) {
-	if limit == 0 {
-		return nil, ErrLimitReached
-	}
 	return &ast.ExprStmt{
-		X: Expr(ctx, limit-1),
+		X: X,
 	}, nil
 }
 
-func ForStmt(ctx *context.Context, limit int) (*ast.ForStmt, error) {
-	if limit == 0 {
+func (c *Creator) ForStmt(l int) (*ast.ForStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Init, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ForStmt.Init: %w", err)
+	}
+	Cond, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ForStmt.Cond: %w", err)
+	}
+	Post, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ForStmt.Post: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ForStmt.Body: %w", err)
+	}
+
 	return &ast.ForStmt{
-		// For:  token.NoPos,
-		Init: Stmt(ctx, limit-1),
-		Cond: Expr(ctx, limit-1),
-		Post: Stmt(ctx, limit-1),
-		Body: BlockStmt(ctx, limit-1),
+		Init: Init,
+		Cond: Cond,
+		Post: Post,
+		Body: Body,
 	}, nil
 }
 
-func GoStmt(ctx *context.Context, limit int) (*ast.GoStmt, error) {
-	if limit == 0 {
+func (c *Creator) GoStmt(l int) (*ast.GoStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Call, err := c.CallExpr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating GoStmt.Call: %w", err)
+	}
+
 	return &ast.GoStmt{
-		// Go:   token.NoPos,
-		Call: CallExpr(ctx, limit-1),
+		Call: Call,
 	}, nil
 }
 
-func IfStmt(ctx *context.Context, limit int) (*ast.IfStmt, error) {
-	if limit == 0 {
+func (c *Creator) IfStmt(l int) (*ast.IfStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Cond, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IfStmt.Cond: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IfStmt.Body: %w", err)
+	}
+
 	return &ast.IfStmt{
-		// If:   token.NoPos,
 		Init: nil,
 		Else: nil,
-		Cond: Expr(ctx, limit-1),
-		Body: BlockStmt(ctx, limit-1),
+		Cond: Cond,
+		Body: Body,
 	}, nil
 }
 
-func IncDecStmt(ctx *context.Context, limit int) (*ast.IncDecStmt, error) {
-	if limit == 0 {
+func (c *Creator) IncDecStmt(l int) (*ast.IncDecStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IncDecStmt.X: %w", err)
+	}
+	Tok, err := pick.Pick(tokens.AcceptedByIncDecStmt)
+	if err != nil {
+		return nil, fmt.Errorf("generating IncDecStmt.Tok=pick: %w", err)
+	}
+
 	return &ast.IncDecStmt{
-		// TokPos: token.NoPos,
-		X:   Expr(ctx, limit-1),
-		Tok: *pick.Pick(tokens.AcceptedByIncDecStmt),
+		X:   X,
+		Tok: Tok,
 	}, nil
 }
 
-func LabeledStmt(ctx *context.Context, limit int) (*ast.LabeledStmt, error) {
-	if limit == 0 {
+func (c *Creator) LabeledStmt(l int) (*ast.LabeledStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Stmt, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating LabeledStmt.Stmt: %w", err)
+	}
+
 	return &ast.LabeledStmt{
-		// Colon: token.NoPos,
-		Stmt:  Stmt(ctx, limit-1),
+		Stmt:  Stmt,
 		Label: generateBranchLabel(),
 	}, nil
 }
 
-func RangeStmt(ctx *context.Context, limit int) (*ast.RangeStmt, error) {
-	if limit == 0 {
+func (c *Creator) RangeStmt(l int) (*ast.RangeStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating RangeStmt.X: %w", err)
+	}
+	Key, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating RangeStmt.Key: %w", err)
+	}
+	Value, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating RangeStmt.Value: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating RangeStmt.Body: %w", err)
+	}
+	Tok, err := pick.Pick(tokens.AcceptedByRangeStmt)
+	if err != nil {
+		return nil, fmt.Errorf("generating RangeStmt.Tok=pick: %w", err)
+	}
+
 	return &ast.RangeStmt{
-		// For:    token.NoPos,
-		// TokPos: token.NoPos,
-		X:     Expr(ctx, limit-1),
-		Key:   Expr(ctx, limit-1),
-		Value: Expr(ctx, limit-1),
-		Body:  BlockStmt(ctx, limit-1),
-		Tok:   *pick.Pick(tokens.AcceptedByRangeStmt),
+		X:     X,
+		Key:   Key,
+		Value: Value,
+		Body:  Body,
+		Tok:   Tok,
 	}, nil
 }
 
-func ReturnStmt(ctx *context.Context, limit int) (*ast.ReturnStmt, error) {
+func (c *Creator) ReturnStmt(l int) (*ast.ReturnStmt, error) {
 	// TODO: multiple return values
-	if limit == 0 {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Results, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ReturnStmt.Results: %w", err)
+	}
+
 	return &ast.ReturnStmt{
-		// Return:  token.NoPos,
-		Results: []ast.Expr{Expr(ctx, limit-1)},
+		Results: []ast.Expr{Results},
 	}, nil
 }
 
-func SelectStmt(ctx *context.Context, limit int) (*ast.SelectStmt, error) {
-	if limit == 0 {
+func (c *Creator) SelectStmt(l int) (*ast.SelectStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SelectStmt.Body: %w", err)
+	}
+
 	return &ast.SelectStmt{
-		// Select: token.NoPos,
-		Body: BlockStmt(ctx, limit-1),
+		Body: Body,
 	}, nil
 }
 
-func SendStmt(ctx *context.Context, limit int) (*ast.SendStmt, error) {
-	if limit == 0 {
+func (c *Creator) SendStmt(l int) (*ast.SendStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Chan, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SendStmt.Chan: %w", err)
+	}
+	Value, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SendStmt.Value: %w", err)
+	}
+
 	return &ast.SendStmt{
-		// Arrow: token.NoPos,
-		Chan:  Expr(ctx, limit-1),
-		Value: Expr(ctx, limit-1),
+		Chan:  Chan,
+		Value: Value,
 	}, nil
 }
 
-func SwitchStmt(ctx *context.Context, limit int) (*ast.SwitchStmt, error) {
-	if limit == 0 {
+func (c *Creator) SwitchStmt(l int) (*ast.SwitchStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Init, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SwitchStmt.Init: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SwitchStmt.Body: %w", err)
+	}
+
 	return &ast.SwitchStmt{
-		// Switch: token.NoPos,
 		Tag:  nil,
-		Init: Stmt(ctx, limit-1),
-		Body: BlockStmt(ctx, limit-1),
+		Init: Init,
+		Body: Body,
 	}, nil
 }
 
-func TypeSwitchStmt(ctx *context.Context, limit int) (*ast.TypeSwitchStmt, error) {
-	if limit == 0 {
+func (c *Creator) TypeSwitchStmt(l int) (*ast.TypeSwitchStmt, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Init, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating TypeSwitchStmt.Init: %w", err)
+	}
+	Assign, err := c.Stmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating TypeSwitchStmt.Assign: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating TypeSwitchStmt.Body: %w", err)
+	}
+
 	return &ast.TypeSwitchStmt{
-		// Switch: token.NoPos,
-		Init:   Stmt(ctx, limit-1),
-		Assign: Stmt(ctx, limit-1),
-		Body:   BlockStmt(ctx, limit-1),
+		Init:   Init,
+		Assign: Assign,
+		Body:   Body,
 	}, nil
 }

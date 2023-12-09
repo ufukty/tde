@@ -1,35 +1,44 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 )
 
-func FuncDecl(ctx *context.Context, limit int) (*ast.FuncDecl, error) {
-	// TODO: Consider adding receiver functions (methods)
-	if limit == 0 {
+// TODO: Consider adding receiver functions (methods)
+func (c *Creator) FuncDecl(l int) (*ast.FuncDecl, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Type, err := c.FuncType(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncDecl.Type: %w", err)
+	}
+	Body, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncDecl.Body: %w", err)
+	}
+
 	return &ast.FuncDecl{
 		Name: generateFunctionName(),
-		Type: FuncType(ctx, limit-1),
-		Body: BlockStmt(ctx, limit-1),
+		Type: Type,
+		Body: Body,
 	}, nil
 }
 
-// Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
-func GenDecl(ctx *context.Context, limit int) (*ast.GenDecl, error) {
-	if limit == 0 {
+// FIXME: Produces only "variable" declarations. "import", "constant", "type" declarations are ignored.
+func (c *Creator) GenDecl(l int) (*ast.GenDecl, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Specs, err := c.ValueSpec(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating GenDecl.Specs: %w", err)
+	}
+
 	return &ast.GenDecl{
-		// TokPos: token.NoPos,
-		// Lparen: token.NoPos,
-		// Rparen: token.NoPos,
-		Tok: token.VAR,
-		Specs: []ast.Spec{
-			ValueSpec(ctx, limit-1),
-		},
+		Tok:   token.VAR,
+		Specs: []ast.Spec{Specs},
 	}, nil
 }

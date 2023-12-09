@@ -1,119 +1,196 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/utilities/pick"
 )
 
 // only valid values are types such int, float, string, bool
-func IdentType(ctx *context.Context, limit int) *ast.Ident {
-	if limit == 0 {
-		return nil
+func (c *Creator) IdentType(l int) (*ast.Ident, error) {
+	if l == 0 {
+		return nil, nil
 	}
-	return ast.NewIdent(*pick.Pick([]string{"int", "float", "string", "bool"}))
+	p, err := pick.Pick([]string{
+		"bool",
+		"int",
+		"int8",
+		"int16",
+		"int32",
+		"int64",
+		"uint",
+		"uint8",
+		"uint16",
+		"uint32",
+		"uint64",
+		"uintptr",
+		"float32",
+		"float64",
+		"complex64",
+		"complex128",
+		"string",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("picking a type ident: %w", err)
+	}
+	return ast.NewIdent(p), err
 }
 
-func ArrayType(ctx *context.Context, limit int) *ast.ArrayType {
-	// FIXME: // is there any usecase thar is not achievable with a slice but only with a ...T array
-	if limit == 0 {
-		return nil
+// FIXME: is there any usecase thar is not achievable with a slice but only with a ...T array
+func (c *Creator) ArrayType(l int) (*ast.ArrayType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	Elt, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ArrayType.Elt: %w", err)
+	}
+
 	return &ast.ArrayType{
-		// Lbrack: token.NoPos,
 		Len: nil,
-		Elt: Type(ctx, limit-1),
-	}
+		Elt: Elt,
+	}, nil
 }
 
-func ChanType(ctx *context.Context, limit int) *ast.ChanType {
-	if limit == 0 {
-		return nil
+func (c *Creator) ChanType(l int) (*ast.ChanType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	Value, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ChanType.Value: %w", err)
+	}
+	Dir, err := pick.Pick([]ast.ChanDir{ast.SEND, ast.RECV})
+	if err != nil {
+		return nil, fmt.Errorf("picking a direction for ChangType.Dir: %w", err)
+	}
+
 	return &ast.ChanType{
-		// Begin: token.NoPos,
-		// Arrow: token.NoPos,
-		Dir:   *pick.Pick([]ast.ChanDir{ast.SEND, ast.RECV}),
-		Value: Type(ctx, limit-1),
-	}
+		Dir:   Dir,
+		Value: Value,
+	}, nil
 }
 
-func FuncType(ctx *context.Context, limit int) *ast.FuncType {
-	// FIXME:
-	if limit == 0 {
-		return nil
+// FIXME: add generics support
+func (c *Creator) FuncType(l int) (*ast.FuncType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	// TypeParams, err := c.FieldList(l - 1)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("generating FuncType.TypeParams: %w", err)
+	// }
+	Params, err := c.FieldList(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncType.Params: %w", err)
+	}
+	Results, err := c.FieldList(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncType.Results: %w", err)
+	}
+
 	return &ast.FuncType{
-		// Func:       token.NoPos,
-		TypeParams: FieldList(ctx, limit-1),
-		Params:     FieldList(ctx, limit-1),
-		Results:    FieldList(ctx, limit-1),
-	}
+		// TypeParams: TypeParams,
+		Params:  Params,
+		Results: Results,
+	}, nil
 }
 
-func InterfaceType(ctx *context.Context, limit int) *ast.InterfaceType {
-	if limit == 0 {
-		return nil
+func (c *Creator) InterfaceType(l int) (*ast.InterfaceType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	Methods, err := c.FieldList(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating InterfaceType.Methods: %w", err)
+	}
+
 	return &ast.InterfaceType{
-		// Interface:  token.NoPos,
 		Incomplete: false,
-		Methods:    FieldList(ctx, limit-1),
-	}
+		Methods:    Methods,
+	}, nil
 }
 
-func MapType(ctx *context.Context, limit int) *ast.MapType {
-	if limit == 0 {
-		return nil
+func (c *Creator) MapType(l int) (*ast.MapType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	Key, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating MapType.Key: %w", err)
+	}
+	Value, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating MapType.Value: %w", err)
+	}
+
 	return &ast.MapType{
-		// Map:   token.NoPos,
-		Key:   Type(ctx, limit-1),
-		Value: Type(ctx, limit-1),
-	}
+		Key:   Key,
+		Value: Value,
+	}, nil
 }
 
-func StructType(ctx *context.Context, limit int) *ast.StructType {
-	if limit == 0 {
-		return nil
+func (c *Creator) StructType(l int) (*ast.StructType, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	Fields, err := c.FieldList(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating StructType.Fields: %w", err)
+	}
+
 	return &ast.StructType{
-		// Struct:     token.NoPos,
 		Incomplete: false,
-		Fields:     FieldList(ctx, limit-1),
-	}
+		Fields:     Fields,
+	}, nil
 }
 
-func ParenExprForType(ctx *context.Context, limit int) *ast.ParenExpr {
-	if limit == 0 {
-		return nil
+func (c *Creator) ParenExprForType(l int) (*ast.ParenExpr, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	X, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ParenExprForType.X: %w", err)
+	}
+
 	return &ast.ParenExpr{
-		// Lparen: 0,
-		// Rparen: 0,
-		X: Type(ctx, limit-1),
-	}
+		X: X,
+	}, nil
 }
 
 // should cover needs for:
 //   - package.Type such as: types.NodeType
 //     -
-func SelectorExprForType(ctx *context.Context, limit int) *ast.SelectorExpr {
-	if limit == 0 {
-		return nil
+func (c *Creator) SelectorExprForType(l int) (*ast.SelectorExpr, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SelectorExprForType.X: %w", err)
+	}
+	Sel, err := c.Ident(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SelectorExprForType.Sel: %w", err)
+	}
+
 	return &ast.SelectorExpr{
-		X:   Expr(ctx, limit-1),
-		Sel: Ident(ctx, limit-1),
-	}
+		X:   X,
+		Sel: Sel,
+	}, nil
 }
 
-func StarExprForType(ctx *context.Context, limit int) *ast.StarExpr {
-	if limit == 0 {
-		return nil
+func (c *Creator) StarExprForType(l int) (*ast.StarExpr, error) {
+	if l == 0 {
+		return nil, nil
 	}
+	X, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating StarExprForType.X: %w", err)
+	}
+
 	return &ast.StarExpr{
-		// Star: 0,
-		X: Type(ctx, limit-1),
-	}
+		X: X,
+	}, nil
 }

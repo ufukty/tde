@@ -1,8 +1,8 @@
 package nodes
 
 import (
+	"fmt"
 	"go/ast"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/evolution/genetics/nodes/tokens"
 	"tde/internal/utilities/pick"
 )
@@ -14,183 +14,292 @@ var basicLitGenerators = []func() *ast.BasicLit{
 	basicCharacterLiteral,
 }
 
-func BasicLit(ctx *context.Context, limit int) (*ast.BasicLit, error) {
-	if limit == 0 {
+func (c *Creator) BasicLit(l int) (*ast.BasicLit, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
-	return (*pick.Pick(basicLitGenerators))()
+	generator, err := pick.Pick(basicLitGenerators)
+	if err != nil {
+		return nil, fmt.Errorf("picking amongst different type literal generators: %w", err)
+	}
+	return generator(), nil
 }
 
-func BinaryExpr(ctx *context.Context, limit int) (*ast.BinaryExpr, error) {
-	if limit == 0 {
+func (c *Creator) BinaryExpr(l int) (*ast.BinaryExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
+	}
+	op, err := pick.Pick(tokens.AcceptedByBinaryExpr)
+	if err != nil {
+		return nil, fmt.Errorf("generating BinaryExpr.Op: %w", err)
+	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating BinaryExpr.X: %w", err)
+	}
+	Y, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating BinaryExpr.Y: %w", err)
 	}
 	return &ast.BinaryExpr{
 		// OpPos: token.NoPos,
-		X:  Expr(ctx, limit-1),
-		Y:  Expr(ctx, limit-1),
-		Op: *pick.Pick(tokens.AcceptedByBinaryExpr),
+		X:  X,
+		Y:  Y,
+		Op: op,
 	}, nil
 }
 
-func CallExpr(ctx *context.Context, limit int) (*ast.CallExpr, error) {
-	// TODO: function calls with more than 1 arguments
-	if limit == 0 {
+// TODO: function calls with more than 1 arguments
+// TODO: variadic parameter support
+func (c *Creator) CallExpr(l int) (*ast.CallExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
+	}
+	fun, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CallExpr.Fun: %w", err)
+	}
+	args, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CallExpr.Args: %w", err)
 	}
 	return &ast.CallExpr{
-		// Lparen:   token.NoPos,
-		// Rparen:   token.NoPos,
-		// Ellipsis: token.NoPos, // FIXME: variadic parameter support
-		Fun:  Expr(ctx, limit-1),
-		Args: []ast.Expr{Expr(ctx, limit-1)},
+		// Ellipsis: token.NoPos,
+		Fun:  fun,
+		Args: []ast.Expr{args},
 	}, nil
 }
 
-func CompositeLit(ctx *context.Context, limit int) (*ast.CompositeLit, error) {
+func (c *Creator) CompositeLit(l int) (*ast.CompositeLit, error) {
 	// TODO: check Incomplete property
-	if limit == 0 {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	t, err := c.Type(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CompositeLit.Type: %w", err)
+	}
+	elts, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating CompositeLit.Elts: %w", err)
+	}
+
 	return &ast.CompositeLit{
 		// Lbrace:     token.NoPos,
 		// Rbrace:     token.NoPos,
-		Type:       Type(ctx, limit-1),
-		Elts:       []ast.Expr{Expr(ctx, limit-1)},
+		Type:       t,
+		Elts:       []ast.Expr{elts},
 		Incomplete: false,
 	}, nil
 }
 
-func Ellipsis(ctx *context.Context, limit int) (*ast.Ellipsis, error) {
-	if limit == 0 {
+func (c *Creator) Ellipsis(l int) (*ast.Ellipsis, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	elt, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating Ellipsis.Elt: %w", err)
+	}
+
 	return &ast.Ellipsis{
-		// Ellipsis: token.NoPos,
-		Elt: Expr(ctx, limit-1),
+		Elt: elt,
 	}, nil
 }
 
-func FuncLit(ctx *context.Context, limit int) (*ast.FuncLit, error) {
-	// TODO:
-	if limit == 0 {
+// TODO:
+func (c *Creator) FuncLit(l int) (*ast.FuncLit, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	typ, err := c.FuncType(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncLit.Type: %w", err)
+	}
+	bs, err := c.BlockStmt(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating FuncLit.BlockStmt: %w", err)
+	}
+
 	return &ast.FuncLit{
-		Type: FuncType(ctx, limit-1),
-		Body: BlockStmt(ctx, limit-1),
+		Type: typ,
+		Body: bs,
 	}, nil
 }
 
-func Ident(ctx *context.Context, limit int) (*ast.Ident, error) {
-	if limit == 0 {
+func (c *Creator) Ident(l int) (*ast.Ident, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
 	return generateNewIdent(), nil
 }
 
-func IndexExpr(ctx *context.Context, limit int) (*ast.IndexExpr, error) {
-	if limit == 0 {
+func (c *Creator) IndexExpr(l int) (*ast.IndexExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IndexExpr.X: %w", err)
+	}
+	Index, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IndexExpr.Index: %w", err)
+	}
+
 	return &ast.IndexExpr{
-		// Lbrack: token.NoPos,
-		// Rbrack: token.NoPos,
-		X:     Expr(ctx, limit-1),
-		Index: Expr(ctx, limit-1),
+		X:     X,
+		Index: Index,
 	}, nil
 }
 
-func IndexListExpr(ctx *context.Context, limit int) (*ast.IndexListExpr, error) {
-	// TODO: Multi-dimensional arrays
-	if limit == 0 {
+// TODO: Multi-dimensional arrays
+func (c *Creator) IndexListExpr(l int) (*ast.IndexListExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IndexListExpr.X: %w", err)
+	}
+	Indices, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating IndexListExpr.Indices: %w", err)
+	}
+
 	return &ast.IndexListExpr{
-		// Lbrack:  token.NoPos,
-		// Rbrack:  token.NoPos,
-		X:       Expr(ctx, limit-1),
-		Indices: []ast.Expr{Expr(ctx, limit-1)},
+		X:       X,
+		Indices: []ast.Expr{Indices},
 	}, nil
 }
 
-func KeyValueExpr(ctx *context.Context, limit int) (*ast.KeyValueExpr, error) {
-	if limit == 0 {
+func (c *Creator) KeyValueExpr(l int) (*ast.KeyValueExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	Key, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating KeyValueExpr.Key: %w", err)
+	}
+	Value, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating KeyValueExpr.Value: %w", err)
+	}
+
 	return &ast.KeyValueExpr{
-		// Colon: token.NoPos,
-		Key:   Expr(ctx, limit-1),
-		Value: Expr(ctx, limit-1),
+		Key:   Key,
+		Value: Value,
 	}, nil
 }
 
-func ParenExpr(ctx *context.Context, limit int) (*ast.ParenExpr, error) {
-	if limit == 0 {
+func (c *Creator) ParenExpr(l int) (*ast.ParenExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating ParenExpr.X: %w", err)
+	}
+
 	return &ast.ParenExpr{
-		// Lparen: token.NoPos,
-		// Rparen: token.NoPos,
-		X: Expr(ctx, limit-1),
+		X: X,
 	}, nil
 }
 
-func SelectorExpr(ctx *context.Context, limit int) (*ast.SelectorExpr, error) {
-	// FIXME: randomly produced X and Sel values will never work, maybe choose from imported libraries' exported functions, or previously declared struct instances that has methods
-	if limit == 0 {
+// FIXME: randomly produced X and Sel values will never work, maybe choose from
+// imported libraries' exported functions, or previously declared struct instances that has methods
+func (c *Creator) SelectorExpr(l int) (*ast.SelectorExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SelectorExpr.X: %w", err)
+	}
+	Sel, err := c.Ident(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SelectorExpr.Sel: %w", err)
+	}
+
 	return &ast.SelectorExpr{
-		X:   Expr(ctx, limit-1),
-		Sel: &ast.Ident{},
+		X:   X,
+		Sel: Sel,
 	}, nil
 }
 
-func SliceExpr(ctx *context.Context, limit int) (*ast.SliceExpr, error) {
-	if limit == 0 {
+func (c *Creator) SliceExpr(l int) (*ast.SliceExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
+	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SliceExpr.X: %w", err)
+	}
+	Low, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SliceExpr.Low: %w", err)
+	}
+	High, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating SliceExpr.High: %w", err)
 	}
 	return &ast.SliceExpr{
-		// Lbrack: token.NoPos,
-		// Rbrack: token.NoPos,
-		X:      Expr(ctx, limit-1),
-		Low:    Expr(ctx, limit-1),
-		High:   Expr(ctx, limit-1),
+		X:      X,
+		Low:    Low,
+		High:   High,
 		Max:    nil,
 		Slice3: false,
 	}, nil
 }
 
-func StarExpr(ctx *context.Context, limit int) (*ast.StarExpr, error) {
-	if limit == 0 {
+func (c *Creator) StarExpr(l int) (*ast.StarExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating StarExpr.X: %w", err)
+	}
+
 	return &ast.StarExpr{
-		// Star: token.NoPos,
-		X: Expr(ctx, limit-1),
+		X: X,
 	}, nil
 }
 
-func TypeAssertExpr(ctx *context.Context, limit int) (*ast.TypeAssertExpr, error) {
-	if limit == 0 {
+func (c *Creator) TypeAssertExpr(l int) (*ast.TypeAssertExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating TypeAssertExpr.X: %w", err)
+	}
+	Type, err := c.InterfaceType(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating TypeAssertExpr.Type: %w", err)
+	}
+
 	return &ast.TypeAssertExpr{
-		// Lparen: token.NoPos,
-		// Rparen: token.NoPos,
-		X:    Expr(ctx, limit-1),
-		Type: InterfaceType(ctx, limit-1),
+		X:    X,
+		Type: Type,
 	}, nil
 }
 
-func UnaryExpr(ctx *context.Context, limit int) (*ast.UnaryExpr, error) {
-	if limit == 0 {
+func (c *Creator) UnaryExpr(l int) (*ast.UnaryExpr, error) {
+	if l == 0 {
 		return nil, ErrLimitReached
 	}
+	X, err := c.Expr(l - 1)
+	if err != nil {
+		return nil, fmt.Errorf("generating UnaryExpr.X: %w", err)
+	}
+	Op, err := pick.Pick(tokens.AcceptedByUnaryExpr)
+	if err != nil {
+		return nil, fmt.Errorf("generating UnaryExpr.Op: %w", err)
+	}
+
 	return &ast.UnaryExpr{
-		// OpPos: token.NoPos,
-		X:  Expr(ctx, limit-1),
-		Op: *pick.Pick(tokens.AcceptedByUnaryExpr),
+		X:  X,
+		Op: Op,
 	}, nil
 }

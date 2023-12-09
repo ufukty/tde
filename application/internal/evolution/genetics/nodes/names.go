@@ -38,7 +38,8 @@ func generateBranchLabel() *ast.Ident {
 }
 
 func basicIntegerLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(*pick.Pick([]int{0, 1}))}
+	l, _ := pick.Pick([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(l)}
 }
 
 func basicFloatLiteral() *ast.BasicLit {
@@ -50,5 +51,6 @@ func basicStringLiteral() *ast.BasicLit {
 }
 
 func basicCharacterLiteral() *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.CHAR, Value: *pick.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; \\", "")), ValuePos: token.NoPos}
+	v, _ := pick.Pick(strings.Split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}_.=&!+-*/%:; \\", ""))
+	return &ast.BasicLit{Kind: token.CHAR, Value: v, ValuePos: token.NoPos}
 }

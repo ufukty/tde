@@ -3,8 +3,18 @@ package nodes
 import (
 	"fmt"
 	"tde/internal/astw/types"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
+	"tde/internal/evolution/symbols"
 )
+
+type Creator struct {
+	sm *symbols.SymbolsMngr
+}
+
+func NewCreator(sm *symbols.SymbolsMngr) *Creator {
+	return &Creator{
+		sm: sm,
+	}
+}
 
 var (
 	ErrLimitReached      = fmt.Errorf("limit reached")
@@ -13,16 +23,16 @@ var (
 
 var AllowedPackagesToImport = []string{"fmt", "strings", "math"}
 
-func InType(t types.NodeType, ctx *context.Context, limit int) any {
+func (c *Creator) InType(t types.NodeType, l int) (any, error) {
 	switch {
 	case t.IsDecl():
-		return Decl(ctx, limit)
+		return c.Decl(l)
 	case t.IsExpr():
-		return Expr(ctx, limit)
+		return c.Expr(l)
 	case t.IsSpec():
-		return Spec(ctx, limit)
+		return c.Spec(l)
 	case t.IsStmt():
-		return Stmt(ctx, limit)
+		return c.Stmt(l)
 	default:
 		panic(fmt.Sprintf("unexpected type %q", t))
 	}
