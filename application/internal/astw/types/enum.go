@@ -241,13 +241,3 @@ func (nt NodeType) IsSpec() bool {
 		return false
 	}
 }
-
-func (nt NodeType) Construct() any {
-	if nt.IsInterfaceType() {
-		return ConstructMockInterfaceTypes(nt)
-	} else if nt.IsSliceType() {
-		return ConstructNodeSlices(nt)
-	} else {
-		return ConstructBasicNodes(nt)
-	}
-}
