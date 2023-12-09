@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
-	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
-	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
+	"tde/internal/evolution/genetics/nodes"
 )
 
 func sliced[T any](v T) []T {
@@ -13,7 +12,7 @@ func sliced[T any](v T) []T {
 }
 
 // NOTE: use only for full replacement of field value with randomly generated values
-func regenerateField(c cursor, ctx *context.Context) error {
+func regenerateField(nc *nodes.Creator, c cursor) error {
 
 	switch p := c.parent.(type) {
 
@@ -30,17 +29,33 @@ func regenerateField(c cursor, ctx *context.Context) error {
 	case *ast.Field:
 		switch c.fi {
 		case 0:
-			p.Names = sliced(nodes.Ident(ctx, 1))
+			Names, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Names = sliced(Names)
 		case 1:
-			p.Type = nodes.Expr(ctx, 1)
+			Type, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		case 2:
-			p.Tag = nodes.BasicLit(ctx, 1)
+			Tag, err := nc.BasicLit(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Tag = Tag
 		}
 
 	case *ast.FieldList:
 		switch c.fi {
 		case 0:
-			p.List = sliced(nodes.Field(ctx, 1))
+			List, err := nc.Field(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.List = sliced(List)
 		}
 
 	// Expressions
@@ -48,153 +63,297 @@ func regenerateField(c cursor, ctx *context.Context) error {
 	case *ast.Ellipsis:
 		switch c.fi {
 		case 0:
-			p.Elt = nodes.Expr(ctx, 1)
+			Elt, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Elt = Elt
 		}
 
 	case *ast.FuncLit:
 		switch c.fi {
 		case 0:
-			p.Type = nodes.FuncType(ctx, 1)
+			Type, err := nc.FuncType(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		case 1:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	case *ast.CompositeLit:
 		switch c.fi {
 		case 0:
-			p.Type = nodes.Expr(ctx, 1)
+			Type, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		case 1:
-			p.Elts = sliced(nodes.Expr(ctx, 1))
+			Elts, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Elts = sliced(Elts)
 		}
 
 	case *ast.ParenExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		}
 
 	case *ast.SelectorExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Sel = nodes.Ident(ctx, 1)
+			Sel, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Sel = Sel
 		}
 
 	case *ast.IndexExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Index = nodes.Expr(ctx, 1)
+			Index, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Index = Index
 		}
 
 	case *ast.IndexListExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Indices = sliced(nodes.Expr(ctx, 1))
+			Indices, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Indices = sliced(Indices)
 		}
 
 	case *ast.SliceExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Low = nodes.Expr(ctx, 1)
+			Low, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Low = Low
 		case 2:
-			p.High = nodes.Expr(ctx, 1)
+			High, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.High = High
 		case 3:
-			p.Max = nodes.Expr(ctx, 1)
+			Max, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Max = Max
 		}
 
 	case *ast.TypeAssertExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Type = nodes.Expr(ctx, 1)
+			Type, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		}
 
 	case *ast.CallExpr:
 		switch c.fi {
 		case 0:
-			p.Fun = nodes.Expr(ctx, 1)
+			Fun, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Fun = Fun
 		case 1:
-			p.Args = sliced(nodes.Expr(ctx, 1))
+			Args, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Args = sliced(Args)
 		}
 
 	case *ast.StarExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		}
 
 	case *ast.UnaryExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		}
 
 	case *ast.BinaryExpr:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 1:
-			p.Y = nodes.Expr(ctx, 1)
+			Y, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Y = Y
 		}
 
 	case *ast.KeyValueExpr:
 		switch c.fi {
 		case 0:
-			p.Key = nodes.Expr(ctx, 1)
+			Key, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Key = Key
 		case 1:
-			p.Value = nodes.Expr(ctx, 1)
+			Value, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Value = Value
 		}
 	// Types
 	case *ast.ArrayType:
 		switch c.fi {
 		case 0:
-			p.Len = nodes.Expr(ctx, 1)
+			Len, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Len = Len
 		case 1:
-			p.Elt = nodes.Expr(ctx, 1)
+			Elt, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Elt = Elt
 		}
 
 	case *ast.StructType:
 		switch c.fi {
 		case 0:
-			p.Fields = nodes.FieldList(ctx, 1)
+			Fields, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Fields = Fields
 		}
 
 	case *ast.FuncType:
 		switch c.fi {
 		case 0:
-			p.TypeParams = nodes.FieldList(ctx, 1)
+			TypeParams, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.TypeParams = TypeParams
 		case 1:
-			p.Params = nodes.FieldList(ctx, 1)
+			Params, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Params = Params
 		case 2:
-			p.Results = nodes.FieldList(ctx, 1)
+			Results, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Results = Results
 		}
 
 	case *ast.InterfaceType:
 		switch c.fi {
 		case 0:
-			p.Methods = nodes.FieldList(ctx, 1)
+			Methods, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Methods = Methods
 		}
 
 	case *ast.MapType:
 		switch c.fi {
 		case 0:
-			p.Key = nodes.Expr(ctx, 1)
+			Key, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Key = Key
 		case 1:
-			p.Value = nodes.Expr(ctx, 1)
+			Value, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Value = Value
 		}
 
 	case *ast.ChanType:
 		switch c.fi {
 		case 0:
-			p.Value = nodes.Expr(ctx, 1)
+			Value, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Value = Value
 		}
 
 	// Statements
@@ -202,151 +361,299 @@ func regenerateField(c cursor, ctx *context.Context) error {
 	case *ast.DeclStmt:
 		switch c.fi {
 		case 0:
-			p.Decl = nodes.Decl(ctx, 1)
+			Decl, err := nc.Decl(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Decl = Decl
 		}
 
 	case *ast.LabeledStmt:
 		switch c.fi {
 		case 0:
-			p.Label = nodes.Ident(ctx, 1)
+			Label, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Label = Label
 		case 1:
-			p.Stmt = nodes.Stmt(ctx, 1)
+			Stmt, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Stmt = Stmt
 		}
 
 	case *ast.ExprStmt:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		}
 
 	case *ast.SendStmt:
 		switch c.fi {
 		case 0:
-			p.Chan = nodes.Expr(ctx, 1)
+			Chan, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Chan = Chan
 		case 1:
-			p.Value = nodes.Expr(ctx, 1)
+			Value, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Value = Value
 		}
 
 	case *ast.IncDecStmt:
 		switch c.fi {
 		case 0:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		}
 
 	case *ast.AssignStmt:
 		switch c.fi {
 		case 0:
-			p.Lhs = sliced(nodes.Expr(ctx, 1))
+			Lhs, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Lhs = sliced(Lhs)
 		case 1:
-			p.Rhs = sliced(nodes.Expr(ctx, 1))
+			Rhs, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Rhs = sliced(Rhs)
 		}
 
 	case *ast.GoStmt:
 		switch c.fi {
 		case 0:
-			p.Call = nodes.CallExpr(ctx, 1)
+			Call, err := nc.CallExpr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Call = Call
 		}
 
 	case *ast.DeferStmt:
 		switch c.fi {
 		case 0:
-			p.Call = nodes.CallExpr(ctx, 1)
+			Call, err := nc.CallExpr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Call = Call
 		}
 
 	case *ast.ReturnStmt:
 		switch c.fi {
 		case 0:
-			p.Results = sliced(nodes.Expr(ctx, 1))
+			Results, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Results = sliced(Results)
 		}
 
 	case *ast.BranchStmt:
 		switch c.fi {
 		case 0:
-			p.Label = nodes.Ident(ctx, 1)
+			Label, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Label = Label
 		}
 
 	case *ast.BlockStmt:
 		switch c.fi {
 		case 0:
-			p.List = sliced(nodes.Stmt(ctx, 1))
+			List, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.List = sliced(List)
 		}
 
 	case *ast.IfStmt:
 		switch c.fi {
 		case 0:
-			p.Init = nodes.Stmt(ctx, 1)
+			Init, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Init = Init
 		case 1:
-			p.Cond = nodes.Expr(ctx, 1)
+			Cond, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Cond = Cond
 		case 2:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		case 3:
-			p.Else = nodes.Stmt(ctx, 1)
+			Else, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Else = Else
 		}
 
 	case *ast.CaseClause:
 		switch c.fi {
 		case 0:
-			p.List = sliced(nodes.Expr(ctx, 1))
+			List, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.List = sliced(List)
 		case 1:
-			p.Body = sliced(nodes.Stmt(ctx, 1))
+			Body, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = sliced(Body)
 		}
 
 	case *ast.SwitchStmt:
 		switch c.fi {
 		case 0:
-			p.Init = nodes.Stmt(ctx, 1)
+			Init, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Init = Init
 		case 1:
-			p.Tag = nodes.Expr(ctx, 1)
+			Tag, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Tag = Tag
 		case 2:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	case *ast.TypeSwitchStmt:
 		switch c.fi {
 		case 0:
-			p.Init = nodes.Stmt(ctx, 1)
+			Init, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Init = Init
 		case 1:
-			p.Assign = nodes.Stmt(ctx, 1)
+			Assign, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Assign = Assign
 		case 2:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	case *ast.CommClause:
 		switch c.fi {
 		case 0:
-			p.Comm = nodes.Stmt(ctx, 1)
+			Comm, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Comm = Comm
 		case 1:
-			p.Body = sliced(nodes.Stmt(ctx, 1))
+			Body, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = sliced(Body)
 		}
 
 	case *ast.SelectStmt:
 		switch c.fi {
 		case 0:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	case *ast.ForStmt:
 		switch c.fi {
 		case 0:
-			p.Init = nodes.Stmt(ctx, 1)
+			Init, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Init = Init
 		case 1:
-			p.Cond = nodes.Expr(ctx, 1)
+			Cond, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Cond = Cond
 		case 2:
-			p.Post = nodes.Stmt(ctx, 1)
+			Post, err := nc.Stmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Post = Post
 		case 3:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	case *ast.RangeStmt:
 		switch c.fi {
 		case 0:
-			p.Key = nodes.Expr(ctx, 1)
+			Key, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Key = Key
 		case 1:
-			p.Value = nodes.Expr(ctx, 1)
+			Value, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Value = Value
 		case 2:
-			p.X = nodes.Expr(ctx, 1)
+			X, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.X = X
 		case 3:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	// Declarations
@@ -354,47 +661,99 @@ func regenerateField(c cursor, ctx *context.Context) error {
 	case *ast.ImportSpec:
 		switch c.fi {
 		case 0:
-			p.Name = nodes.Ident(ctx, 1)
+			Name, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Name = Name
 		case 1:
-			p.Path = nodes.BasicLit(ctx, 1)
+			Path, err := nc.BasicLit(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Path = Path
 		}
 
 	case *ast.ValueSpec:
 		switch c.fi {
 		case 0:
-			p.Names = sliced(nodes.Ident(ctx, 1))
+			Names, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Names = sliced(Names)
 		case 1:
-			p.Type = nodes.Expr(ctx, 1)
+			Type, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		case 2:
-			p.Values = sliced(nodes.Expr(ctx, 1))
+			Values, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Values = sliced(Values)
 		}
 
 	case *ast.TypeSpec:
 		switch c.fi {
 		case 0:
-			p.Name = nodes.Ident(ctx, 1)
+			Name, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Name = Name
 		case 1:
-			p.TypeParams = nodes.FieldList(ctx, 1)
+			TypeParams, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.TypeParams = TypeParams
 		case 2:
-			p.Type = nodes.Expr(ctx, 1)
+			Type, err := nc.Expr(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		}
 
 	case *ast.GenDecl:
 		switch c.fi {
 		case 0:
-			p.Specs = sliced(nodes.Spec(ctx, 1))
+			Specs, err := nc.Spec(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Specs = sliced(Specs)
 		}
 
 	case *ast.FuncDecl:
 		switch c.fi {
 		case 0:
-			p.Recv = nodes.FieldList(ctx, 1)
+			Recv, err := nc.FieldList(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Recv = Recv
 		case 1:
-			p.Name = nodes.Ident(ctx, 1)
+			Name, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Name = Name
 		case 2:
-			p.Type = nodes.FuncType(ctx, 1)
+			Type, err := nc.FuncType(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Type = Type
 		case 3:
-			p.Body = nodes.BlockStmt(ctx, 1)
+			Body, err := nc.BlockStmt(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Body = Body
 		}
 
 	// Files and packages
@@ -402,9 +761,17 @@ func regenerateField(c cursor, ctx *context.Context) error {
 	case *ast.File:
 		switch c.fi {
 		case 0:
-			p.Name = nodes.Ident(ctx, 1)
+			Name, err := nc.Ident(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Name = Name
 		case 1:
-			p.Decls = sliced(nodes.Decl(ctx, 1))
+			Decls, err := nc.Decl(1)
+			if err != nil {
+				return fmt.Errorf("generating replacement node: %w", err)
+			}
+			p.Decls = sliced(Decls)
 		}
 
 	default:

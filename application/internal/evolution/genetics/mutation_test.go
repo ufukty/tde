@@ -6,10 +6,11 @@ import (
 	"go/token"
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
+	"tde/internal/evolution/genetics/nodes"
 	"testing"
 )
 
-func Test_Grow(t *testing.T) {
+func TestGrow(t *testing.T) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "testdata/words", nil, parser.AllErrors)
 	if err != nil {
@@ -21,7 +22,8 @@ func Test_Grow(t *testing.T) {
 	}
 	mfd := clean.FuncDecl(fd)
 
-	Grow(mfd)
+	nc := nodes.NewCreator()
+	Grow(nc, mfd)
 
 	if astwutl.CompareRecursively(fd, mfd) {
 		t.Fatal("assert: change is expected")
