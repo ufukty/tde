@@ -26,3 +26,7 @@ func IndentLines(str string, indent int) string {
 		return indentation + line
 	}), "\n")
 }
+
+func EscapeLinefeeds(str string) string {
+	return strings.Join(strings.Split(str, "\n"), " (\\n) ")
+}
