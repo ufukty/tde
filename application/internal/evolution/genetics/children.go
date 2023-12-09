@@ -21,24 +21,17 @@ func children(n any) []field {
 
 	switch m := n.(type) {
 
-	// case
-	//  *ast.Package,
-	// 	*ast.Comment,
-	// 	*ast.BadExpr,
-	// 	*ast.Ident,
-	// 	*ast.BasicLit,
-	// 	*ast.BadStmt,
-	// 	*ast.EmptyStmt,
-	// 	*ast.BadDecl:
+	// case *ast.Package:
+	// case *ast.Comment:
+	// case *ast.CommentGroup:
+	// case *ast.BadExpr:
+	// case *ast.Ident:
+	// case *ast.BasicLit:
+	// case *ast.BadStmt:
+	// case *ast.EmptyStmt:
+	// case *ast.BadDecl:
 
 	// MARK: Concrete array
-
-	case *[]*ast.Comment:
-		s := make([]field, len(*m))
-		for _, mv := range *m {
-			s = append(s, field{mv, types.Comment})
-		}
-		return s
 
 	case *[]*ast.Field:
 		s := make([]field, len(*m))
@@ -86,18 +79,11 @@ func children(n any) []field {
 
 	// MARK: Concrete types
 
-	case *ast.CommentGroup:
-		return []field{
-			{&m.List, types.CommentSlice},
-		}
-
 	case *ast.Field:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{&m.Names, types.IdentSlice},
 			{m.Type, types.Expr},
 			{m.Tag, types.BasicLit},
-			{m.Comment, types.CommentGroup},
 		}
 
 	case *ast.FieldList:
@@ -342,39 +328,31 @@ func children(n any) []field {
 
 	case *ast.ImportSpec:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{m.Name, types.Ident},
 			{m.Path, types.BasicLit},
-			{m.Comment, types.CommentGroup},
 		}
 
 	case *ast.ValueSpec:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{&m.Names, types.IdentSlice},
 			{m.Type, types.Expr},
 			{&m.Values, types.ExprSlice},
-			{m.Comment, types.CommentGroup},
 		}
 
 	case *ast.TypeSpec:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{m.Name, types.Ident},
 			{m.TypeParams, types.FieldList},
 			{m.Type, types.Expr},
-			{m.Comment, types.CommentGroup},
 		}
 
 	case *ast.GenDecl:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{&m.Specs, types.SpecSlice},
 		}
 
 	case *ast.FuncDecl:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{m.Recv, types.FieldList},
 			{m.Name, types.Ident},
 			{m.Type, types.FuncType},
@@ -385,7 +363,6 @@ func children(n any) []field {
 
 	case *ast.File:
 		return []field{
-			{m.Doc, types.CommentGroup},
 			{m.Name, types.Ident},
 			{&m.Decls, types.DeclSlice},
 		}

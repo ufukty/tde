@@ -6,6 +6,7 @@ import (
 	"tde/internal/astw/astwutl"
 )
 
+// NOTE: slices are to compare with pointers
 func findParent(r ast.Node, n any) (p ast.Node) {
 	ast.Inspect(r, func(m ast.Node) bool {
 		if r == m || m == nil || astwutl.IsNodeNil(m) {
@@ -14,25 +15,18 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 
 		switch m := m.(type) {
 
-		// case *ast.Package,
-		// 	*ast.Comment,
-		// 	*ast.BadExpr,
-		// 	*ast.Ident,
-		// 	*ast.BasicLit,
-		// 	*ast.BadStmt,
-		// 	*ast.EmptyStmt,
-		// 	*ast.BadDecl:
-
-		case *ast.CommentGroup:
-			if n, ok := n.([]*ast.Comment); ok && &n == &m.List { // list comparison by pointers
-				p = m
-			}
+		// case *ast.Package:
+		// case *ast.Comment:
+		// case *ast.CommentGroup:
+		// case *ast.BadExpr:
+		// case *ast.Ident:
+		// case *ast.BasicLit:
+		// case *ast.BadStmt:
+		// case *ast.EmptyStmt:
+		// case *ast.BadDecl:
 
 		case *ast.Field:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
-			if n, ok := n.([]*ast.Ident); ok && &n == &m.Names { // list comparison by pointers
+			if n, ok := n.([]*ast.Ident); ok && &n == &m.Names {
 				p = m
 			}
 			if n, ok := n.(ast.Expr); ok && n == m.Type {
@@ -41,12 +35,9 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			if n, ok := n.(*ast.BasicLit); ok && n == m.Tag {
 				p = m
 			}
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Comment {
-				p = m
-			}
 
 		case *ast.FieldList:
-			if n, ok := n.([]*ast.Field); ok && &n == &m.List { // list comparison by pointers
+			if n, ok := n.([]*ast.Field); ok && &n == &m.List {
 				p = m
 			}
 
@@ -69,7 +60,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			if n, ok := n.(ast.Expr); ok && n == m.Type {
 				p = m
 			}
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Elts { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Elts {
 				p = m
 			}
 
@@ -98,7 +89,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			if n, ok := n.(ast.Expr); ok && n == m.X {
 				p = m
 			}
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Indices { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Indices {
 				p = m
 			}
 
@@ -128,7 +119,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			if n, ok := n.(ast.Expr); ok && n == m.Fun {
 				p = m
 			}
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Args { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Args {
 				p = m
 			}
 
@@ -173,7 +164,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			}
 
 		case *ast.FuncType:
-			if n, ok := n.(*ast.FieldList); ok && n == m.TypeParams { // fields
+			if n, ok := n.(*ast.FieldList); ok && n == m.TypeParams {
 				p = m
 			}
 			if n, ok := n.(*ast.FieldList); ok && n == m.Params {
@@ -235,10 +226,10 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			}
 
 		case *ast.AssignStmt:
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Lhs { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Lhs {
 				p = m
 			}
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Rhs { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Rhs {
 				p = m
 			}
 
@@ -253,7 +244,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			}
 
 		case *ast.ReturnStmt:
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Results { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Results {
 				p = m
 			}
 
@@ -263,7 +254,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			}
 
 		case *ast.BlockStmt:
-			if n, ok := n.([]ast.Stmt); ok && &n == &m.List { // list comparison by pointers
+			if n, ok := n.([]ast.Stmt); ok && &n == &m.List {
 				p = m
 			}
 
@@ -282,10 +273,10 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			}
 
 		case *ast.CaseClause:
-			if n, ok := n.([]ast.Expr); ok && &n == &m.List { // list comparison by pointers
+			if n, ok := n.([]ast.Expr); ok && &n == &m.List {
 				p = m
 			}
-			if n, ok := n.([]ast.Stmt); ok && &n == &m.Body { // list comparison by pointers
+			if n, ok := n.([]ast.Stmt); ok && &n == &m.Body {
 				p = m
 			}
 
@@ -315,7 +306,7 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 			if n, ok := n.(ast.Stmt); ok && n == m.Comm {
 				p = m
 			}
-			if n, ok := n.([]ast.Stmt); ok && &n == &m.Body { // list comparison by pointers
+			if n, ok := n.([]ast.Stmt); ok && &n == &m.Body {
 				p = m
 			}
 
@@ -354,65 +345,41 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 
 		// Declarations
 		case *ast.ImportSpec:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
 			if n, ok := n.(*ast.Ident); ok && n == m.Name {
 				p = m
 			}
 			if n, ok := n.(*ast.BasicLit); ok && n == m.Path {
 				p = m
 			}
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Comment {
-				p = m
-			}
 
 		case *ast.ValueSpec:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
-			if n, ok := n.([]*ast.Ident); ok && &n == &m.Names { // list comparison by pointers
+			if n, ok := n.([]*ast.Ident); ok && &n == &m.Names {
 				p = m
 			}
 			if n, ok := n.(ast.Expr); ok && n == m.Type {
 				p = m
 			}
-			if n, ok := n.([]ast.Expr); ok && &n == &m.Values { // list comparison by pointers
-				p = m
-			}
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Comment {
+			if n, ok := n.([]ast.Expr); ok && &n == &m.Values {
 				p = m
 			}
 
 		case *ast.TypeSpec:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
 			if n, ok := n.(*ast.Ident); ok && n == m.Name {
 				p = m
 			}
-			if n, ok := n.(*ast.FieldList); ok && n == m.TypeParams { // fields
+			if n, ok := n.(*ast.FieldList); ok && n == m.TypeParams {
 				p = m
 			}
 			if n, ok := n.(ast.Expr); ok && n == m.Type {
 				p = m
 			}
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Comment {
-				p = m
-			}
 
 		case *ast.GenDecl:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
-			if n, ok := n.([]ast.Spec); ok && &n == &m.Specs { // list comparison by pointers
+			if n, ok := n.([]ast.Spec); ok && &n == &m.Specs {
 				p = m
 			}
 
 		case *ast.FuncDecl:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
 			if n, ok := n.(*ast.FieldList); ok && n == m.Recv {
 				p = m
 			}
@@ -429,13 +396,10 @@ func findParent(r ast.Node, n any) (p ast.Node) {
 		// Files and packages
 
 		case *ast.File:
-			if n, ok := n.(*ast.CommentGroup); ok && n == m.Doc {
-				p = m
-			}
 			if n, ok := n.(*ast.Ident); ok && n == m.Name {
 				p = m
 			}
-			if n, ok := n.([]ast.Decl); ok && &n == &m.Decls { // list comparison by pointers
+			if n, ok := n.([]ast.Decl); ok && &n == &m.Decls {
 				p = m
 			}
 

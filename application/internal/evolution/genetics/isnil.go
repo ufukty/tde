@@ -7,8 +7,6 @@ import (
 
 func isNil(n any) bool {
 	switch n := n.(type) {
-	case []*ast.Comment:
-		return n == nil
 	case []*ast.Field:
 		return n == nil
 	case []*ast.Ident:
@@ -26,8 +24,6 @@ func isNil(n any) bool {
 	case *ast.BlockStmt:
 		return n == nil
 	case *ast.CallExpr:
-		return n == nil
-	case *ast.CommentGroup:
 		return n == nil
 	case *ast.FieldList:
 		return n == nil

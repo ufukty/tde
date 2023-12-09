@@ -9,23 +9,21 @@ import (
 
 func marktypes(fd *ast.FuncDecl) []types.NodeType {
 	flags := map[types.NodeType]bool{
-		types.CommentSlice: false,
-		types.FieldSlice:   false,
-		types.IdentSlice:   false,
-		types.DeclSlice:    false,
-		types.ExprSlice:    false,
-		types.SpecSlice:    false,
-		types.StmtSlice:    false,
-		types.BasicLit:     false,
-		types.BlockStmt:    false,
-		types.CallExpr:     false,
-		types.CommentGroup: false,
-		types.FieldList:    false,
-		types.FuncType:     false,
-		types.Ident:        false,
-		types.Decl:         false,
-		types.Expr:         false,
-		types.Stmt:         false,
+		types.FieldSlice: false,
+		types.IdentSlice: false,
+		types.DeclSlice:  false,
+		types.ExprSlice:  false,
+		types.SpecSlice:  false,
+		types.StmtSlice:  false,
+		types.BasicLit:   false,
+		types.BlockStmt:  false,
+		types.CallExpr:   false,
+		types.FieldList:  false,
+		types.FuncType:   false,
+		types.Ident:      false,
+		types.Decl:       false,
+		types.Expr:       false,
+		types.Stmt:       false,
 	}
 	inspect(fd, func(c *cursor) bool {
 		if !flags[c.field.expected] {

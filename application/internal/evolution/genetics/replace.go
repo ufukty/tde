@@ -10,6 +10,7 @@ import (
 // Returns false if the replacement has failed (either because type-incomplient or c doesn't exist).
 // r: root
 // NOTE: Will not work for assigning to nil fields
+// NOTE: slices are to compare with pointers
 func replaceOnParent(root ast.Node, c, n any) bool {
 	found := false
 	replaced := false
@@ -21,33 +22,18 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 
 		switch m := m.(type) {
 
-		// case *ast.Package,
-		// 	*ast.Comment,
-		// 	*ast.BadExpr,
-		// 	*ast.Ident,
-		// 	*ast.BasicLit,
-		// 	*ast.BadStmt,
-		// 	*ast.EmptyStmt,
-		// 	*ast.BadDecl:
-
-		case *ast.CommentGroup:
-			if c, ok := c.([]*ast.Comment); ok && &c == &m.List { // list comparison by pointers
-				found = true
-				if c, ok := n.([]*ast.Comment); ok {
-					m.List = c
-					replaced = true
-				}
-			}
+		// case *ast.Package:
+		// case *ast.Comment:
+		// case *ast.CommentGroup:
+		// case *ast.BadExpr:
+		// case *ast.Ident:
+		// case *ast.BasicLit:
+		// case *ast.BadStmt:
+		// case *ast.EmptyStmt:
+		// case *ast.BadDecl:
 
 		case *ast.Field:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
-			if c, ok := c.([]*ast.Ident); ok && &c == &m.Names { // list comparison by pointers
+			if c, ok := c.([]*ast.Ident); ok && &c == &m.Names {
 				found = true
 				if n, ok := n.([]*ast.Ident); ok {
 					m.Names = n
@@ -68,16 +54,9 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Comment {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Comment = n
-					replaced = true
-				}
-			}
 
 		case *ast.FieldList:
-			if c, ok := c.([]*ast.Field); ok && &c == &m.List { // list comparison by pointers
+			if c, ok := c.([]*ast.Field); ok && &c == &m.List {
 				found = true
 				if n, ok := n.([]*ast.Field); ok {
 					m.List = n
@@ -120,7 +99,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Elts { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Elts {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Elts = n
@@ -177,7 +156,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Indices { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Indices {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Indices = n
@@ -239,7 +218,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Args { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Args {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Args = n
@@ -324,7 +303,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.FuncType:
-			if c, ok := c.(*ast.FieldList); ok && c == m.TypeParams { // fields
+			if c, ok := c.(*ast.FieldList); ok && c == m.TypeParams {
 				found = true
 				if n, ok := n.(*ast.FieldList); ok {
 					m.TypeParams = n
@@ -442,14 +421,14 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.AssignStmt:
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Lhs { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Lhs {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Lhs = n
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Rhs { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Rhs {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Rhs = n
@@ -476,7 +455,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.ReturnStmt:
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Results { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Results {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Results = n
@@ -494,7 +473,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.BlockStmt:
-			if c, ok := c.([]ast.Stmt); ok && &c == &m.List { // list comparison by pointers
+			if c, ok := c.([]ast.Stmt); ok && &c == &m.List {
 				found = true
 				if n, ok := n.([]ast.Stmt); ok {
 					m.List = n
@@ -533,14 +512,14 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.CaseClause:
-			if c, ok := c.([]ast.Expr); ok && &c == &m.List { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.List {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.List = n
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Stmt); ok && &c == &m.Body { // list comparison by pointers
+			if c, ok := c.([]ast.Stmt); ok && &c == &m.Body {
 				found = true
 				if n, ok := n.([]ast.Stmt); ok {
 					m.Body = n
@@ -602,7 +581,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Stmt); ok && &c == &m.Body { // list comparison by pointers
+			if c, ok := c.([]ast.Stmt); ok && &c == &m.Body {
 				found = true
 				if n, ok := n.([]ast.Stmt); ok {
 					m.Body = n
@@ -681,13 +660,6 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 
 		// Declarations
 		case *ast.ImportSpec:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
 			if c, ok := c.(*ast.Ident); ok && c == m.Name {
 				found = true
 				if n, ok := n.(*ast.Ident); ok {
@@ -702,23 +674,9 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Comment {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Comment = n
-					replaced = true
-				}
-			}
 
 		case *ast.ValueSpec:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
-			if c, ok := c.([]*ast.Ident); ok && &c == &m.Names { // list comparison by pointers
+			if c, ok := c.([]*ast.Ident); ok && &c == &m.Names {
 				found = true
 				if n, ok := n.([]*ast.Ident); ok {
 					m.Names = n
@@ -732,29 +690,15 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Expr); ok && &c == &m.Values { // list comparison by pointers
+			if c, ok := c.([]ast.Expr); ok && &c == &m.Values {
 				found = true
 				if n, ok := n.([]ast.Expr); ok {
 					m.Values = n
 					replaced = true
 				}
 			}
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Comment {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Comment = n
-					replaced = true
-				}
-			}
 
 		case *ast.TypeSpec:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
 			if c, ok := c.(*ast.Ident); ok && c == m.Name {
 				found = true
 				if n, ok := n.(*ast.Ident); ok {
@@ -762,7 +706,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.(*ast.FieldList); ok && c == m.TypeParams { // fields
+			if c, ok := c.(*ast.FieldList); ok && c == m.TypeParams {
 				found = true
 				if n, ok := n.(*ast.FieldList); ok {
 					m.TypeParams = n
@@ -776,23 +720,9 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Comment {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Comment = n
-					replaced = true
-				}
-			}
 
 		case *ast.GenDecl:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
-			if c, ok := c.([]ast.Spec); ok && &c == &m.Specs { // list comparison by pointers
+			if c, ok := c.([]ast.Spec); ok && &c == &m.Specs {
 				found = true
 				if n, ok := n.([]ast.Spec); ok {
 					m.Specs = n
@@ -801,13 +731,6 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 			}
 
 		case *ast.FuncDecl:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
 			if c, ok := c.(*ast.FieldList); ok && c == m.Recv {
 				found = true
 				if n, ok := n.(*ast.FieldList); ok {
@@ -840,13 +763,6 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 		// Files and packages
 
 		case *ast.File:
-			if c, ok := c.(*ast.CommentGroup); ok && c == m.Doc {
-				found = true
-				if n, ok := n.(*ast.CommentGroup); ok {
-					m.Doc = n
-					replaced = true
-				}
-			}
 			if c, ok := c.(*ast.Ident); ok && c == m.Name {
 				found = true
 				if n, ok := n.(*ast.Ident); ok {
@@ -854,7 +770,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 					replaced = true
 				}
 			}
-			if c, ok := c.([]ast.Decl); ok && &c == &m.Decls { // list comparison by pointers
+			if c, ok := c.([]ast.Decl); ok && &c == &m.Decls {
 				found = true
 				if n, ok := n.([]ast.Decl); ok {
 					m.Decls = n

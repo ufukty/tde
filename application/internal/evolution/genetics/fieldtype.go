@@ -10,25 +10,17 @@ import (
 func fieldType(p ast.Node, f any) types.NodeType {
 	switch p := p.(type) {
 
-	// case
-	//  *ast.Package,
-	// 	*ast.Comment,
-	// 	*ast.BadExpr,
-	// 	*ast.Ident,
-	// 	*ast.BasicLit,
-	// 	*ast.BadStmt,
-	// 	*ast.EmptyStmt,
-	// 	*ast.BadDecl:
-
-	case *ast.CommentGroup:
-		if c, ok := f.([]*ast.Comment); ok && &c == &p.List {
-			return types.CommentSlice
-		}
+	// case *ast.Package:
+	// case *ast.Comment:
+	// case *ast.CommentGroup:
+	// case *ast.BadExpr:
+	// case *ast.Ident:
+	// case *ast.BasicLit:
+	// case *ast.BadStmt:
+	// case *ast.EmptyStmt:
+	// case *ast.BadDecl:
 
 	case *ast.Field:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.([]*ast.Ident); ok && &c == &p.Names {
 			return types.IdentSlice
 		}
@@ -37,9 +29,6 @@ func fieldType(p ast.Node, f any) types.NodeType {
 		}
 		if c, ok := f.(*ast.BasicLit); ok && c == p.Tag {
 			return types.BasicLit
-		}
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Comment {
-			return types.CommentGroup
 		}
 
 	case *ast.FieldList:
@@ -170,7 +159,7 @@ func fieldType(p ast.Node, f any) types.NodeType {
 		}
 
 	case *ast.FuncType:
-		if c, ok := f.(*ast.FieldList); ok && c == p.TypeParams { // fields
+		if c, ok := f.(*ast.FieldList); ok && c == p.TypeParams {
 			return types.FieldList
 		}
 		if c, ok := f.(*ast.FieldList); ok && c == p.Params {
@@ -351,23 +340,14 @@ func fieldType(p ast.Node, f any) types.NodeType {
 
 	// Declarations
 	case *ast.ImportSpec:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.(*ast.Ident); ok && c == p.Name {
 			return types.Ident
 		}
 		if c, ok := f.(*ast.BasicLit); ok && c == p.Path {
 			return types.BasicLit
 		}
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Comment {
-			return types.CommentGroup
-		}
 
 	case *ast.ValueSpec:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.([]*ast.Ident); ok && &c == &p.Names {
 			return types.IdentSlice
 		}
@@ -377,39 +357,24 @@ func fieldType(p ast.Node, f any) types.NodeType {
 		if c, ok := f.([]ast.Expr); ok && &c == &p.Values {
 			return types.ExprSlice
 		}
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Comment {
-			return types.CommentGroup
-		}
 
 	case *ast.TypeSpec:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.(*ast.Ident); ok && c == p.Name {
 			return types.Ident
 		}
-		if c, ok := f.(*ast.FieldList); ok && c == p.TypeParams { // fields
+		if c, ok := f.(*ast.FieldList); ok && c == p.TypeParams {
 			return types.FieldList
 		}
 		if c, ok := f.(ast.Expr); ok && c == p.Type {
 			return types.Expr
 		}
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Comment {
-			return types.CommentGroup
-		}
 
 	case *ast.GenDecl:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.([]ast.Spec); ok && &c == &p.Specs {
 			return types.SpecSlice
 		}
 
 	case *ast.FuncDecl:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.(*ast.FieldList); ok && c == p.Recv {
 			return types.FieldList
 		}
@@ -426,9 +391,6 @@ func fieldType(p ast.Node, f any) types.NodeType {
 	// Files and packages
 
 	case *ast.File:
-		if c, ok := f.(*ast.CommentGroup); ok && c == p.Doc {
-			return types.CommentGroup
-		}
 		if c, ok := f.(*ast.Ident); ok && c == p.Name {
 			return types.Ident
 		}

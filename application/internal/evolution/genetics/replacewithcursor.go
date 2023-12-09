@@ -14,58 +14,36 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 
 	switch p := c.parent.(type) {
 
-	// case
-	//  *ast.Package,
-	// 	*ast.Comment,
-	// 	*ast.BadExpr,
-	// 	*ast.Ident,
-	// 	*ast.BasicLit,
-	// 	*ast.BadStmt,
-	// 	*ast.EmptyStmt,
-	// 	*ast.BadDecl:
-
-	case *ast.CommentGroup:
-		switch c.fi {
-		case 0:
-			if n, ok := n.([]*ast.Comment); ok {
-				p.List = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Comment", n, ErrTypeMismatch)
-		}
+	// case *ast.Package:
+	// case *ast.Comment:
+	// case *ast.CommentGroup:
+	// case *ast.BadExpr:
+	// case *ast.Ident:
+	// case *ast.BasicLit:
+	// case *ast.BadStmt:
+	// case *ast.EmptyStmt:
+	// case *ast.BadDecl:
 
 	case *ast.Field:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.([]*ast.Ident); ok {
 				p.Names = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Ident", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
-		case 3:
+		case 2:
 			if n, ok := n.(*ast.BasicLit); ok {
 				p.Tag = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.BasicLit", n, ErrTypeMismatch)
-		case 4:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Comment = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
 		}
 
 	case *ast.FieldList:
@@ -681,108 +659,66 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	case *ast.ImportSpec:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Name = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.(*ast.BasicLit); ok {
 				p.Path = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.BasicLit", n, ErrTypeMismatch)
-		case 3:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Comment = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
 		}
 
 	case *ast.ValueSpec:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.([]*ast.Ident); ok {
 				p.Names = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Ident", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
-		case 3:
+		case 2:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Values = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
-		case 4:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Comment = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
 		}
 
 	case *ast.TypeSpec:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Name = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.TypeParams = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
-		case 3:
+		case 2:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
-		case 4:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Comment = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
 		}
 
 	case *ast.GenDecl:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.([]ast.Spec); ok {
 				p.Specs = n
 				return nil
@@ -793,30 +729,24 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	case *ast.FuncDecl:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.Recv = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Name = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
-		case 3:
+		case 2:
 			if n, ok := n.(*ast.FuncType); ok {
 				p.Type = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.FuncType", n, ErrTypeMismatch)
-		case 4:
+		case 3:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
@@ -829,18 +759,12 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 	case *ast.File:
 		switch c.fi {
 		case 0:
-			if n, ok := n.(*ast.CommentGroup); ok {
-				p.Doc = n
-				return nil
-			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CommentGroup", n, ErrTypeMismatch)
-		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Name = n
 				return nil
 			}
 			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
-		case 2:
+		case 1:
 			if n, ok := n.([]ast.Decl); ok {
 				p.Decls = n
 				return nil
