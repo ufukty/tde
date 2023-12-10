@@ -778,5 +778,5 @@ func regenerateField(nc *nodes.Creator, c cursor) error {
 		panic(fmt.Sprintf("Apply: unexpected node type %T", reflect.TypeOf(p)))
 	}
 
-	return ErrTypeNotFound
+	return fmt.Errorf("unhandled case for parent type: %T", c.parent)
 }

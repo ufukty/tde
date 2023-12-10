@@ -6,9 +6,6 @@ import (
 	"reflect"
 )
 
-var ErrTypeMismatch = fmt.Errorf("type mismatch between next value and parent.field")
-var ErrTypeNotFound = fmt.Errorf("type not found")
-
 // (n)ext
 func replaceOnParentWithCursor(c cursor, n any) error {
 
@@ -31,19 +28,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Names = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.BasicLit); ok {
 				p.Tag = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BasicLit", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BasicLit\" got %T", n)
 		}
 
 	case *ast.FieldList:
@@ -53,7 +50,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.List = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Field", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]*ast.Field\" got %T", n)
 		}
 
 	// Expressions
@@ -65,7 +62,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Elt = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.FuncLit:
@@ -75,13 +72,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FuncType", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FuncType\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	case *ast.CompositeLit:
@@ -91,13 +88,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Elts = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.ParenExpr:
@@ -107,7 +104,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.SelectorExpr:
@@ -117,13 +114,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Sel = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		}
 
 	case *ast.IndexExpr:
@@ -133,13 +130,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Index = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.IndexListExpr:
@@ -149,13 +146,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Indices = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.SliceExpr:
@@ -165,25 +162,25 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Low = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(ast.Expr); ok {
 				p.High = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 3:
 			if n, ok := n.(ast.Expr); ok {
 				p.Max = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.TypeAssertExpr:
@@ -193,13 +190,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.CallExpr:
@@ -209,13 +206,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Fun = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Args = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.StarExpr:
@@ -225,7 +222,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.UnaryExpr:
@@ -235,7 +232,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.BinaryExpr:
@@ -245,13 +242,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Y = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.KeyValueExpr:
@@ -261,13 +258,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Key = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Value = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 	// Types
 	case *ast.ArrayType:
@@ -277,13 +274,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Len = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Elt = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.StructType:
@@ -293,7 +290,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Fields = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		}
 
 	case *ast.FuncType:
@@ -303,19 +300,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.TypeParams = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.Params = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.Results = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		}
 
 	case *ast.InterfaceType:
@@ -325,7 +322,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Methods = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		}
 
 	case *ast.MapType:
@@ -335,13 +332,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Key = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Value = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.ChanType:
@@ -351,7 +348,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Value = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	// Statements
@@ -363,7 +360,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Decl = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Decl", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Decl\" got %T", n)
 		}
 
 	case *ast.LabeledStmt:
@@ -373,13 +370,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Label = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Stmt = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		}
 
 	case *ast.ExprStmt:
@@ -389,7 +386,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.SendStmt:
@@ -399,13 +396,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Chan = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Value = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.IncDecStmt:
@@ -415,7 +412,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.AssignStmt:
@@ -425,13 +422,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Lhs = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Rhs = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.GoStmt:
@@ -441,7 +438,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Call = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CallExpr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.CallExpr\" got %T", n)
 		}
 
 	case *ast.DeferStmt:
@@ -451,7 +448,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Call = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.CallExpr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.CallExpr\" got %T", n)
 		}
 
 	case *ast.ReturnStmt:
@@ -461,7 +458,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Results = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.BranchStmt:
@@ -471,7 +468,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Label = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		}
 
 	case *ast.BlockStmt:
@@ -481,7 +478,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.List = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Stmt\" got %T", n)
 		}
 
 	case *ast.IfStmt:
@@ -491,25 +488,25 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Init = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Cond = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		case 3:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Else = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		}
 
 	case *ast.CaseClause:
@@ -519,13 +516,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.List = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Stmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Stmt\" got %T", n)
 		}
 
 	case *ast.SwitchStmt:
@@ -535,19 +532,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Init = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Tag = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	case *ast.TypeSwitchStmt:
@@ -557,19 +554,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Init = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Assign = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	case *ast.CommClause:
@@ -579,13 +576,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Comm = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Stmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Stmt\" got %T", n)
 		}
 
 	case *ast.SelectStmt:
@@ -595,7 +592,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	case *ast.ForStmt:
@@ -605,25 +602,25 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Init = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Cond = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(ast.Stmt); ok {
 				p.Post = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Stmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Stmt\" got %T", n)
 		case 3:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	case *ast.RangeStmt:
@@ -633,25 +630,25 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Key = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Value = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.(ast.Expr); ok {
 				p.X = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 3:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	// Declarations
@@ -663,13 +660,13 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Name = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.BasicLit); ok {
 				p.Path = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BasicLit", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BasicLit\" got %T", n)
 		}
 
 	case *ast.ValueSpec:
@@ -679,19 +676,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Names = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		case 2:
 			if n, ok := n.([]ast.Expr); ok {
 				p.Values = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Expr\" got %T", n)
 		}
 
 	case *ast.TypeSpec:
@@ -701,19 +698,19 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Name = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.FieldList); ok {
 				p.TypeParams = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		case 2:
 			if n, ok := n.(ast.Expr); ok {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "ast.Expr", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"ast.Expr\" got %T", n)
 		}
 
 	case *ast.GenDecl:
@@ -723,7 +720,7 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Specs = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Spec", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Spec\" got %T", n)
 		}
 
 	case *ast.FuncDecl:
@@ -733,25 +730,25 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Recv = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FieldList", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FieldList\" got %T", n)
 		case 1:
 			if n, ok := n.(*ast.Ident); ok {
 				p.Name = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		case 2:
 			if n, ok := n.(*ast.FuncType); ok {
 				p.Type = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.FuncType", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.FuncType\" got %T", n)
 		case 3:
 			if n, ok := n.(*ast.BlockStmt); ok {
 				p.Body = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.BlockStmt", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.BlockStmt\" got %T", n)
 		}
 
 	// Files and packages
@@ -763,18 +760,18 @@ func replaceOnParentWithCursor(c cursor, n any) error {
 				p.Name = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "*ast.Ident", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"*ast.Ident\" got %T", n)
 		case 1:
 			if n, ok := n.([]ast.Decl); ok {
 				p.Decls = n
 				return nil
 			}
-			return fmt.Errorf("%w: expected %q got %T", "[]ast.Decl", n, ErrTypeMismatch)
+			return fmt.Errorf("expected \"[]ast.Decl\" got %T", n)
 		}
 
 	default:
 		panic(fmt.Sprintf("Apply: unexpected node type %T", reflect.TypeOf(p)))
 	}
 
-	return ErrTypeNotFound
+	return fmt.Errorf("unhandled case for parent type: %T", c.parent)
 }
