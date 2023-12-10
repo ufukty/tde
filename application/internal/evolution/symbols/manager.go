@@ -14,7 +14,7 @@ import (
 
 // Use it to get list of symbols defined at the package and in imports.
 // Excludes the symbols defined inside a function (because the info is not available at initialization)
-type SymbolsMngr struct {
+type Manager struct {
 	pkg  *types.Package
 	ast  *ast.Package
 	info *types.Info
@@ -23,7 +23,7 @@ type SymbolsMngr struct {
 	Context *Context
 }
 
-func (sm *SymbolsMngr) analyze(path string) error {
+func (sm *Manager) analyze(path string) error {
 	pkgs, err := parser.ParseDir(sm.fset, path, nil, parser.AllErrors)
 	if err != nil {
 		return fmt.Errorf("parseDir: %w", err)
@@ -60,7 +60,7 @@ func (sm *SymbolsMngr) analyze(path string) error {
 // 	}
 // }
 
-func (sm *SymbolsMngr) prepareContext() error {
+func (sm *Manager) prepareContext() error {
 	// the "universe"
 	sm.Context.ReviewScopeContent(NewScopeContent(types.Universe), nil)
 
@@ -75,8 +75,8 @@ func (sm *SymbolsMngr) prepareContext() error {
 	return nil
 }
 
-func NewSymbolsManager(path string) (*SymbolsMngr, error) {
-	sm := &SymbolsMngr{
+func NewSymbolsManager(path string) (*Manager, error) {
+	sm := &Manager{
 		fset: token.NewFileSet(),
 		// scopes: map[ast.Node]*types.Scope{},
 		Context: &Context{
