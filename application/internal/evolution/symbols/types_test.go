@@ -8,21 +8,13 @@ import (
 	"go/token"
 	"go/types"
 	"tde/internal/astw/astwutl"
-	"tde/internal/astw/traced"
 	"testing"
 
 	"golang.org/x/exp/maps"
 )
 
-var testdatafolders = [][]string{
-	{"testdata/evolution", "WalkWithNils"},
-	{"testdata/words", "Reverse"},
-}
-
-var testcase int64 = 0
-
-func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Package, error) {
-	path, funcname := testdatafolders[testcase][0], testdatafolders[testcase][1]
+func prepare(tcasei int) (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Package, error) {
+	path, funcname := tcs[tcasei].path, tcs[tcasei].funcname
 	fset := token.NewFileSet()
 	pkgs, err := parser.ParseDir(fset, path, nil, 0)
 	if err != nil {
@@ -53,7 +45,7 @@ func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Packa
 }
 
 func ExampleFindFuncScope() {
-	_, funcdecl, _, info, _, err := prepare()
+	_, funcdecl, _, info, _, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -63,7 +55,7 @@ func ExampleFindFuncScope() {
 }
 
 func Test_ConvertScopesMap(t *testing.T) {
-	_, _, _, info, _, err := prepare()
+	_, _, _, info, _, err := prepare(0)
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
@@ -91,21 +83,8 @@ func Test_ConvertScopesMap(t *testing.T) {
 	// }
 }
 
-func Test_Trace(t *testing.T) {
-	file, _, spot, info, _, err := prepare()
-	if err != nil {
-		t.Fatal(fmt.Errorf("prep: %w", err))
-	}
-
-	parents := traced.Parents(file, spot)
-	fmt.Println("parents:", parents)
-	for _, parent := range parents {
-		fmt.Println("scope for a parent:", info.Scopes[parent])
-	}
-}
-
 func Test_PkgScope(t *testing.T) {
-	_, _, _, _, pkg, err := prepare()
+	_, _, _, _, pkg, err := prepare(0)
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
@@ -126,7 +105,7 @@ func Test_PkgScope(t *testing.T) {
 }
 
 func ExampleFindingIdentsDefinedInImports() {
-	_, _, _, _, pkg, err := prepare()
+	_, _, _, _, pkg, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -213,7 +192,7 @@ var integer = 0
 }
 
 func ExampleFindingPkgScopeInInfo() {
-	_, _, _, _, pkg, err := prepare()
+	_, _, _, _, pkg, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -229,7 +208,7 @@ func ExampleFindingPkgScopeInInfo() {
 }
 
 func ExampleIdenticalTypes() {
-	_, _, _, _, pkg, err := prepare()
+	_, _, _, _, pkg, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -250,7 +229,7 @@ func ExampleIdenticalTypes() {
 }
 
 func ExampleFindingFuncScopeInInfo() {
-	_, funcdecl, _, info, _, err := prepare()
+	_, funcdecl, _, info, _, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -260,7 +239,7 @@ func ExampleFindingFuncScopeInInfo() {
 }
 
 func ExampleFuncSignature() {
-	_, funcdecl, _, info, _, err := prepare()
+	_, funcdecl, _, info, _, err := prepare(0)
 	if err != nil {
 		panic(fmt.Errorf("prep: %w", err))
 	}
@@ -272,7 +251,7 @@ func ExampleFuncSignature() {
 }
 
 // func Example() {
-// 	file, funcdecl, spot, info, pkg, err := prepare()
+// 	file, funcdecl, spot, info, pkg, err := prepare(0)
 // 	if err != nil {
 // 		panic(fmt.Errorf("prep: %w", err))
 // 	}

@@ -3,93 +3,102 @@ package symbols
 import (
 	"fmt"
 	"go/ast"
-	"go/importer"
-	"go/parser"
-	"go/token"
 	"go/types"
-	"slices"
+	"tde/internal/utilities/strw"
 
 	"golang.org/x/exp/maps"
+	"golang.org/x/tools/go/packages"
 )
 
-// Use it to get list of symbols defined at the package and in imports.
-// Excludes the symbols defined inside a function (because the info is not available at initialization)
+func packageerrors(pkgs []*packages.Package) error {
+	err := ""
+	packages.Visit(pkgs, func(p *packages.Package) bool {
+		if len(p.Errors) > 0 {
+			err += fmt.Sprintf("found %d errors in %q:\n", len(p.Errors), p.ID)
+			for _, e := range p.Errors {
+				err += fmt.Sprintf("   %s\n", e.Error())
+			}
+		}
+		return true
+	}, nil)
+	if err == "" {
+		return nil
+	}
+	return fmt.Errorf(err)
+}
+
+// Multiple use
 type Manager struct {
-	pkg  *types.Package
-	ast  *ast.Package
-	info *types.Info
-	fset *token.FileSet
-	// scopes  map[ast.Node]*types.Scope
-	Context *Context
+	main    *packages.Package
+	imports []*packages.Package
 }
 
-func (sm *Manager) analyze(path string) error {
-	pkgs, err := parser.ParseDir(sm.fset, path, nil, parser.AllErrors)
+func NewSymbolsManager(path string, allowedpackages []string) (*Manager, error) {
+	cfg := &packages.Config{
+		Mode: packages.NeedDeps |
+			packages.NeedImports |
+			packages.NeedSyntax |
+			packages.NeedTypes |
+			packages.NeedTypesInfo |
+			packages.NeedFiles,
+		BuildFlags: []string{"-tags", "tde"},
+	}
+	pkgs, err := packages.Load(cfg, path)
 	if err != nil {
-		return fmt.Errorf("parseDir: %w", err)
+		return nil, fmt.Errorf("loading the package: %w", err)
 	}
-	if len(pkgs) == 0 {
-		return fmt.Errorf("there is no package in the dir")
+	if err = packageerrors(pkgs); err != nil {
+		return nil, fmt.Errorf("checking package errors:\n%s", strw.IndentLines(err.Error(), 3))
 	}
-	if slices.Contains(maps.Keys(pkgs), "test") && len(pkgs) != 2 {
-		return fmt.Errorf("too many packages (%d) in the dir", len(pkgs))
+
+	var pkg *packages.Package
+	for _, p := range pkgs {
+		if p.ID == path {
+			pkg = p
+		}
 	}
-	pkg := maps.Values(pkgs)[0]
-	files := maps.Values(pkg.Files)
-	conf := types.Config{Importer: importer.Default()}
-	sm.info = &types.Info{
-		Defs:       map[*ast.Ident]types.Object{},
-		Implicits:  map[ast.Node]types.Object{},
-		InitOrder:  []*types.Initializer{},
-		Instances:  map[*ast.Ident]types.Instance{},
-		Scopes:     map[ast.Node]*types.Scope{},
-		Selections: map[*ast.SelectorExpr]*types.Selection{},
-		Types:      map[ast.Expr]types.TypeAndValue{},
-		Uses:       map[*ast.Ident]types.Object{},
+	if pkg == nil {
+		return nil, fmt.Errorf("could not load the package %q", path)
 	}
-	sm.pkg, err = conf.Check("main", sm.fset, files, sm.info)
-	if err != nil {
-		return fmt.Errorf("types.Config.Check: %w", err)
-	}
-	return nil
+
+	return &Manager{main: pkg, imports: maps.Values(pkg.Imports)}, nil
 }
 
-// func (sm *SymbolsMngr) prepareScopes() {
-// 	for idt, scp := range sm.info.Scopes {
-// 		sm.scopes[idt] = scp
-// 	}
-// }
+func (sm *Manager) BinaryIdents() ([]*ast.Ident, map[string][]*ast.Ident) {
+	inpackage := []*ast.Ident{}
 
-func (sm *Manager) prepareContext() error {
-	// the "universe"
-	sm.Context.ReviewScopeContent(NewScopeContent(types.Universe), nil)
-
-	// the package
-	sm.Context.ReviewScopeContent(NewScopeContent(sm.pkg.Scope()), nil)
-
-	// imports
-	for _, pkg := range sm.pkg.Imports() {
-		sm.Context.ReviewScopeContent(NewScopeContent(pkg.Scope()), pkg)
+	if sm.main.TypesInfo != nil && sm.main.TypesInfo.Defs != nil {
+		fmt.Println(len(sm.main.TypesInfo.Defs))
+		for i, o := range sm.main.TypesInfo.Defs {
+			if o == nil {
+				continue
+			}
+			t := o.Type()
+			if t != nil && types.AssignableTo(t, types.Typ[types.Bool]) {
+				inpackage = append(inpackage, i)
+			}
+		}
 	}
 
-	return nil
-}
+	imported := map[string][]*ast.Ident{}
+	for _, pkg := range sm.imports {
+		fmt.Println(len(pkg.TypesInfo.Defs))
+		if pkg.TypesInfo == nil || pkg.TypesInfo.Defs == nil {
+			continue
+		}
+		for i, o := range pkg.TypesInfo.Defs {
+			if o == nil || !o.Exported() {
+				continue
+			}
+			t := o.Type()
 
-func NewSymbolsManager(path string) (*Manager, error) {
-	sm := &Manager{
-		fset: token.NewFileSet(),
-		// scopes: map[ast.Node]*types.Scope{},
-		Context: &Context{
-			Symbols: []*Symbol{},
-			ByType:  map[types.Type][]*Symbol{},
-		},
+			if t != nil && types.AssignableTo(t, types.Typ[types.Bool]) {
+				if _, ok := imported[pkg.ID]; !ok {
+					imported[pkg.ID] = []*ast.Ident{}
+				}
+				imported[pkg.ID] = append(imported[pkg.ID], i)
+			}
+		}
 	}
-	if err := sm.analyze(path); err != nil {
-		return nil, fmt.Errorf("analyze: %w", err)
-	}
-	// sm.prepareScopes()
-	if err := sm.prepareContext(); err != nil {
-		return nil, fmt.Errorf("prepareContext: %w", err)
-	}
-	return sm, nil
+	return inpackage, imported
 }
