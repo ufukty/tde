@@ -1,20 +1,10 @@
 package canonicalize
 
 import (
-	"fmt"
 	"path/filepath"
 	"slices"
 	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities/osw"
 )
-
-func GoRoot() (string, error) {
-	goroot, _, err := osw.RunCommandForOutput("go", "env", "GOROOT")
-	if err != nil {
-		return "", fmt.Errorf("running go env GOROOT: %w", err)
-	}
-	return goroot, nil
-}
 
 func isInStdLib(pkg string) bool {
 	return slices.Index(stdlibpkgs, pkg) != -1
