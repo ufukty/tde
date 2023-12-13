@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"tde/internal/evolution/evaluation/discovery"
@@ -16,25 +15,25 @@ import (
 
 func Test_SymbolsInspector(t *testing.T) {
 	type tcase struct {
-		pkgid       string
+		name        string
 		allowedpkgs []string
 	}
 
 	var tcs = []tcase{
 		{
-			pkgid:       "fmt",
+			name:        "fmt",
 			allowedpkgs: []string{"fmt"},
 		},
 		{
-			pkgid:       "reflect",
+			name:        "reflect",
 			allowedpkgs: []string{"reflect"},
 		},
 		{
-			pkgid:       "tde/internal/evolution/symbols/testdata/evolution",
+			name:        "evolution",
 			allowedpkgs: []string{"tde/internal/evolution/symbols/testdata/evolution", "fmt", "log", "slices", "maps"},
 		},
 		{
-			pkgid:       "tde/internal/evolution/symbols/testdata/words",
+			name:        "words",
 			allowedpkgs: []string{"tde/internal/evolution/symbols/testdata/words", "fmt", "math", "strconv"},
 		},
 	}
@@ -51,16 +50,16 @@ func Test_SymbolsInspector(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		t.Run(filepath.Base(tc.pkgid), func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			allowedpkgs := canonicalize.CanonicalizePaths(goroot, mod, pkgs, tc.allowedpkgs)
-			si, err := NewSymbolsInspector(tc.pkgid, allowedpkgs)
+			si, err := NewSymbolsInspector(allowedpkgs)
 			if err != nil {
 				t.Fatal(fmt.Errorf("prep 2: %w", err))
 			}
 
 			symbols := si.SymbolsAssignableTo(types.Typ[types.String])
 			for pkgid, symbols := range symbols {
-				fmt.Printf("%s: [%s]\n", pkgid, strings.Join(functional.Map(symbols, func(i int, v *ast.Ident) string { return v.Name }), ", "))
+				fmt.Printf("%s:\n\t[%s]\n", pkgid, strings.Join(functional.Map(symbols, func(i int, v *ast.Ident) string { return v.Name }), ", "))
 			}
 		})
 	}

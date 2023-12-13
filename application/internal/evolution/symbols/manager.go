@@ -8,14 +8,12 @@ import (
 	"tde/internal/utilities/mapw"
 	"tde/internal/utilities/strw"
 
-	"golang.org/x/exp/maps"
 	"golang.org/x/tools/go/packages"
 )
 
 // Multiple use
 type Inspector struct {
-	main    *packages.Package
-	imports []*packages.Package
+	pkgs []*packages.Package
 }
 
 func packageerrors(pkgs []*packages.Package) error {
@@ -37,7 +35,7 @@ func packageerrors(pkgs []*packages.Package) error {
 
 // pkgid is the import path of the current package
 // allowedpkgs consists by canonicalized directory paths
-func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error) {
+func NewSymbolsInspector(allowedpkgs []string) (*Inspector, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedDeps |
 			packages.NeedImports |
@@ -54,19 +52,7 @@ func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error)
 	if err = packageerrors(pkgs); err != nil {
 		return nil, fmt.Errorf("checking package errors:\n%s", strw.IndentLines(err.Error(), 3))
 	}
-
-	var pkg *packages.Package
-	for _, p := range pkgs {
-		if p.ID == pkgid {
-			pkg = p
-			break
-		}
-	}
-	if pkg == nil {
-		return nil, fmt.Errorf("could not load the package %q", pkgid)
-	}
-
-	return &Inspector{main: pkg, imports: maps.Values(pkg.Imports)}, nil
+	return &Inspector{pkgs: pkgs}, nil
 }
 
 func appenduniq[T comparable](s []T, v T) []T {
@@ -98,10 +84,7 @@ func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.
 // itself or its a field, element or result can be assignable to a variable in type of "t".
 func (si *Inspector) SymbolsAssignableTo(t types.Type) map[string][]*ast.Ident {
 	symbols := map[string][]*ast.Ident{}
-	if scopesymbols := symbolsFromScope(si.main.Types.Scope(), si.main.TypesInfo.Defs, t); len(scopesymbols) > 0 {
-		symbols[""] = scopesymbols
-	}
-	for _, pkg := range si.imports {
+	for _, pkg := range si.pkgs {
 		if pkg.TypesInfo != nil && pkg.TypesInfo.Defs != nil {
 			if scopesymbols := symbolsFromScope(pkg.Types.Scope(), pkg.TypesInfo.Defs, t); len(scopesymbols) > 0 {
 				symbols[pkg.ID] = scopesymbols
