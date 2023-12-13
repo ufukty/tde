@@ -4,11 +4,19 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"slices"
+	"tde/internal/utilities/mapw"
 	"tde/internal/utilities/strw"
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/tools/go/packages"
 )
+
+// Multiple use
+type Inspector struct {
+	main    *packages.Package
+	imports []*packages.Package
+}
 
 func packageerrors(pkgs []*packages.Package) error {
 	err := ""
@@ -27,13 +35,9 @@ func packageerrors(pkgs []*packages.Package) error {
 	return fmt.Errorf(err)
 }
 
-// Multiple use
-type Manager struct {
-	main    *packages.Package
-	imports []*packages.Package
-}
-
-func NewSymbolsManager(path string, allowedpackages []string) (*Manager, error) {
+// pkgid is the import path of the current package
+// allowedpkgs consists by canonicalized directory paths
+func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedDeps |
 			packages.NeedImports |
@@ -43,7 +47,7 @@ func NewSymbolsManager(path string, allowedpackages []string) (*Manager, error) 
 			packages.NeedFiles,
 		BuildFlags: []string{"-tags", "tde"},
 	}
-	pkgs, err := packages.Load(cfg, path)
+	pkgs, err := packages.Load(cfg, allowedpkgs...)
 	if err != nil {
 		return nil, fmt.Errorf("loading the package: %w", err)
 	}
@@ -53,52 +57,56 @@ func NewSymbolsManager(path string, allowedpackages []string) (*Manager, error) 
 
 	var pkg *packages.Package
 	for _, p := range pkgs {
-		if p.ID == path {
+		if p.ID == pkgid {
 			pkg = p
+			break
 		}
 	}
 	if pkg == nil {
-		return nil, fmt.Errorf("could not load the package %q", path)
+		return nil, fmt.Errorf("could not load the package %q", pkgid)
 	}
 
-	return &Manager{main: pkg, imports: maps.Values(pkg.Imports)}, nil
+	return &Inspector{main: pkg, imports: maps.Values(pkg.Imports)}, nil
 }
 
-func (sm *Manager) BinaryIdents() ([]*ast.Ident, map[string][]*ast.Ident) {
-	inpackage := []*ast.Ident{}
-
-	if sm.main.TypesInfo != nil && sm.main.TypesInfo.Defs != nil {
-		fmt.Println(len(sm.main.TypesInfo.Defs))
-		for i, o := range sm.main.TypesInfo.Defs {
-			if o == nil {
-				continue
-			}
-			t := o.Type()
-			if t != nil && types.AssignableTo(t, types.Typ[types.Bool]) {
-				inpackage = append(inpackage, i)
-			}
-		}
+func appenduniq[T comparable](s []T, v T) []T {
+	if slices.Index(s, v) == -1 {
+		return append(s, v)
 	}
+	return s
+}
 
-	imported := map[string][]*ast.Ident{}
-	for _, pkg := range sm.imports {
-		fmt.Println(len(pkg.TypesInfo.Defs))
-		if pkg.TypesInfo == nil || pkg.TypesInfo.Defs == nil {
-			continue
-		}
-		for i, o := range pkg.TypesInfo.Defs {
-			if o == nil || !o.Exported() {
-				continue
-			}
-			t := o.Type()
-
-			if t != nil && types.AssignableTo(t, types.Typ[types.Bool]) {
-				if _, ok := imported[pkg.ID]; !ok {
-					imported[pkg.ID] = []*ast.Ident{}
+// helper of *Manager.AssignableTo. inspects only one scope
+func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.Type) []*ast.Ident {
+	idents := mapw.Reverse(defs)
+	symbols := []*ast.Ident{}
+	for _, elem := range s.Names() {
+		if o := s.Lookup(elem); o != nil && o.Exported() {
+			if v := o.Type(); v != nil {
+				if i, ok := idents[o]; ok {
+					if containsSomethingAssignableTo(v, t) {
+						symbols = appenduniq(symbols, i)
+					}
 				}
-				imported[pkg.ID] = append(imported[pkg.ID], i)
 			}
 		}
 	}
-	return inpackage, imported
+	return symbols
+}
+
+// returns the list of all symbols defined in current/imported/importable packages that either
+// itself or its a field, element or result can be assignable to a variable in type of "t".
+func (si *Inspector) SymbolsAssignableTo(t types.Type) map[string][]*ast.Ident {
+	symbols := map[string][]*ast.Ident{}
+	if scopesymbols := symbolsFromScope(si.main.Types.Scope(), si.main.TypesInfo.Defs, t); len(scopesymbols) > 0 {
+		symbols[""] = scopesymbols
+	}
+	for _, pkg := range si.imports {
+		if pkg.TypesInfo != nil && pkg.TypesInfo.Defs != nil {
+			if scopesymbols := symbolsFromScope(pkg.Types.Scope(), pkg.TypesInfo.Defs, t); len(scopesymbols) > 0 {
+				symbols[pkg.ID] = scopesymbols
+			}
+		}
+	}
+	return symbols
 }
