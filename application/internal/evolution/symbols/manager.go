@@ -13,7 +13,8 @@ import (
 
 // Multiple use
 type Inspector struct {
-	pkgs []*packages.Package
+	pkgid string
+	pkgs  []*packages.Package
 }
 
 func packageerrors(pkgs []*packages.Package) error {
@@ -35,7 +36,7 @@ func packageerrors(pkgs []*packages.Package) error {
 
 // pkgid is the import path of the current package
 // allowedpkgs consists by canonicalized directory paths
-func NewSymbolsInspector(allowedpkgs []string) (*Inspector, error) {
+func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedDeps |
 			packages.NeedImports |
@@ -52,7 +53,10 @@ func NewSymbolsInspector(allowedpkgs []string) (*Inspector, error) {
 	if err = packageerrors(pkgs); err != nil {
 		return nil, fmt.Errorf("checking package errors:\n%s", strw.IndentLines(err.Error(), 3))
 	}
-	return &Inspector{pkgs: pkgs}, nil
+	return &Inspector{
+		pkgid: pkgid,
+		pkgs:  pkgs,
+	}, nil
 }
 
 func appenduniq[T comparable](s []T, v T) []T {
@@ -62,12 +66,30 @@ func appenduniq[T comparable](s []T, v T) []T {
 	return s
 }
 
+func symbolsFromUniverse(t types.Type) []*ast.Ident {
+	symbols := []*ast.Ident{}
+	s := types.Universe
+	for _, elem := range s.Names() {
+		if o := s.Lookup(elem); o != nil {
+			if v := o.Type(); v != nil {
+				if containsSomethingAssignableTo(v, t) {
+					symbols = appenduniq(symbols, ast.NewIdent(o.Name())) // TODO: is convertion to ident necessary?
+				}
+			}
+		}
+	}
+	return symbols
+}
+
 // helper of *Manager.AssignableTo. inspects only one scope
-func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.Type) []*ast.Ident {
+func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.Type, exportedonly bool) []*ast.Ident {
 	idents := mapw.Reverse(defs)
 	symbols := []*ast.Ident{}
 	for _, elem := range s.Names() {
-		if o := s.Lookup(elem); o != nil && o.Exported() {
+		if o := s.Lookup(elem); o != nil {
+			if exportedonly && !o.Exported() {
+				continue
+			}
 			if v := o.Type(); v != nil {
 				if i, ok := idents[o]; ok {
 					if containsSomethingAssignableTo(v, t) {
@@ -84,9 +106,12 @@ func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.
 // itself or its a field, element or result can be assignable to a variable in type of "t".
 func (si *Inspector) SymbolsAssignableTo(t types.Type) map[string][]*ast.Ident {
 	symbols := map[string][]*ast.Ident{}
+	if universesymbols := symbolsFromUniverse(t); len(universesymbols) > 0 {
+		symbols[""] = universesymbols
+	}
 	for _, pkg := range si.pkgs {
 		if pkg.TypesInfo != nil && pkg.TypesInfo.Defs != nil {
-			if scopesymbols := symbolsFromScope(pkg.Types.Scope(), pkg.TypesInfo.Defs, t); len(scopesymbols) > 0 {
+			if scopesymbols := symbolsFromScope(pkg.Types.Scope(), pkg.TypesInfo.Defs, t, si.pkgid != pkg.ID); len(scopesymbols) > 0 {
 				symbols[pkg.ID] = scopesymbols
 			}
 		}
