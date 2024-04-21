@@ -5,6 +5,7 @@ import (
 	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/genetics/crossover/subtreeswitch"
 	"tde/internal/evolution/genetics/mutation/v1"
+	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
@@ -89,7 +90,7 @@ func (ss *SolutionSearch) pruneSearches() error {
 	return nil
 }
 
-func (ss *SolutionSearch) diversify() error {
+func (ss *SolutionSearch) reproduce() error {
 	candidates := ss.commons.Pool.FilterValidIn(models.Candidate)
 
 	co, mu, err := ss.pickParents(candidates)
@@ -115,8 +116,14 @@ func (ss *SolutionSearch) diversify() error {
 	if len(mu) > 0 {
 		for _, subj := range mu {
 			offspring := subj.Clone()
-			if err := mutation.Mutate(*ss.commons.Context, offspring, ss.commons.Params.Packages); err != nil {
-				return fmt.Errorf("failed at mutation")
+			opctx := &models1.MutationParameters{
+				Package:         ss.commons.Context.Package,
+				File:            ss.commons.Context.File,
+				FuncDecl:        subj.AST,
+				AllowedPackages: ss.commons.Params.Packages,
+			}
+			if err := mutation.Mutate(opctx); err != nil {
+				return fmt.Errorf("applying mutation on offspring: %w", err)
 			}
 			ss.offsprings.Add(offspring)
 		}
@@ -146,17 +153,17 @@ func (ss *SolutionSearch) startSearches() {
 func (ss *SolutionSearch) Loop() error {
 	ss.commons.Pool = pool.New(ss.commons.Context.NewSubject())
 	for i := 0; i < ss.commons.Params.Generations; i++ {
+		if err := ss.reproduce(); err != nil {
+			return fmt.Errorf("diversifying: %w", err)
+		}
+		if err := ss.evaluate(); err != nil {
+			return fmt.Errorf("evaluating offsprings: %w", err)
+		}
 		if err := ss.iterateSearches(); err != nil {
 			return fmt.Errorf("iterating candidate searches: %w", err)
 		}
 		if err := ss.pruneSearches(); err != nil {
 			return fmt.Errorf("pruning failed candidate searches: %w", err)
-		}
-		if err := ss.diversify(); err != nil {
-			return fmt.Errorf("diversifying: %w", err)
-		}
-		if err := ss.evaluate(); err != nil {
-			return fmt.Errorf("evaluating offsprings: %w", err)
 		}
 		ss.startSearches()
 	}

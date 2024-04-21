@@ -35,20 +35,20 @@ const (
 )
 
 var mutators = map[MutationOperation]models.GeneticOperation{
-	MOImportPackage:     imports.ImportPackage,
-	MOLiteralValueAlter: literals.LiteralValueAlter,
-	MORemoveLine:        lines.RemoveLine,
-	MOSwapLines:         lines.SwapLines,
-	MOTokenShuffle:      tokens.TokenShuffle,
-	MOSTG:               stg.Develop,
+	// MOImportPackage:     imports.ImportPackage,
+	// MOLiteralValueAlter: literals.LiteralValueAlter,
+	// MORemoveLine:        lines.RemoveLine,
+	// MOSwapLines:         lines.SwapLines,
+	// MOTokenShuffle:      tokens.TokenShuffle,
+	MOSTG: stg.Develop,
 }
 
 func runMutator(mutator models.GeneticOperation, params *models.MutationParameters) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("%v", r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		err = fmt.Errorf("%v", r)
+	// 	}
+	// }()
 	return mutator(params)
 }
 

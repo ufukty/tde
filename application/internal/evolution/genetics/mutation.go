@@ -114,11 +114,11 @@ func SwapLines(fd *ast.FuncDecl) error {
 }
 
 // TODO:
-func ShuffleLiterals(nc *nodes.Creator, fd *ast.FuncDecl) error {
-	c, err := pickf(fd.Body, func(c *cursor) bool { return c.field.expected == types.Ident })
-	if err != nil {
-		return fmt.Errorf("pickf: %w", ErrNoPicks)
-	}
+// func ShuffleLiterals(nc *nodes.Creator, fd *ast.FuncDecl) error {
+// 	c, err := pickf(fd.Body, func(c *cursor) bool { return c.field.expected == types.Ident })
+// 	if err != nil {
+// 		return fmt.Errorf("pickf: %w", ErrNoPicks)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

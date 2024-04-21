@@ -61,7 +61,7 @@ func (s *codeSearch) Iterate() (models.Subjects, error) {
 			offspring := subj.Clone()
 			offsprings.Add(offspring)
 
-			opctx := &models1.GeneticOperationContext{
+			opctx := &models1.MutationParameters{
 				Package:         s.Context.Package,
 				File:            s.Context.File,
 				FuncDecl:        subj.AST,

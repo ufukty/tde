@@ -7,10 +7,10 @@ import (
 )
 
 type Creator struct {
-	sm *symbols.Manager
+	sm *symbols.Inspector
 }
 
-func NewCreator(sm *symbols.Manager) *Creator {
+func NewCreator(sm *symbols.Inspector) *Creator {
 	return &Creator{
 		sm: sm,
 	}

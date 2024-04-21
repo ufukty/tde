@@ -8,7 +8,7 @@ import (
 	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
-	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
+	"tde/internal/evolution/genetics/nodes"
 	"tde/internal/utilities/pick"
 )
 
