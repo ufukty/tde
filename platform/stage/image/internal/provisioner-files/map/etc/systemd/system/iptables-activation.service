@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/iptables-restore /etc/iptables/iptables-rules.v4
-ExecReload=/usr/bin/iptables-restore /etc/iptables/iptables-rules.v4
+ExecReload=/usr/sbin/iptables-restore /etc/iptables/iptables-rules.v4
 RemainAfterExit=yes
 
 [Install]
