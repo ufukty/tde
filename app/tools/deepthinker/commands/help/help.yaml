@@ -1,5 +1,5 @@
 ---
-help: |
+main: |
   Use deepthinker to produce implementation in Go that complies a test.
 
   Usage:
@@ -32,14 +32,14 @@ upload: |
 
   Arguments:
 
-      -e, -exclude-dir (Optional)
+      -exclude-dir (Optional)
           To reduce network usage and avoid exceeding limits, exclude every
           directory that its absence won't lead to any compile error of target 
           package. Multiple directories can be specified individually.
           Directories ".git", "build", "docs", ".vscode", "vendor" are excluded 
           by default.
 
-      -i, -include-ext (Optional)
+      -include-ext (Optional)
           Specify additional file extensions to include in archive. 
           Multiple extensions can be specified individually.
           "go", "mod" and "sum" are preselected. Don't start with a dot 
@@ -48,7 +48,7 @@ upload: |
       -only-archive (Optional)
           Only archive the module. Abort before starting to upload.
 
-      --output <path> (Optional)
+      -output <path> (Optional)
           Only effective when it is used with -only-archive flag. Append the 
           target path after flag.
 
@@ -76,7 +76,7 @@ produce: |
           Specify a IP:Port to use custom runners. See 
           "https://deepthinker.io/docs/runner"
 
-      -c, -continue (Optional)
+      -continue (Optional)
           When absent, evolution will start from the latest saved state of files
           in local.
           When a UUID of previous evolution process has given, temporarily saved 
@@ -104,7 +104,7 @@ produce: |
       -size (Required) (Default=1000)
           Size limit for any subject in bytes.
 
-      -p, -package (Optional)
+      -package (Optional)
           Allows evolver server to include import statements and type/func usage
           from specified package. Multiple entries can be given individually. 
           Runners may have limitation on which packages can be used.
