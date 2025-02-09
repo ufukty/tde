@@ -24,19 +24,47 @@ Functions:
 */
 
 import (
+	"fmt"
+	"os"
+	"strings"
 	"tde/tools/deepthinker/internal/help"
-	list_test "tde/tools/deepthinker/internal/list-test"
+	"tde/tools/deepthinker/internal/listtest"
 	"tde/tools/deepthinker/internal/produce"
 	"tde/tools/deepthinker/internal/upload"
 
-	"tde/internal/command"
+	"golang.org/x/exp/maps"
 )
 
-func main() {
-	command.RegisterCommand("help", &help.Command{})
-	command.RegisterCommand("upload", &upload.Command{})
-	command.RegisterCommand("produce", &produce.Command{})
-	command.RegisterCommand("list-test", &list_test.Command{})
+func Main() error {
+	commands := map[string]func() error{
+		"help":      help.Run,
+		"upload":    upload.Run,
+		"produce":   produce.Run,
+		"list-test": listtest.Run,
+	}
 
-	command.Route()
+	if len(os.Args) < 2 {
+		return fmt.Errorf("subcommands: %s", strings.Join(maps.Keys(commands), ", "))
+	}
+
+	cmd := os.Args[1]
+	command, ok := commands[cmd]
+	if !ok {
+		return fmt.Errorf("available subcommands: %s", strings.Join(maps.Keys(commands), ", "))
+	}
+
+	os.Args = os.Args[1:]
+	err := command()
+	if err != nil {
+		return fmt.Errorf("%s: %w", cmd, err)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := Main(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

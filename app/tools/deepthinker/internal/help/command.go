@@ -3,39 +3,32 @@ package help
 import (
 	_ "embed"
 	"fmt"
-	"log"
+	"os"
 	"strings"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
 //go:embed help.yaml
 var helpYamlFileContent string
 
-var helpFileContent map[string]string
+func Run() error {
+	topic := "main"
+	if len(os.Args) > 0 {
+		topic = os.Args[0]
+	}
 
-func parseHelpFileContent() {
+	helpFileContent := map[string]string{}
 	err := yaml.NewDecoder(strings.NewReader(helpYamlFileContent)).Decode(&helpFileContent)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "failed to decode help.yaml"))
-	}
-	// fmt.Printf("%#v\n", helpFileContent)
-}
-
-type Command struct {
-	Topic string `precedence:"0"`
-}
-
-func (c *Command) Run() {
-	if c.Topic == "" {
-		c.Topic = "help"
+		return fmt.Errorf("decoding yaml: %w", err)
 	}
 
-	parseHelpFileContent()
-	if msg, ok := helpFileContent[c.Topic]; ok {
-		fmt.Println(msg)
-	} else {
-		log.Fatalln("Unrecognized command for help. Run \"tde help\"")
+	msg, ok := helpFileContent[topic]
+	if !ok {
+		return fmt.Errorf(`Unrecognized command for help. Run "tde help"`)
 	}
+	fmt.Println(msg)
+
+	return nil
 }

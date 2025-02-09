@@ -1,7 +1,7 @@
-package list_test
+package listtest
 
 import (
-	"log"
+	"flag"
 	astw_util "tde/internal/astw/astwutl"
 	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/utilities/functional"
@@ -14,19 +14,20 @@ import (
 	"reflect"
 )
 
-type Command struct {
-	Root    string `precedence:"0"`
-	Verbose bool   `short:"v"`
+type Args struct {
+	Root    string
+	Verbose bool
 }
 
-func (c *Command) validateArgs() {
+func (c *Args) validateArgs() error {
 	if c.Root == "" {
 		var err error
 		c.Root, err = discovery.ModuleRoot()
 		if err != nil {
-			log.Fatalln("Could not detect module root:", err)
+			return fmt.Errorf("Could not detect module root: %w", err)
 		}
 	}
+	return nil
 }
 
 func extractTargetFunction(callExp *ast.CallExpr) (funcName string, receiverName string, err error) {
@@ -92,18 +93,23 @@ func printTestFunc(path string, line int, function string, lastInLevel bool, con
 	)
 }
 
-func (c *Command) Run() {
-	c.validateArgs()
+func Run() error {
+	args := &Args{}
+	flag.StringVar(&args.Root, "root", "", "")
+	flag.BoolVar(&args.Verbose, "v", false, "")
+	flag.Parse()
+
+	args.validateArgs()
 
 	root, err := discovery.ModuleRoot()
 	if err != nil {
-		log.Fatalln("Failed to detect module root path.")
+		return fmt.Errorf("Failed to detect module root path.")
 	}
 	PrintModule(filepath.Base(root), filepath.Dir(root))
 
 	tests, skipped, err := discovery.TestFunctionsInSubdirs(root)
 	if err != nil {
-		log.Fatalln("Failed to detect test functions:", err)
+		return fmt.Errorf("Failed to detect test functions: %w", err)
 	}
 
 	for i, test := range tests {
@@ -157,7 +163,7 @@ func (c *Command) Run() {
 	}
 
 	if len(skipped) > 0 {
-		if !c.Verbose {
+		if !args.Verbose {
 			fmt.Println("Could not inspect some of the files because of syntax errors. Run with -v flag to print details.")
 		} else {
 			fmt.Println("Could not inspect some of the files because of syntax errors.")
@@ -173,4 +179,6 @@ func (c *Command) Run() {
 			}
 		}
 	}
+
+	return nil
 }

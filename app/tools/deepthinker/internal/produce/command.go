@@ -1,24 +1,39 @@
 package produce
 
 import (
-	"tde/internal/command"
+	"flag"
 
 	"github.com/kr/pretty"
 )
 
-type Command struct {
-	Timeout    int                 `long:"timeout" default:"10"`
-	Runner     string              `long:"runner"`
-	Continue   string              `long:"continue" short:"c" default:"10"`
-	Model      string              `long:"model" default:"0.1"`
-	Ratios     string              `long:"ratios" default:"10/1"`
-	Population int                 `long:"population" default:"1000"`
-	Iterate    int                 `long:"iterate" default:"10"`
-	Size       int                 `long:"size" default:"1000"`
-	Package    command.MultiString `long:"package" short:"p"`
-	TestName   string              `precedence:"0"`
+type Args struct {
+	Continue   int
+	Iterate    int
+	Model      string
+	Package    string
+	Population int
+	Ratios     string
+	Runner     string
+	Size       int
+	TestName   string
+	Timeout    int
 }
 
-func (c *Command) Run() {
-	pretty.Println(c)
+func Run() error {
+	args := &Args{}
+	flag.IntVar(&args.Continue, "continue", 10, "")
+	flag.IntVar(&args.Iterate, "iterate", 10, "")
+	flag.IntVar(&args.Population, "population", 1000, "")
+	flag.IntVar(&args.Size, "size", 1000, "")
+	flag.IntVar(&args.Timeout, "timeout", 10, "")
+	flag.StringVar(&args.Model, "model", "0.1", "")
+	flag.StringVar(&args.Package, "package", "", "")
+	flag.StringVar(&args.Ratios, "ratios", "10/1", "")
+	flag.StringVar(&args.Runner, "runner", "", "")
+	flag.StringVar(&args.TestName, "testname", "", "")
+	flag.Parse()
+
+	pretty.Println(args)
+
+	return nil
 }

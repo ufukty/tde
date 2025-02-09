@@ -1,78 +1,90 @@
 package upload
 
 import (
-	"tde/cmd/customs/endpoints"
-	"tde/internal/command"
-	"tde/internal/evolution/evaluation/archive"
-	"tde/internal/evolution/evaluation/discovery"
-
+	"flag"
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/pkg/errors"
+	strings_ "strings"
+	"tde/cmd/customs/endpoints"
+	"tde/internal/evolution/evaluation/archive"
+	"tde/internal/evolution/evaluation/discovery"
 )
 
-type Command struct {
-	OnlyArchive bool                `long:"only-archive"`
-	Output      string              `long:"output"`
-	ExcludeDirs command.MultiString `short:"e" long:"exclude-dir"`
-	IncludeExts command.MultiString `short:"i" long:"include-ext"`
-	Verbose     bool                `short:"v"`
+type strings []string
+
+func (s *strings) String() string {
+	return strings_.Join(*s, ", ")
 }
 
-func (c *Command) Run() {
-	var (
-		err         error
-		modulePath  string
-		req         *endpoints.UploadRequest
-		resp        *endpoints.UploadResponse
-		fileHandler *os.File
-	)
-	modulePath, err = discovery.ModuleRoot()
+// implements [flag.Value]
+func (s *strings) Set(v string) error {
+	*s = append(*s, v)
+	return nil
+}
+
+type Args struct {
+	OnlyArchive bool
+	Output      string
+	ExcludeDirs strings
+	IncludeExts strings
+	Verbose     bool
+}
+
+func Run() error {
+	args := &Args{}
+	flag.BoolVar(&args.OnlyArchive, "only-archive", false, "")
+	flag.StringVar(&args.Output, "output", "", "")
+	flag.Var(&args.ExcludeDirs, "exclude-dir", "")
+	flag.Var(&args.IncludeExts, "include-ext", "")
+	flag.BoolVar(&args.Verbose, "v", false, "")
+	flag.Parse()
+
+	modulePath, err := discovery.ModuleRoot()
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not find the path of Go module root"))
+		return fmt.Errorf("Could not find the path of Go module root: %w", err)
 	}
 
-	c.IncludeExts = append(c.IncludeExts, archive.DefaultInclExt...)
-	c.ExcludeDirs = append(c.ExcludeDirs, archive.DefaultSkipDirs...)
+	args.IncludeExts = append(args.IncludeExts, archive.DefaultInclExt...)
+	args.ExcludeDirs = append(args.ExcludeDirs, archive.DefaultSkipDirs...)
 
-	var zipPath = ""
-	if c.OnlyArchive && c.Output != "" {
-		err = archive.DirectoryToFile(c.Output, modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
+	zipPath := ""
+	if args.OnlyArchive && args.Output != "" {
+		err = archive.DirectoryToFile(args.Output, modulePath, true, args.ExcludeDirs, args.ExcludeDirs, args.IncludeExts, args.Verbose)
 	} else {
-		zipPath, err = archive.Directory(modulePath, true, c.ExcludeDirs, c.ExcludeDirs, c.IncludeExts, c.Verbose)
+		zipPath, err = archive.Directory(modulePath, true, args.ExcludeDirs, args.ExcludeDirs, args.IncludeExts, args.Verbose)
 	}
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not create archive for module"))
+		return fmt.Errorf("Could not create archive for module: %w", err)
 	}
 
-	if c.Verbose || (c.OnlyArchive && c.Output == "") {
+	if args.Verbose || (args.OnlyArchive && args.Output == "") {
 		fmt.Println("Archived into:", zipPath)
 	}
-	if c.OnlyArchive {
+	if args.OnlyArchive {
 		fmt.Println("Done.")
 		os.Exit(0)
 	}
 
-	fileHandler, err = os.Open(zipPath)
+	fh, err := os.Open(zipPath)
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not open file to upload"))
+		return fmt.Errorf("Could not open file to upload: %w", err)
 	}
-	defer fileHandler.Close()
+	defer fh.Close()
 
-	req, err = endpoints.NewUploadRequest(fileHandler)
+	up, err := endpoints.NewUploadRequest(fh)
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not create request"))
+		return fmt.Errorf("Could not create request: %w", err)
 	}
 
-	if c.Verbose {
+	if args.Verbose {
 		log.Println("Uploading...")
 	}
-	resp, err = req.Send()
+	resp, err := up.Send()
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Failed"))
+		return fmt.Errorf("Failed: %w", err)
 	}
 
-	fmt.Println("Archive ID:", resp.ArchiveID)
+	fmt.Println("Done. Archive ID:", resp.ArchiveID)
+	return nil
 }
