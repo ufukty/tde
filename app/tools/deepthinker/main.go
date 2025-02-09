@@ -27,10 +27,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"tde/tools/deepthinker/internal/help"
-	"tde/tools/deepthinker/internal/listtest"
-	"tde/tools/deepthinker/internal/produce"
-	"tde/tools/deepthinker/internal/upload"
+	"tde/tools/deepthinker/commands/help"
+	"tde/tools/deepthinker/commands/listtest"
+	"tde/tools/deepthinker/commands/produce"
+	"tde/tools/deepthinker/commands/upload"
 
 	"golang.org/x/exp/maps"
 )
