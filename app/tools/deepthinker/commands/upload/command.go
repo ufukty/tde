@@ -5,29 +5,17 @@ import (
 	"fmt"
 	"log"
 	"os"
-	strings_ "strings"
 	"tde/cmd/customs/endpoints"
 	"tde/internal/evolution/evaluation/archive"
 	"tde/internal/evolution/evaluation/discovery"
+	"tde/internal/utilities/valuable"
 )
-
-type strings []string
-
-func (s *strings) String() string {
-	return strings_.Join(*s, ", ")
-}
-
-// implements [flag.Value]
-func (s *strings) Set(v string) error {
-	*s = append(*s, v)
-	return nil
-}
 
 type Args struct {
 	OnlyArchive bool
 	Output      string
-	ExcludeDirs strings
-	IncludeExts strings
+	ExcludeDirs valuable.Strings
+	IncludeExts valuable.Strings
 	Verbose     bool
 }
 
