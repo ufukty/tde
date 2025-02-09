@@ -1,16 +1,20 @@
 {
-    "gopls": {
-        "build.buildFlags": ["-tags=tde"]
-    },
-    "go.lintFlags": ["-ST1001"], // "ST1001: Dot imports are discouraged"
-    "files.exclude": {
-        "**/__pycache__": true,
-        "**/.DS_Store": true,
-        "**/.git": true,
-        "**/.hg": true,
-        "**/.svn": true,
-        "**/.terraform*": true,
-        "**/CVS": true,
-        "**/terraform.tfstate*": true
-    }
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/.terraform*": true,
+    "**/CVS": true,
+    "**/__pycache__": true,
+    "**/terraform.tfstate*": true
+  },
+  "go.lintFlags": [
+    "-ST1001"
+  ], // "ST1001: Dot imports are discouraged"
+  "gopls": {
+    "build.buildFlags": [
+      "-tags=tde"
+    ]
+  },
 }
