@@ -1,5 +1,7 @@
 # TDE
 
+![Logotype](assets/github-social-preview.png)
+
 ## Start
 
 -   Sourcing the `.source-me.sh` is required for each new shell. Which will set required environment vars, define functions, set aliases for commands and command completion for `commands` files. For the convenience, add below script to `~/.bash_profile`
