@@ -17,5 +17,8 @@
       "-tags=tde"
     ]
   },
-  "window.title": "tde"
+  "window.title": "tde",
+  "[markdown]": {
+    "prettier.tabWidth": 4
+  }
 }
