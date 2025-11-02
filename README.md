@@ -2,7 +2,7 @@
 
 ![Logotype](assets/github-social-preview.png)
 
-This is the implementation of my suggestions on solving the problem of applying Genetic Programming to produce test-passing Go functions that I've shared on [my Master's thesis](https://tez.yok.gov.tr/UlusalTezMerkezi/TezGoster?key=weFMBHaUra8rsS5wi2bmHDKlIvi-IwlFkdPWTMwNi0k9Pt1C4PzNAFzxcjzHPgAW) in 2024. For English readers an [LLM-provided](https://chatgpt.com/s/dr_690708eead688191814493090ba3e9f7) review of it might be helpful on understanding what is this work currently and not.
+This is the implementation of my suggestions on solving the problem of applying Genetic Programming to produce test-passing Go functions that I've shared on [my Master's thesis](https://tez.yok.gov.tr/UlusalTezMerkezi/TezGoster?key=weFMBHaUra8rsS5wi2bmHDKlIvi-IwlFkdPWTMwNi0k9Pt1C4PzNAFzxcjzHPgAW) in 2024. For English readers an [LLM-provided](assets/llm-review.pdf) review of it might be helpful on understanding what is this work currently and not.
 
 The codebase provides many packages than can be helpful for future researchers to implement necessary tooling on performing genetic operations on Go AST. It also contains the partial implementations for the **Layered Search** and **Context Aware Subtree Generation** (CA-STG, the newest component of the Strongly-Typed ASTGP) algorithms that each are the main suggestions of my thesis. They still have time for completion.
 
