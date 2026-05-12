@@ -1,15 +1,14 @@
 package ctxres
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/traverse"
-	"tde/internal/utilities/functional"
-
 	"fmt"
 	"go/ast"
 	"testing"
 
-	"github.com/pkg/errors"
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/traverse"
+	"tde/internal/utilities/functional"
+
 	"golang.org/x/exp/slices"
 )
 
@@ -21,7 +20,7 @@ func Test_GetContextForSpot(t *testing.T) {
 	astPkg := astPkgs["test_package"]
 	funcDecl, err := astwutl.FindFuncDecl(astPkg, "WalkWithNils")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "Failed on preparation"))
+		t.Error(fmt.Errorf("Failed on preparation: %w", err))
 	}
 
 	tFuncDecl := traverse.GetTraversableNodeForASTNode(funcDecl)
@@ -34,7 +33,7 @@ func Test_GetContextForSpot(t *testing.T) {
 		choosenSpot,
 	)
 	if err != nil {
-		t.Error(errors.Wrapf(err, ""))
+		t.Error(fmt.Errorf("getting context for spot: %w", err))
 	}
 
 	vars := functional.Map(ctx.Scopes[1].Variables, func(i int, n *ast.Ident) string {

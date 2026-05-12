@@ -1,28 +1,27 @@
 package tokens
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-
 	"fmt"
 	"go/ast"
 	"reflect"
 	"testing"
 
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
+
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 	_, astPkgs, err := astwutl.LoadDir("testdata")
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
 	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
+		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}
 	return astPkg, astFile, funcDecl, nil
 }
@@ -30,7 +29,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 func Test_Operator(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -53,13 +52,12 @@ func Test_Operator(t *testing.T) {
 	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation", choosenNode, newToken)
 	}
-
 }
 
 func Test_Bulk(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 1000; i++ {
@@ -72,5 +70,4 @@ func Test_Bulk(t *testing.T) {
 			t.Errorf("validation i='%d' typeOf->choosenNode='%v' address->choosenNode='%p' newToken='%v'", i, reflect.TypeOf(choosenNode), choosenNode, newToken)
 		}
 	}
-
 }

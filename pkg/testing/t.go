@@ -1,14 +1,12 @@
 package testing
 
 import (
-	"fmt"
-	"tde/internal/evolution/models"
-
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
-	"github.com/pkg/errors"
+	"tde/internal/evolution/models"
 )
 
 type Config struct {
@@ -49,7 +47,7 @@ func (t *T) SetConfig(config Config) {
 func (t *T) Export() {
 	f, err := os.Create("results.json")
 	if err != nil {
-		panic(errors.Wrap(err, "Could not create 'result.json' for writing"))
+		panic(fmt.Errorf("Could not create 'result.json' for writing: %w", err))
 	}
 	json.NewEncoder(f).Encode(t)
 }

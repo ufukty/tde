@@ -6,7 +6,6 @@ package pkgbits
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"go/constant"
 	"go/token"
@@ -280,7 +279,7 @@ func readUvarint(r *strings.Reader) (uint64, error) {
 	return x, overflow
 }
 
-var overflow = errors.New("pkgbits: readUvarint overflows a 64-bit integer")
+var overflow = fmt.Errorf("pkgbits: readUvarint overflows a 64-bit integer")
 
 func (r *Decoder) rawVarint() int64 {
 	ux := r.rawUvarint()

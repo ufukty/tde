@@ -2,18 +2,20 @@ package archive
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
 )
 
-var DefaultInclExt = []string{"go", "mod", "sum"}
-var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
+var (
+	DefaultInclExt  = []string{"go", "mod", "sum"}
+	DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
+)
 
 func directory(dst io.Writer, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (err error) {
 	zipWriter := zip.NewWriter(dst)
@@ -21,12 +23,12 @@ func directory(dst io.Writer, src string, incSubdirs bool, skipDirs, skipSubdirs
 
 	err = filepath.Walk(src, func(subPath string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
-			return errors.Wrap(err, "failed to walk directory")
+			return fmt.Errorf("failed to walk directory: %w", err)
 		}
 
 		inZipSubPath, err := filepath.Rel(src, subPath)
 		if err != nil {
-			return errors.Wrap(err, "failed to clean path for a file")
+			return fmt.Errorf("failed to clean path for a file: %w", err)
 		}
 
 		if fileInfo.IsDir() {
@@ -57,24 +59,24 @@ func directory(dst io.Writer, src string, incSubdirs bool, skipDirs, skipSubdirs
 
 		subFile, err := os.Open(subPath)
 		if err != nil {
-			return errors.Wrap(err, "failed to open file")
+			return fmt.Errorf("failed to open file: %w", err)
 		}
 		defer subFile.Close()
 
 		zipSubPathWriter, err := zipWriter.Create(inZipSubPath)
 		if err != nil {
-			return errors.Wrap(err, "failed to get a writer for a file to write it into the archive")
+			return fmt.Errorf("failed to get a writer for a file to write it into the archive: %w", err)
 		}
 
 		_, err = io.Copy(zipSubPathWriter, subFile)
 		if err != nil {
-			return errors.Wrap(err, "failed to add a file into archive")
+			return fmt.Errorf("failed to add a file into archive: %w", err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return errors.Wrap(err, "failed on archiving the directory")
+		return fmt.Errorf("failed on archiving the directory: %w", err)
 	}
 
 	return nil
@@ -83,7 +85,7 @@ func directory(dst io.Writer, src string, incSubdirs bool, skipDirs, skipSubdirs
 func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) (path string, err error) {
 	target, err := os.CreateTemp(os.TempDir(), "tde.CodeArchive.*.zip")
 	if err != nil {
-		return "", errors.Wrap(err, "failed to create temporary zip file")
+		return "", fmt.Errorf("failed to create temporary zip file: %w", err)
 	}
 	defer target.Close()
 	return target.Name(), directory(target, relativePath, includeSubfolders, skipDirs, skipSubdirs, includeExt, enableLogging)
@@ -92,7 +94,7 @@ func Directory(relativePath string, includeSubfolders bool, skipDirs, skipSubdir
 func DirectoryToFile(target string, relativePath string, includeSubfolders bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
 	fh, err := os.Create(target)
 	if err != nil {
-		return errors.Wrap(err, "failed to create temporary zip file")
+		return fmt.Errorf("failed to create temporary zip file: %w", err)
 	}
 	defer fh.Close()
 	return directory(fh, relativePath, includeSubfolders, skipDirs, skipSubdirs, includeExt, enableLogging)

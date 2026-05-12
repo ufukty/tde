@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var (
-	MoreThanOneLineFound = errors.New("given command output has more than one line")
-	NoLinesFound         = errors.New("given command output has no output that is terminated with '\\n' character")
+	MoreThanOneLineFound = fmt.Errorf("given command output has more than one line")
+	NoLinesFound         = fmt.Errorf("given command output has no output that is terminated with '\\n' character")
 )
 
 func RunCommandForOutput(commandName string, arguments ...string) (stdout string, stderr string, err error) {
@@ -25,7 +23,7 @@ func RunCommandForOutput(commandName string, arguments ...string) (stdout string
 	err_ := cmd.Run()
 	if err_ != nil {
 		return outputStream.String(), errStream.String(),
-			errors.Wrapf(err_, "exec.Command is failed for command %s", commandName)
+			fmt.Errorf("exec.Command is failed for command %s: %w", commandName, err_)
 	}
 	return outputStream.String(), errStream.String(), nil
 }
@@ -53,11 +51,11 @@ func StripOnlyLineFromCommandOuput(output string) (string, error) {
 func CurrentDir() (string, error) {
 	dir, _, err := RunCommandForOutput("pwd", "-P")
 	if err != nil {
-		return "", errors.Wrap(err, "failed to run 'pwd'")
+		return "", fmt.Errorf("failed to run 'pwd': %w", err)
 	}
 	dir, err = StripOnlyLineFromCommandOuput(dir)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to get current dir from output of 'pwd'")
+		return "", fmt.Errorf("failed to get current dir from output of 'pwd': %w", err)
 	}
 	return dir, nil
 }

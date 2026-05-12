@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
-
-	"github.com/pkg/errors"
 )
 
 //go:embed _assets/main_tde.go
@@ -20,9 +18,9 @@ type TestInfo struct {
 }
 
 func createTesterDir(testerPkgPath string) error {
-	err := os.MkdirAll(testerPkgPath, 0_755)
+	err := os.MkdirAll(testerPkgPath, 0o_755)
 	if err != nil {
-		return errors.Wrap(err, "mkdir")
+		return fmt.Errorf("mkdir: %w", err)
 	}
 	return nil
 }
@@ -32,7 +30,7 @@ func prepareTemplateForTesterFile(testInfo *TestInfo) (string, error) {
 	templ := template.Must(template.New("").Parse(mainFileContent))
 	err := templ.Execute(buf, testInfo)
 	if err != nil {
-		return "", errors.Wrap(err, "execute template")
+		return "", fmt.Errorf("execute template: %w", err)
 	}
 	return buf.String(), nil
 }
@@ -40,13 +38,13 @@ func prepareTemplateForTesterFile(testInfo *TestInfo) (string, error) {
 func writeTesterFileContent(testerPkgDir string, content string) error {
 	f, err := os.Create(testerPkgDir)
 	if err != nil {
-		return errors.Wrap(err, "create file")
+		return fmt.Errorf("create file: %w", err)
 	}
 	defer f.Close()
 
 	_, err = fmt.Fprint(f, content)
 	if err != nil {
-		return errors.Wrap(err, "fprintf")
+		return fmt.Errorf("fprintf: %w", err)
 	}
 	return nil
 }
@@ -58,17 +56,17 @@ func Inject(testedPkgDir string, testInfo *TestInfo) error {
 
 	err := createTesterDir(testerPkgPath)
 	if err != nil {
-		return errors.Wrap(err, "tester package dir")
+		return fmt.Errorf("tester package dir: %w", err)
 	}
 
 	content, err := prepareTemplateForTesterFile(testInfo)
 	if err != nil {
-		return errors.Wrap(err, "templating for tester file")
+		return fmt.Errorf("templating for tester file: %w", err)
 	}
 
 	err = writeTesterFileContent(testerFilePath, content)
 	if err != nil {
-		return errors.Wrap(err, "writing tester file content")
+		return fmt.Errorf("writing tester file content: %w", err)
 	}
 
 	return nil

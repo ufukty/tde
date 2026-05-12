@@ -1,21 +1,20 @@
 package astwutl
 
 import (
+	"fmt"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func Test_ParseString(t *testing.T) {
 	_, _, err := ParseString(TEST_FILE)
 	if err != nil {
-		t.Error(errors.Wrapf(err, "failed ParseString"))
+		t.Error(fmt.Errorf("failed ParseString: %w", err))
 	}
 }
 
 func Test_LoadDir(t *testing.T) {
 	_, _, err := LoadDir("testdata")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "Failed on loading dir"))
+		t.Error(fmt.Errorf("Failed on loading dir: %w", err))
 	}
 }

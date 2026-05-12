@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 const (
@@ -20,13 +18,13 @@ const (
 )
 
 var (
-	ErrExtensionUnallowed      = errors.New("ErrExtensionUnallowed")
-	ErrZipOpen                 = errors.New("ErrZipOpen")
-	ErrZipFileExceedsLimit     = errors.New(fmt.Sprintf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize))
-	ErrZipExceedsLimit         = errors.New(fmt.Sprintf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize))
-	ErrRelativePathFound       = errors.New("Relative paths are not allowed in a zip archive")
-	ErrTooManyFiles            = errors.New(fmt.Sprintf("A module upload can not have more than %d files", maxAllowedFile))
-	ErrSubfolderExceedingDepth = errors.New(fmt.Sprintf("More than %d nested subfolders are unallowed.", maxAllowedSubfolderDepth))
+	ErrExtensionUnallowed      = fmt.Errorf("ErrExtensionUnallowed")
+	ErrZipOpen                 = fmt.Errorf("ErrZipOpen")
+	ErrZipFileExceedsLimit     = fmt.Errorf(fmt.Sprintf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize))
+	ErrZipExceedsLimit         = fmt.Errorf(fmt.Sprintf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize))
+	ErrRelativePathFound       = fmt.Errorf("Relative paths are not allowed in a zip archive")
+	ErrTooManyFiles            = fmt.Errorf(fmt.Sprintf("A module upload can not have more than %d files", maxAllowedFile))
+	ErrSubfolderExceedingDepth = fmt.Errorf(fmt.Sprintf("More than %d nested subfolders are unallowed.", maxAllowedSubfolderDepth))
 )
 
 // Regular expression to match relative path segments
@@ -47,8 +45,8 @@ func isPathTooDeep(path string, destDepth int) bool {
 }
 
 func createParentFoldersForFile(path string) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
-		return errors.Wrap(err, "os.MkdirAll")
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return fmt.Errorf("os.MkdirAll: %w", err)
 	}
 	return nil
 }
@@ -66,14 +64,14 @@ func Unarchive(src string, dest string) (err error, errFile string) {
 
 	zipReader, err = zip.OpenReader(src)
 	if err != nil {
-		return errors.Wrap(err, "could not create zip reader"), ""
+		return fmt.Errorf("could not create zip reader: %w", err), ""
 	}
 	defer zipReader.Close()
 
-	var moduleDepth = len(strings.Split(dest, "/"))
+	moduleDepth := len(strings.Split(dest, "/"))
 
 	for _, containedFileHandler := range zipReader.File {
-		var filename = containedFileHandler.Name
+		filename := containedFileHandler.Name
 
 		if totalFile++; totalFile == maxAllowedFile {
 			return ErrTooManyFiles, ""
@@ -94,7 +92,7 @@ func Unarchive(src string, dest string) (err error, errFile string) {
 		}
 		defer rc.Close()
 
-		var path = filepath.Clean(filepath.Join(dest, filename))
+		path := filepath.Clean(filepath.Join(dest, filename))
 
 		if !isDirInsideDest(path, dest) {
 			return ErrRelativePathFound, filename
@@ -103,18 +101,18 @@ func Unarchive(src string, dest string) (err error, errFile string) {
 			return ErrSubfolderExceedingDepth, filename
 		}
 		if err = createParentFoldersForFile(path); err != nil {
-			return errors.Wrap(err, "creating parent dirs for file"), ""
+			return fmt.Errorf("creating parent dirs for file: %w", err), ""
 		}
 
 		targetFile, err := os.Create(path)
 		if err != nil {
-			return errors.Wrap(err, "could not create file to write zip file'"), filename
+			return fmt.Errorf("could not create file to write zip file': %w", err), filename
 		}
 		defer targetFile.Close()
 
 		_, err = io.Copy(targetFile, rc)
 		if err != nil {
-			return errors.Wrap(err, "could not extract the file"), filename
+			return fmt.Errorf("could not extract the file: %w", err), filename
 		}
 	}
 

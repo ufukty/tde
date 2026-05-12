@@ -2,12 +2,11 @@ package randoms
 
 import (
 	crand "crypto/rand"
+	"fmt"
 	"log"
 	"math"
 	"math/big"
 	mrand "math/rand"
-
-	"github.com/pkg/errors"
 )
 
 const DEBUG_MODE = false
@@ -25,7 +24,7 @@ func UniformCryptoFloat() float64 {
 
 		randomBigInt, err := crand.Int(crand.Reader, maxInt)
 		if err != nil {
-			log.Panicln(errors.Wrap(err, "Could not call RNG for UniformCrypto"))
+			log.Panicln(fmt.Errorf("Could not call RNG for UniformCrypto: %w", err))
 		}
 		randomBigFloat := big.NewFloat(0).Quo(big.NewFloat(0).SetInt(randomBigInt), big.NewFloat(0).SetInt(maxInt))
 
@@ -41,7 +40,7 @@ func UniformIntN(n int) int {
 		maxInt := big.NewInt(int64(n))
 		randomBigInt, err := crand.Int(crand.Reader, maxInt)
 		if err != nil {
-			log.Panicln(errors.Wrap(err, "Could not call RNG for URandIntN"))
+			log.Panicln(fmt.Errorf("Could not call RNG for URandIntN: %w", err))
 		}
 		return int(randomBigInt.Int64())
 	}

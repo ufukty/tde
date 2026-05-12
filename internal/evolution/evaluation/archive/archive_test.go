@@ -1,14 +1,12 @@
 package archive
 
 import (
-	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/utilities/osw"
-
 	"fmt"
 	"path/filepath"
 	"testing"
 
-	"github.com/pkg/errors"
+	"tde/internal/evolution/evaluation/discovery"
+	"tde/internal/utilities/osw"
 )
 
 func Test_ArchiveDirectory(t *testing.T) {
@@ -16,7 +14,7 @@ func Test_ArchiveDirectory(t *testing.T) {
 	includeExt := []string{"go"}
 	path, err := Directory("../../../../", true, excludeDir, excludeDir, includeExt, false)
 	if err != nil {
-		t.Error(errors.Wrapf(err, "failed to archive directory"))
+		t.Error(fmt.Errorf("failed to archive directory: %w", err))
 	}
 	fmt.Println("Output zip:", path)
 }
@@ -24,12 +22,12 @@ func Test_ArchiveDirectory(t *testing.T) {
 func Test_findModuleRoot(t *testing.T) {
 	root, err := discovery.ModuleRoot()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "failed"))
+		t.Error(fmt.Errorf("failed: %w", err))
 	}
 
 	workingDir, err := osw.WorkingDir()
 	if err != nil {
-		t.Error(errors.Wrap(err, "failed on running \"pwd -P\" command"))
+		t.Error(fmt.Errorf("failed on running \"pwd -P\" command: %w", err))
 	}
 	expected := filepath.Clean(workingDir + "/../../../..")
 

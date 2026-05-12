@@ -1,28 +1,27 @@
 package lines
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/evolution/genetics/mutation/v1/models"
-
 	"fmt"
 	"go/ast"
 	"testing"
 
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
+	"tde/internal/evolution/genetics/mutation/v1/models"
+
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 	_, astPkgs, err := astwutl.LoadDir("testdata")
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
 	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
+		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}
 	return astPkg, astFile, funcDecl, nil
 }
@@ -30,7 +29,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 func Test_SiblingSwap(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -60,7 +59,7 @@ func Test_SiblingSwap(t *testing.T) {
 func Test_SiblingSwapMany(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 1000; i++ {

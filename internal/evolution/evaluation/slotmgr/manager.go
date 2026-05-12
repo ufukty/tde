@@ -5,13 +5,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
 	"tde/internal/evolution/evaluation/copymod"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/slicew"
 	"tde/internal/utilities/strw"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"golang.org/x/exp/maps"
 )
 
@@ -40,7 +40,8 @@ func New(sample, pkgPathInMod, targetFilename path) *SlotManager {
 		targetFilename: targetFilename,
 		slots: slots{
 			free:     []Slot{},
-			assigned: map[models.Sid]Slot{}},
+			assigned: map[models.Sid]Slot{},
+		},
 	}
 	s.createMainFolder()
 	return &s
@@ -50,7 +51,7 @@ func New(sample, pkgPathInMod, targetFilename path) *SlotManager {
 func (s *SlotManager) genNewSlotPath() (path, error) {
 	uuid, err := uuid.NewUUID() // UUIDv1 has choosen because the id never leaves the same-device or compared with ids produced in another device
 	if err != nil {
-		return "", errors.New("can't create a uuid")
+		return "", fmt.Errorf("can't create a uuid")
 	}
 	basename := strings.Join(strw.Fold(strings.ReplaceAll(uuid.String(), "-", ""), 2), "/")
 	return basename, nil
@@ -59,7 +60,7 @@ func (s *SlotManager) genNewSlotPath() (path, error) {
 func (s *SlotManager) createMainFolder() error {
 	path, err := os.MkdirTemp(os.TempDir(), "deepthinker-slots-*")
 	if err != nil {
-		return errors.New("failed to create main folder for slot_manager in temp directory")
+		return fmt.Errorf("failed to create main folder for slot_manager in temp directory")
 	}
 	s.tmp = path
 	return nil
@@ -69,16 +70,16 @@ func (s *SlotManager) createMainFolder() error {
 func (s *SlotManager) createEmptySlot() error {
 	newSlotPath, err := s.genNewSlotPath()
 	if err != nil {
-		return errors.Wrap(err, "generating slot path")
+		return fmt.Errorf("generating slot path: %w", err)
 	}
-	var abs = filepath.Join(s.tmp, newSlotPath)
-	err = os.MkdirAll(abs, 0755)
+	abs := filepath.Join(s.tmp, newSlotPath)
+	err = os.MkdirAll(abs, 0o755)
 	if err != nil {
 		return fmt.Errorf("creating parent dirs for new slot: %w", err)
 	}
 	err = copymod.CopyModule(abs, s.sample, true, []string{}, []string{}, []string{}, false)
 	if err != nil {
-		return errors.Wrap(err, "copying the contents of sample module into the slot")
+		return fmt.Errorf("copying the contents of sample module into the slot: %w", err)
 	}
 	s.slots.free = append(s.slots.free, Slot(newSlotPath))
 	return nil
@@ -132,7 +133,7 @@ func (s *SlotManager) PlaceSubjectsIntoSlots(subjects models.Subjects) error {
 }
 
 func (s *SlotManager) FreeAllSlots() error {
-	var slots = maps.Values(s.slots.assigned)
+	slots := maps.Values(s.slots.assigned)
 	s.slots.free = append(s.slots.free, slots...)
 	maps.Clear(s.slots.assigned)
 

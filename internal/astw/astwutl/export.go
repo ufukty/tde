@@ -2,13 +2,13 @@ package astwutl
 
 import (
 	"bytes"
+	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"strings"
 
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func String(node ast.Node) (string, error) {
@@ -16,7 +16,7 @@ func String(node ast.Node) (string, error) {
 	buf := bytes.NewBuffer([]byte{})
 	err := printer.Fprint(buf, fset, node)
 	if err != nil {
-		return "", errors.Wrapf(err, "failed print")
+		return "", fmt.Errorf("failed print: %w", err)
 	}
 	return buf.String(), nil
 }
@@ -24,11 +24,11 @@ func String(node ast.Node) (string, error) {
 func Diff(current, new ast.Node) (string, error) {
 	printCurrent, err := String(current)
 	if err != nil {
-		return "", errors.Wrap(err, "printing the current version")
+		return "", fmt.Errorf("printing the current version: %w", err)
 	}
 	printNew, err := String(new)
 	if err != nil {
-		return "", errors.Wrap(err, "printing the new version")
+		return "", fmt.Errorf("printing the new version: %w", err)
 	}
 
 	diffStr := diff.Diff(printCurrent, printNew)

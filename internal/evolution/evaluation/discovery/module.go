@@ -3,25 +3,22 @@ package discovery
 import (
 	"fmt"
 	"path/filepath"
+
 	"tde/internal/evolution/evaluation/list"
 	"tde/internal/utilities/osw"
-
-	"github.com/pkg/errors"
 )
 
-var (
-	ModuleNotFound = errors.New("this directory is not part of a Go module")
-)
+var ModuleNotFound = fmt.Errorf("this directory is not part of a Go module")
 
 // Returns the absolute path of the module that working directory is in it
 func ModuleRoot() (string, error) {
 	path, _, err := osw.RunCommandForOutput("go", "env", "GOMOD")
 	if err != nil {
-		return "", errors.Wrap(err, "failed to run 'go env GOMOD'")
+		return "", fmt.Errorf("failed to run 'go env GOMOD': %w", err)
 	}
 	path, err = osw.StripOnlyLineFromCommandOuput(path)
 	if err != nil {
-		return "", errors.Wrap(err, "could not strip GOMOD path from the output of 'go env GOMOD'")
+		return "", fmt.Errorf("could not strip GOMOD path from the output of 'go env GOMOD': %w", err)
 	}
 	if path == "/dev/null" {
 		return "", ModuleNotFound

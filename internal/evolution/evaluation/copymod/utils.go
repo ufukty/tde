@@ -5,8 +5,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/pkg/errors"
 )
 
 func copyDir(scrDir, dest string) error {
@@ -25,7 +23,7 @@ func copyDir(scrDir, dest string) error {
 
 		switch fileInfo.Mode() & os.ModeType {
 		case os.ModeDir:
-			if err := createDirIfDoesNotExists(destPath, 0755); err != nil {
+			if err := createDirIfDoesNotExists(destPath, 0o755); err != nil {
 				return err
 			}
 			if err := copyDir(sourcePath, destPath); err != nil {
@@ -63,19 +61,19 @@ func copyDir(scrDir, dest string) error {
 func CopyFile(srcFile, dstFile string) error {
 	dst, err := os.Create(dstFile)
 	if err != nil {
-		return errors.Wrap(err, "os.Create(dstFile)")
+		return fmt.Errorf("os.Create(dstFile): %w", err)
 	}
 	defer dst.Close()
 
 	src, err := os.Open(srcFile)
 	if err != nil {
-		return errors.Wrap(err, "os.Open(srcFile)")
+		return fmt.Errorf("os.Open(srcFile): %w", err)
 	}
 	defer src.Close()
 
 	_, err = io.Copy(dst, src)
 	if err != nil {
-		return errors.Wrap(err, "io.Copy(dst, src)")
+		return fmt.Errorf("io.Copy(dst, src): %w", err)
 	}
 
 	return nil

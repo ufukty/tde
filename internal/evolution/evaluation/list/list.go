@@ -3,10 +3,9 @@ package list
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os/exec"
-
-	"github.com/pkg/errors"
 )
 
 func ListAllPackages(path string) (Packages, error) {
@@ -23,17 +22,17 @@ func ListAllPackages(path string) (Packages, error) {
 	cmd.Stderr = stdbuf
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrap(err, stdbuf.String())
+		return nil, fmt.Errorf("command: %w", stdbuf.String())
 	}
 
 	decoder = json.NewDecoder(stdbuf)
 	for {
-		var pkg = &Package{}
+		pkg := &Package{}
 		err = decoder.Decode(pkg)
 		if err == io.EOF {
 			return packages, nil
 		} else if err != nil {
-			return nil, errors.Wrap(err, "JSON decoding")
+			return nil, fmt.Errorf("JSON decoding: %w", err)
 		}
 		(packages)[pkg.ImportPath] = pkg
 	}
@@ -53,17 +52,17 @@ func ListPackagesInDir(path string) (Packages, error) {
 	cmd.Stderr = stdbuf
 	err = cmd.Run()
 	if err != nil {
-		return nil, errors.Wrap(err, stdbuf.String())
+		return nil, fmt.Errorf("command: %w", stdbuf.String())
 	}
 
 	decoder = json.NewDecoder(stdbuf)
 	for {
-		var pkg = &Package{}
+		pkg := &Package{}
 		err = decoder.Decode(pkg)
 		if err == io.EOF {
 			return packages, nil
 		} else if err != nil {
-			return nil, errors.Wrap(err, "JSON decoding")
+			return nil, fmt.Errorf("JSON decoding: %w", err)
 		}
 		(packages)[pkg.ImportPath] = pkg
 	}

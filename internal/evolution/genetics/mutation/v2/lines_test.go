@@ -7,7 +7,7 @@ import (
 func Test_RemoveLine(t *testing.T) {
 	// _, _, originalFuncDecl, err := loadTestPackage()
 	// if err != nil {
-	// 	t.Error(errors.Wrapf(err, "prep"))
+	// 	t.Error(fmt.Errorf("prep: %w", err)
 	// }
 
 	// modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -34,7 +34,7 @@ func Test_RemoveLine(t *testing.T) {
 func Test_RemoveLineMany(t *testing.T) {
 	// _, _, originalFuncDecl, err := loadTestPackage()
 	// if err != nil {
-	// 	t.Error(errors.Wrapf(err, "prep"))
+	// 	t.Error(fmt.Errorf("prep: %w", err)
 	// }
 
 	// for i := 0; i < 1000; i++ {
@@ -53,7 +53,7 @@ func Test_RemoveLineMany(t *testing.T) {
 func Test_SiblingSwap(t *testing.T) {
 	// _, _, originalFuncDecl, err := loadTestPackage()
 	// if err != nil {
-	// 	t.Error(errors.Wrapf(err, "prep"))
+	// 	t.Error(fmt.Errorf("prep: %w", err)
 	// }
 
 	// modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -80,7 +80,7 @@ func Test_SiblingSwap(t *testing.T) {
 func Test_SiblingSwapMany(t *testing.T) {
 	// _, _, originalFuncDecl, err := loadTestPackage()
 	// if err != nil {
-	// 	t.Error(errors.Wrapf(err, "prep"))
+	// 	t.Error(fmt.Errorf("prep: %w", err)
 	// }
 
 	// for i := 0; i < 1000; i++ {

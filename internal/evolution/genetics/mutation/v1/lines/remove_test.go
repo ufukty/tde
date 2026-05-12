@@ -1,21 +1,20 @@
 package lines
 
 import (
+	"fmt"
+	"testing"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 
-	"fmt"
-	"testing"
-
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func Test_RemoveLine(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -45,7 +44,7 @@ func Test_RemoveLine(t *testing.T) {
 func Test_RemoveLineMany(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 1000; i++ {

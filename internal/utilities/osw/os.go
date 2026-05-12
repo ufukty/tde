@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"tde/internal/utilities/functional"
 
-	"github.com/pkg/errors"
+	"tde/internal/utilities/functional"
 )
 
 func WorkingDir() (string, error) {
 	stdOut, _, err := RunCommandForOutput("pwd", "-P")
 	if err != nil {
-		return "", errors.Wrap(err, "Failed to run command pwd")
+		return "", fmt.Errorf("Failed to run command pwd: %w", err)
 	}
 	return stdOut, nil
 }

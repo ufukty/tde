@@ -1,30 +1,28 @@
 package subtreeswitch
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-
 	"fmt"
 	"go/ast"
 	"testing"
 
-	"github.com/pkg/errors"
+	"tde/internal/astw/astwutl"
+	"tde/internal/astw/clone"
 )
 
 func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
 	_, astPkgs, err := astwutl.LoadDir("testdata")
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
 	funcDeclA, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "walkHelper")
+		return nil, nil, fmt.Errorf("walkHelper: %w", err)
 	}
 	funcDeclB, err := astwutl.FindFuncDecl(astFile, "walkAstTypeFieldsIfSet")
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "walkAstTypeFieldsIfSet")
+		return nil, nil, fmt.Errorf("walkAstTypeFieldsIfSet: %w", err)
 	}
 	return funcDeclA, funcDeclB, nil
 }
@@ -32,7 +30,7 @@ func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
 func Test_SubtreeSwitch(t *testing.T) {
 	funcDeclA, funcDeclB, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDeclA, modifiedFuncDeclB := clone.FuncDecl(funcDeclA), clone.FuncDecl(funcDeclB)

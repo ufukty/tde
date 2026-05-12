@@ -7,8 +7,6 @@ import (
 	"go/token"
 	"log"
 	"os"
-
-	"github.com/pkg/errors"
 )
 
 func main() {
@@ -17,7 +15,7 @@ func main() {
 	}
 	file, err := parseFile(os.Args[1])
 	if err != nil {
-		log.Fatalln(errors.Wrapf(err, "Could not read the file: '%s'", os.Args[1]))
+		log.Fatalln(fmt.Errorf("Could not read the file: '%s': %w", err, os.Args[1])
 	}
 
 	var (
@@ -31,7 +29,7 @@ func main() {
 		return
 	}
 
-	var genFile = &ast.File{
+	genFile := &ast.File{
 		Name:  packageName,
 		Decls: []ast.Decl{genDecl},
 	}
@@ -59,10 +57,10 @@ func main() {
 	newFileName := createNewFileName(os.Args[1])
 	target, err := os.Create(newFileName)
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not create file in current directory"))
+		log.Fatalln(fmt.Errorf("Could not create file in current directory: %w", err))
 	}
 	err = printer.Fprint(target, token.NewFileSet(), genFile)
 	if err != nil {
-		log.Fatalln(errors.Wrap(err, "Could not write into newly created file"))
+		log.Fatalln(fmt.Errorf("Could not write into newly created file: %w", err))
 	}
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func Test_DivideIntoBuckets(t *testing.T) {
@@ -60,15 +58,15 @@ func Test_DivideIntoBuckets(t *testing.T) {
 		}
 
 		if err := checkAllItemsPlaced(items, buckets); err != nil {
-			t.Error(errors.Wrap(err, fmt.Sprintf("numberOfBuckets: %d", numberOfBuckets)))
+			t.Error(fmt.Errorf("numberOfBuckets: %d: %w", numberOfBuckets, err))
 		}
 
 		for _, subBucket := range buckets {
 			if err := checkBucketSize(items, subBucket, numberOfBuckets); err != nil {
-				t.Error(errors.Wrap(err, fmt.Sprintf("numberOfBuckets: %d", numberOfBuckets)))
+				t.Error(fmt.Errorf("numberOfBuckets: %d: %w", numberOfBuckets, err))
 			}
 			if err := checkItems(items, subBucket); err != nil {
-				t.Error(errors.Wrap(err, fmt.Sprintf("numberOfBuckets: %d", numberOfBuckets)))
+				t.Error(fmt.Errorf("numberOfBuckets: %d: %w", numberOfBuckets, err))
 			}
 		}
 

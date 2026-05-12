@@ -5,7 +5,6 @@
 package typeparams
 
 import (
-	"errors"
 	"fmt"
 	"go/types"
 	"os"
@@ -16,7 +15,7 @@ import (
 
 const debug = false
 
-var ErrEmptyTypeSet = errors.New("empty type set")
+var ErrEmptyTypeSet = fmt.Errorf("empty type set")
 
 // StructuralTerms returns a slice of terms representing the normalized
 // structural type restrictions of a type parameter, if any.
