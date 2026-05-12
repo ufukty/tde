@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
-
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 // Retraces the trace returned by InspectWithTrace or InspectTwiceWithTrace and calls the callback at each node.

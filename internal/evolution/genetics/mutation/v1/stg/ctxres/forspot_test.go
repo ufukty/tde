@@ -3,13 +3,12 @@ package ctxres
 import (
 	"fmt"
 	"go/ast"
+	"slices"
 	"testing"
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/traverse"
 	"tde/internal/utilities/functional"
-
-	"golang.org/x/exp/slices"
 )
 
 func Test_GetContextForSpot(t *testing.T) {

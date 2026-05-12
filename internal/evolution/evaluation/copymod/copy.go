@@ -3,16 +3,16 @@ package copymod
 import (
 	"fmt"
 	"log"
-	"strings"
-
 	"os"
 	"path/filepath"
-
-	"golang.org/x/exp/slices"
+	"slices"
+	"strings"
 )
 
-var DefaultInclExt = []string{"go", "mod", "sum"}
-var DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
+var (
+	DefaultInclExt  = []string{"go", "mod", "sum"}
+	DefaultSkipDirs = []string{".git", "build", "docs", ".vscode", "vendor"}
+)
 
 func CopyModule(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, includeExt []string, enableLogging bool) error {
 	skipSubdirs = append(skipSubdirs, DefaultSkipDirs...)
@@ -42,7 +42,7 @@ func CopyModule(dst string, src string, incSubdirs bool, skipDirs, skipSubdirs, 
 			if enableLogging {
 				log.Println(srcRel)
 			}
-			if err := createDirIfDoesNotExists(dstAbs, 0755); err != nil {
+			if err := createDirIfDoesNotExists(dstAbs, 0o755); err != nil {
 				return fmt.Errorf("could not create dir %q: %w", srcRel, err)
 			}
 		case os.ModeSymlink:

@@ -7,11 +7,13 @@ import (
 	"os"
 	"reflect"
 	"slices"
-
-	"golang.org/x/exp/constraints"
 )
 
-func distanceNumber[T constraints.Integer | constraints.Float](a, b T) (eq bool, d float64) {
+type number interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr | ~float32 | ~float64
+}
+
+func distanceNumber[T number](a, b T) (eq bool, d float64) {
 	return a == b, math.Abs(float64(a) - float64(b))
 }
 

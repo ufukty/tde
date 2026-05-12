@@ -1,8 +1,6 @@
 package traverse
 
-import (
-	"golang.org/x/exp/slices"
-)
+import "slices"
 
 type Ref interface {
 	Set(value any) bool

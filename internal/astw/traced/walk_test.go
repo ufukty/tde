@@ -1,19 +1,17 @@
 package traced
 
 import (
-	"tde/internal/astw/astwutl"
-
 	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
+	"slices"
 	"testing"
 
-	"golang.org/x/exp/slices"
+	"tde/internal/astw/astwutl"
 )
 
 func Test_WalkPersistentChildIndexTraces(t *testing.T) {
-
 	testCasesChildIndexTrace := map[ast.Node][]int{
 		TEST_TREE:          {},
 		TEST_TREE.Name:     {0},
@@ -39,7 +37,6 @@ func Test_WalkPersistentChildIndexTraces(t *testing.T) {
 		isFaulty(n, childIndexTrace, t)
 		return true
 	})
-
 }
 
 func Test_WalkCoveringTypes(t *testing.T) {
@@ -66,8 +63,8 @@ func Test_WalkCoveringTypes(t *testing.T) {
 func Test_WalkListLeaves(t *testing.T) {
 	_, astFile, _ := astwutl.LoadFile("./walk.go")
 
-	var indices = [][]int{}
-	var parents = [][]ast.Node{}
+	indices := [][]int{}
+	parents := [][]ast.Node{}
 
 	WalkWithNils(astFile, func(n ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		if n == nil {

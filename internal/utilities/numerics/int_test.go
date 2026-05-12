@@ -1,9 +1,8 @@
 package numerics
 
 import (
+	"slices"
 	"testing"
-
-	"golang.org/x/exp/slices"
 )
 
 func Test_GetPrimeFactors(t *testing.T) {
@@ -66,7 +65,6 @@ func Test_GetPrimeFactors(t *testing.T) {
 			if got := PrimeFactors(testCase.input); slices.Compare(testCase.want, got) != 0 {
 				t.Error("validation. input:", testCase.input, "want:", testCase.want, "got:", got)
 			}
-
 		}
 	})
 
@@ -82,5 +80,4 @@ func Test_GetPrimeFactors(t *testing.T) {
 			}
 		}
 	})
-
 }

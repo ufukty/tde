@@ -1,9 +1,8 @@
 package strw
 
 import (
+	"slices"
 	"testing"
-
-	"golang.org/x/exp/slices"
 )
 
 func Test_StringFold(t *testing.T) {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/kylelemons/godebug/diff"
-	"golang.org/x/exp/slices"
 )
 
 func Test_ReplaceSectionInFile(t *testing.T) {

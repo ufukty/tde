@@ -2,9 +2,8 @@ package discovery
 
 import (
 	"go/ast"
+	"slices"
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 func ExpectedTargetFileAndFuncNameFor(testfile, testFunction string) (targetfile, targetFunction string) {

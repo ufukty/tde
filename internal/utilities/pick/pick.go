@@ -2,11 +2,10 @@ package pick
 
 import (
 	"fmt"
+
 	"tde/internal/utilities/numerics"
 	"tde/internal/utilities/randoms"
 	"tde/internal/utilities/setops"
-
-	"golang.org/x/exp/constraints"
 )
 
 var ErrEmptySlice = fmt.Errorf("empty slice")
@@ -34,7 +33,11 @@ func Coin() bool {
 	return p
 }
 
-func Weighted[T any, N constraints.Integer | constraints.Float](slice []T, weight []N) (T, error) {
+type number interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr | ~float32 | ~float64
+}
+
+func Weighted[T any, N number](slice []T, weight []N) (T, error) {
 	i, err := WeightedIndex(weight)
 	if err != nil {
 		return *new(T), err
@@ -42,7 +45,7 @@ func Weighted[T any, N constraints.Integer | constraints.Float](slice []T, weigh
 	return slice[i], nil
 }
 
-func WeightedIndex[N constraints.Integer | constraints.Float](weights []N) (int, error) {
+func WeightedIndex[N number](weights []N) (int, error) {
 	if len(weights) == 0 {
 		return -1, ErrEmptySlice
 	}
