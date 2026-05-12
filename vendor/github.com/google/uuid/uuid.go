@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -87,7 +88,7 @@ func Parse(s string) (UUID, error) {
 		for i := range uuid {
 			uuid[i], ok = xtob(s[i*2], s[i*2+1])
 			if !ok {
-				return uuid, fmt.Errorf("invalid UUID format")
+				return uuid, errors.New("invalid UUID format")
 			}
 		}
 		return uuid, nil
@@ -97,7 +98,7 @@ func Parse(s string) (UUID, error) {
 	// s is now at least 36 bytes long
 	// it must be of the form  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 	if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
-		return uuid, fmt.Errorf("invalid UUID format")
+		return uuid, errors.New("invalid UUID format")
 	}
 	for i, x := range [16]int{
 		0, 2, 4, 6,
@@ -108,7 +109,7 @@ func Parse(s string) (UUID, error) {
 	} {
 		v, ok := xtob(s[x], s[x+1])
 		if !ok {
-			return uuid, fmt.Errorf("invalid UUID format")
+			return uuid, errors.New("invalid UUID format")
 		}
 		uuid[i] = v
 	}
@@ -132,7 +133,7 @@ func ParseBytes(b []byte) (UUID, error) {
 		for i := 0; i < 32; i += 2 {
 			uuid[i/2], ok = xtob(b[i], b[i+1])
 			if !ok {
-				return uuid, fmt.Errorf("invalid UUID format")
+				return uuid, errors.New("invalid UUID format")
 			}
 		}
 		return uuid, nil
@@ -142,7 +143,7 @@ func ParseBytes(b []byte) (UUID, error) {
 	// s is now at least 36 bytes long
 	// it must be of the form  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 	if b[8] != '-' || b[13] != '-' || b[18] != '-' || b[23] != '-' {
-		return uuid, fmt.Errorf("invalid UUID format")
+		return uuid, errors.New("invalid UUID format")
 	}
 	for i, x := range [16]int{
 		0, 2, 4, 6,
@@ -153,7 +154,7 @@ func ParseBytes(b []byte) (UUID, error) {
 	} {
 		v, ok := xtob(b[x], b[x+1])
 		if !ok {
-			return uuid, fmt.Errorf("invalid UUID format")
+			return uuid, errors.New("invalid UUID format")
 		}
 		uuid[i] = v
 	}
@@ -303,7 +304,7 @@ type UUIDs []UUID
 
 // Strings returns a string slice containing the string form of each UUID in uuids.
 func (uuids UUIDs) Strings() []string {
-	uuidStrs := make([]string, len(uuids))
+	var uuidStrs = make([]string, len(uuids))
 	for i, uuid := range uuids {
 		uuidStrs[i] = uuid.String()
 	}
