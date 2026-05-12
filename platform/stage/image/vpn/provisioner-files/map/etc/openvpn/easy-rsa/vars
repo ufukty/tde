@@ -1,7 +1,0 @@
-set_var EASYRSA_REQ_COUNTRY "N/A"
-set_var EASYRSA_REQ_PROVINCE "N/A"
-set_var EASYRSA_REQ_CITY "N/A"
-set_var EASYRSA_REQ_ORG "N/A"
-set_var EASYRSA_REQ_EMAIL "N/A"
-set_var EASYRSA_REQ_OU "N/A"
-set_var EASYRSA_BATCH "yes"
