@@ -5,13 +5,13 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"maps"
 	"path/filepath"
 	"strings"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/utilities/functional"
 	"tde/internal/utilities/osw"
-
-	"golang.org/x/exp/maps"
 )
 
 // all paths returned will be relative to <moduleRoot>

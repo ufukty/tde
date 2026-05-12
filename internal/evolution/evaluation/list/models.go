@@ -2,10 +2,10 @@ package list
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/maps"
 )
 
 type Module struct {
@@ -122,6 +122,6 @@ func (p Package) PathInModule() string {
 type Packages map[string]*Package
 
 func (p Packages) First() *Package {
-	var keys = maps.Keys(p)
+	keys := slices.Collect(maps.Keys(p))
 	return p[keys[0]]
 }

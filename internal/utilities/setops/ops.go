@@ -1,7 +1,8 @@
 package setops
 
 import (
-	"golang.org/x/exp/maps"
+	"maps"
+	"slices"
 )
 
 func prepLookupMap[T comparable](s []T) map[T]bool {
@@ -39,7 +40,7 @@ func Combined[T comparable](l, r []T) (isect, diffl, diffr []T) {
 			diffr_m[v] = true
 		}
 	}
-	return maps.Keys(isect_m), maps.Keys(diffl_m), maps.Keys(diffr_m)
+	return slices.Collect(maps.Keys(isect_m)), slices.Collect(maps.Keys(diffl_m)), slices.Collect(maps.Keys(diffr_m))
 }
 
 func Intersect[T comparable](l, r []T) []T {

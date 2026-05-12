@@ -2,12 +2,13 @@ package distance
 
 import (
 	"log"
+	"maps"
 	"math"
 	"os"
 	"reflect"
+	"slices"
 
 	"golang.org/x/exp/constraints"
-	"golang.org/x/exp/maps"
 )
 
 func distanceNumber[T constraints.Integer | constraints.Float](a, b T) (eq bool, d float64) {
@@ -55,97 +56,66 @@ func distanceBool(a, b bool) (eq bool, d float64) {
 func Distance(a, b any) (eq bool, d float64) {
 	if ax, bx, ok := convert[[]byte](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]int](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]int8](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]int16](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]int32](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]int64](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]uint8](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]uint16](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]uint32](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]uint64](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]float32](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]float64](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]bool](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]string](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]error](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[[]any](a, b); ok {
 		return distanceArrays(ax, bx)
-
 	} else if ax, bx, ok := convert[byte](a, b); ok {
 		return distanceByte(ax, bx)
-
 	} else if ax, bx, ok := convert[int](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[int8](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[int16](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[int32](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[int64](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[uint8](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[uint16](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[uint32](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[uint64](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[float32](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[float64](a, b); ok {
 		return distanceNumber(ax, bx)
-
 	} else if ax, bx, ok := convert[bool](a, b); ok {
 		return distanceBool(ax, bx)
-
 	} else if ax, bx, ok := convert[string](a, b); ok {
 		return distanceString(ax, bx)
-
 	} else if ax, bx, ok := convert[error](a, b); ok {
 		return distanceString(ax.Error(), bx.Error())
-
 	} else {
 		log.Fatalf("Can not calculate the distance for types %q and %q", reflect.TypeOf(a), reflect.TypeOf(b))
 		os.Exit(1)
@@ -204,7 +174,7 @@ func subsets[T comparable](l, r []T) (intersect, diffl, diffr []T) {
 			uniquesr[v] = true
 		}
 	}
-	return maps.Keys(commons), maps.Keys(uniquesl), maps.Keys(uniquesr)
+	return slices.Collect(maps.Keys(commons)), slices.Collect(maps.Keys(uniquesl)), slices.Collect(maps.Keys(uniquesr))
 }
 
 func distanceUnorderedArrays[T comparable](l, r []T) (eq bool, d float64) {

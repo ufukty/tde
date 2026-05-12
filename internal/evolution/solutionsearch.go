@@ -2,6 +2,9 @@ package evolution
 
 import (
 	"fmt"
+	"maps"
+	"slices"
+
 	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/genetics/crossover/subtreeswitch"
 	"tde/internal/evolution/genetics/mutation/v1"
@@ -10,8 +13,6 @@ import (
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
 	"tde/internal/utilities/slicew"
-
-	"golang.org/x/exp/maps"
 )
 
 type SolutionSearch struct {
@@ -47,7 +48,7 @@ func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*mod
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
 	}
-	co = slicew.Zip(maps.Values(coA), maps.Values(coB))
+	co = slicew.Zip(slices.Collect(maps.Values(coA)), slices.Collect(maps.Values(coB)))
 	nMu := n - 2*nCo
 	mu, err = selection.RouletteWheelToReproduce(parents, models.Candidate, nMu)
 	if err != nil {

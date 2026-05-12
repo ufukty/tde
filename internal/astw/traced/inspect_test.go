@@ -3,11 +3,10 @@ package traced
 import (
 	"fmt"
 	"go/ast"
+	"maps"
 	"reflect"
+	"slices"
 	"testing"
-
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 func Test_InspectWithTrace(t *testing.T) {
@@ -56,7 +55,7 @@ func Test_InspectWithTrace(t *testing.T) {
 		reflect.TypeOf(&ast.ReturnStmt{}).String(): {1, 2, 0},
 		reflect.TypeOf(&ast.BinaryExpr{}).String(): {1, 2, 0, 0},
 	}
-	testCasesKeysOnly := maps.Keys(testCases)
+	testCasesKeysOnly := slices.Collect(maps.Keys(testCases))
 
 	InspectWithTrace(TEST_TREE, func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) bool {
 		fmt.Printf(
@@ -126,7 +125,7 @@ func Test_InspectTwiceWithTrace(t *testing.T) {
 		reflect.TypeOf(&ast.ReturnStmt{}).String(): {1, 2, 0},
 		reflect.TypeOf(&ast.BinaryExpr{}).String(): {1, 2, 0, 0},
 	}
-	testCasesKeysOnly := maps.Keys(testCases)
+	testCasesKeysOnly := slices.Collect(maps.Keys(testCases))
 
 	tester := func(currentNode ast.Node, parentTrace []ast.Node, childIndexTrace []int) {
 		if currentNode != nil {

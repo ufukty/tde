@@ -2,8 +2,10 @@ package slotmgr
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"tde/internal/evolution/evaluation/copymod"
@@ -12,7 +14,6 @@ import (
 	"tde/internal/utilities/strw"
 
 	"github.com/google/uuid"
-	"golang.org/x/exp/maps"
 )
 
 type Slot string
@@ -133,9 +134,9 @@ func (s *SlotManager) PlaceSubjectsIntoSlots(subjects models.Subjects) error {
 }
 
 func (s *SlotManager) FreeAllSlots() error {
-	slots := maps.Values(s.slots.assigned)
+	slots := slices.Collect(maps.Values(s.slots.assigned))
 	s.slots.free = append(s.slots.free, slots...)
-	maps.Clear(s.slots.assigned)
+	clear(s.slots.assigned)
 
 	org := filepath.Join(
 		s.sample,

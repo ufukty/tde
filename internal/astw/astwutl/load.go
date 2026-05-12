@@ -5,10 +5,11 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"maps"
 	"os"
-	"tde/i18n"
+	"slices"
 
-	"golang.org/x/exp/maps"
+	"tde/i18n"
 )
 
 func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
@@ -60,7 +61,7 @@ func LoadPackageFromDir(path string) (*ast.Package, error) {
 	if err != nil {
 		return nil, fmt.Errorf(err.Error()+": %w", i18n.ErrAstConversionFailed)
 	}
-	pkgList = maps.Keys(pkgs)
+	pkgList = slices.Collect(maps.Keys(pkgs))
 	if l := len(pkgList); l == 0 {
 		return nil, i18n.ErrNoPackagesFound
 	} else if l > 1 {

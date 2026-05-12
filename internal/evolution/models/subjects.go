@@ -1,9 +1,10 @@
 package models
 
 import (
-	"tde/internal/utilities/mapw"
+	"maps"
+	"slices"
 
-	"golang.org/x/exp/maps"
+	"tde/internal/utilities/mapw"
 )
 
 type Subjects map[Sid]*Subject // To make Subjects accessible by CIDs
@@ -30,9 +31,9 @@ func SubjectsFrom(s []*Subject) Subjects {
 }
 
 func (s Subjects) Values() []*Subject {
-	return maps.Values(s)
+	return slices.Collect(maps.Values(s))
 }
 
 func (s Subjects) Keys() []Sid {
-	return maps.Keys(s)
+	return slices.Collect(maps.Keys(s))
 }

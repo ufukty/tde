@@ -1,10 +1,11 @@
 package selection
 
 import (
+	"maps"
+	"slices"
 	"sort"
-	"tde/internal/evolution/models"
 
-	"golang.org/x/exp/maps"
+	"tde/internal/evolution/models"
 )
 
 func getFitnesses(subjects []*models.Subject, layer models.Layer) []float64 {
@@ -34,7 +35,7 @@ func filterSubjectsBySids(subjects models.Subjects, sids []models.Sid) models.Su
 }
 
 func sortByFitnessInLayer(subjects models.Subjects, layer models.Layer) []models.Sid {
-	sorted := maps.Keys(subjects)
+	sorted := slices.Collect(maps.Keys(subjects))
 	for _, ind := range subjects {
 		sorted = append(sorted, ind.Sid)
 	}
