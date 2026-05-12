@@ -15,7 +15,7 @@ func main() {
 	}
 	file, err := parseFile(os.Args[1])
 	if err != nil {
-		log.Fatalln(fmt.Errorf("Could not read the file: '%s': %w", err, os.Args[1])
+		log.Fatalln(fmt.Errorf("Could not read the file: '%s': %w", err, os.Args[1]))
 	}
 
 	var (
