@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestChildNodes(t *testing.T) {
+func TestChildren(t *testing.T) {
 	compareSlices := func(a, b []ast.Node) bool {
 		if len(a) != len(b) {
 			return false
