@@ -1,10 +1,14 @@
 package traced
 
 import (
-	"tde/internal/utilities/slicew"
-
 	"go/ast"
+
+	"tde/internal/utilities/slicew"
 )
+
+func pop[T any](slice []T) []T {
+	return slice[:len(slice)-1]
+}
 
 // Sends traces of parents and childIndices to callback for each node.
 //
@@ -22,14 +26,14 @@ func InspectWithTrace(node ast.Node, callback func(node ast.Node, parents []ast.
 			if n != nil {
 				parents = append(parents, n)
 			} else {
-				parents = slicew.WithoutLast(parents)
+				parents = pop(parents)
 			}
 		}
 		updateIndices = func(n ast.Node) {
 			if n != nil {
 				indices = append(indices, 0)
 			} else {
-				indices = slicew.WithoutLast(indices)
+				indices = pop(indices)
 			}
 		}
 		updateLastIndex = func() {
@@ -39,7 +43,7 @@ func InspectWithTrace(node ast.Node, callback func(node ast.Node, parents []ast.
 		}
 	)
 	ast.Inspect(node, func(currentNode ast.Node) bool {
-		var recurse = false
+		recurse := false
 		if currentNode != nil {
 			recurse = callback(currentNode, parents, indices)
 			if recurse {
@@ -79,14 +83,14 @@ func InspectTwiceWithTrace(
 			if n != nil {
 				parents = append(parents, n)
 			} else {
-				parents = slicew.WithoutLast(parents)
+				parents = pop(parents)
 			}
 		}
 		updateIndices = func(n ast.Node) {
 			if n != nil {
 				indices = append(indices, 0)
 			} else {
-				indices = slicew.WithoutLast(indices)
+				indices = pop(indices)
 			}
 		}
 		updateLastIndex = func() {
@@ -96,7 +100,7 @@ func InspectTwiceWithTrace(
 		}
 	)
 	ast.Inspect(node, func(currentNode ast.Node) bool {
-		var recurse = true
+		recurse := true
 		if currentNode != nil {
 			if pre != nil {
 				recurse = pre(currentNode, parents, indices)
