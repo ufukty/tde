@@ -6,6 +6,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"github.com/kylelemons/godebug/diff"
@@ -36,7 +37,7 @@ func Test_RemoveLine(t *testing.T) {
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation")
 	}
 }
@@ -56,7 +57,7 @@ func Test_RemoveLineMany(t *testing.T) {
 			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 
-		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+		if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Error("validation", i)
 		}
 	}

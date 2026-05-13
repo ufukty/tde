@@ -7,6 +7,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 )
@@ -41,10 +42,10 @@ func Test_SubtreeSwitch(t *testing.T) {
 		t.Error("false return")
 	}
 
-	if astwutl.CompareRecursively(modifiedFuncDeclA, funcDeclA) {
+	if compare.Recursively(modifiedFuncDeclA, funcDeclA) {
 		t.Error("Comparison")
 	}
-	if astwutl.CompareRecursively(modifiedFuncDeclB, funcDeclB) {
+	if compare.Recursively(modifiedFuncDeclB, funcDeclB) {
 		t.Error("Comparison")
 	}
 

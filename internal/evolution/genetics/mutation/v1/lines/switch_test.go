@@ -7,6 +7,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 	"tde/internal/evolution/genetics/mutation/v1/models"
@@ -53,7 +54,7 @@ func Test_SiblingSwap(t *testing.T) {
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation")
 	}
 }
@@ -74,7 +75,7 @@ func Test_SiblingSwapMany(t *testing.T) {
 			t.Fatal(fmt.Errorf("act: %w", err))
 		}
 
-		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+		if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Error("validation", i)
 		}
 	}

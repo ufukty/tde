@@ -26,7 +26,7 @@ func Test_RemoveLine(t *testing.T) {
 
 	// fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	// if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	// if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 	// 	t.Error("validation")
 	// }
 }
@@ -44,7 +44,7 @@ func Test_RemoveLineMany(t *testing.T) {
 	// 		t.Error(fmt.Errorf("act: %w", err))
 	// 	}
 
-	// 	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	// 	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 	// 		t.Error("validation", i)
 	// 	}
 	// }
@@ -72,7 +72,7 @@ func Test_SiblingSwap(t *testing.T) {
 
 	// fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	// if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	// if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 	// 	t.Error("validation")
 	// }
 }
@@ -90,7 +90,7 @@ func Test_SiblingSwapMany(t *testing.T) {
 	// 		t.Error(fmt.Errorf("act: %w", err))
 	// 	}
 
-	// 	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	// 	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 	// 		t.Error("validation", i)
 	// 	}
 	// }

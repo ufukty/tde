@@ -8,6 +8,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 
@@ -51,7 +52,7 @@ func Test_Operator(t *testing.T) {
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation", choosenNode, newToken)
 	}
 }
@@ -68,7 +69,7 @@ func Test_Bulk(t *testing.T) {
 		if err != nil {
 			t.Fatal(fmt.Errorf("perform: %w", err))
 		}
-		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+		if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Errorf("validation i='%d' typeOf->choosenNode='%v' address->choosenNode='%p' newToken='%v'", i, reflect.TypeOf(choosenNode), choosenNode, newToken)
 		}
 	}

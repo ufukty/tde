@@ -8,6 +8,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 	"tde/internal/evolution/genetics/mutation/v1/models"
@@ -56,7 +57,7 @@ func Test_ImportPackage(t *testing.T) {
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFile, modifiedFile) {
+	if compare.Recursively(originalFile, modifiedFile) {
 		t.Error("validation 1")
 	}
 
@@ -86,7 +87,7 @@ func Test_ImportPackageProgressively(t *testing.T) {
 			t.Error("validation prep")
 		}
 
-		if astwutl.CompareRecursively(originalFile, modifiedFile) {
+		if compare.Recursively(originalFile, modifiedFile) {
 			t.Error("validation 1")
 		}
 

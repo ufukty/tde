@@ -1,4 +1,4 @@
-package astwutl
+package compare
 
 import (
 	"go/ast"
@@ -6,10 +6,22 @@ import (
 	"tde/internal/utilities/slicew"
 )
 
+func children(root ast.Node) []ast.Node {
+	list := []ast.Node{}
+	ast.Inspect(root, func(n ast.Node) bool {
+		if n == root {
+			return true
+		}
+		list = append(list, n)
+		return false
+	})
+	return list
+}
+
 // Returns true if they are same.
 // Returns true for those types that don't have non-node type field.
 // Returns false for changes in addresses also. In addition to only value changes just like CompareNonNodeFields
-func CompareNonNodeFieldsWithAddresses(a, b ast.Node) bool {
+func nonNodeFieldsWithAddresses(a, b ast.Node) bool {
 	switch a := a.(type) {
 
 	case *ast.Comment:
@@ -470,7 +482,7 @@ func CompareNonNodeFieldsWithAddresses(a, b ast.Node) bool {
 
 // returns true if they are same, uses BFS and value comparison instead of ponter comparison
 // Returns false for changes in addresses also. In addition to only value changes just like CompareRecursively
-func CompareRecursivelyWithAddresses(a, b ast.Node) bool {
+func RecursivelyWithAddresses(a, b ast.Node) bool {
 	pairs := []*[2]ast.Node{}
 	pairs = append(pairs, &[2]ast.Node{a, b})
 
@@ -478,7 +490,7 @@ func CompareRecursivelyWithAddresses(a, b ast.Node) bool {
 		a, b := pairs[0][0], pairs[0][1]
 		pairs = pairs[1:]
 
-		if !CompareNonNodeFieldsWithAddresses(a, b) {
+		if !nonNodeFieldsWithAddresses(a, b) {
 			return false
 		}
 
@@ -498,7 +510,7 @@ func CompareRecursivelyWithAddresses(a, b ast.Node) bool {
 // Returns true if they are same.
 // Returns true for those types that don't have non-node type field.
 // Doesn't care about changes in addresses, in contrast to CompareNonNodeFieldWithAddresses.
-func CompareNonNodeFields(a, b ast.Node) bool {
+func nonNodeFields(a, b ast.Node) bool {
 	switch a := a.(type) {
 
 	case *ast.Comment:
@@ -876,7 +888,7 @@ func CompareNonNodeFields(a, b ast.Node) bool {
 
 // returns true if they are same, uses BFS and value comparison instead of ponter comparison
 // Doesn't care about changes in addresses, in contrast to CompareRecursivelWithAddresses.
-func CompareRecursively(a, b ast.Node) bool {
+func Recursively(a, b ast.Node) bool {
 	pairs := []*[2]ast.Node{}
 	pairs = append(pairs, &[2]ast.Node{a, b})
 
@@ -884,7 +896,7 @@ func CompareRecursively(a, b ast.Node) bool {
 		a, b := pairs[0][0], pairs[0][1]
 		pairs = pairs[1:]
 
-		if !CompareNonNodeFields(a, b) {
+		if !nonNodeFields(a, b) {
 			return false
 		}
 

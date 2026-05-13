@@ -8,8 +8,8 @@ import (
 	"go/token"
 	"testing"
 
-	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/indent"
@@ -78,7 +78,7 @@ func Test_Develop(t *testing.T) {
 			if err != nil {
 				t.Fatal(fmt.Errorf("act: %w", err))
 			}
-			if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+			if compare.RecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
 				t.Error("Failed to see change on subject")
 			}
 		})
@@ -97,7 +97,7 @@ func Benchmark_Develop(b *testing.B) {
 				if err != nil {
 					b.Fatal(fmt.Errorf("act: %w", err))
 				}
-				if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+				if compare.RecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
 					b.Error("Failed to see change on subject")
 				}
 			}

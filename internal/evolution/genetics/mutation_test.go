@@ -6,8 +6,8 @@ import (
 	"go/token"
 	"testing"
 
-	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
+	"tde/internal/astw/compare"
 	"tde/internal/astw/find"
 	"tde/internal/evolution/genetics/nodes"
 )
@@ -27,7 +27,7 @@ func TestGrow(t *testing.T) {
 	nc := nodes.NewCreator()
 	Grow(nc, mfd)
 
-	if astwutl.CompareRecursively(fd, mfd) {
+	if compare.Recursively(fd, mfd) {
 		t.Fatal("assert: change is expected")
 	}
 }

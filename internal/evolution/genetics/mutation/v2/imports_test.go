@@ -7,6 +7,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/compare"
 
 	"github.com/google/uuid"
 	"github.com/kylelemons/godebug/diff"
@@ -34,7 +35,7 @@ func Test_ImportPackage(t *testing.T) {
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFile, modifiedFile) {
+	if compare.Recursively(originalFile, modifiedFile) {
 		t.Error("validation 1")
 	}
 
@@ -60,7 +61,7 @@ func Test_ImportPackageProgressively(t *testing.T) {
 			t.Error("validation prep")
 		}
 
-		if astwutl.CompareRecursively(originalFile, modifiedFile) {
+		if compare.Recursively(originalFile, modifiedFile) {
 			t.Error("validation 1")
 		}
 
