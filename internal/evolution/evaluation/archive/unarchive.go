@@ -20,11 +20,11 @@ const (
 var (
 	ErrExtensionUnallowed      = fmt.Errorf("ErrExtensionUnallowed")
 	ErrZipOpen                 = fmt.Errorf("ErrZipOpen")
-	ErrZipFileExceedsLimit     = fmt.Errorf(fmt.Sprintf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize))
-	ErrZipExceedsLimit         = fmt.Errorf(fmt.Sprintf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize))
+	ErrZipFileExceedsLimit     = fmt.Errorf("Zip file contains a file that its uncompressed size exceeds the limit for single file (%d)", maxAllowedUncompressedSingleFileSize)
+	ErrZipExceedsLimit         = fmt.Errorf("Zip file's uncompressed size exceeds the limit (%d bytes)", maxAllowedUncompressedTotalFileSize)
 	ErrRelativePathFound       = fmt.Errorf("Relative paths are not allowed in a zip archive")
-	ErrTooManyFiles            = fmt.Errorf(fmt.Sprintf("A module upload can not have more than %d files", maxAllowedFile))
-	ErrSubfolderExceedingDepth = fmt.Errorf(fmt.Sprintf("More than %d nested subfolders are unallowed.", maxAllowedSubfolderDepth))
+	ErrTooManyFiles            = fmt.Errorf("A module upload can not have more than %d files", maxAllowedFile)
+	ErrSubfolderExceedingDepth = fmt.Errorf("More than %d nested subfolders are unallowed.", maxAllowedSubfolderDepth)
 )
 
 // Regular expression to match relative path segments
