@@ -1,24 +1,38 @@
 package discovery
 
 import (
+	"bytes"
 	"fmt"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities/osw"
 )
 
 var ModuleNotFound = fmt.Errorf("this directory is not part of a Go module")
 
+func gomod() (string, error) {
+	cmd := exec.Command("go", "env", "GOMOD")
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("running go command: shell: %w", err)
+	}
+	output := stdout.String()
+	if lines := strings.Count(output, "\n"); lines != 2 {
+		return "", fmt.Errorf("unexpected number of lines: %d", lines)
+	}
+	line := strings.SplitN(output, "\n", 2)[0]
+	return strings.TrimSpace(line), nil
+}
+
 // Returns the absolute path of the module that working directory is in it
 func ModuleRoot() (string, error) {
-	path, _, err := osw.RunCommandForOutput("go", "env", "GOMOD")
+	path, err := gomod()
 	if err != nil {
-		return "", fmt.Errorf("failed to run 'go env GOMOD': %w", err)
-	}
-	path, err = osw.StripOnlyLineFromCommandOuput(path)
-	if err != nil {
-		return "", fmt.Errorf("could not strip GOMOD path from the output of 'go env GOMOD': %w", err)
+		return "", fmt.Errorf("finding GOMOD: %w", err)
 	}
 	if path == "/dev/null" {
 		return "", ModuleNotFound
