@@ -6,21 +6,14 @@ import (
 	"go/parser"
 	"go/token"
 	"maps"
-	"os"
 	"slices"
-)
-
-var (
-	ErrAstConversionFailed   = fmt.Errorf("AST convertion has failed")
-	ErrMultiplePackagesFound = fmt.Errorf("More than 1 package found at the directory")
-	ErrNoPackagesFound       = fmt.Errorf("Package not found in directory")
 )
 
 func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
 	fset := token.NewFileSet()
 	pkgs, err := parser.ParseDir(fset, dirpath, nil, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
-		return nil, nil, fmt.Errorf("LoadDir: %w", err)
+		return nil, nil, fmt.Errorf("parser: %w", err)
 	}
 	return fset, pkgs, nil
 }
@@ -29,7 +22,7 @@ func LoadFile(filepath string) (*token.FileSet, *ast.File, error) {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, filepath, nil, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
-		return nil, nil, fmt.Errorf("LoadFile: %w", err)
+		return nil, nil, fmt.Errorf("parser: %w", err)
 	}
 	return fset, astFile, nil
 }
@@ -38,7 +31,7 @@ func ParseString(content string) (*token.FileSet, ast.Node, error) {
 	fset := token.NewFileSet()
 	astFile, err := parser.ParseFile(fset, "", content, parser.AllErrors|parser.SkipObjectResolution)
 	if err != nil {
-		return nil, nil, fmt.Errorf("ParseString: %w", err)
+		return nil, nil, fmt.Errorf("parser: %w", err)
 	}
 	return fset, astFile, nil
 }
@@ -47,29 +40,15 @@ func LoadPackageFromDir(path string) (*ast.Package, error) {
 	var (
 		pkgs    map[string]*ast.Package
 		pkgList []string
-		wd      string
 		err     error
 	)
-
-	wd, err = os.Getwd()
+	_, pkgs, err = LoadDir(path)
 	if err != nil {
-		return nil, fmt.Errorf("Can't get the working directory: %w", err)
-	}
-	err = os.Chdir(path)
-	if err != nil {
-		return nil, fmt.Errorf("Can't switch to the directory of requested package: %w", err)
-	}
-	defer os.Chdir(wd)
-
-	_, pkgs, err = LoadDir(".")
-	if err != nil {
-		return nil, fmt.Errorf(err.Error()+": %w", ErrAstConversionFailed)
+		return nil, fmt.Errorf("root: %w", err)
 	}
 	pkgList = slices.Collect(maps.Keys(pkgs))
-	if l := len(pkgList); l == 0 {
-		return nil, ErrNoPackagesFound
-	} else if l > 1 {
-		return nil, ErrMultiplePackagesFound
+	if l := len(pkgList); l != 1 {
+		return nil, fmt.Errorf("unexpected number of packages: %d", l)
 	}
 	return pkgs[pkgList[0]], nil
 }
