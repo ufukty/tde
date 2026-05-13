@@ -19,11 +19,11 @@ func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDeclA, err := find.Function(astPkg, "walkHelper")
+	funcDeclA, err := find.FunctionInPackage(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, fmt.Errorf("walkHelper: %w", err)
 	}
-	funcDeclB, err := find.Function(astFile, "walkAstTypeFieldsIfSet")
+	funcDeclB, err := find.FunctionInFile(astFile, "walkAstTypeFieldsIfSet")
 	if err != nil {
 		return nil, nil, fmt.Errorf("walkAstTypeFieldsIfSet: %w", err)
 	}

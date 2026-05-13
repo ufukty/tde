@@ -19,7 +19,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := find.Function(astPkg, "WalkWithNils")
+	funcDecl, err := find.FunctionInPackage(astPkg, "WalkWithNils")
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}

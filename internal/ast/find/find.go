@@ -26,13 +26,3 @@ func FunctionInPackage(p *ast.Package, name string) (*ast.FuncDecl, error) {
 	}
 	return nil, fmt.Errorf("not found")
 }
-
-func Function(root ast.Node, name string) (*ast.FuncDecl, error) {
-	switch root := (root).(type) {
-	case *ast.Package:
-		return FunctionInPackage(root, name)
-	case *ast.File:
-		return FunctionInFile(root, name)
-	}
-	return nil, fmt.Errorf("expected ast.Package or ast.File")
-}

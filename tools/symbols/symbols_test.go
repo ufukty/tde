@@ -45,7 +45,7 @@ func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Packa
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("check: %w", err)
 	}
-	funcdecl, err := find.Function(astpkg, funcname)
+	funcdecl, err := find.FunctionInPackage(astpkg, funcname)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("find func decl: %w", err)
 	}

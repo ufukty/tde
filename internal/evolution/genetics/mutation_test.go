@@ -18,7 +18,7 @@ func TestGrow(t *testing.T) {
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep 1: %w", err))
 	}
-	fd, err := find.Function(f, "WordReverse")
+	fd, err := find.FunctionInFile(f, "WordReverse")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep 2: %w", err))
 	}

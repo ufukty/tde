@@ -16,7 +16,7 @@ func Test_GetContextForSpot(t *testing.T) {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	astPkg := astPkgs["test_package"]
-	funcDecl, err := find.Function(astPkg, "WalkWithNils")
+	funcDecl, err := find.FunctionInPackage(astPkg, "WalkWithNils")
 	if err != nil {
 		t.Error(fmt.Errorf("Failed on preparation: %w", err))
 	}

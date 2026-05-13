@@ -1,7 +1,6 @@
 package find
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"testing"
@@ -93,17 +92,19 @@ var (
 )
 
 func TestFuncDecl(t *testing.T) {
-	_, astNode, err := parse.String(TEST_FILE)
+	_, n, err := parse.String(TEST_FILE)
 	if err != nil {
-		t.Error(fmt.Errorf("failed ParseString: %w", err))
+		t.Errorf("prep, parse: %v", err)
 	}
-
-	funcDecl, err := Function(astNode, "Addition")
+	f, ok := n.(*ast.File)
+	if !ok {
+		t.Errorf("prep, assert: expected %q got %T", "*ast.File", n)
+	}
+	fd, err := FunctionInFile(f, "Addition")
 	if err != nil {
-		t.Error(fmt.Errorf("failed find.Function: %w", err))
+		t.Errorf("failed find.Function: %v", err)
 	}
-
-	if funcDecl.Name.Name != "Addition" {
-		t.Error(fmt.Errorf("failed name check: %w", err))
+	if fd.Name.Name != "Addition" {
+		t.Errorf("failed name check: %v", err)
 	}
 }
