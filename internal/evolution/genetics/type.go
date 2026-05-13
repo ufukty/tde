@@ -3,7 +3,8 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/types"
 )
 
 func typeOf(n any) types.NodeType {

@@ -3,13 +3,14 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/astwutl"
+
+	"tde/internal/ast/is"
 )
 
 // NOTE: slices are to compare with pointers
 func findParent(r ast.Node, n any) (p ast.Node) {
 	ast.Inspect(r, func(m ast.Node) bool {
-		if r == m || m == nil || astwutl.IsNodeNil(m) {
+		if r == m || m == nil || is.Nil(m) {
 			return p == nil
 		}
 

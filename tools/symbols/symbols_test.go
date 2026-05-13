@@ -7,9 +7,10 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
-	"tde/internal/astw/astwutl"
+	"maps"
+	"slices"
 
-	"golang.org/x/exp/maps"
+	"tde/internal/ast/find"
 )
 
 var testdatafolders = [][]string{
@@ -28,7 +29,7 @@ func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Packa
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("parser: %w", err)
 	}
-	astpkg := maps.Values(pkgs)[0] // there should be exactly 1 package at tested dir
+	astpkg := slices.Collect(maps.Values(pkgs))[0] // there should be exactly 1 package at tested dir
 	conf := types.Config{Importer: importer.Default()}
 	info := &types.Info{
 		Defs:       map[*ast.Ident]types.Object{},
@@ -40,11 +41,11 @@ func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Packa
 		Types:      map[ast.Expr]types.TypeAndValue{},
 		Uses:       map[*ast.Ident]types.Object{},
 	}
-	pkg, err := conf.Check("main", fset, maps.Values(astpkg.Files), info)
+	pkg, err := conf.Check("main", fset, slices.Collect(maps.Values(astpkg.Files)), info)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("check: %w", err)
 	}
-	funcdecl, err := astwutl.FindFuncDecl(astpkg, funcname)
+	funcdecl, err := find.FunctionInPackage(astpkg, funcname)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("find func decl: %w", err)
 	}

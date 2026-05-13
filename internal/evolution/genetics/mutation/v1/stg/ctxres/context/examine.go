@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
-	"tde/internal/astw/traverse"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/traverse"
+	"tde/internal/ast/types"
 )
 
 // func examineEnteringNode(ctx *context.Context, node ast.Node) {
@@ -73,7 +74,7 @@ import (
 // }
 
 func (ctx *Context) ExamineFuncDecl(funcdecl, insertionPoint *traverse.TraversableNode) {
-	var isCompleted = false
+	isCompleted := false
 	traverse.TraverseTwice(funcdecl, func(tNodePtr *traverse.TraversableNode) bool {
 		if isCompleted || tNodePtr.PointsToNilSpot {
 			return false

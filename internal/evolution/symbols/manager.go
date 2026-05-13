@@ -5,8 +5,8 @@ import (
 	"go/ast"
 	"go/types"
 	"slices"
-	"tde/internal/utilities/mapw"
-	"tde/internal/utilities/strw"
+
+	"tde/internal/utilities/indent"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -51,7 +51,7 @@ func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error)
 		return nil, fmt.Errorf("loading the package: %w", err)
 	}
 	if err = packageerrors(pkgs); err != nil {
-		return nil, fmt.Errorf("checking package errors:\n%s", strw.IndentLines(err.Error(), 3))
+		return nil, fmt.Errorf("checking package errors:\n%s", indent.Lines(err.Error(), 3))
 	}
 	return &Inspector{
 		pkgid: pkgid,
@@ -81,9 +81,17 @@ func symbolsFromUniverse(t types.Type) []*ast.Ident {
 	return symbols
 }
 
+func reverse[K, V comparable](m map[K]V) map[V]K {
+	r := make(map[V]K, len(m))
+	for k, v := range m {
+		r[v] = k
+	}
+	return r
+}
+
 // helper of *Manager.AssignableTo. inspects only one scope
 func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.Type, exportedonly bool) []*ast.Ident {
-	idents := mapw.Reverse(defs)
+	idents := reverse(defs)
 	symbols := []*ast.Ident{}
 	for _, elem := range s.Names() {
 		if o := s.Lookup(elem); o != nil {

@@ -1,30 +1,32 @@
 package imports
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/evolution/genetics/mutation/v1/models"
-
 	"fmt"
 	"go/ast"
 	"strings"
 	"testing"
 
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
+	"tde/internal/evolution/genetics/mutation/v1/models"
+
 	"github.com/google/uuid"
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
+	funcDecl, err := find.FunctionInPackage(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
+		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}
 	return astPkg, astFile, funcDecl, nil
 }
@@ -32,7 +34,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 func Test_ImportPackage(t *testing.T) {
 	_, originalFile, _, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	packageNameToImport := "4e1c8b43-300e-549e-a7d8-2ddb6b803915"
@@ -44,18 +46,18 @@ func Test_ImportPackage(t *testing.T) {
 	}
 	ImportPackage(params)
 
-	codeForOriginal, err := astwutl.String(originalFile)
+	codeForOriginal, err := export.String(originalFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFile)
+	codeForModified, err := export.String(modifiedFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFile, modifiedFile) {
+	if compare.Recursively(originalFile, modifiedFile) {
 		t.Error("validation 1")
 	}
 
@@ -67,7 +69,7 @@ func Test_ImportPackage(t *testing.T) {
 func Test_ImportPackageProgressively(t *testing.T) {
 	_, originalFile, _, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 100; i++ {
@@ -80,12 +82,12 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		}
 		ImportPackage(params)
 
-		codeForModified, err := astwutl.String(modifiedFile)
+		codeForModified, err := export.String(modifiedFile)
 		if err != nil {
 			t.Error("validation prep")
 		}
 
-		if astwutl.CompareRecursively(originalFile, modifiedFile) {
+		if compare.Recursively(originalFile, modifiedFile) {
 			t.Error("validation 1")
 		}
 

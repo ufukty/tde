@@ -1,28 +1,30 @@
 package tokens
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-
 	"fmt"
 	"go/ast"
 	"reflect"
 	"testing"
 
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
+
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
+	funcDecl, err := find.FunctionInPackage(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "could not find test function")
+		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}
 	return astPkg, astFile, funcDecl, nil
 }
@@ -30,7 +32,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 func Test_Operator(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDecl := clone.FuncDecl(originalFuncDecl)
@@ -39,27 +41,26 @@ func Test_Operator(t *testing.T) {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
 
-	codeForOriginal, err := astwutl.String(originalFuncDecl)
+	codeForOriginal, err := export.String(originalFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFuncDecl)
+	codeForModified, err := export.String(modifiedFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+	if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 		t.Error("validation", choosenNode, newToken)
 	}
-
 }
 
 func Test_Bulk(t *testing.T) {
 	_, _, originalFuncDecl, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 1000; i++ {
@@ -68,9 +69,8 @@ func Test_Bulk(t *testing.T) {
 		if err != nil {
 			t.Fatal(fmt.Errorf("act: %w", err))
 		}
-		if astwutl.CompareRecursively(originalFuncDecl, modifiedFuncDecl) {
+		if compare.Recursively(originalFuncDecl, modifiedFuncDecl) {
 			t.Errorf("validation i='%d' typeOf->choosenNode='%v' address->choosenNode='%p' newToken='%v'", i, reflect.TypeOf(choosenNode), choosenNode, newToken)
 		}
 	}
-
 }

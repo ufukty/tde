@@ -2,6 +2,7 @@ package scopes
 
 import (
 	"go/ast"
+
 	"tde/internal/evolution/genetics/mutation/v1/models"
 )
 
@@ -34,7 +35,6 @@ func ScopeOut(params models.MutationParameters) error {
 
 	ast.Inspect(params.FuncDecl.Body, func(n ast.Node) bool {
 		if n, ok := n.(*ast.BlockStmt); ok {
-
 		}
 	})
 	return nil

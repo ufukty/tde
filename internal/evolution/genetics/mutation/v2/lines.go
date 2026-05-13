@@ -3,11 +3,11 @@ package mutation
 import (
 	"fmt"
 	"go/ast"
+	"slices"
+
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/pick"
 	"tde/internal/utilities/randoms"
-
-	"golang.org/x/exp/slices"
 )
 
 func listBlockStatements(n ast.Node, subnodes int) (slice []ast.Node) {

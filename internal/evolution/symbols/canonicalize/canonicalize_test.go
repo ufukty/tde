@@ -2,14 +2,15 @@ package canonicalize
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
-	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities/osw"
 	"testing"
+
+	"tde/internal/evaluation/discovery"
+	"tde/internal/evaluation/list"
 )
 
 type testcase struct {
@@ -22,8 +23,8 @@ func prepareTestCases() ([]testcase, error) {
 			input: []string{
 				"fmt",
 				"math",
-				"tde/internal/evolution/evaluation/discovery",
-				"tde/internal/evolution/evaluation/list",
+				"tde/internal/evaluation/discovery",
+				"tde/internal/evaluation/list",
 				"tde/internal/utilities/osw",
 			},
 			want: []string{
@@ -36,8 +37,8 @@ func prepareTestCases() ([]testcase, error) {
 		},
 		{
 			input: []string{
-				"tde/internal/evolution/evaluation/discovery",
-				"tde/internal/evolution/evaluation/list",
+				"tde/internal/evaluation/discovery",
+				"tde/internal/evaluation/list",
 				"fmt",
 				"math",
 				"tde/internal/utilities/osw",
@@ -53,14 +54,14 @@ func prepareTestCases() ([]testcase, error) {
 	}
 
 	goroot := runtime.GOROOT()
-	cwd, err := osw.WorkingDir()
+	wd, err := os.Getwd()
 	if err != nil {
-		return nil, fmt.Errorf("osw.WorkingDir: %w", err)
+		return nil, fmt.Errorf("getting the working directory: %w", err)
 	}
 
 	for _, tc := range testcases {
 		for i := range tc.want {
-			tc.want[i] = strings.ReplaceAll(tc.want[i], "{{cwd}}", cwd)
+			tc.want[i] = strings.ReplaceAll(tc.want[i], "{{cwd}}", wd)
 			tc.want[i] = strings.ReplaceAll(tc.want[i], "{{goroot}}", goroot)
 			tc.want[i] = filepath.Clean(tc.want[i])
 		}
@@ -70,14 +71,12 @@ func prepareTestCases() ([]testcase, error) {
 }
 
 func TestCanonicalize(t *testing.T) {
-
 	tcs, err := prepareTestCases()
 	if err != nil {
 		t.Fatal(fmt.Errorf("preparing testcases: %w", err))
 	}
 	for i, tc := range tcs {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-
 			mod, err := discovery.ModuleRoot()
 			if err != nil {
 				t.Fatal(fmt.Errorf("prep, whereAmI: %w", err))

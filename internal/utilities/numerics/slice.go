@@ -2,13 +2,15 @@ package numerics
 
 import (
 	"math"
-
-	"golang.org/x/exp/constraints"
 )
 
-func Cumulate[N constraints.Integer | constraints.Float](input []N) []N {
+type number interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr | ~float32 | ~float64
+}
+
+func Cumulate[N number](input []N) []N {
 	var output []N
-	var total = N(0)
+	total := N(0)
 	for _, v := range input {
 		total += v
 		output = append(output, total)
@@ -21,7 +23,7 @@ func midIndex(lo, hi int) int {
 }
 
 // Returns the index of leftmost (smallest) element greater than (or equal to) the key. range: [0, len]
-func BisectLeft[N constraints.Integer | constraints.Float](values []N, key N) int {
+func BisectLeft[N number](values []N, key N) int {
 	var (
 		low  = 0
 		high = len(values)
@@ -39,7 +41,7 @@ func BisectLeft[N constraints.Integer | constraints.Float](values []N, key N) in
 }
 
 // Returns the index of leftmost (smallest) element greater than the key. range: [0, len]
-func BisectRight[N constraints.Integer | constraints.Float](values []N, key N) int {
+func BisectRight[N number](values []N, key N) int {
 	var (
 		low  = 0
 		high = len(values)
@@ -59,7 +61,7 @@ func BisectRight[N constraints.Integer | constraints.Float](values []N, key N) i
 // example input -> output:
 //
 //	[0, 4, 6, 10] -> [0, 0.2, 0.3, 0.5]
-func DivideBySum[N constraints.Integer | constraints.Float](slice []N) (proportions []float64) {
+func DivideBySum[N number](slice []N) (proportions []float64) {
 	total := Sum(slice)
 	for _, item := range slice {
 		proportions = append(proportions, float64(item)/float64(total))
@@ -67,7 +69,7 @@ func DivideBySum[N constraints.Integer | constraints.Float](slice []N) (proporti
 	return
 }
 
-func Sum[N constraints.Integer | constraints.Float](s []N) N {
+func Sum[N number](s []N) N {
 	total := N(0)
 	for _, item := range s {
 		total += item

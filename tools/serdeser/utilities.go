@@ -1,13 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"path/filepath"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 func createNewFileName(inputPath string) string {
@@ -16,6 +15,7 @@ func createNewFileName(inputPath string) string {
 	filenameWithoutExt := filename[0 : len(filename)-len(fileExt)]
 	return filepath.Join(filepath.Dir(inputPath), filenameWithoutExt+".sd.go")
 }
+
 func checkSuffix(str, suffix string) bool {
 	return strings.LastIndex(str, suffix) == len(str)-len(suffix)
 }
@@ -46,7 +46,7 @@ func discoverFileForStructDefinitions(file *ast.File) (reqModels, resModels []*a
 func parseFile(path string) (*ast.File, error) {
 	file, err := parser.ParseFile(token.NewFileSet(), path, nil, parser.AllErrors)
 	if err != nil {
-		return nil, errors.Wrap(err, "Outside error")
+		return nil, fmt.Errorf("Outside error: %w", err)
 	}
 	return file, nil
 }

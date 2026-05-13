@@ -5,7 +5,8 @@ import (
 	"go/ast"
 	"go/types"
 	"reflect"
-	"tde/internal/astw/traced"
+
+	"tde/internal/ast/traced"
 )
 
 type ScopeContent struct {
@@ -65,7 +66,7 @@ func LocalScope(fd *ast.FuncDecl, spot ast.Node) (*ScopeContent, error) {
 		return nil, fmt.Errorf("no trace found")
 	}
 
-	var sc *ScopeContent  
+	var sc *ScopeContent
 
 	for _, n := range parents {
 		// find the scope related with n and its custom children (eg. FuncDecl->FuncType)

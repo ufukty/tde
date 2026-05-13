@@ -1,6 +1,6 @@
 package testing
 
-import "tde/internal/evolution/evaluation/distance"
+import "tde/internal/evaluation/distance"
 
 func (t *T) Assert(a, b any) bool {
 	eq, d := distance.Distance(a, b)

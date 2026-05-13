@@ -1,7 +1,7 @@
 package evolution
 
 import (
-	"tde/internal/evolution/evaluation"
+	"tde/internal/evaluation"
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 )

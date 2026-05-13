@@ -1,27 +1,24 @@
 package ctxres
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/traverse"
-	"tde/internal/utilities/functional"
-
 	"fmt"
-	"go/ast"
+	"slices"
 	"testing"
 
-	"github.com/pkg/errors"
-	"golang.org/x/exp/slices"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
+	"tde/internal/ast/traverse"
 )
 
 func Test_GetContextForSpot(t *testing.T) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
 	astPkg := astPkgs["test_package"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "WalkWithNils")
+	funcDecl, err := find.FunctionInPackage(astPkg, "WalkWithNils")
 	if err != nil {
-		t.Error(errors.Wrapf(err, "Failed on preparation"))
+		t.Error(fmt.Errorf("Failed on preparation: %w", err))
 	}
 
 	tFuncDecl := traverse.GetTraversableNodeForASTNode(funcDecl)
@@ -34,12 +31,13 @@ func Test_GetContextForSpot(t *testing.T) {
 		choosenSpot,
 	)
 	if err != nil {
-		t.Error(errors.Wrapf(err, ""))
+		t.Error(fmt.Errorf("getting context for spot: %w", err))
 	}
 
-	vars := functional.Map(ctx.Scopes[1].Variables, func(i int, n *ast.Ident) string {
-		return n.Name
-	})
+	vars := []string{}
+	for _, id := range ctx.Scopes[1].Variables {
+		vars = append(vars, id.Name)
+	}
 	if !slices.Contains(vars, "root") {
 		t.Error("validation: variable 'root' not found in context")
 	}

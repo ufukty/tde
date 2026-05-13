@@ -3,8 +3,8 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/types"
-	"tde/internal/utilities/setops"
+
+	"tde/internal/ast/types"
 )
 
 func marktypes(fd *ast.FuncDecl) []types.NodeType {
@@ -40,9 +40,28 @@ func marktypes(fd *ast.FuncDecl) []types.NodeType {
 	return l
 }
 
+func lookup[T comparable](s []T) map[T]bool {
+	m := make(map[T]bool, len(s))
+	for i := 0; i < len(s); i++ {
+		m[s[i]] = true
+	}
+	return m
+}
+
+func interset[T comparable](l, r []T) []T {
+	ml := lookup(l)
+	i := make([]T, 0, min(len(l), len(r)))
+	for _, v := range r {
+		if _, found := ml[v]; found {
+			i = append(i, v)
+		}
+	}
+	return i
+}
+
 func mutualFieldTypes(fd1, fd2 *ast.FuncDecl) ([]types.NodeType, error) {
 	t1, t2 := marktypes(fd1), marktypes(fd2)
-	mutuals := setops.Intersect(t1, t2)
+	mutuals := interset(t1, t2)
 	if len(mutuals) == 0 {
 		return nil, fmt.Errorf("There is no single field type mutually existing in the entire subtree of two function declarations")
 	}

@@ -2,14 +2,13 @@ package selection
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
-	"tde/internal/evolution/models"
-	"tde/internal/utilities/mapw"
-	"tde/internal/utilities/strw"
+	"strings"
 	"testing"
 
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"tde/internal/evolution/models"
 )
 
 func Test_normalize(t *testing.T) {
@@ -50,7 +49,7 @@ func Test_normalize(t *testing.T) {
 func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 	const runsPerDataset = 1000
 
-	var datasets = [][]float64{
+	datasets := [][]float64{
 		{0.0},
 		{0.0, 1.0},
 		{1.0, 0.0},
@@ -66,14 +65,13 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 
 	for _, dataset := range datasets {
 		t.Run(fmt.Sprintf("%v", dataset), func(t *testing.T) {
-
-			var subjects = subjectsForDataset(dataset)
-			var freqCounter = newFreqCounter(subjects)
-			var imbalancedRuns = 0
+			subjects := subjectsForDataset(dataset)
+			freqCounter := newFreqCounter(subjects)
+			imbalancedRuns := 0
 
 			for j := 0; j < runsPerDataset; j++ {
 				picks := RouletteWheelToEliminate(subjects, models.AST, int(len(subjects)/2))
-				survivingBest, survivingWorst := freqCounter.count(maps.Keys(picks))
+				survivingBest, survivingWorst := freqCounter.count(slices.Collect(maps.Keys(picks)))
 				if survivingWorst > survivingBest {
 					fmt.Printf("Run %3d: Imbalanced: B:%d / W:%d\n", j, survivingBest, survivingWorst)
 					imbalancedRuns++
@@ -91,7 +89,7 @@ func Test_RouletteWheelFrequencyDistribution(t *testing.T) {
 }
 
 func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
-	var datasets = [][]float64{
+	datasets := [][]float64{
 		{1.0},
 		{1.0, 1.0},
 		{1.0, 1.0, 1.0},
@@ -114,7 +112,7 @@ func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 // MARK: test utilities
 
 func filterBestAndWorstIds(subjects map[models.Sid]*models.Subject) (sortedIds []models.Sid, bests []models.Sid, worsts []models.Sid) {
-	_, cands := mapw.Items(subjects)
+	cands := slices.Collect(maps.Values(subjects))
 	sort.Slice(cands, func(i, j int) bool {
 		return cands[i].Fitness.AST < cands[j].Fitness.AST
 	})
@@ -136,7 +134,7 @@ type freqCounter struct {
 }
 
 func newFreqCounter(subjects map[models.Sid]*models.Subject) *freqCounter {
-	ids := maps.Keys(subjects)
+	ids := slices.Collect(maps.Keys(subjects))
 	freqs := map[models.Sid]int{}
 	for _, id := range ids {
 		freqs[id] = 0
@@ -169,14 +167,14 @@ func (fc freqCounter) PrintHistogram() {
 		return
 	}
 	fmt.Println("Histogram of frequencies:")
-	maxFreq := slices.Max(maps.Values(fc.idFreqs))
+	maxFreq := slices.Max(slices.Collect(maps.Values(fc.idFreqs)))
 	for _, id := range fc.sortedIds {
 		freq := fc.idFreqs[id]
 		fmt.Printf("    %2s %.2f %3d%% %s\n",
 			string(id),
 			fc.subjects[id].Fitness.AST,
 			int(float64(freq)/float64(maxFreq)*100),
-			strw.Fill("*", int(float64(freq)/float64(maxFreq)*40)),
+			strings.Repeat("*", int(float64(freq)/float64(maxFreq)*40)),
 		)
 	}
 }
@@ -190,7 +188,7 @@ func prepare(subjects map[models.Sid]*models.Subject, picks []models.Sid) map[mo
 }
 
 func subjectsForDataset(dataset []float64) map[models.Sid]*models.Subject {
-	var subjects = map[models.Sid]*models.Subject{}
+	subjects := map[models.Sid]*models.Subject{}
 	for i, f := range dataset {
 		id := models.Sid(fmt.Sprintf("%d", i))
 		subjects[id] = &models.Subject{Sid: id, Fitness: models.Fitness{AST: f}}

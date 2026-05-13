@@ -5,7 +5,8 @@ import (
 	"go/ast"
 	"math/rand"
 	"slices"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/types"
 	"tde/internal/evolution/genetics/nodes"
 )
 

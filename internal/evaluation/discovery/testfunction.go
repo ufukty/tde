@@ -1,0 +1,114 @@
+package discovery
+
+import (
+	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"maps"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+// all paths returned will be relative to <moduleRoot>
+func TestFunctionsInFile(path string) ([]TestFunction, error) {
+	tests := []TestFunction{}
+
+	fset := token.NewFileSet()
+	astFile, err := parser.ParseFile(fset, path, nil, parser.AllErrors)
+	if err != nil {
+		return nil, err
+	}
+
+	ast.Inspect(astFile, func(node ast.Node) bool {
+		if funcDecl, ok := node.(*ast.FuncDecl); ok {
+			name := funcDecl.Name.Name
+			if strings.Index(name, "TDE_") == 0 {
+				tests = append(tests, TestFunction{
+					Name:      name,
+					Path:      path,
+					LineStart: line(fset, node.Pos()),
+					LineEnd:   line(fset, node.End()),
+					Calls:     FunctionCalls(funcDecl),
+				})
+			}
+		}
+		return node == astFile
+	})
+
+	return tests, nil
+}
+
+func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
+	tests, _, err := TestFunctionsInDir(path)
+	if err != nil {
+		return nil, fmt.Errorf("listing all test functions in dir %q: %w", path, err)
+	}
+
+	matches := []TestFunction{}
+	for _, tf := range tests {
+		if tf.Name == funcname {
+			matches = append(matches, tf)
+		}
+	}
+	switch len(matches) {
+	case 0:
+		tests := []string{}
+		for _, tf := range matches {
+			tests = append(tests, tf.Name)
+		}
+		return nil, fmt.Errorf("%q not found. Found tests are %s", funcname, strings.Join(tests, ", "))
+	case 1:
+		return &matches[0], nil
+	default:
+		return nil, fmt.Errorf("multiple tests have found with name %q", funcname)
+	}
+}
+
+// skipped is for filename:syntax-error
+func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]error, err error) {
+	tests = []TestFunction{}
+	skipped = map[string]error{}
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("listing dir entries: %w", err)
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			if !strings.HasSuffix(entry.Name(), "_tde.go") {
+				continue
+			}
+			testsInFile, err := TestFunctionsInFile(filepath.Join(path, entry.Name()))
+			if err != nil {
+				skipped[filepath.Join(path, entry.Name())] = err
+			} else {
+				tests = append(tests, testsInFile...)
+			}
+		}
+	}
+	return
+}
+
+// skipped is for filename:syntax-error
+func TestFunctionsInSubdirs(path string) (tests []TestFunction, skipped map[string]error, err error) {
+	tests, skipped, err = TestFunctionsInDir(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf(": %w", err)
+	}
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("listing dir entries: %w", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			testsInSubdirs, skippedInSubdirs, err := TestFunctionsInSubdirs(filepath.Join(path, entry.Name()))
+			if err != nil {
+				return nil, nil, fmt.Errorf("(in recursion) listing test functions in subdirs of %q: %w", entry.Name(), err)
+			}
+			tests = append(tests, testsInSubdirs...)
+			maps.Copy(skipped, skippedInSubdirs)
+		}
+	}
+	return tests, skipped, nil
+}

@@ -6,8 +6,8 @@ import (
 	"go/types"
 	"reflect"
 	"strings"
-	"tde/internal/astw/traced"
-	"tde/internal/utilities/mapw"
+
+	"tde/internal/ast/traced"
 )
 
 func findFuncTypeParent(r ast.Node, ft *ast.FuncType) *ast.FuncDecl {
@@ -49,8 +49,17 @@ func crumb(in string) string {
 	return fmt.Sprintf("`%s`", in)
 }
 
+func findNode(scopes map[ast.Node]*types.Scope, scope *types.Scope) (ast.Node, bool) {
+	for k, v1 := range scopes {
+		if v1 == scope {
+			return k, true
+		}
+	}
+	return nil, false
+}
+
 func findMeaningfulPathToScope(info *types.Info, r ast.Node, s *types.Scope) string {
-	sn, ok := mapw.FindKey(info.Scopes, s)
+	sn, ok := findNode(info.Scopes, s)
 	if !ok {
 		return ""
 	}

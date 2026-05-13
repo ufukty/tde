@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"os"
+	"slices"
 	"strings"
-	"tde/tools/poc/commands/produce"
 
-	"golang.org/x/exp/maps"
+	"tde/tools/poc/commands/produce"
 )
 
 func Main() error {
@@ -15,13 +16,13 @@ func Main() error {
 	}
 
 	if len(os.Args) < 2 {
-		return fmt.Errorf("subcommands: %s", strings.Join(maps.Keys(commands), ", "))
+		return fmt.Errorf("subcommands: %s", strings.Join(slices.Collect(maps.Keys(commands)), ", "))
 	}
 
 	cmd := os.Args[1]
 	command, ok := commands[cmd]
 	if !ok {
-		return fmt.Errorf("available subcommands: %s", strings.Join(maps.Keys(commands), ", "))
+		return fmt.Errorf("available subcommands: %s", strings.Join(slices.Collect(maps.Keys(commands)), ", "))
 	}
 
 	os.Args = os.Args[1:]

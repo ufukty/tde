@@ -3,19 +3,20 @@ package mutation
 import (
 	"fmt"
 	"strings"
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
 	"testing"
+
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
 
 	"github.com/google/uuid"
 	"github.com/kylelemons/godebug/diff"
-	"github.com/pkg/errors"
 )
 
 func Test_ImportPackage(t *testing.T) {
 	_, originalFile, _, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	packageNameToImport := "4e1c8b43-300e-549e-a7d8-2ddb6b803915"
@@ -23,18 +24,18 @@ func Test_ImportPackage(t *testing.T) {
 	modifiedFile := clone.File(originalFile)
 	ImportPackage(modifiedFile, packageNameToImport)
 
-	codeForOriginal, err := astwutl.String(originalFile)
+	codeForOriginal, err := export.String(originalFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFile)
+	codeForModified, err := export.String(modifiedFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
 
 	fmt.Println("Differences in code:\n", diff.Diff(codeForOriginal, codeForModified))
 
-	if astwutl.CompareRecursively(originalFile, modifiedFile) {
+	if compare.Recursively(originalFile, modifiedFile) {
 		t.Error("validation 1")
 	}
 
@@ -46,7 +47,7 @@ func Test_ImportPackage(t *testing.T) {
 func Test_ImportPackageProgressively(t *testing.T) {
 	_, originalFile, _, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	for i := 0; i < 100; i++ {
@@ -55,12 +56,12 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		modifiedFile := clone.File(originalFile)
 		ImportPackage(modifiedFile, packageNameToImport)
 
-		codeForModified, err := astwutl.String(modifiedFile)
+		codeForModified, err := export.String(modifiedFile)
 		if err != nil {
 			t.Error("validation prep")
 		}
 
-		if astwutl.CompareRecursively(originalFile, modifiedFile) {
+		if compare.Recursively(originalFile, modifiedFile) {
 			t.Error("validation 1")
 		}
 

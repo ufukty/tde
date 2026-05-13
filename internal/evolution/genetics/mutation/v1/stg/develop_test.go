@@ -6,12 +6,13 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
+	"testing"
+
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
-	"testing"
+	"tde/internal/utilities/indent"
 )
 
 // NOTE: empty branch statement always leads fail in ast->code convertion
@@ -77,7 +78,7 @@ func Test_Develop(t *testing.T) {
 			if err != nil {
 				t.Fatal(fmt.Errorf("act: %w", err))
 			}
-			if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+			if compare.RecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
 				t.Error("Failed to see change on subject")
 			}
 		})
@@ -96,13 +97,12 @@ func Benchmark_Develop(b *testing.B) {
 				if err != nil {
 					b.Fatal(fmt.Errorf("act: %w", err))
 				}
-				if astwutl.CompareRecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
+				if compare.RecursivelyWithAddresses(tcase.params.FuncDecl, tcase.ctx.FuncDecl) {
 					b.Error("Failed to see change on subject")
 				}
 			}
 		})
 	}
-
 }
 
 func Test_DevelopProgressively(t *testing.T) {
@@ -120,7 +120,7 @@ func Test_DevelopProgressively(t *testing.T) {
 					t.Error(fmt.Errorf("act, i=%d: %w", i, err))
 				}
 				if code, err := fprintSafe(best); err == nil {
-					fmt.Printf("Code:\n%s\n", strw.IndentLines(string(code), 4))
+					fmt.Printf("Code:\n%s\n", indent.Lines(string(code), 4))
 					best = subject
 				}
 			}

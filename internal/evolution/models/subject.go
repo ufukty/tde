@@ -2,7 +2,8 @@ package models
 
 import (
 	"go/ast"
-	"tde/internal/astw/clone/clean"
+
+	"tde/internal/ast/clone/clean"
 
 	"github.com/google/uuid"
 )

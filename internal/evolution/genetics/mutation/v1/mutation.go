@@ -3,11 +3,12 @@ package mutation
 import (
 	"fmt"
 	"log"
+	"maps"
+	"slices"
+
 	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg"
 	"tde/internal/utilities/pick"
-
-	"golang.org/x/exp/maps"
 )
 
 // TODO: RegenerateSubtree (cfg/node_constructor)
@@ -54,7 +55,7 @@ func runMutator(mutator models.GeneticOperation, params *models.MutationParamete
 
 func Mutate(params *models.MutationParameters) error {
 	for attempts := 0; attempts < 50; attempts++ {
-		MO, err := pick.Pick(maps.Keys(mutators))
+		MO, err := pick.Pick(slices.Collect(maps.Keys(mutators)))
 		if err != nil {
 			return fmt.Errorf("picking the mutation: %w", err)
 		}

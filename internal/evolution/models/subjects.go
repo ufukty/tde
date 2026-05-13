@@ -1,9 +1,8 @@
 package models
 
 import (
-	"tde/internal/utilities/mapw"
-
-	"golang.org/x/exp/maps"
+	"maps"
+	"slices"
 )
 
 type Subjects map[Sid]*Subject // To make Subjects accessible by CIDs
@@ -17,8 +16,13 @@ func (s Subjects) Join(s2 Subjects) {
 }
 
 func (s Subjects) Diff(subtract Subjects) Subjects {
-	diff := mapw.Diff(map[Sid]*Subject(s), map[Sid]*Subject(subtract))
-	return (Subjects)(diff)
+	d := make(Subjects, len(s))
+	for k := range s {
+		if _, ok := subtract[k]; !ok {
+			d[k] = s[k]
+		}
+	}
+	return d
 }
 
 func SubjectsFrom(s []*Subject) Subjects {
@@ -30,9 +34,9 @@ func SubjectsFrom(s []*Subject) Subjects {
 }
 
 func (s Subjects) Values() []*Subject {
-	return maps.Values(s)
+	return slices.Collect(maps.Values(s))
 }
 
 func (s Subjects) Keys() []Sid {
-	return maps.Keys(s)
+	return slices.Collect(maps.Keys(s))
 }

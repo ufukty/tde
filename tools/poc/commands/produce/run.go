@@ -5,25 +5,37 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
+
+	"tde/internal/evaluation"
+	"tde/internal/evaluation/discovery"
+	"tde/internal/evaluation/inject"
+	"tde/internal/evaluation/slotmgr"
 	"tde/internal/evolution"
-	"tde/internal/evolution/evaluation"
-	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/evolution/evaluation/inject"
-	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
-	"tde/internal/utilities/valuable"
+	"tde/internal/utilities/indent"
 )
+
+type Strings []string
+
+func (s *Strings) String() string {
+	return strings.Join(*s, ", ")
+}
+
+func (s *Strings) Set(v string) error {
+	*s = append(*s, v)
+	return nil
+}
 
 type Args struct {
 	Continue   int
 	Dc         int
 	Dp         int
 	Ds         int
-	Exclude    valuable.Strings
+	Exclude    Strings
 	Iterate    int
 	Model      string
-	Package    valuable.Strings
+	Package    Strings
 	Population int
 	Ratios     string
 	Runner     string
@@ -42,7 +54,7 @@ func pipeline(args *Args) error {
 		log.Fatalln("Could not find test details:", err)
 	}
 	fmt.Println("Detected values:")
-	fmt.Println(strw.IndentLines(combined.String(), 4))
+	fmt.Println(indent.Lines(combined.String(), 4))
 	prepPath, err := inject.WithCreatingSample(mod, pkg, args.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module:", err)

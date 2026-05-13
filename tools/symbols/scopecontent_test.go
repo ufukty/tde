@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"maps"
 	"os"
 	"reflect"
-	"tde/internal/astw/astwutl"
-	"tde/internal/utilities/mapw"
-	"tde/internal/utilities/slicew"
+	"slices"
+
+	"tde/internal/ast/export"
 )
 
 func ExampleAstToScope() {
@@ -46,6 +47,19 @@ func ExamplePackageScopeWriteTo() {
 	// Output:
 }
 
+func findIdent(objects map[*ast.Ident]types.Object, obj types.Object) (*ast.Ident, bool) {
+	for k, v1 := range objects {
+		if v1 == obj {
+			return k, true
+		}
+	}
+	return nil, false
+}
+
+func pop(slice []*types.Scope) ([]*types.Scope, *types.Scope) {
+	return slice[:len(slice)-1], slice[len(slice)-1]
+}
+
 func ExampleScopeLookup() {
 	p, _, _, info, pkg, err := prepare()
 	if err != nil {
@@ -54,16 +68,16 @@ func ExampleScopeLookup() {
 
 	fmt.Println("len", len(info.Scopes), len(info.Defs), len(info.Types))
 
-	var ss = []*types.Scope{pkg.Scope()}
+	ss := []*types.Scope{pkg.Scope()}
 	var s *types.Scope
 
 	for len(ss) > 0 {
-		ss, s = slicew.Pop(ss)
+		ss, s = pop(ss)
 		fmt.Println(findMeaningfulPathToScope(info, p, s))
 		fmt.Println("    Names:", s.Names())
 		for _, name := range s.Names() {
 			obj := s.Lookup(name)
-			def, ok := mapw.FindKey(info.Defs, obj)
+			def, ok := findIdent(info.Defs, obj)
 			if ok {
 				fmt.Printf("    %-20s => (%T) %s\n", obj, def, def)
 			}
@@ -74,7 +88,7 @@ func ExampleScopeLookup() {
 
 	}
 
-	ns, ss := mapw.Items(info.Scopes)
+	ns, ss := slices.Collect(maps.Keys(info.Scopes)), slices.Collect(maps.Values(info.Scopes))
 	for i := 0; i < 20; i++ {
 		fmt.Printf(">>>%T %s\nDefines the scope: %s\n\n", ns[i], ns[i], ss[i])
 	}
@@ -91,7 +105,7 @@ func ExampleExprTypes() {
 	ast.Inspect(p, func(n ast.Node) bool {
 		if e, ok := n.(ast.Expr); ok {
 			if t, ok := info.Types[e]; ok {
-				pr, err := astwutl.String(e)
+				pr, err := export.String(e)
 				if err != nil {
 					panic(fmt.Errorf("printing the expression: %w", err))
 				}

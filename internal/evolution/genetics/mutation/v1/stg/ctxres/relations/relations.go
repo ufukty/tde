@@ -1,8 +1,6 @@
 package relations
 
-import (
-	"golang.org/x/exp/slices"
-)
+import "slices"
 
 //go:generate stringer -type=NodeRelationToInsertionPoint
 

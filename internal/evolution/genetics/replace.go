@@ -3,7 +3,8 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/astwutl"
+
+	"tde/internal/ast/is"
 )
 
 // Replaces the (c)urrent node with (n)ext node by finding the "field" on its parent, not directly.
@@ -16,7 +17,7 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 	replaced := false
 
 	ast.Inspect(root, func(m ast.Node) bool {
-		if root == m || m == nil || astwutl.IsNodeNil(m) {
+		if root == m || m == nil || is.Nil(m) {
 			return !found
 		}
 
@@ -783,7 +784,6 @@ func replaceOnParent(root ast.Node, c, n any) bool {
 		}
 
 		return !found
-
 	})
 	return replaced
 }

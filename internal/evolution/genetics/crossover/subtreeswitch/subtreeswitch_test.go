@@ -1,30 +1,31 @@
 package subtreeswitch
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-
 	"fmt"
 	"go/ast"
 	"testing"
 
-	"github.com/pkg/errors"
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
 )
 
 func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "could not load test package")
+		return nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDeclA, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
+	funcDeclA, err := find.FunctionInPackage(astPkg, "walkHelper")
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "walkHelper")
+		return nil, nil, fmt.Errorf("walkHelper: %w", err)
 	}
-	funcDeclB, err := astwutl.FindFuncDecl(astFile, "walkAstTypeFieldsIfSet")
+	funcDeclB, err := find.FunctionInFile(astFile, "walkAstTypeFieldsIfSet")
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "walkAstTypeFieldsIfSet")
+		return nil, nil, fmt.Errorf("walkAstTypeFieldsIfSet: %w", err)
 	}
 	return funcDeclA, funcDeclB, nil
 }
@@ -32,7 +33,7 @@ func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
 func Test_SubtreeSwitch(t *testing.T) {
 	funcDeclA, funcDeclB, err := loadTestPackage()
 	if err != nil {
-		t.Error(errors.Wrapf(err, "prep"))
+		t.Error(fmt.Errorf("prep: %w", err))
 	}
 
 	modifiedFuncDeclA, modifiedFuncDeclB := clone.FuncDecl(funcDeclA), clone.FuncDecl(funcDeclB)
@@ -41,20 +42,20 @@ func Test_SubtreeSwitch(t *testing.T) {
 		t.Error("false return")
 	}
 
-	if astwutl.CompareRecursively(modifiedFuncDeclA, funcDeclA) {
+	if compare.Recursively(modifiedFuncDeclA, funcDeclA) {
 		t.Error("Comparison")
 	}
-	if astwutl.CompareRecursively(modifiedFuncDeclB, funcDeclB) {
+	if compare.Recursively(modifiedFuncDeclB, funcDeclB) {
 		t.Error("Comparison")
 	}
 
-	if diff, err := astwutl.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
+	if diff, err := export.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)
 	}
 
-	if diff, err := astwutl.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
+	if diff, err := export.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)
