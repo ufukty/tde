@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/mapw"
 )
 
 func Test_normalize(t *testing.T) {
@@ -113,7 +112,7 @@ func Test_RouletteWheelAllFailingSubjects(t *testing.T) {
 // MARK: test utilities
 
 func filterBestAndWorstIds(subjects map[models.Sid]*models.Subject) (sortedIds []models.Sid, bests []models.Sid, worsts []models.Sid) {
-	_, cands := mapw.Items(subjects)
+	cands := slices.Collect(maps.Values(subjects))
 	sort.Slice(cands, func(i, j int) bool {
 		return cands[i].Fitness.AST < cands[j].Fitness.AST
 	})

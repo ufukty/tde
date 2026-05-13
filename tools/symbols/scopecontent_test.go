@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"maps"
 	"os"
 	"reflect"
+	"slices"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/utilities/mapw"
 	"tde/internal/utilities/slicew"
@@ -54,7 +57,7 @@ func ExampleScopeLookup() {
 
 	fmt.Println("len", len(info.Scopes), len(info.Defs), len(info.Types))
 
-	var ss = []*types.Scope{pkg.Scope()}
+	ss := []*types.Scope{pkg.Scope()}
 	var s *types.Scope
 
 	for len(ss) > 0 {
@@ -74,7 +77,7 @@ func ExampleScopeLookup() {
 
 	}
 
-	ns, ss := mapw.Items(info.Scopes)
+	ns, ss := slices.Collect(maps.Keys(info.Scopes)), slices.Collect(maps.Values(info.Scopes))
 	for i := 0; i < 20; i++ {
 		fmt.Printf(">>>%T %s\nDefines the scope: %s\n\n", ns[i], ns[i], ss[i])
 	}

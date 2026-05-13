@@ -4,8 +4,10 @@ package selection
 
 import (
 	"fmt"
+	"maps"
+	"slices"
+
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/mapw"
 	"tde/internal/utilities/numerics"
 	"tde/internal/utilities/randoms"
 )
@@ -31,7 +33,7 @@ func RouletteWheelToEliminate(subjects models.Subjects, layer models.Layer, pick
 		return subjects
 	}
 	var (
-		ids, cands   = mapw.Items(subjects)
+		ids, cands   = slices.Collect(maps.Keys(subjects)), slices.Collect(maps.Values(subjects))
 		fitnesses    = reverse(getFitnesses(cands, layer))
 		cumulative   = numerics.Cumulate(fitnesses)
 		totalFitness = cumulative[len(cumulative)-1]
@@ -63,7 +65,7 @@ func RouletteWheelToReproduce(subjects models.Subjects, layer models.Layer, pick
 		}
 	}
 	var (
-		ids, cands   = mapw.Items(subjects)
+		ids, cands   = slices.Collect(maps.Keys(subjects)), slices.Collect(maps.Values(subjects))
 		fitnesses    = reverse(getFitnesses(cands, layer))
 		cumulative   = numerics.Cumulate(fitnesses)
 		totalFitness = cumulative[len(cumulative)-1]
