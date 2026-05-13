@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/token"
 
-	"tde/internal/ast/astwutl"
 	"tde/internal/ast/parse"
 )
 
@@ -37,7 +36,7 @@ func TargetFunctionInFile(path string, funcname string) (*TargetFunction, error)
 	return &TargetFunction{
 		Name:      funcname,
 		Path:      path,
-		LineStart: astwutl.LineNumberOfPosition(fset, funcDecl.Pos()),
-		LineEnd:   astwutl.LineNumberOfPosition(fset, funcDecl.End()),
+		LineStart: line(fset, funcDecl.Pos()),
+		LineEnd:   line(fset, funcDecl.End()),
 	}, nil
 }

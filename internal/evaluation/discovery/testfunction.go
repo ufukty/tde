@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"tde/internal/ast/astwutl"
 )
 
 // all paths returned will be relative to <moduleRoot>
@@ -30,8 +28,8 @@ func TestFunctionsInFile(path string) ([]TestFunction, error) {
 				tests = append(tests, TestFunction{
 					Name:      name,
 					Path:      path,
-					LineStart: astwutl.LineNumberOfPosition(fset, node.Pos()),
-					LineEnd:   astwutl.LineNumberOfPosition(fset, node.End()),
+					LineStart: line(fset, node.Pos()),
+					LineEnd:   line(fset, node.End()),
 					Calls:     FunctionCalls(funcDecl),
 				})
 			}

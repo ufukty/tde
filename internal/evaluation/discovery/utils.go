@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"go/ast"
+	"go/token"
 	"slices"
 	"strings"
 )
@@ -23,4 +24,8 @@ func FunctionCalls(funcDecl *ast.FuncDecl) []*ast.CallExpr {
 		return true
 	})
 	return list
+}
+
+func line(fset *token.FileSet, posToken token.Pos) int {
+	return fset.Position(posToken).Line - 1
 }
