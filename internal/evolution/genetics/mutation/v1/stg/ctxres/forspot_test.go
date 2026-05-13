@@ -2,13 +2,11 @@ package ctxres
 
 import (
 	"fmt"
-	"go/ast"
 	"slices"
 	"testing"
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/traverse"
-	"tde/internal/utilities/functional"
 )
 
 func Test_GetContextForSpot(t *testing.T) {
@@ -35,9 +33,10 @@ func Test_GetContextForSpot(t *testing.T) {
 		t.Error(fmt.Errorf("getting context for spot: %w", err))
 	}
 
-	vars := functional.Map(ctx.Scopes[1].Variables, func(i int, n *ast.Ident) string {
-		return n.Name
-	})
+	vars := []string{}
+	for _, id := range ctx.Scopes[1].Variables {
+		vars = append(vars, id.Name)
+	}
 	if !slices.Contains(vars, "root") {
 		t.Error("validation: variable 'root' not found in context")
 	}

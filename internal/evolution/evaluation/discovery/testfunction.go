@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"tde/internal/astw/astwutl"
-	"tde/internal/utilities/functional"
 )
 
 // all paths returned will be relative to <moduleRoot>
@@ -48,10 +47,19 @@ func TestFunctionInDir(path string, funcname string) (*TestFunction, error) {
 	if err != nil {
 		return nil, fmt.Errorf("listing all test functions in dir %q: %w", path, err)
 	}
-	matches := functional.Mapf(tests, func(i int, v TestFunction) (TestFunction, bool) { return v, v.Name == funcname })
+
+	matches := []TestFunction{}
+	for _, tf := range tests {
+		if tf.Name == funcname {
+			matches = append(matches, tf)
+		}
+	}
 	switch len(matches) {
 	case 0:
-		tests := functional.Map(tests, func(i int, v TestFunction) string { return v.Name })
+		tests := []string{}
+		for _, tf := range matches {
+			tests = append(tests, tf.Name)
+		}
 		return nil, fmt.Errorf("%q not found. Found tests are %s", funcname, strings.Join(tests, ", "))
 	case 1:
 		return &matches[0], nil
