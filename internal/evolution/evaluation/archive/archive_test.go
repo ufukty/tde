@@ -2,11 +2,11 @@ package archive
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/utilities/osw"
 )
 
 func Test_ArchiveDirectory(t *testing.T) {
@@ -24,12 +24,11 @@ func Test_findModuleRoot(t *testing.T) {
 	if err != nil {
 		t.Error(fmt.Errorf("failed: %w", err))
 	}
-
-	workingDir, err := osw.WorkingDir()
+	wd, err := os.Getwd()
 	if err != nil {
-		t.Error(fmt.Errorf("failed on running \"pwd -P\" command: %w", err))
+		t.Error(fmt.Errorf("getting the working directory: %w", err))
 	}
-	expected := filepath.Clean(workingDir + "/../../../..")
+	expected := filepath.Clean(wd + "/../../../..")
 
 	if root != expected {
 		t.Error("failed: got wrong output:", root, "expected:", expected)
