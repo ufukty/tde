@@ -20,7 +20,3 @@ func Zip[T any](a, b []T) []*[2]T {
 func Pop[T any](slice []T) ([]T, T) {
 	return slice[:len(slice)-1], slice[len(slice)-1]
 }
-
-func Dequeue[T any](slice []T) ([]T, T) {
-	return slice[1:], slice[0]
-}
