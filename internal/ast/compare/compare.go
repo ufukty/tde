@@ -10,7 +10,9 @@ func children(root ast.Node) []ast.Node {
 		if n == root {
 			return true
 		}
-		list = append(list, n)
+		if n != nil {
+			list = append(list, n)
+		}
 		return false
 	})
 	return list
