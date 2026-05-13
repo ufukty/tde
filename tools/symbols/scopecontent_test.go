@@ -10,7 +10,6 @@ import (
 	"slices"
 
 	"tde/internal/astw/astwutl"
-	"tde/internal/utilities/mapw"
 	"tde/internal/utilities/slicew"
 )
 
@@ -49,6 +48,15 @@ func ExamplePackageScopeWriteTo() {
 	// Output:
 }
 
+func findIdent(objects map[*ast.Ident]types.Object, obj types.Object) (*ast.Ident, bool) {
+	for k, v1 := range objects {
+		if v1 == obj {
+			return k, true
+		}
+	}
+	return nil, false
+}
+
 func ExampleScopeLookup() {
 	p, _, _, info, pkg, err := prepare()
 	if err != nil {
@@ -66,7 +74,7 @@ func ExampleScopeLookup() {
 		fmt.Println("    Names:", s.Names())
 		for _, name := range s.Names() {
 			obj := s.Lookup(name)
-			def, ok := mapw.FindKey(info.Defs, obj)
+			def, ok := findIdent(info.Defs, obj)
 			if ok {
 				fmt.Printf("    %-20s => (%T) %s\n", obj, def, def)
 			}
