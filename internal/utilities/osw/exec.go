@@ -47,15 +47,3 @@ func StripOnlyLineFromCommandOuput(output string) (string, error) {
 		return lastLine, nil
 	}
 }
-
-func CurrentDir() (string, error) {
-	dir, _, err := RunCommandForOutput("pwd", "-P")
-	if err != nil {
-		return "", fmt.Errorf("failed to run 'pwd': %w", err)
-	}
-	dir, err = StripOnlyLineFromCommandOuput(dir)
-	if err != nil {
-		return "", fmt.Errorf("failed to get current dir from output of 'pwd': %w", err)
-	}
-	return dir, nil
-}
