@@ -1,9 +1,9 @@
 package astwutl
 
 import (
-	"tde/internal/utilities/slicew"
-
 	"go/ast"
+
+	"tde/internal/utilities/slicew"
 )
 
 // Returns true if they are same.
@@ -482,8 +482,8 @@ func CompareRecursivelyWithAddresses(a, b ast.Node) bool {
 			return false
 		}
 
-		childrenA := ChildNodes(a)
-		childrenB := ChildNodes(b)
+		childrenA := children(a)
+		childrenB := children(b)
 
 		if len(childrenA) != len(childrenB) {
 			return false
@@ -888,8 +888,8 @@ func CompareRecursively(a, b ast.Node) bool {
 			return false
 		}
 
-		childrenA := ChildNodes(a)
-		childrenB := ChildNodes(b)
+		childrenA := children(a)
+		childrenB := children(b)
 
 		if len(childrenA) != len(childrenB) {
 			return false

@@ -35,7 +35,7 @@ func TestChildNodes(t *testing.T) {
 		},
 	}}
 	for testIndex, testCase := range testCases {
-		got := ChildNodes(testCase.input)
+		got := children(testCase.input)
 		if !compareSlices(got, testCase.output) {
 			t.Errorf("Failed on comparison want == got for test #%d\n", testIndex)
 		}

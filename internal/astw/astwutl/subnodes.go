@@ -4,7 +4,7 @@ import (
 	"go/ast"
 )
 
-func ChildNodes(root ast.Node) []ast.Node {
+func children(root ast.Node) []ast.Node {
 	list := []ast.Node{}
 	ast.Inspect(root, func(n ast.Node) bool {
 		if n == root {
