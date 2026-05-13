@@ -7,7 +7,6 @@ import (
 	"slices"
 
 	"tde/internal/utilities/indent"
-	"tde/internal/utilities/mapw"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -82,9 +81,17 @@ func symbolsFromUniverse(t types.Type) []*ast.Ident {
 	return symbols
 }
 
+func reverse[K, V comparable](m map[K]V) map[V]K {
+	r := make(map[V]K, len(m))
+	for k, v := range m {
+		r[v] = k
+	}
+	return r
+}
+
 // helper of *Manager.AssignableTo. inspects only one scope
 func symbolsFromScope(s *types.Scope, defs map[*ast.Ident]types.Object, t types.Type, exportedonly bool) []*ast.Ident {
-	idents := mapw.Reverse(defs)
+	idents := reverse(defs)
 	symbols := []*ast.Ident{}
 	for _, elem := range s.Names() {
 		if o := s.Lookup(elem); o != nil {
