@@ -1,8 +1,6 @@
 package slicew
 
-func Last[T any](slice []T) T {
-	return slice[len(slice)-1]
-}
+
 
 func Zip[T any](a, b []T) []*[2]T {
 	pairs := []*[2]T{}

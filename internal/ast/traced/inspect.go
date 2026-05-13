@@ -2,8 +2,6 @@ package traced
 
 import (
 	"go/ast"
-
-	"tde/internal/utilities/slicew"
 )
 
 func pop[T any](slice []T) []T {
@@ -62,6 +60,10 @@ func InspectWithTrace(node ast.Node, callback func(node ast.Node, parents []ast.
 	})
 }
 
+func last(slice []ast.Node) ast.Node {
+	return slice[len(slice)-1]
+}
+
 // The Pre function will be called before subnodes are visited and the Post
 // function will be called for nodes after it is called for all of the subnodes.
 //
@@ -112,7 +114,7 @@ func InspectTwiceWithTrace(
 				updateLastIndex()
 			}
 		} else {
-			ntemp := slicew.Last(parents)
+			ntemp := last(parents)
 			updateParents(currentNode)
 			updateIndices(currentNode)
 			if post != nil {
