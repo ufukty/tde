@@ -8,8 +8,12 @@ import (
 	"maps"
 	"os"
 	"slices"
+)
 
-	"tde/i18n"
+var (
+	ErrAstConversionFailed   = fmt.Errorf("AST convertion has failed")
+	ErrMultiplePackagesFound = fmt.Errorf("More than 1 package found at the directory")
+	ErrNoPackagesFound       = fmt.Errorf("Package not found in directory")
 )
 
 func LoadDir(dirpath string) (*token.FileSet, map[string]*ast.Package, error) {
@@ -59,13 +63,13 @@ func LoadPackageFromDir(path string) (*ast.Package, error) {
 
 	_, pkgs, err = LoadDir(".")
 	if err != nil {
-		return nil, fmt.Errorf(err.Error()+": %w", i18n.ErrAstConversionFailed)
+		return nil, fmt.Errorf(err.Error()+": %w", ErrAstConversionFailed)
 	}
 	pkgList = slices.Collect(maps.Keys(pkgs))
 	if l := len(pkgList); l == 0 {
-		return nil, i18n.ErrNoPackagesFound
+		return nil, ErrNoPackagesFound
 	} else if l > 1 {
-		return nil, i18n.ErrMultiplePackagesFound
+		return nil, ErrMultiplePackagesFound
 	}
 	return pkgs[pkgList[0]], nil
 }
