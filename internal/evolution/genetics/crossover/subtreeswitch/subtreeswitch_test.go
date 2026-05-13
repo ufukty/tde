@@ -5,9 +5,9 @@ import (
 	"go/ast"
 	"testing"
 
-	"tde/internal/ast/astwutl"
 	"tde/internal/ast/clone"
 	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
 	"tde/internal/ast/find"
 	"tde/internal/ast/parse"
 )
@@ -49,13 +49,13 @@ func Test_SubtreeSwitch(t *testing.T) {
 		t.Error("Comparison")
 	}
 
-	if diff, err := astwutl.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
+	if diff, err := export.Diff(funcDeclA, modifiedFuncDeclA); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)
 	}
 
-	if diff, err := astwutl.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
+	if diff, err := export.Diff(funcDeclB, modifiedFuncDeclB); err != nil {
 		t.Error("print")
 	} else if diff != "" {
 		fmt.Println(diff)

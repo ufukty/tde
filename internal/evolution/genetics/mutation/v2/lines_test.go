@@ -15,11 +15,11 @@ func Test_RemoveLine(t *testing.T) {
 	// 	t.Error(fmt.Errorf("act: %w", err))
 	// }
 
-	// codeForOriginal, err := astwutl.String(originalFuncDecl)
+	// codeForOriginal, err := export.String(originalFuncDecl)
 	// if err != nil {
 	// 	t.Error("validation prep")
 	// }
-	// codeForModified, err := astwutl.String(modifiedFuncDecl)
+	// codeForModified, err := export.String(modifiedFuncDecl)
 	// if err != nil {
 	// 	t.Error("validation prep")
 	// }
@@ -61,11 +61,11 @@ func Test_SiblingSwap(t *testing.T) {
 	// 	t.Error(fmt.Errorf("act: %w", err))
 	// }
 
-	// codeForOriginal, err := astwutl.String(originalFuncDecl)
+	// codeForOriginal, err := export.String(originalFuncDecl)
 	// if err != nil {
 	// 	t.Error("validation prep")
 	// }
-	// codeForModified, err := astwutl.String(modifiedFuncDecl)
+	// codeForModified, err := export.String(modifiedFuncDecl)
 	// if err != nil {
 	// 	t.Error("validation prep")
 	// }

@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	"tde/internal/ast/astwutl"
 	"tde/internal/ast/clone"
 	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
 	"tde/internal/ast/find"
 	"tde/internal/ast/parse"
 
@@ -41,11 +41,11 @@ func Test_Operator(t *testing.T) {
 		t.Fatal(fmt.Errorf("perform: %w", err))
 	}
 
-	codeForOriginal, err := astwutl.String(originalFuncDecl)
+	codeForOriginal, err := export.String(originalFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFuncDecl)
+	codeForModified, err := export.String(modifiedFuncDecl)
 	if err != nil {
 		t.Error("validation prep")
 	}

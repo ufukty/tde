@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"slices"
 
-	"tde/internal/ast/astwutl"
+	"tde/internal/ast/export"
 	"tde/internal/utilities/slicew"
 )
 
@@ -102,7 +102,7 @@ func ExampleExprTypes() {
 	ast.Inspect(p, func(n ast.Node) bool {
 		if e, ok := n.(ast.Expr); ok {
 			if t, ok := info.Types[e]; ok {
-				pr, err := astwutl.String(e)
+				pr, err := export.String(e)
 				if err != nil {
 					panic(fmt.Errorf("printing the expression: %w", err))
 				}

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"tde/internal/ast/astwutl"
 	"tde/internal/ast/clone"
 	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
 	"tde/internal/ast/find"
 	"tde/internal/ast/parse"
 	"tde/internal/evolution/genetics/mutation/v1/models"
@@ -46,11 +46,11 @@ func Test_ImportPackage(t *testing.T) {
 	}
 	ImportPackage(params)
 
-	codeForOriginal, err := astwutl.String(originalFile)
+	codeForOriginal, err := export.String(originalFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFile)
+	codeForModified, err := export.String(modifiedFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
@@ -82,7 +82,7 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		}
 		ImportPackage(params)
 
-		codeForModified, err := astwutl.String(modifiedFile)
+		codeForModified, err := export.String(modifiedFile)
 		if err != nil {
 			t.Error("validation prep")
 		}

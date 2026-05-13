@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"tde/internal/ast/astwutl"
 	"tde/internal/ast/clone"
 	"tde/internal/ast/compare"
+	"tde/internal/ast/export"
 
 	"github.com/google/uuid"
 	"github.com/kylelemons/godebug/diff"
@@ -24,11 +24,11 @@ func Test_ImportPackage(t *testing.T) {
 	modifiedFile := clone.File(originalFile)
 	ImportPackage(modifiedFile, packageNameToImport)
 
-	codeForOriginal, err := astwutl.String(originalFile)
+	codeForOriginal, err := export.String(originalFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
-	codeForModified, err := astwutl.String(modifiedFile)
+	codeForModified, err := export.String(modifiedFile)
 	if err != nil {
 		t.Error("validation prep")
 	}
@@ -56,7 +56,7 @@ func Test_ImportPackageProgressively(t *testing.T) {
 		modifiedFile := clone.File(originalFile)
 		ImportPackage(modifiedFile, packageNameToImport)
 
-		codeForModified, err := astwutl.String(modifiedFile)
+		codeForModified, err := export.String(modifiedFile)
 		if err != nil {
 			t.Error("validation prep")
 		}
