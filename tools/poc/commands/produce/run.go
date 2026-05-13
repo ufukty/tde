@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"tde/internal/evolution"
 	"tde/internal/evolution/evaluation"
@@ -13,18 +14,28 @@ import (
 	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/indent"
-	"tde/internal/utilities/valuable"
 )
+
+type Strings []string
+
+func (s *Strings) String() string {
+	return strings.Join(*s, ", ")
+}
+
+func (s *Strings) Set(v string) error {
+	*s = append(*s, v)
+	return nil
+}
 
 type Args struct {
 	Continue   int
 	Dc         int
 	Dp         int
 	Ds         int
-	Exclude    valuable.Strings
+	Exclude    Strings
 	Iterate    int
 	Model      string
-	Package    valuable.Strings
+	Package    Strings
 	Population int
 	Ratios     string
 	Runner     string
