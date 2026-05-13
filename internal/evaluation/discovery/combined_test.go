@@ -13,7 +13,7 @@ func Test_CombinedForDir(t *testing.T) {
 	if c.Package.Name != "words" {
 		t.Fatal(fmt.Errorf("assert. got %q. want %q", c.Package.Name, "words"))
 	}
-	if c.Package.ImportPath != "tde/internal/evolution/evaluation/discovery/testdata" {
+	if c.Package.ImportPath != "tde/internal/evaluation/discovery/testdata" {
 		t.Fatal(fmt.Errorf("assert. got %q. want %q", c.Package.ImportPath, "tde/examples/words"))
 	}
 	if c.Target.Name != "WordReverse" {

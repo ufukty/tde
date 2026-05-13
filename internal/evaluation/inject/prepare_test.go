@@ -2,8 +2,9 @@ package inject
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation/list"
 	"testing"
+
+	"tde/internal/evaluation/list"
 )
 
 func Test_Preparation(t *testing.T) {

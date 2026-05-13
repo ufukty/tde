@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evaluation/discovery"
+	"tde/internal/evaluation/list"
 )
 
 type testcase struct {
@@ -23,8 +23,8 @@ func prepareTestCases() ([]testcase, error) {
 			input: []string{
 				"fmt",
 				"math",
-				"tde/internal/evolution/evaluation/discovery",
-				"tde/internal/evolution/evaluation/list",
+				"tde/internal/evaluation/discovery",
+				"tde/internal/evaluation/list",
 				"tde/internal/utilities/osw",
 			},
 			want: []string{
@@ -37,8 +37,8 @@ func prepareTestCases() ([]testcase, error) {
 		},
 		{
 			input: []string{
-				"tde/internal/evolution/evaluation/discovery",
-				"tde/internal/evolution/evaluation/list",
+				"tde/internal/evaluation/discovery",
+				"tde/internal/evaluation/list",
 				"fmt",
 				"math",
 				"tde/internal/utilities/osw",

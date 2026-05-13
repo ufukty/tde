@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"tde/internal/evolution/evaluation/discovery"
+	"tde/internal/evaluation/discovery"
 )
 
 func Test_ArchiveDirectory(t *testing.T) {

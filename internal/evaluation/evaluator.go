@@ -2,7 +2,8 @@ package evaluation
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation/slotmgr"
+
+	"tde/internal/evaluation/slotmgr"
 	"tde/internal/evolution/models"
 )
 

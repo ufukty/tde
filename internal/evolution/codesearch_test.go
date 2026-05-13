@@ -2,13 +2,14 @@ package evolution
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation"
-	"tde/internal/evolution/evaluation/inject"
-	"tde/internal/evolution/evaluation/list"
-	"tde/internal/evolution/evaluation/slotmgr"
+	"testing"
+
+	"tde/internal/evaluation"
+	"tde/internal/evaluation/inject"
+	"tde/internal/evaluation/list"
+	"tde/internal/evaluation/slotmgr"
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
-	"testing"
 )
 
 func prepareCodeSearch() (*codeSearch, error) {
@@ -57,7 +58,6 @@ func Test_CodeSearch(t *testing.T) {
 }
 
 func Test_CodeSearch_Probabilistic(t *testing.T) {
-
 }
 
 // func Test_DevelopFindUnbreakingChange(t *testing.T) {

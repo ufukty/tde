@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evaluation/list"
 )
 
 var ModuleNotFound = fmt.Errorf("this directory is not part of a Go module")

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"tde/internal/evolution/evaluation/discovery"
-	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evaluation/discovery"
+	"tde/internal/evaluation/list"
 	"tde/internal/evolution/symbols/canonicalize"
 )
 

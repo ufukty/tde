@@ -10,7 +10,7 @@ func Test_AssertThisPackage(t *testing.T) {
 	if err != nil {
 		t.Error(fmt.Errorf("act: %w", err))
 	}
-	if _, ok := m["tde/internal/evolution/evaluation/list"]; !ok {
+	if _, ok := m["tde/internal/evaluation/list"]; !ok {
 		t.Error(fmt.Errorf("assert: %w", err))
 	}
 }
@@ -30,8 +30,8 @@ func Test_ListPackages(t *testing.T) {
 
 func Test_FindImportPath(t *testing.T) {
 	testCases := map[string]string{
-		".":        "tde/internal/evolution/evaluation/list",
-		"testdata": "tde/internal/evolution/evaluation/list/testdata",
+		".":        "tde/internal/evaluation/list",
+		"testdata": "tde/internal/evaluation/list/testdata",
 	}
 
 	for input, want := range testCases {

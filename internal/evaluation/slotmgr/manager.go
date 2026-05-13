@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"tde/internal/evolution/evaluation/copymod"
+	"tde/internal/evaluation/copymod"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/slicew"
 

@@ -5,7 +5,7 @@ import (
 	"maps"
 	"slices"
 
-	"tde/internal/evolution/evaluation"
+	"tde/internal/evaluation"
 	"tde/internal/evolution/genetics/crossover/subtreeswitch"
 	"tde/internal/evolution/genetics/mutation/v1"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"

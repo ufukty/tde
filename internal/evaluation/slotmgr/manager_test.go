@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"tde/internal/evolution/evaluation/inject"
-	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evaluation/inject"
+	"tde/internal/evaluation/list"
 	"tde/internal/evolution/models"
 
 	"github.com/google/uuid"
@@ -38,7 +38,7 @@ func Test_CodePlacement(t *testing.T) {
 		Code: []byte("Hello world"),
 	})
 
-	var sm = New(sample, pkg.PathInModule(), "words.go")
+	sm := New(sample, pkg.PathInModule(), "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}
@@ -65,7 +65,7 @@ func Test_AssignAndFree(t *testing.T) {
 	}
 	fmt.Println("sample module dir:", sample)
 
-	var subjects = models.Subjects{}
+	subjects := models.Subjects{}
 	for i := 0; i < 10; i++ {
 		subjects.Add(&models.Subject{
 			Sid:  models.Sid(uuid.New().String()),
@@ -73,7 +73,7 @@ func Test_AssignAndFree(t *testing.T) {
 		})
 	}
 
-	var sm = New(sample, pkg.PathInModule(), "words.go")
+	sm := New(sample, pkg.PathInModule(), "words.go")
 	if err := sm.PlaceSubjectsIntoSlots(subjects); err != nil {
 		t.Fatal(fmt.Errorf("act: %w", err))
 	}

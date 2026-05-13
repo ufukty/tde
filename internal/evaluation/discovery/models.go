@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 
-	"tde/internal/evolution/evaluation/list"
+	"tde/internal/evaluation/list"
 	"tde/internal/utilities/indent"
 )
 

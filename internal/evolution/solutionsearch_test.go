@@ -2,12 +2,13 @@ package evolution
 
 import (
 	"fmt"
-	"tde/internal/evolution/evaluation"
-	"tde/internal/evolution/evaluation/inject"
-	"tde/internal/evolution/evaluation/list"
-	"tde/internal/evolution/evaluation/slotmgr"
-	"tde/internal/evolution/models"
 	"testing"
+
+	"tde/internal/evaluation"
+	"tde/internal/evaluation/inject"
+	"tde/internal/evaluation/list"
+	"tde/internal/evaluation/slotmgr"
+	"tde/internal/evolution/models"
 )
 
 func prepareSolutionSearch() (*SolutionSearch, error) {

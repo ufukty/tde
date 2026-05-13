@@ -3,7 +3,8 @@ package canonicalize
 import (
 	"path/filepath"
 	"slices"
-	"tde/internal/evolution/evaluation/list"
+
+	"tde/internal/evaluation/list"
 )
 
 func isInStdLib(pkg string) bool {

@@ -1,13 +1,13 @@
 package inject
 
 import (
-	"strings"
-	"tde/internal/evolution/evaluation/copymod"
-	"tde/internal/evolution/evaluation/list"
-
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"tde/internal/evaluation/copymod"
+	"tde/internal/evaluation/list"
 )
 
 func duplicateInTmp(src string) (string, error) {
@@ -23,9 +23,9 @@ func duplicateInTmp(src string) (string, error) {
 }
 
 func inject(sample string, pkg *list.Package, testname string) error {
-	var pkgRel = strings.TrimPrefix(pkg.Dir, pkg.Module.Dir)
-	var pkgAbs = filepath.Join(sample, pkgRel)
-	var testInfo = &TestInfo{
+	pkgRel := strings.TrimPrefix(pkg.Dir, pkg.Module.Dir)
+	pkgAbs := filepath.Join(sample, pkgRel)
+	testInfo := &TestInfo{
 		TargetPackageImportPath: pkg.ImportPath,
 		TestFunctionName:        testname,
 	}

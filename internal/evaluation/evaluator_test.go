@@ -5,9 +5,9 @@ import (
 	"sort"
 	"testing"
 
-	"tde/internal/evolution/evaluation/inject"
-	"tde/internal/evolution/evaluation/list"
-	"tde/internal/evolution/evaluation/slotmgr"
+	"tde/internal/evaluation/inject"
+	"tde/internal/evaluation/list"
+	"tde/internal/evaluation/slotmgr"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/indent"
 )
