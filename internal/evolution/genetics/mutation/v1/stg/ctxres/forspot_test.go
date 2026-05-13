@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"tde/internal/astw/astwutl"
+	"tde/internal/astw/parse"
 	"tde/internal/astw/traverse"
 )
 
 func Test_GetContextForSpot(t *testing.T) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}

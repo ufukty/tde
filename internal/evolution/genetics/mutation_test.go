@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"go/parser"
 	"go/token"
+	"testing"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/evolution/genetics/nodes"
-	"testing"
 )
 
 func TestGrow(t *testing.T) {

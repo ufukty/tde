@@ -3,6 +3,7 @@ package patterns
 import (
 	"go/ast"
 	"go/token"
+
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"
 	"tde/internal/evolution/genetics/mutation/v1/stg/nodes"
 )

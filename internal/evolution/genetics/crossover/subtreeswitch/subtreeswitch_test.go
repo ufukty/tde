@@ -7,10 +7,11 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/parse"
 )
 
 func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}

@@ -8,6 +8,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/parse"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ import (
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
-	_, astPkgs, err := astwutl.LoadDir("testdata")
+	_, astPkgs, err := parse.Dir("testdata")
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("could not load test package: %w", err)
 	}

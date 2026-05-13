@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+
+	"tde/internal/astw/parse"
 )
 
 func FindFuncDecl(toppest ast.Node, name string) (*ast.FuncDecl, error) {
@@ -62,7 +64,7 @@ func FindFuncDeclInPkg(pkg *ast.Package, name string) (*ast.File, *ast.FuncDecl,
 }
 
 func FindFunctionInFile(path string, name string) (*ast.FuncDecl, *token.FileSet, error) {
-	fset, astFile, err := LoadFile(path)
+	fset, astFile, err := parse.File(path)
 	if err != nil {
 		return nil, nil, fmt.Errorf("parsing file %q: %w", path, err)
 	}

@@ -1,15 +1,15 @@
 package traverse
 
 import (
-	"tde/internal/astw/astwutl"
-
 	"fmt"
 	"testing"
+
+	"tde/internal/astw/parse"
 )
 
 // Pass if no panic
 func Test_Traverse(t *testing.T) {
-	_, astFile, err := astwutl.LoadFile("testdata/walk.go")
+	_, astFile, err := parse.File("testdata/walk.go")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep: %w", err))
 	}
@@ -29,5 +29,4 @@ func Test_Traverse(t *testing.T) {
 
 		return true
 	})
-
 }

@@ -3,8 +3,10 @@ package models
 import (
 	"fmt"
 	"go/ast"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
+	"tde/internal/astw/parse"
 
 	"github.com/google/uuid"
 )
@@ -20,7 +22,7 @@ type Context struct {
 }
 
 func LoadContext(module, pkgpath, funcname string) (*Context, error) {
-	pkg, err := astwutl.LoadPackageFromDir(pkgpath)
+	pkg, err := parse.Package(pkgpath)
 	if err != nil {
 		return nil, fmt.Errorf("loading the package in %q: %w", pkgpath, err)
 	}

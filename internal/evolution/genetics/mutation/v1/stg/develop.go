@@ -3,6 +3,7 @@ package stg
 import (
 	"fmt"
 	"go/ast"
+
 	"tde/internal/astw/traverse"
 	"tde/internal/astw/types"
 	"tde/internal/evolution/genetics/mutation/v1/models"
@@ -23,7 +24,6 @@ func listAppendableSpots(node ast.Node) (appandableNodes []*traverse.Traversable
 }
 
 func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLimit int) (appended any, err error) {
-
 	if dst.ExpectedType.IsSliceType() {
 		switch dst.Value.(type) {
 		case []*ast.ImportSpec:
@@ -43,7 +43,6 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		default:
 			return nil, fmt.Errorf("Unhandled case for slice type node creation")
 		}
-
 	} else if dst.ExpectedType.IsInterfaceType() {
 		switch dst.ExpectedType {
 		case types.Expr:
@@ -59,9 +58,7 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		default:
 			return nil, fmt.Errorf("Unhandled case for interface type node creation")
 		}
-
 	} else if dst.ExpectedType.IsConcreteType() {
-
 		switch dst.ExpectedType {
 		// case types.BadDecl:
 		// 	newNode = nc.BadDecl(ctx, depthLimit)
@@ -179,7 +176,6 @@ func appendRandomly(dst *traverse.TraversableNode, ctx *context.Context, depthLi
 		default:
 			return nil, fmt.Errorf("Unhandled case for concrete type node creation")
 		}
-
 	}
 	if appended == nil {
 		return nil, fmt.Errorf("Could not create an instance of ast.Node")
