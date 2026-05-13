@@ -2,15 +2,9 @@ package strw
 
 import (
 	"strings"
+
 	"tde/internal/utilities/functional"
 )
-
-func Fold(str string, partLength int) (splitted []string) {
-	for i := 0; i < len(str); i += partLength {
-		splitted = append(splitted, str[i:min(i+partLength, len(str))])
-	}
-	return
-}
 
 func Fill(c string, repeat int) string {
 	ret := ""
