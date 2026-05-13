@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+
 	"tde/internal/evolution"
 	"tde/internal/evolution/evaluation"
 	"tde/internal/evolution/evaluation/discovery"
 	"tde/internal/evolution/evaluation/inject"
 	"tde/internal/evolution/evaluation/slotmgr"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
+	"tde/internal/utilities/indent"
 	"tde/internal/utilities/valuable"
 )
 
@@ -42,7 +43,7 @@ func pipeline(args *Args) error {
 		log.Fatalln("Could not find test details:", err)
 	}
 	fmt.Println("Detected values:")
-	fmt.Println(strw.IndentLines(combined.String(), 4))
+	fmt.Println(indent.Lines(combined.String(), 4))
 	prepPath, err := inject.WithCreatingSample(mod, pkg, args.TestName)
 	if err != nil {
 		log.Fatalln("Could not prepare the module:", err)

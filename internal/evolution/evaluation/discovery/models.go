@@ -3,8 +3,9 @@ package discovery
 import (
 	"fmt"
 	"go/ast"
+
 	"tde/internal/evolution/evaluation/list"
-	"tde/internal/utilities/strw"
+	"tde/internal/utilities/indent"
 )
 
 type TargetFunction struct {
@@ -49,10 +50,10 @@ func (t TargetFunction) String() string {
 func (c CombinedDetails) String() string {
 	r := ""
 	r += fmt.Sprintln("Package:")
-	r += fmt.Sprintln(strw.IndentLines(c.Package.String(), 4))
+	r += fmt.Sprintln(indent.Lines(c.Package.String(), 4))
 	r += fmt.Sprintln("Test:")
-	r += fmt.Sprintln(strw.IndentLines(c.Test.String(), 4))
+	r += fmt.Sprintln(indent.Lines(c.Test.String(), 4))
 	r += fmt.Sprintln("Target:")
-	r += fmt.Sprintln(strw.IndentLines(c.Target.String(), 4))
+	r += fmt.Sprintln(indent.Lines(c.Target.String(), 4))
 	return r
 }

@@ -11,7 +11,6 @@ import (
 	"tde/internal/evolution/evaluation/copymod"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/slicew"
-	"tde/internal/utilities/strw"
 
 	"github.com/google/uuid"
 )
@@ -48,7 +47,6 @@ func New(sample, pkgPathInMod, targetFilename path) *SlotManager {
 	return &s
 }
 
-
 // returns eg. 65/36/f1/24/b8/56/5a/ad/8c/cc/22/ea/c3/7d/8e/63
 func (s *SlotManager) genNewSlotPath() (path, error) {
 	uuid, err := uuid.NewUUID() // UUIDv1 has choosen because the id never leaves the same-device or compared with ids produced in another device
@@ -60,7 +58,7 @@ func (s *SlotManager) genNewSlotPath() (path, error) {
 	basename := suuid[0:2]
 	for i := 2; i < 32; i += 2 {
 		basename += "/" + suuid[i:i+2]
-	} 
+	}
 	return basename, nil
 }
 

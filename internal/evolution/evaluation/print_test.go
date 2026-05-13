@@ -2,9 +2,10 @@ package evaluation
 
 import (
 	"fmt"
-	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
 	"testing"
+
+	"tde/internal/evolution/models"
+	"tde/internal/utilities/indent"
 )
 
 func Test_Print(t *testing.T) {
@@ -17,7 +18,6 @@ func Test_Print(t *testing.T) {
 	for _, expectedLayer := range []models.Layer{models.AST, models.Code, models.Program, models.Candidate, models.Solution} {
 		for i, example := range examples[expectedLayer] {
 			t.Run(fmt.Sprintf("%s-%d", expectedLayer, i), func(t *testing.T) {
-
 				subj := ctx.NewSubject()
 				subj.AST = example
 				e.print(subj)
@@ -25,11 +25,11 @@ func Test_Print(t *testing.T) {
 				if expectedLayer == models.AST {
 					if subj.Fitness.Layer() != models.AST {
 						t.Errorf("assert, layer mismatch (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), strw.IndentLines(string(subj.Code), 4))
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), indent.Lines(string(subj.Code), 4))
 					}
 					if len(subj.Code) != 0 {
 						t.Errorf("assert, unexpectedly populated (expected layer=%s, got=%s, fitness=%.3f)\n%s",
-							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), strw.IndentLines(string(subj.Code), 4))
+							expectedLayer, subj.Fitness.Layer(), subj.Fitness.Flat(), indent.Lines(string(subj.Code), 4))
 					}
 				} else {
 					if subj.Fitness.Layer() != models.Code {
@@ -44,5 +44,4 @@ func Test_Print(t *testing.T) {
 			})
 		}
 	}
-
 }

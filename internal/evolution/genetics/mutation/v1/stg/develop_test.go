@@ -6,12 +6,13 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
+	"testing"
+
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
-	"testing"
+	"tde/internal/utilities/indent"
 )
 
 // NOTE: empty branch statement always leads fail in ast->code convertion
@@ -102,7 +103,6 @@ func Benchmark_Develop(b *testing.B) {
 			}
 		})
 	}
-
 }
 
 func Test_DevelopProgressively(t *testing.T) {
@@ -120,7 +120,7 @@ func Test_DevelopProgressively(t *testing.T) {
 					t.Error(fmt.Errorf("act, i=%d: %w", i, err))
 				}
 				if code, err := fprintSafe(best); err == nil {
-					fmt.Printf("Code:\n%s\n", strw.IndentLines(string(code), 4))
+					fmt.Printf("Code:\n%s\n", indent.Lines(string(code), 4))
 					best = subject
 				}
 			}

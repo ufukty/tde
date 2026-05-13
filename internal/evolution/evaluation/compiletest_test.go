@@ -2,9 +2,10 @@ package evaluation
 
 import (
 	"fmt"
-	"tde/internal/evolution/models"
-	"tde/internal/utilities/strw"
 	"testing"
+
+	"tde/internal/evolution/models"
+	"tde/internal/utilities/indent"
 )
 
 func Test_Compile(t *testing.T) {
@@ -16,7 +17,6 @@ func Test_Compile(t *testing.T) {
 	for _, layer := range []models.Layer{models.Code, models.Program, models.Candidate, models.Solution} {
 		for i, ast := range examples[layer] {
 			t.Run(fmt.Sprintf("%s-%d", layer, i), func(t *testing.T) {
-
 				subjects := models.Subjects{}
 				subject := ctx.NewSubject()
 				subject.AST = ast
@@ -34,7 +34,7 @@ func Test_Compile(t *testing.T) {
 
 				if subject.Fitness.Layer() < models.Code {
 					t.Errorf("assert, got=%q expected=Code (%s/%d, fitness=%.3f)\n%s",
-						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), strw.IndentLines(string(subject.Code), 4))
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), indent.Lines(string(subject.Code), 4))
 				}
 			})
 		}
@@ -50,7 +50,6 @@ func Test_Test(t *testing.T) {
 	for _, layer := range []models.Layer{models.Program, models.Candidate, models.Solution} {
 		for i, ast := range examples[layer] {
 			t.Run(fmt.Sprintf("%s-%d", layer, i), func(t *testing.T) {
-
 				subjects := models.Subjects{}
 				subject := ctx.NewSubject()
 				subject.AST = ast
@@ -71,7 +70,7 @@ func Test_Test(t *testing.T) {
 
 				if subject.Fitness.Layer() < models.Program {
 					t.Errorf("assert, got=%q expected=Code (%s/%d, fitness=%.3f)\n%s",
-						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), strw.IndentLines(string(subject.Code), 4))
+						subject.Fitness.Layer(), layer, i, subject.Fitness.Flat(), indent.Lines(string(subject.Code), 4))
 				}
 			})
 		}

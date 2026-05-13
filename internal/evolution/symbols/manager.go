@@ -5,8 +5,9 @@ import (
 	"go/ast"
 	"go/types"
 	"slices"
+
+	"tde/internal/utilities/indent"
 	"tde/internal/utilities/mapw"
-	"tde/internal/utilities/strw"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -51,7 +52,7 @@ func NewSymbolsInspector(pkgid string, allowedpkgs []string) (*Inspector, error)
 		return nil, fmt.Errorf("loading the package: %w", err)
 	}
 	if err = packageerrors(pkgs); err != nil {
-		return nil, fmt.Errorf("checking package errors:\n%s", strw.IndentLines(err.Error(), 3))
+		return nil, fmt.Errorf("checking package errors:\n%s", indent.Lines(err.Error(), 3))
 	}
 	return &Inspector{
 		pkgid: pkgid,
