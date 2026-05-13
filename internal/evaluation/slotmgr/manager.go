@@ -10,7 +10,6 @@ import (
 
 	"tde/internal/evaluation/copymod"
 	"tde/internal/evolution/models"
-	"tde/internal/utilities/slicew"
 
 	"github.com/google/uuid"
 )
@@ -90,8 +89,12 @@ func (s *SlotManager) createEmptySlot() error {
 	return nil
 }
 
+func pop(slice []Slot) ([]Slot, Slot) {
+	return slice[:len(slice)-1], slice[len(slice)-1]
+}
+
 func (s *SlotManager) assignSubjectToASlot(subject *models.Subject) (slot Slot) {
-	s.slots.free, slot = slicew.Pop(s.slots.free)
+	s.slots.free, slot = pop(s.slots.free)
 	s.slots.assigned[subject.Sid] = slot
 	return slot
 }

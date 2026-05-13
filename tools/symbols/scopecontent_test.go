@@ -10,7 +10,6 @@ import (
 	"slices"
 
 	"tde/internal/ast/export"
-	"tde/internal/utilities/slicew"
 )
 
 func ExampleAstToScope() {
@@ -57,6 +56,10 @@ func findIdent(objects map[*ast.Ident]types.Object, obj types.Object) (*ast.Iden
 	return nil, false
 }
 
+func pop(slice []*types.Scope) ([]*types.Scope, *types.Scope) {
+	return slice[:len(slice)-1], slice[len(slice)-1]
+}
+
 func ExampleScopeLookup() {
 	p, _, _, info, pkg, err := prepare()
 	if err != nil {
@@ -69,7 +72,7 @@ func ExampleScopeLookup() {
 	var s *types.Scope
 
 	for len(ss) > 0 {
-		ss, s = slicew.Pop(ss)
+		ss, s = pop(ss)
 		fmt.Println(findMeaningfulPathToScope(info, p, s))
 		fmt.Println("    Names:", s.Names())
 		for _, name := range s.Names() {
