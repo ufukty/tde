@@ -11,7 +11,7 @@ import (
 	"slices"
 	"testing"
 
-	"tde/internal/astw/astwutl"
+	"tde/internal/astw/find"
 )
 
 type tcase1 struct {
@@ -76,7 +76,7 @@ func prepare(tc tcase1) (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *ty
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("check: %w", err)
 	}
-	funcdecl, err := astwutl.FindFuncDecl(astpkg, funcname)
+	funcdecl, err := find.Function(astpkg, funcname)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("find func decl: %w", err)
 	}

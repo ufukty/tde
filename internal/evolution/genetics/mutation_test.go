@@ -8,6 +8,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
+	"tde/internal/astw/find"
 	"tde/internal/evolution/genetics/nodes"
 )
 
@@ -17,7 +18,7 @@ func TestGrow(t *testing.T) {
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep 1: %w", err))
 	}
-	fd, err := astwutl.FindFuncDecl(f, "WordReverse")
+	fd, err := find.Function(f, "WordReverse")
 	if err != nil {
 		t.Fatal(fmt.Errorf("prep 2: %w", err))
 	}

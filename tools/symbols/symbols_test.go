@@ -10,7 +10,7 @@ import (
 	"maps"
 	"slices"
 
-	"tde/internal/astw/astwutl"
+	"tde/internal/astw/find"
 )
 
 var testdatafolders = [][]string{
@@ -45,7 +45,7 @@ func prepare() (*ast.Package, *ast.FuncDecl, ast.Node, *types.Info, *types.Packa
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("check: %w", err)
 	}
-	funcdecl, err := astwutl.FindFuncDecl(astpkg, funcname)
+	funcdecl, err := find.Function(astpkg, funcname)
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("find func decl: %w", err)
 	}

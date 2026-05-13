@@ -1,11 +1,11 @@
-package astwutl
+package find
 
 import (
 	"fmt"
 	"go/ast"
 )
 
-func FindFuncInsideFile(f *ast.File, name string) (*ast.FuncDecl, error) {
+func FunctionInFile(f *ast.File, name string) (*ast.FuncDecl, error) {
 	if f != nil && f.Decls != nil {
 		for _, d := range f.Decls {
 			if fd, ok := d.(*ast.FuncDecl); ok && fd.Name != nil && fd.Name.Name == name {
@@ -16,10 +16,10 @@ func FindFuncInsideFile(f *ast.File, name string) (*ast.FuncDecl, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func FindFuncInsidePackage(p *ast.Package, name string) (*ast.FuncDecl, error) {
+func FunctionInPackage(p *ast.Package, name string) (*ast.FuncDecl, error) {
 	if p != nil && p.Files != nil {
 		for _, f := range p.Files {
-			if fd, err := FindFuncInsideFile(f, name); err == nil {
+			if fd, err := FunctionInFile(f, name); err == nil {
 				return fd, nil
 			}
 		}
@@ -27,12 +27,12 @@ func FindFuncInsidePackage(p *ast.Package, name string) (*ast.FuncDecl, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func FindFuncDecl(root ast.Node, name string) (*ast.FuncDecl, error) {
+func Function(root ast.Node, name string) (*ast.FuncDecl, error) {
 	switch root := (root).(type) {
 	case *ast.Package:
-		return FindFuncInsidePackage(root, name)
+		return FunctionInPackage(root, name)
 	case *ast.File:
-		return FindFuncInsideFile(root, name)
+		return FunctionInFile(root, name)
 	}
 	return nil, fmt.Errorf("expected ast.Package or ast.File")
 }

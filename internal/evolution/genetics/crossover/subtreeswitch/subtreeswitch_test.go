@@ -7,6 +7,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 )
 
@@ -17,11 +18,11 @@ func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDeclA, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
+	funcDeclA, err := find.Function(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, fmt.Errorf("walkHelper: %w", err)
 	}
-	funcDeclB, err := astwutl.FindFuncDecl(astFile, "walkAstTypeFieldsIfSet")
+	funcDeclB, err := find.Function(astFile, "walkAstTypeFieldsIfSet")
 	if err != nil {
 		return nil, nil, fmt.Errorf("walkAstTypeFieldsIfSet: %w", err)
 	}

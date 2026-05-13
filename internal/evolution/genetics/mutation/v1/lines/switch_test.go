@@ -7,6 +7,7 @@ import (
 
 	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone"
+	"tde/internal/astw/find"
 	"tde/internal/astw/parse"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 
@@ -20,7 +21,7 @@ func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {
 	}
 	astPkg := astPkgs["test_package"]
 	astFile := astPkg.Files["testdata/walk.go"]
-	funcDecl, err := astwutl.FindFuncDecl(astPkg, "walkHelper")
+	funcDecl, err := find.Function(astPkg, "walkHelper")
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("could not find test function: %w", err)
 	}

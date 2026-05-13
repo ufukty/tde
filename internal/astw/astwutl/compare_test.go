@@ -2,9 +2,9 @@ package astwutl
 
 import (
 	"go/ast"
-	"tde/internal/astw/clone"
-
 	"testing"
+
+	"tde/internal/astw/clone"
 )
 
 func TestComparRecursively(t *testing.T) {
