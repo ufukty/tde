@@ -86,10 +86,6 @@ func TestFunctionsInDir(path string) (tests []TestFunction, skipped map[string]e
 
 // skipped is for filename:syntax-error
 func TestFunctionsInSubdirs(path string) (tests []TestFunction, skipped map[string]error, err error) {
-	// excludeDirs := copymod.DefaultSkipDirs
-	// excludePaths := functional.Map(excludeDirs, func(i int, v string) string {
-	// 	return filepath.Join(path, v)
-	// })
 	tests, skipped, err = TestFunctionsInDir(path)
 	if err != nil {
 		return nil, nil, fmt.Errorf(": %w", err)
