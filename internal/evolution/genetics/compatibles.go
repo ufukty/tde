@@ -40,8 +40,16 @@ func marktypes(fd *ast.FuncDecl) []types.NodeType {
 	return l
 }
 
-func Intersect[T comparable](l, r []T) []T {
-	ml := prepLookupMap(l)
+func lookup[T comparable](s []T) map[T]bool {
+	m := make(map[T]bool, len(s))
+	for i := 0; i < len(s); i++ {
+		m[s[i]] = true
+	}
+	return m
+}
+
+func interset[T comparable](l, r []T) []T {
+	ml := lookup(l)
 	i := make([]T, 0, min(len(l), len(r)))
 	for _, v := range r {
 		if _, found := ml[v]; found {
@@ -53,7 +61,7 @@ func Intersect[T comparable](l, r []T) []T {
 
 func mutualFieldTypes(fd1, fd2 *ast.FuncDecl) ([]types.NodeType, error) {
 	t1, t2 := marktypes(fd1), marktypes(fd2)
-	mutuals := Intersect(t1, t2)
+	mutuals := interset(t1, t2)
 	if len(mutuals) == 0 {
 		return nil, fmt.Errorf("There is no single field type mutually existing in the entire subtree of two function declarations")
 	}
