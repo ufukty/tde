@@ -1,4 +1,4 @@
-package setops
+package sets
 
 import (
 	"go/token"
@@ -28,5 +28,4 @@ func Test_Diff(t *testing.T) {
 	if slices.Compare(got, []token.Token{token.ASSIGN}) != 0 {
 		t.Error("validation")
 	}
-
 }

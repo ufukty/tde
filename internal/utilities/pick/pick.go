@@ -5,7 +5,7 @@ import (
 
 	"tde/internal/utilities/numerics"
 	"tde/internal/utilities/randoms"
-	"tde/internal/utilities/setops"
+	"tde/internal/utilities/sets"
 )
 
 var ErrEmptySlice = fmt.Errorf("empty slice")
@@ -21,7 +21,7 @@ func Except[T comparable](s []T, e []T) (T, error) {
 	if len(s) == 0 {
 		return *new(T), ErrEmptySlice
 	}
-	cleaned := setops.Diff(s, e)
+	cleaned := sets.Diff(s, e)
 	if len(cleaned) == 0 {
 		return *new(T), ErrEmptySlice
 	}

@@ -3,8 +3,8 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
+
 	"tde/internal/astw/types"
-	"tde/internal/utilities/setops"
 )
 
 func marktypes(fd *ast.FuncDecl) []types.NodeType {

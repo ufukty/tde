@@ -1,4 +1,4 @@
-package setops
+package sets
 
 func lookup[T comparable](s []T) map[T]bool {
 	m := make(map[T]bool, len(s))
