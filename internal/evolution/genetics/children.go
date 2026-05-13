@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/types"
 )
 
 type field struct {
@@ -14,7 +15,6 @@ type field struct {
 
 // n can be a `ast.Node`, or a slice that is connected to a `ast.Node`
 func children(n any) []field {
-
 	if n == nil || isNil(n) {
 		return []field{}
 	}

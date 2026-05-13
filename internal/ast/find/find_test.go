@@ -1,11 +1,12 @@
-package compare
+package find
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"testing"
 
-	"tde/internal/astw/clone"
+	"tde/internal/ast/parse"
 )
 
 const TEST_FILE = `package main
@@ -91,61 +92,18 @@ var (
 	}
 )
 
-func TestChildren(t *testing.T) {
-	compareSlices := func(a, b []ast.Node) bool {
-		if len(a) != len(b) {
-			return false
-		}
-		for i := 0; i < len(a); i++ {
-			if a[i] != b[i] {
-				return false
-			}
-		}
-		return true
-	}
-	testCases := []struct {
-		input  ast.Node
-		output []ast.Node
-	}{{
-		input: TEST_TREE,
-		output: []ast.Node{
-			TEST_TREE.Name,
-			TEST_TREE.Decls[0].(*ast.FuncDecl),
-		},
-	}, {
-		input: TEST_TREE.Decls[0],
-		output: []ast.Node{
-			TEST_TREE.Decls[0].(*ast.FuncDecl).Name,
-			TEST_TREE.Decls[0].(*ast.FuncDecl).Type,
-			TEST_TREE.Decls[0].(*ast.FuncDecl).Body,
-		},
-	}}
-	for testIndex, testCase := range testCases {
-		got := children(testCase.input)
-		if !compareSlices(got, testCase.output) {
-			t.Errorf("Failed on comparison want == got for test #%d\n", testIndex)
-		}
-	}
-}
-
-func TestRecursively(t *testing.T) {
-	if Recursively(TEST_TREE, TEST_TREE) != true {
-		t.Error("Failed for same inputs")
-	}
-	if RecursivelyWithAddresses(TEST_TREE, TEST_TREE) != true {
-		t.Error("Failed for same inputs")
+func TestFuncDecl(t *testing.T) {
+	_, astNode, err := parse.String(TEST_FILE)
+	if err != nil {
+		t.Error(fmt.Errorf("failed ParseString: %w", err))
 	}
 
-	TEST_TREE_NEW := clone.File(TEST_TREE)
-	if Recursively(TEST_TREE, TEST_TREE_NEW) != true {
-		t.Error("Failed for same inputs")
-	}
-	if RecursivelyWithAddresses(TEST_TREE, TEST_TREE_NEW) != false {
-		t.Error("Failed for same inputs")
+	funcDecl, err := Function(astNode, "Addition")
+	if err != nil {
+		t.Error(fmt.Errorf("failed find.Function: %w", err))
 	}
 
-	TEST_TREE_NEW.Decls = append(TEST_TREE_NEW.Decls, &ast.GenDecl{})
-	if RecursivelyWithAddresses(TEST_TREE, TEST_TREE_NEW) != false {
-		t.Error("Failed for changed inputs")
+	if funcDecl.Name.Name != "Addition" {
+		t.Error(fmt.Errorf("failed name check: %w", err))
 	}
 }

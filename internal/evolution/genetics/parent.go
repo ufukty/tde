@@ -3,7 +3,8 @@ package genetics
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/astwutl"
+
+	"tde/internal/ast/astwutl"
 )
 
 // NOTE: slices are to compare with pointers

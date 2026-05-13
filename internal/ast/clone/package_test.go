@@ -1,4 +1,4 @@
-package clean
+package clone
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"io"
 	"testing"
 
-	"tde/internal/astw/find"
-	"tde/internal/astw/parse"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
 )
 
 func loadTestPackage() (*ast.Package, *ast.File, *ast.FuncDecl, error) {

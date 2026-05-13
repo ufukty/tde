@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"tde/internal/astw/astwutl"
+	"tde/internal/ast/astwutl"
 )
 
 // all paths returned will be relative to <moduleRoot>

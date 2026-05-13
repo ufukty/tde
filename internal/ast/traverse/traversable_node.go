@@ -1,10 +1,10 @@
 package traverse
 
 import (
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/types"
-
 	"go/ast"
+
+	"tde/internal/ast/astwutl"
+	"tde/internal/ast/types"
 )
 
 // Use to represent nullable, Node-like (ast.Node etc.) or Node-slice ([]ast.Node etc.) components of the AST.

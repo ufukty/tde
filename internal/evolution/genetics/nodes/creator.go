@@ -2,7 +2,8 @@ package nodes
 
 import (
 	"fmt"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/types"
 	"tde/internal/evolution/symbols"
 )
 

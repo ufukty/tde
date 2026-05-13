@@ -8,8 +8,8 @@ import (
 	"go/token"
 	"testing"
 
-	"tde/internal/astw/clone"
-	"tde/internal/astw/compare"
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
 	models1 "tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/indent"

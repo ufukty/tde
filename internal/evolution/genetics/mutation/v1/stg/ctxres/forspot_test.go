@@ -5,9 +5,9 @@ import (
 	"slices"
 	"testing"
 
-	"tde/internal/astw/find"
-	"tde/internal/astw/parse"
-	"tde/internal/astw/traverse"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
+	"tde/internal/ast/traverse"
 )
 
 func Test_GetContextForSpot(t *testing.T) {

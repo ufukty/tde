@@ -5,8 +5,8 @@ import (
 	"go/ast"
 	"testing"
 
-	"tde/internal/astw/clone/clean"
-	"tde/internal/astw/parse"
+	"tde/internal/ast/clone/clean"
+	"tde/internal/ast/parse"
 )
 
 // use this test with memory profiling. go test -memprofile=mem.out .

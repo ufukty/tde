@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/astw/compare"
+	"tde/internal/ast/astwutl"
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
 
 	"github.com/google/uuid"
 	"github.com/kylelemons/godebug/diff"

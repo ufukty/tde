@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"slices"
 
-	"tde/internal/astw/astwutl"
+	"tde/internal/ast/astwutl"
 	"tde/internal/utilities/slicew"
 )
 

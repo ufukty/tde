@@ -11,7 +11,7 @@ import (
 	"slices"
 	"testing"
 
-	"tde/internal/astw/find"
+	"tde/internal/ast/find"
 )
 
 type tcase1 struct {

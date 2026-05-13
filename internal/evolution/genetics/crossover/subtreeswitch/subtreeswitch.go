@@ -3,7 +3,8 @@ package subtreeswitch
 import (
 	"fmt"
 	"go/ast"
-	"tde/internal/astw/traced"
+
+	"tde/internal/ast/traced"
 	"tde/internal/utilities/pick"
 
 	"golang.org/x/tools/go/ast/astutil"

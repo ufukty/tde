@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 
-	"tde/internal/astw/traverse"
-	"tde/internal/astw/types"
+	"tde/internal/ast/traverse"
+	"tde/internal/ast/types"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres"
 	"tde/internal/evolution/genetics/mutation/v1/stg/ctxres/context"

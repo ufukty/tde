@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/astw/compare"
+	"tde/internal/ast/astwutl"
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
 	"tde/internal/evolution/genetics/mutation/v1/models"
 
 	"github.com/kylelemons/godebug/diff"

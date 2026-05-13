@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 	"slices"
-	"tde/internal/astw/types"
+
+	"tde/internal/ast/types"
 	"tde/internal/utilities/pick"
 )
 

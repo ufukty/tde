@@ -6,9 +6,9 @@ import (
 	"go/token"
 	"testing"
 
-	"tde/internal/astw/clone/clean"
-	"tde/internal/astw/compare"
-	"tde/internal/astw/find"
+	"tde/internal/ast/clone/clean"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/find"
 	"tde/internal/evolution/genetics/nodes"
 )
 

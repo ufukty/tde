@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 
-	"tde/internal/astw/clone/clean"
-	"tde/internal/astw/parse"
+	"tde/internal/ast/clone/clean"
+	"tde/internal/ast/parse"
 
 	"github.com/google/uuid"
 )

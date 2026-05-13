@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"tde/internal/astw/parse"
+	"tde/internal/ast/parse"
 )
 
 // Pass if no panic

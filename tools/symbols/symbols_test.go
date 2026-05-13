@@ -10,7 +10,7 @@ import (
 	"maps"
 	"slices"
 
-	"tde/internal/astw/find"
+	"tde/internal/ast/find"
 )
 
 var testdatafolders = [][]string{

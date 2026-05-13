@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"tde/internal/astw/traced"
+	"tde/internal/ast/traced"
 )
 
 func findFuncTypeParent(r ast.Node, ft *ast.FuncType) *ast.FuncDecl {

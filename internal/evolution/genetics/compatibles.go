@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 
-	"tde/internal/astw/types"
+	"tde/internal/ast/types"
 )
 
 func marktypes(fd *ast.FuncDecl) []types.NodeType {

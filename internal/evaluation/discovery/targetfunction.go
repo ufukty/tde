@@ -5,8 +5,8 @@ import (
 	"go/ast"
 	"go/token"
 
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/parse"
+	"tde/internal/ast/astwutl"
+	"tde/internal/ast/parse"
 )
 
 func find(path string, name string) (*ast.FuncDecl, *token.FileSet, error) {

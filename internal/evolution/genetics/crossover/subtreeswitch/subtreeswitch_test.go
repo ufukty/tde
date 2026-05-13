@@ -5,11 +5,11 @@ import (
 	"go/ast"
 	"testing"
 
-	"tde/internal/astw/astwutl"
-	"tde/internal/astw/clone"
-	"tde/internal/astw/compare"
-	"tde/internal/astw/find"
-	"tde/internal/astw/parse"
+	"tde/internal/ast/astwutl"
+	"tde/internal/ast/clone"
+	"tde/internal/ast/compare"
+	"tde/internal/ast/find"
+	"tde/internal/ast/parse"
 )
 
 func loadTestPackage() (*ast.FuncDecl, *ast.FuncDecl, error) {
