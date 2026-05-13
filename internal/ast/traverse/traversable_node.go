@@ -3,7 +3,7 @@ package traverse
 import (
 	"go/ast"
 
-	"tde/internal/ast/astwutl"
+	"tde/internal/ast/is"
 	"tde/internal/ast/types"
 )
 
@@ -20,7 +20,7 @@ func GetTraversableNodeForASTNode(node ast.Node) *TraversableNode {
 	return &TraversableNode{
 		Value:           node,
 		ExpectedType:    types.GetNodeTypeForASTNode(node),
-		PointsToNilSpot: astwutl.IsNodeNil(node),
+		PointsToNilSpot: is.Nil(node),
 		Parent:          nil,
 		Ref:             NewDirectRef(&node),
 	}

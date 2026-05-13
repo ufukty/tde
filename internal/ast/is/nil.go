@@ -1,9 +1,9 @@
-package astwutl
+package is
 
 import "go/ast"
 
 // This mess is because simple comparison of n == nil doesn't work.
-func IsNodeNil(n ast.Node) bool {
+func Nil(n ast.Node) bool {
 	switch n := n.(type) {
 	case *ast.ArrayType:
 		return n == nil
