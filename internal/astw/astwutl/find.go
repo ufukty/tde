@@ -5,26 +5,34 @@ import (
 	"go/ast"
 )
 
-func FindFuncDecl(toppest ast.Node, name string) (*ast.FuncDecl, error) {
-	found := []*ast.FuncDecl{}
-
-	ast.Inspect(toppest, func(n ast.Node) bool {
-		if n != nil {
-			if functionDeclaration, ok := n.(*ast.FuncDecl); ok {
-				if functionDeclaration.Name.Name == name {
-					found = append(found, functionDeclaration)
-					return false
-				}
+func FindFuncInsideFile(f *ast.File, name string) (*ast.FuncDecl, error) {
+	if f != nil && f.Decls != nil {
+		for _, d := range f.Decls {
+			if fd, ok := d.(*ast.FuncDecl); ok && fd.Name != nil && fd.Name.Name == name {
+				return fd, nil
 			}
 		}
-		return true
-	})
-
-	if len(found) == 0 {
-		return nil, fmt.Errorf("could not find function '%s'", name)
-	} else if len(found) > 1 {
-		return nil, fmt.Errorf("more than one function definition with the name  '%s'", name)
-	} else {
-		return found[0], nil
 	}
+	return nil, fmt.Errorf("not found")
+}
+
+func FindFuncInsidePackage(p *ast.Package, name string) (*ast.FuncDecl, error) {
+	if p != nil && p.Files != nil {
+		for _, f := range p.Files {
+			if fd, err := FindFuncInsideFile(f, name); err == nil {
+				return fd, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("not found")
+}
+
+func FindFuncDecl(root ast.Node, name string) (*ast.FuncDecl, error) {
+	switch root := (root).(type) {
+	case *ast.Package:
+		return FindFuncInsidePackage(root, name)
+	case *ast.File:
+		return FindFuncInsideFile(root, name)
+	}
+	return nil, fmt.Errorf("expected ast.Package or ast.File")
 }
