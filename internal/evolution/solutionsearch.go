@@ -12,7 +12,6 @@ import (
 	"tde/internal/evolution/models"
 	"tde/internal/evolution/pool"
 	"tde/internal/evolution/selection"
-	"tde/internal/utilities/slicew"
 )
 
 type SolutionSearch struct {
@@ -32,6 +31,15 @@ func NewSolutionSearch(e *evaluation.Evaluator, params *models.Parameters, conte
 	}
 }
 
+func pair(a, b []*models.Subject) []*[2]*models.Subject {
+	l := min(len(a), len(b))
+	z := make([]*[2]*models.Subject, 0, l)
+	for i := range l {
+		z = append(z, &[2]*models.Subject{a[i], b[i]})
+	}
+	return z
+}
+
 // Pick parents for genetic operations
 func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*models.Subject, mu models.Subjects, err error) {
 	n := ss.commons.Params.Solution.Evaluations
@@ -48,7 +56,7 @@ func (ss *SolutionSearch) pickParents(candidates models.Subjects) (co []*[2]*mod
 	if err != nil {
 		return nil, nil, fmt.Errorf("picking crossover parents from picked parents: %w", err)
 	}
-	co = slicew.Zip(slices.Collect(maps.Values(coA)), slices.Collect(maps.Values(coB)))
+	co = pair(slices.Collect(maps.Values(coA)), slices.Collect(maps.Values(coB)))
 	nMu := n - 2*nCo
 	mu, err = selection.RouletteWheelToReproduce(parents, models.Candidate, nMu)
 	if err != nil {

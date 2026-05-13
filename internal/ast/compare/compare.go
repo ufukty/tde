@@ -2,8 +2,6 @@ package compare
 
 import (
 	"go/ast"
-
-	"tde/internal/utilities/slicew"
 )
 
 func children(root ast.Node) []ast.Node {
@@ -480,7 +478,16 @@ func nonNodeFieldsWithAddresses(a, b ast.Node) bool {
 	return true
 }
 
-// returns true if they are same, uses BFS and value comparison instead of ponter comparison
+func pair(a, b []ast.Node) []*[2]ast.Node {
+	l := min(len(a), len(b))
+	z := make([]*[2]ast.Node, 0, l)
+	for i := range l {
+		z = append(z, &[2]ast.Node{a[i], b[i]})
+	}
+	return z
+}
+
+// returns true if they are same, uses BFS and value comparison instead of pointer comparison
 // Returns false for changes in addresses also. In addition to only value changes just like CompareRecursively
 func RecursivelyWithAddresses(a, b ast.Node) bool {
 	pairs := []*[2]ast.Node{}
@@ -489,19 +496,14 @@ func RecursivelyWithAddresses(a, b ast.Node) bool {
 	for len(pairs) > 0 {
 		a, b := pairs[0][0], pairs[0][1]
 		pairs = pairs[1:]
-
 		if !nonNodeFieldsWithAddresses(a, b) {
 			return false
 		}
-
-		childrenA := children(a)
-		childrenB := children(b)
-
+		childrenA, childrenB := children(a), children(b)
 		if len(childrenA) != len(childrenB) {
 			return false
 		}
-
-		pairs = append(pairs, slicew.Zip(childrenA, childrenB)...)
+		pairs = append(pairs, pair(childrenA, childrenB)...)
 	}
 
 	return true
@@ -895,19 +897,14 @@ func Recursively(a, b ast.Node) bool {
 	for len(pairs) > 0 {
 		a, b := pairs[0][0], pairs[0][1]
 		pairs = pairs[1:]
-
 		if !nonNodeFields(a, b) {
 			return false
 		}
-
-		childrenA := children(a)
-		childrenB := children(b)
-
+		childrenA, childrenB := children(a), children(b)
 		if len(childrenA) != len(childrenB) {
 			return false
 		}
-
-		pairs = append(pairs, slicew.Zip(childrenA, childrenB)...)
+		pairs = append(pairs, pair(childrenA, childrenB)...)
 	}
 
 	return true
