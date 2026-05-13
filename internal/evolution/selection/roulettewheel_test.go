@@ -5,11 +5,11 @@ import (
 	"maps"
 	"slices"
 	"sort"
+	"strings"
 	"testing"
 
 	"tde/internal/evolution/models"
 	"tde/internal/utilities/mapw"
-	"tde/internal/utilities/strw"
 )
 
 func Test_normalize(t *testing.T) {
@@ -175,7 +175,7 @@ func (fc freqCounter) PrintHistogram() {
 			string(id),
 			fc.subjects[id].Fitness.AST,
 			int(float64(freq)/float64(maxFreq)*100),
-			strw.Fill("*", int(float64(freq)/float64(maxFreq)*40)),
+			strings.Repeat("*", int(float64(freq)/float64(maxFreq)*40)),
 		)
 	}
 }
