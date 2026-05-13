@@ -4,7 +4,7 @@ import (
 	"go/ast"
 )
 
-func ObjectMap(src map[string]*ast.Object) map[string]*ast.Object {
+func objectMap(src map[string]*ast.Object) map[string]*ast.Object {
 	if src == nil {
 		return nil
 	}
@@ -15,7 +15,7 @@ func ObjectMap(src map[string]*ast.Object) map[string]*ast.Object {
 	return dst
 }
 
-func FileMap(src map[string]*ast.File) map[string]*ast.File {
+func fileMap(src map[string]*ast.File) map[string]*ast.File {
 	if src == nil {
 		return nil
 	}

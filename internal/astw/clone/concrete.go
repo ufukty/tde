@@ -20,7 +20,7 @@ func CommentGroup(src *ast.CommentGroup) *ast.CommentGroup {
 		return nil
 	}
 	return &ast.CommentGroup{
-		List: CommentSlice(src.List),
+		List: commentSlice(src.List),
 	}
 }
 
@@ -30,7 +30,7 @@ func Field(src *ast.Field) *ast.Field {
 	}
 	return &ast.Field{
 		Doc:     CommentGroup(src.Doc),
-		Names:   IdentSlice(src.Names),
+		Names:   identSlice(src.Names),
 		Type:    Expr(src.Type),
 		Tag:     BasicLit(src.Tag),
 		Comment: CommentGroup(src.Comment),
@@ -43,7 +43,7 @@ func FieldList(src *ast.FieldList) *ast.FieldList {
 	}
 	return &ast.FieldList{
 		Opening: token.Pos(src.Opening),
-		List:    FieldSlice(src.List),
+		List:    fieldSlice(src.List),
 		Closing: token.Pos(src.Closing),
 	}
 }
@@ -107,7 +107,7 @@ func CompositeLit(src *ast.CompositeLit) *ast.CompositeLit {
 	return &ast.CompositeLit{
 		Type:       Expr(src.Type),
 		Lbrace:     token.Pos(src.Lbrace),
-		Elts:       ExprSlice(src.Elts),
+		Elts:       exprSlice(src.Elts),
 		Rbrace:     token.Pos(src.Rbrace),
 		Incomplete: bool(src.Incomplete),
 	}
@@ -153,7 +153,7 @@ func IndexListExpr(src *ast.IndexListExpr) *ast.IndexListExpr {
 	return &ast.IndexListExpr{
 		X:       Expr(src.X),
 		Lbrack:  token.Pos(src.Lbrack),
-		Indices: ExprSlice(src.Indices),
+		Indices: exprSlice(src.Indices),
 		Rbrack:  token.Pos(src.Rbrack),
 	}
 }
@@ -192,7 +192,7 @@ func CallExpr(src *ast.CallExpr) *ast.CallExpr {
 	return &ast.CallExpr{
 		Fun:      Expr(src.Fun),
 		Lparen:   token.Pos(src.Lparen),
-		Args:     ExprSlice(src.Args),
+		Args:     exprSlice(src.Args),
 		Ellipsis: token.Pos(src.Ellipsis),
 		Rparen:   token.Pos(src.Rparen),
 	}
@@ -386,10 +386,10 @@ func AssignStmt(src *ast.AssignStmt) *ast.AssignStmt {
 		return nil
 	}
 	return &ast.AssignStmt{
-		Lhs:    ExprSlice(src.Lhs),
+		Lhs:    exprSlice(src.Lhs),
 		TokPos: token.Pos(src.TokPos),
 		Tok:    token.Token(src.Tok),
-		Rhs:    ExprSlice(src.Rhs),
+		Rhs:    exprSlice(src.Rhs),
 	}
 }
 
@@ -419,7 +419,7 @@ func ReturnStmt(src *ast.ReturnStmt) *ast.ReturnStmt {
 	}
 	return &ast.ReturnStmt{
 		Return:  token.Pos(src.Return),
-		Results: ExprSlice(src.Results),
+		Results: exprSlice(src.Results),
 	}
 }
 
@@ -440,7 +440,7 @@ func BlockStmt(src *ast.BlockStmt) *ast.BlockStmt {
 	}
 	return &ast.BlockStmt{
 		Lbrace: token.Pos(src.Lbrace),
-		List:   StmtSlice(src.List),
+		List:   stmtSlice(src.List),
 		Rbrace: token.Pos(src.Rbrace),
 	}
 }
@@ -464,9 +464,9 @@ func CaseClause(src *ast.CaseClause) *ast.CaseClause {
 	}
 	return &ast.CaseClause{
 		Case:  token.Pos(src.Case),
-		List:  ExprSlice(src.List),
+		List:  exprSlice(src.List),
 		Colon: token.Pos(src.Colon),
-		Body:  StmtSlice(src.Body),
+		Body:  stmtSlice(src.Body),
 	}
 }
 
@@ -502,7 +502,7 @@ func CommClause(src *ast.CommClause) *ast.CommClause {
 		Case:  token.Pos(src.Case),
 		Comm:  Stmt(src.Comm),
 		Colon: token.Pos(src.Colon),
-		Body:  StmtSlice(src.Body),
+		Body:  stmtSlice(src.Body),
 	}
 }
 
@@ -563,9 +563,9 @@ func ValueSpec(src *ast.ValueSpec) *ast.ValueSpec {
 	}
 	return &ast.ValueSpec{
 		Doc:     CommentGroup(src.Doc),
-		Names:   IdentSlice(src.Names),
+		Names:   identSlice(src.Names),
 		Type:    Expr(src.Type),
-		Values:  ExprSlice(src.Values),
+		Values:  exprSlice(src.Values),
 		Comment: CommentGroup(src.Comment),
 	}
 }
@@ -603,7 +603,7 @@ func GenDecl(src *ast.GenDecl) *ast.GenDecl {
 		TokPos: token.Pos(src.TokPos),
 		Tok:    token.Token(src.Tok),
 		Lparen: token.Pos(src.Lparen),
-		Specs:  SpecSlice(src.Specs),
+		Specs:  specSlice(src.Specs),
 		Rparen: token.Pos(src.Rparen),
 	}
 }
@@ -629,11 +629,11 @@ func File(src *ast.File) *ast.File {
 		Doc:        CommentGroup(src.Doc),
 		Package:    token.Pos(src.Package),
 		Name:       Ident(src.Name),
-		Decls:      DeclSlice(src.Decls),
+		Decls:      declSlice(src.Decls),
 		Scope:      Scope(src.Scope),
-		Imports:    ImportSpecSlice(src.Imports),
-		Unresolved: IdentSlice(src.Unresolved),
-		Comments:   CommentGroupSlice(src.Comments),
+		Imports:    importSpecSlice(src.Imports),
+		Unresolved: identSlice(src.Unresolved),
+		Comments:   commentGroupSlice(src.Comments),
 	}
 }
 
@@ -644,8 +644,8 @@ func Package(src *ast.Package) *ast.Package {
 	return &ast.Package{
 		Name:    string(src.Name),
 		Scope:   Scope(src.Scope),
-		Imports: ObjectMap(src.Imports),
-		Files:   FileMap(src.Files),
+		Imports: objectMap(src.Imports),
+		Files:   fileMap(src.Files),
 	}
 }
 
@@ -672,7 +672,7 @@ func Scope(src *ast.Scope) *ast.Scope {
 		return nil
 	}
 	dest := &ast.Scope{
-		Objects: ObjectMap(src.Objects),
+		Objects: objectMap(src.Objects),
 	}
 	if src.Outer != nil {
 		dest.Outer = Scope(src.Outer)

@@ -2,7 +2,7 @@ package clone
 
 import "go/ast"
 
-func CommentSlice(src []*ast.Comment) []*ast.Comment {
+func commentSlice(src []*ast.Comment) []*ast.Comment {
 	if src == nil {
 		return nil
 	}
@@ -13,7 +13,7 @@ func CommentSlice(src []*ast.Comment) []*ast.Comment {
 	return dst
 }
 
-func CommentGroupSlice(src []*ast.CommentGroup) []*ast.CommentGroup {
+func commentGroupSlice(src []*ast.CommentGroup) []*ast.CommentGroup {
 	if src == nil {
 		return nil
 	}
@@ -24,7 +24,7 @@ func CommentGroupSlice(src []*ast.CommentGroup) []*ast.CommentGroup {
 	return dst
 }
 
-func DeclSlice(src []ast.Decl) []ast.Decl {
+func declSlice(src []ast.Decl) []ast.Decl {
 	if src == nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func DeclSlice(src []ast.Decl) []ast.Decl {
 	return dst
 }
 
-func ExprSlice(src []ast.Expr) []ast.Expr {
+func exprSlice(src []ast.Expr) []ast.Expr {
 	if src == nil {
 		return nil
 	}
@@ -46,7 +46,7 @@ func ExprSlice(src []ast.Expr) []ast.Expr {
 	return dst
 }
 
-func FieldSlice(src []*ast.Field) []*ast.Field {
+func fieldSlice(src []*ast.Field) []*ast.Field {
 	if src == nil {
 		return nil
 	}
@@ -57,7 +57,7 @@ func FieldSlice(src []*ast.Field) []*ast.Field {
 	return dst
 }
 
-func IdentSlice(src []*ast.Ident) []*ast.Ident {
+func identSlice(src []*ast.Ident) []*ast.Ident {
 	if src == nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func IdentSlice(src []*ast.Ident) []*ast.Ident {
 	return dst
 }
 
-func ImportSpecSlice(src []*ast.ImportSpec) []*ast.ImportSpec {
+func importSpecSlice(src []*ast.ImportSpec) []*ast.ImportSpec {
 	if src == nil {
 		return nil
 	}
@@ -79,7 +79,7 @@ func ImportSpecSlice(src []*ast.ImportSpec) []*ast.ImportSpec {
 	return dst
 }
 
-func SpecSlice(src []ast.Spec) []ast.Spec {
+func specSlice(src []ast.Spec) []ast.Spec {
 	if src == nil {
 		return nil
 	}
@@ -90,7 +90,7 @@ func SpecSlice(src []ast.Spec) []ast.Spec {
 	return dst
 }
 
-func StmtSlice(src []ast.Stmt) []ast.Stmt {
+func stmtSlice(src []ast.Stmt) []ast.Stmt {
 	if src == nil {
 		return nil
 	}
