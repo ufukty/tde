@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/ast"
 
-	"tde/internal/astw/astwutl"
 	"tde/internal/astw/clone/clean"
 	"tde/internal/astw/parse"
 
@@ -21,30 +20,38 @@ type Context struct {
 	orgFuncDecl   *ast.FuncDecl
 }
 
-func LoadContext(module, pkgpath, funcname string) (*Context, error) {
-	pkg, err := parse.Package(pkgpath)
-	if err != nil {
-		return nil, fmt.Errorf("loading the package in %q: %w", pkgpath, err)
-	}
-	file, funcdecl, err := astwutl.FindFuncDeclInPkg(pkg, funcname)
-	if err != nil {
-		return nil, fmt.Errorf("searching %q in the package: %w", funcname, err)
-	}
-	ctx := &Context{
-		Module:   map[string]*ast.Package{}, // TODO: context for module
-		Package:  pkg,
-		File:     file,
-		FuncDecl: funcdecl,
-
-		funcDeclIndex: -1,
-		orgFuncDecl:   funcdecl,
-	}
-	for i, decl := range file.Decls {
-		if funcDecl, ok := decl.(*ast.FuncDecl); ok && funcDecl.Name.Name == funcname {
-			ctx.funcDeclIndex = i
+func funcInFile(pkg *ast.Package, name string) (*ast.File, *ast.FuncDecl, int, error) {
+	if pkg != nil && pkg.Files != nil {
+		for _, f := range pkg.Files {
+			for i, d := range f.Decls {
+				if fd, ok := d.(*ast.FuncDecl); ok {
+					if fd.Name != nil && fd.Name.Name == name {
+						return f, fd, i, nil
+					}
+				}
+			}
 		}
 	}
-	return ctx, nil
+	return nil, nil, -1, fmt.Errorf("could not find: %s", name)
+}
+
+func LoadContext(module, pkgpath, funcname string) (*Context, error) {
+	p, err := parse.Package(pkgpath)
+	if err != nil {
+		return nil, fmt.Errorf("parsing the package: %w", err)
+	}
+	f, fd, fdi, err := funcInFile(p, funcname)
+	if err != nil {
+		return nil, fmt.Errorf("locating the function in AST: %w", err)
+	}
+	return &Context{
+		Module:        map[string]*ast.Package{}, // TODO: context for module
+		Package:       p,
+		File:          f,
+		FuncDecl:      fd,
+		funcDeclIndex: fdi,
+		orgFuncDecl:   fd,
+	}, nil
 }
 
 // needed before printing file
